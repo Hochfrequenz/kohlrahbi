@@ -5,7 +5,7 @@ import docx
 import numpy as np
 import pandas as pd
 
-directory_path = Path.cwd() / "bdew-documents"
+directory_path = Path.cwd() / "documents"
 file_name = "UTILMD_AHB_WiM_3_1c_2021_04_01_2021_03_30.docx"
 
 path_to_file = directory_path / file_name
