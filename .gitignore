@@ -132,3 +132,7 @@ dmypy.json
 
 # vscode settings
 .vscode/
+
+# document folders
+documents/
+backup_documents/
