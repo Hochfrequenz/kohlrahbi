@@ -64,59 +64,160 @@ def write_segment_to_dataframe(final_dataframe, row_index, dataframe_row, text_i
 
     splitted_middle_cell = text_in_row_as_list[1].split("\t")
     if text_in_row_as_list[1].count("\t") == 3:
-        dataframe_row[5] = splitted_middle_cell[0]
-        dataframe_row[6] = splitted_middle_cell[1]
-        dataframe_row[7] = splitted_middle_cell[2]
+        dataframe_row[5] = splitted_middle_cell[1]
+        dataframe_row[6] = splitted_middle_cell[2]
+        dataframe_row[7] = splitted_middle_cell[3]
 
     final_dataframe.loc[row_index] = dataframe_row
+
+
+def parse_first_paragraph_in_middle_column_to_dataframe(paragraph, dataframe_row):
+
+    # Codenummer, e.g. 332 or
+    # Freitext, e.g. Vorgangsnummer
+
+    splitted_text_at_tabs = paragraph.text.split("\t")
+
+    # Qualifier / Code
+    dataframe_row[3] += splitted_text_at_tabs.pop(0)
+
+    for tabstop in paragraph.paragraph_format.tab_stops._pPr.tabs:
+        if tabstop.pos == 436245:
+            # Beschreibung
+            dataframe_row[4] += splitted_text_at_tabs.pop(0)
+        elif tabstop.pos == 1962785:
+            # first Prüfidentifikator
+            dataframe_row[5] += splitted_text_at_tabs.pop(0)
+        elif tabstop.pos == 2578735:
+            # second Prüfidentifikator
+            dataframe_row[6] += splitted_text_at_tabs.pop(0)
+        elif tabstop.pos == 3192780:
+            # third Prüfidentifikator
+            dataframe_row[7] += splitted_text_at_tabs.pop(0)
+        else:
+            raise NotImplementedError(
+                f"Found an undefined tabstop position: {tabstop.pos}. Text: {splitted_text_at_tabs}"
+            )
+    return dataframe_row
+
+
+# def parse_multiline_ahb_condition_expression(paragraph, dataframe_row):
+#     """
+#     Example:
+#     Muss ([77]	Muss ([59]	Muss [61] U
+# 	U [78]) U	U [580]) O	[584]
+# 	(([61] U	([46] U [61])
+# 	[584]) O
+# 	[583])
+
+#     """
 
 
 def write_dataelement_to_dataframe(final_dataframe, row_index, dataframe_row, text_in_row_as_list, middle_cell):
 
     splitted_edifact_struktur_cell = text_in_row_as_list[0].split("\t")
     if text_in_row_as_list[0].count("\t") == 1:
+        # EDIFACT Struktur column: UNH\t0062
         dataframe_row[1] = splitted_edifact_struktur_cell[0]
         dataframe_row[2] = splitted_edifact_struktur_cell[1]
+    elif text_in_row_as_list[0].count("\t") == 2:
+        dataframe_row[0] = splitted_edifact_struktur_cell[0]
+        dataframe_row[1] = splitted_edifact_struktur_cell[1]
+        dataframe_row[2] = splitted_edifact_struktur_cell[2]
 
     # here we can also distinguish between Freitext (graue Schrift Felder) und nicht Freitext (fette geschriebene Felder)
-    if middle_cell.paragraphs[0].runs[0].bold:
-        if "\n" in middle_cell.text:
+    # if middle_cell.paragraphs[0].runs[0].bold:
 
-            if middle_cell.text.count("\t") == 5:
-                # example: ['UNH\t0065', 'UTILM\tNetzanschluss-\tX\tX\tX\nD\tStammdaten', '']
-                splitted_text_at_line_endings: List = middle_cell.text.split("\n")
-
-                splitted_text_at_tabs = [snippet.split("\t") for snippet in splitted_text_at_line_endings]
-
-                fixed_text = [text[0] + text[1] for text in zip(splitted_text_at_tabs[0], splitted_text_at_tabs[1])]
-
-                dataframe_row[3] = fixed_text[0]
-                dataframe_row[4] = fixed_text[1]
-
-                dataframe_row[5] = splitted_text_at_tabs[0][2]
-                dataframe_row[6] = splitted_text_at_tabs[0][3]
-                dataframe_row[7] = splitted_text_at_tabs[0][4]
-        else:
-            splitted_middle_cell = text_in_row_as_list[1].split("\t")
-            if middle_cell.text.count("\t") == 4:
-                dataframe_row[3] = splitted_middle_cell[0]
-                dataframe_row[4] = splitted_middle_cell[1]
-                dataframe_row[5] = splitted_middle_cell[2]
-                dataframe_row[6] = splitted_middle_cell[3]
-                dataframe_row[7] = splitted_middle_cell[4]
-
+    if len(middle_cell.paragraphs) == 1:
+        # -> single line row
+        dataframe_row = parse_first_paragraph_in_middle_column_to_dataframe(
+            paragraph=middle_cell.paragraphs[0], dataframe_row=dataframe_row
+        )
     else:
-        splitted_middle_cell = text_in_row_as_list[1].split("\t")
-        if text_in_row_as_list[1].count("\t") == 3:
-            dataframe_row[3] = splitted_middle_cell[0]
-            dataframe_row[5] = splitted_middle_cell[1]
-            dataframe_row[6] = splitted_middle_cell[2]
-            dataframe_row[7] = splitted_middle_cell[3]
+        for paragraph in middle_cell.paragraphs:
+            if paragraph.paragraph_format.left_indent == 36830 and "\t" in paragraph.text:
+                # Beschreibung -> 4 -> 436245
+                # 11039 -> 5 -> 1962785
+                # 11040 -> 6 -> 2578735
+                # 11041 -> 7 -> 3192780
+
+                dataframe_row = parse_first_paragraph_in_middle_column_to_dataframe(
+                    paragraph=paragraph, dataframe_row=dataframe_row
+                )
+
+                # splitted_text_at_tabs = paragraph.text.split("\t")
+
+                # dataframe_row[3] = splitted_text_at_tabs.pop(0)
+
+                # for tabstop in paragraph.paragraph_format.tab_stops._pPr.tabs:
+                #     if tabstop.pos == 436245:
+                #         # Beschreibung
+                #         dataframe_row[4] = splitted_text_at_tabs.pop(0)
+                #     elif tabstop.pos == 1962785:
+                #         # first Prüfidentifikator
+                #         dataframe_row[5] = splitted_text_at_tabs.pop(0)
+                #     elif tabstop.pos == 2578735:
+                #         # second Prüfidentifikator
+                #         dataframe_row[6] = splitted_text_at_tabs.pop(0)
+                #     elif tabstop.pos == 3192780:
+                #         # third Prüfidentifikator
+                #         dataframe_row[7] = splitted_text_at_tabs.pop(0)
+                #     else:
+                #         raise NotImplementedError(
+                #             f"Found an undefined tabstop position: {tabstop.pos}. Text: {splitted_text_at_tabs}"
+                #         )
+            elif paragraph.paragraph_format.left_indent == 36830 and not "\t" in paragraph.text:
+                # multi line Freitext
+                dataframe_row[3] += " " + paragraph.text
+            elif paragraph.paragraph_format.left_indent == 436245:
+                # multi line Beschreibung
+                dataframe_row[4] += " " + paragraph.text
+            elif paragraph.paragraph_format.left_indent is None:
+                parse_first_paragraph_in_middle_column_to_dataframe(paragraph=paragraph, dataframe_row=dataframe_row)
+            else:
+                raise NotImplementedError(f"The row with {repr(paragraph.text)} can not be read.")
+
+    #     if "\n" in middle_cell.text:
+
+    #         if middle_cell.text.count("\t") == 5:
+    #             # example: ['UNH\t0065', 'UTILM\tNetzanschluss-\tX\tX\tX\nD\tStammdaten', '']
+    #             splitted_text_at_line_endings: List = middle_cell.text.split("\n")
+
+    #             splitted_text_at_tabs = [snippet.split("\t") for snippet in splitted_text_at_line_endings]
+
+    #             fixed_text = [text[0] + text[1] for text in zip(splitted_text_at_tabs[0], splitted_text_at_tabs[1])]
+
+    #             dataframe_row[3] = fixed_text[0]
+    #             dataframe_row[4] = fixed_text[1]
+
+    #             dataframe_row[5] = splitted_text_at_tabs[0][2]
+    #             dataframe_row[6] = splitted_text_at_tabs[0][3]
+    #             dataframe_row[7] = splitted_text_at_tabs[0][4]
+    #     else:
+    #         splitted_middle_cell = text_in_row_as_list[1].split("\t")
+    #         if middle_cell.text.count("\t") == 4:
+    #             dataframe_row[3] = splitted_middle_cell[0]
+    #             dataframe_row[4] = splitted_middle_cell[1]
+    #             dataframe_row[5] = splitted_middle_cell[2]
+    #             dataframe_row[6] = splitted_middle_cell[3]
+    #             dataframe_row[7] = splitted_middle_cell[4]
+
+    # else:
+    #     splitted_middle_cell = text_in_row_as_list[1].split("\t")
+    #     if text_in_row_as_list[1].count("\t") == 3:
+    #         dataframe_row[3] = splitted_middle_cell[0]
+    #         dataframe_row[5] = splitted_middle_cell[1]
+    #         dataframe_row[6] = splitted_middle_cell[2]
+    #         dataframe_row[7] = splitted_middle_cell[3]
 
     final_dataframe.loc[row_index] = dataframe_row
 
 
 def has_cell_in_edifact_struktur_column_a_segmentgruppe(cell):
+    """
+    Checks if the cell contains a Segementgruppe like e.g. "SG2" or "SG2\tNAD\t3035"
+    (should only be called for cells in EDIFACT Struktur column)
+    """
     # if cell.paragraphs[0].paragraph_format.left_indent == 364490:
     if cell.paragraphs[0].paragraph_format.left_indent == 36830:
         return True
@@ -217,8 +318,6 @@ def is_row_datenelement(edifact_struktur_cell):
 
     return False
 
-    pass
-
 
 def define_row_type(table, edifact_struktur_cell, text_in_row_as_list):
     if is_row_header(text_in_row_as_list=text_in_row_as_list):
@@ -272,6 +371,7 @@ def main():
 
             for row in range(len(table.rows)):
 
+                index_for_middle_column = 1
                 # initial empty list for the next row in the dataframe
                 actual_dataframe_row = (len(df.columns)) * [""]
 
@@ -279,7 +379,27 @@ def main():
                 row_cell_texts_as_list = [cell.text for cell in table.row_cells(row)]
                 if table._column_count == 4:
                     # remove redundant information for tables with 4 columns
-                    del row_cell_texts_as_list[2]
+                    if (
+                        row_cell_texts_as_list[0] == row_cell_texts_as_list[1]
+                        and row_cell_texts_as_list[2] == row_cell_texts_as_list[3]
+                    ):
+                        # HEADER looks like
+                        # 0:'EDIFACT Struktur'
+                        # 1:'EDIFACT Struktur'
+                        # 2:'Beschreibung\tKündigung\tBestätigung\tAblehnung\tBedingung\n\tMSB \tKündigung\tKündigung\n\tMSB \tMSB \nKommunikation von\tMSBN an\tMSBA an\tMSBA an\n\tMSBA\tMSBN\tMSBN\nPrüfidentifikator\t11039\t11040\t11041'
+                        # 3:'Beschreibung\tKündigung\tBestätigung\tAblehnung\tBedingung\n\tMSB \tKündigung\tKündigung\n\tMSB \tMSB \nKommunikation von\tMSBN an\tMSBA an\tMSBA an\n\tMSBA\tMSBN\tMSBN\nPrüfidentifikator\t11039\t11040\t11041'
+                        # len():4
+                        del row_cell_texts_as_list[1]
+                        row_cell_texts_as_list[2] == ""
+                    elif row_cell_texts_as_list[0] == row_cell_texts_as_list[1] and row_cell_texts_as_list[3] == "":
+                        # Dataelement row with header in the table
+                        # 0:'SG2\tNAD\t3035'
+                        # 1:'SG2\tNAD\t3035'
+                        # 2:'MR\tNachrichtenempfänger\tX\tX\tX'
+                        # 3:''
+                        # len():4
+                        del row_cell_texts_as_list[1]
+                    index_for_middle_column = 2
 
                 actual_edifact_struktur_cell = table.row_cells(row)[0]
 
@@ -334,7 +454,7 @@ def main():
                         row_index=actual_df_row_index,
                         dataframe_row=actual_dataframe_row,
                         text_in_row_as_list=row_cell_texts_as_list,
-                        middle_cell=table.row_cells(row)[1],
+                        middle_cell=table.row_cells(row)[index_for_middle_column],
                     )
                     actual_df_row_index = actual_df_row_index + 1
                     continue
