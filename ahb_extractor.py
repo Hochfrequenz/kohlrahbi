@@ -59,8 +59,12 @@ def write_segmentgruppe_to_dataframe(final_dataframe, row_index, dataframe_row, 
 
 def write_segment_to_dataframe(final_dataframe, row_index, dataframe_row, text_in_row_as_list):
     splitted_edifact_struktur_cell = text_in_row_as_list[0].split("\t")
-    dataframe_row[0] = splitted_edifact_struktur_cell[0]
-    dataframe_row[1] = splitted_edifact_struktur_cell[1]
+
+    if len(splitted_edifact_struktur_cell) == 1:
+        dataframe_row[1] = splitted_edifact_struktur_cell[0]
+    else:
+        dataframe_row[0] = splitted_edifact_struktur_cell[0]
+        dataframe_row[1] = splitted_edifact_struktur_cell[1]
 
     splitted_middle_cell = text_in_row_as_list[1].split("\t")
     if text_in_row_as_list[1].count("\t") == 3:
@@ -101,16 +105,29 @@ def parse_first_paragraph_in_middle_column_to_dataframe(paragraph, dataframe_row
     return dataframe_row
 
 
-# def parse_multiline_ahb_condition_expression(paragraph, dataframe_row):
-#     """
-#     Example:
-#     Muss ([77]	Muss ([59]	Muss [61] U
-# 	U [78]) U	U [580]) O	[584]
-# 	(([61] U	([46] U [61])
-# 	[584]) O
-# 	[583])
+def count_matching(condition, seq):
+    """Returns the amount of items in seq that return true from condition"""
+    # return sum(1 for item in seq if condition(item))
 
-#     """
+    return sum(condition(item) for item in seq)
+
+
+def code_condition(paragraph):
+    try:
+        tabstop_positions = [tab_position.pos for tab_position in paragraph.paragraph_format.tab_stops._pPr.tabs]
+    except TypeError:
+        return False
+
+    if paragraph.runs[0].bold == True and any(x in tabstop_positions for x in [1962785, 2578735, 3192780]):
+        return True
+    return False
+
+
+def has_middle_cell_multiple_codes(paragraphs) -> bool:
+
+    if count_matching(code_condition, paragraphs) > 1:
+        return True
+    return False
 
 
 def write_dataelement_to_dataframe(final_dataframe, row_index, dataframe_row, text_in_row_as_list, middle_cell):
@@ -133,8 +150,45 @@ def write_dataelement_to_dataframe(final_dataframe, row_index, dataframe_row, te
         dataframe_row = parse_first_paragraph_in_middle_column_to_dataframe(
             paragraph=middle_cell.paragraphs[0], dataframe_row=dataframe_row
         )
+        final_dataframe.loc[row_index] = dataframe_row
+        row_index = row_index + 1
+    elif has_middle_cell_multiple_codes(paragraphs=middle_cell.paragraphs):
+        # here we have to look into the next row to see, if we can add a new datarow or
+        # if we have to collect more information in the next row and then add a new datarow
+        create_new_dataframe_row_indicator_list: List = [
+            paragraph.runs[0].bold == True for paragraph in middle_cell.paragraphs
+        ]
+
+        for paragraph, i in zip(middle_cell.paragraphs, range(len(create_new_dataframe_row_indicator_list))):
+            # for paragraph in middle_cell.paragraphs:
+
+            if paragraph.runs[0].bold:
+                # dataframe_row = (len(final_dataframe.columns)) * [""]
+                # next_row_index = row_index + 1
+
+                # if paragraph.paragraph_format.left_indent == 36830 and "\t" in paragraph.text:
+                dataframe_row = parse_first_paragraph_in_middle_column_to_dataframe(
+                    paragraph=paragraph, dataframe_row=dataframe_row
+                )
+
+            elif paragraph.paragraph_format.left_indent == 436245:
+                # multi line Beschreibung
+                dataframe_row[4] += " " + paragraph.text
+                # continue
+
+            if len(create_new_dataframe_row_indicator_list) > i + 1:
+                if create_new_dataframe_row_indicator_list[i + 1]:
+                    final_dataframe.loc[row_index] = dataframe_row
+                    dataframe_row = (len(final_dataframe.columns)) * [""]
+                    row_index = row_index + 1
+            else:
+                final_dataframe.loc[row_index] = dataframe_row
+                row_index = row_index + 1
+
+            # row_index = next_row_index
     else:
         for paragraph in middle_cell.paragraphs:
+
             if paragraph.paragraph_format.left_indent == 36830 and "\t" in paragraph.text:
                 # Beschreibung -> 4 -> 436245
                 # 11039 -> 5 -> 1962785
@@ -156,7 +210,9 @@ def write_dataelement_to_dataframe(final_dataframe, row_index, dataframe_row, te
             else:
                 raise NotImplementedError(f"The row with {repr(paragraph.text)} can not be read.")
 
-    final_dataframe.loc[row_index] = dataframe_row
+        final_dataframe.loc[row_index] = dataframe_row
+        row_index = row_index + 1
+    return row_index
 
 
 def has_cell_in_edifact_struktur_column_a_segmentgruppe(cell):
@@ -164,7 +220,6 @@ def has_cell_in_edifact_struktur_column_a_segmentgruppe(cell):
     Checks if the cell contains a Segementgruppe like e.g. "SG2" or "SG2\tNAD\t3035"
     (should only be called for cells in EDIFACT Struktur column)
     """
-    # if cell.paragraphs[0].paragraph_format.left_indent == 364490:
     if cell.paragraphs[0].paragraph_format.left_indent == 36830:
         return True
     return False
@@ -198,11 +253,11 @@ def is_row_segmentname(table, text_in_row_as_list: List) -> bool:
 
 
 def is_row_segmentgruppe(edifact_struktur_cell):
-    if (
-        not edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == 36830
-        and not "\t" in edifact_struktur_cell.text
-    ):
-        return True
+    # if (
+    #     not edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == 36830
+    #     and not "\t" in edifact_struktur_cell.text
+    # ):
+    #     return True
 
     if (
         edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == 36830
@@ -372,14 +427,13 @@ def main():
                     continue
 
                 elif actual_row_type is row_type.DATENELEMENT:
-                    write_dataelement_to_dataframe(
+                    actual_df_row_index = write_dataelement_to_dataframe(
                         final_dataframe=df,
                         row_index=actual_df_row_index,
                         dataframe_row=actual_dataframe_row,
                         text_in_row_as_list=row_cell_texts_as_list,
                         middle_cell=table.row_cells(row)[index_for_middle_column],
                     )
-                    actual_df_row_index = actual_df_row_index + 1
                     continue
 
         df.to_csv("export.csv")
