@@ -128,6 +128,7 @@ def main():
                         row_index=actual_df_row_index,
                         dataframe_row=actual_dataframe_row,
                         text_in_row_as_list=row_cell_texts_as_list,
+                        middle_cell=table.row_cells(row)[index_for_middle_column],
                     )
                     actual_df_row_index = actual_df_row_index + 1
                     continue
@@ -138,6 +139,7 @@ def main():
                         row_index=actual_df_row_index,
                         dataframe_row=actual_dataframe_row,
                         text_in_row_as_list=row_cell_texts_as_list,
+                        middle_cell=table.row_cells(row)[index_for_middle_column],
                     )
                     actual_df_row_index = actual_df_row_index + 1
                     continue
