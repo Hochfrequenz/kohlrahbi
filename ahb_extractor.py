@@ -18,24 +18,6 @@ file_name = "UTILMD_AHB_WiM_3_1c_2021_04_01_2021_03_30.docx"
 path_to_file = directory_path / file_name
 
 
-def create_list_of_column_indices(table) -> List:
-    """
-    The amount of columns of the tables can switch between 3 and 4.
-    If the actual table contains the header with "EDIFACT Struktur", then the table has 4 columns.
-    The second and the third one have exactly the same content. So we skip the third one to get the same length for the list.
-    """
-    number_of_columns: int = table._column_count
-
-    if number_of_columns == 3:
-        return [0, 1, 2]
-    elif number_of_columns == 4:
-        return [0, 1, 3]
-    else:
-        raise NotImplemented(
-            f"Only tables with 3 and 4 columns are implemented. Your table has {number_of_columns} columns."
-        )
-
-
 def main():
     try:
         doc = docx.Document(path_to_file)  # Creating word reader object.
@@ -61,8 +43,6 @@ def main():
 
         # for table in doc.tables[2 : len(doc.tables)]:
         for table in doc.tables[1:20]:
-
-            column_indices = create_list_of_column_indices(table=table)
 
             for row in range(len(table.rows)):
 
