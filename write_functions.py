@@ -33,21 +33,35 @@ def parse_paragraph_in_middle_column_to_dataframe(paragraph, dataframe_row):
     return dataframe_row
 
 
-def write_segment_name_to_dataframe(final_dataframe, row_index, dataframe_row, text_in_row_as_list):
+def write_segment_name_to_dataframe(dataframe, row_index, dataframe_row, text_in_row_as_list):
     dataframe_row[0] = text_in_row_as_list[0]
-    final_dataframe.loc[row_index] = dataframe_row
+    dataframe.loc[row_index] = dataframe_row
 
 
-def write_segmentgruppe_to_dataframe(final_dataframe, row_index, dataframe_row, text_in_row_as_list, middle_cell):
+def write_segmentgruppe_to_dataframe(dataframe, row_index, dataframe_row, text_in_row_as_list, middle_cell):
     dataframe_row[0] = text_in_row_as_list[0]
+    # Write Bedingung
+    dataframe_row[8] += text_in_row_as_list[2]
 
-    for paragraph in middle_cell.paragraphs:
-        dataframe_row = parse_paragraph_in_middle_column_to_dataframe(paragraph=paragraph, dataframe_row=dataframe_row)
+    # Check if there are any tabstops in the middle cell
+    if middle_cell.paragraphs[0].paragraph_format.tab_stops._pPr.tabs is None:
+        pass
+    else:
+        for paragraph in middle_cell.paragraphs:
+            dataframe_row = parse_paragraph_in_middle_column_to_dataframe(
+                paragraph=paragraph, dataframe_row=dataframe_row
+            )
 
-    final_dataframe.loc[row_index] = dataframe_row
+    # check if there is some text in EDIFACT Struktur cell
+    if dataframe_row[0]:
+        dataframe.loc[row_index] = dataframe_row
+        pass
+    else:
+        dataframe_row = [a + " " + b for a, b in zip(list(dataframe.loc[row_index]), dataframe_row)]
+        dataframe.loc[row_index] = dataframe_row
 
 
-def write_segment_to_dataframe(final_dataframe, row_index, dataframe_row, text_in_row_as_list, middle_cell):
+def write_segment_to_dataframe(dataframe, row_index, dataframe_row, text_in_row_as_list, middle_cell):
     splitted_edifact_struktur_cell = text_in_row_as_list[0].split("\t")
 
     # Write Bedingung
@@ -62,7 +76,7 @@ def write_segment_to_dataframe(final_dataframe, row_index, dataframe_row, text_i
     for paragraph in middle_cell.paragraphs:
         dataframe_row = parse_paragraph_in_middle_column_to_dataframe(paragraph=paragraph, dataframe_row=dataframe_row)
 
-    final_dataframe.loc[row_index] = dataframe_row
+    dataframe.loc[row_index] = dataframe_row
 
 
 def count_matching(condition, seq):
@@ -90,7 +104,7 @@ def has_middle_cell_multiple_codes(paragraphs) -> bool:
     return False
 
 
-def write_dataelement_to_dataframe(final_dataframe, row_index, dataframe_row, text_in_row_as_list, middle_cell):
+def write_dataelement_to_dataframe(dataframe, row_index, dataframe_row, text_in_row_as_list, middle_cell):
 
     # Write Bedingung
     dataframe_row[8] = text_in_row_as_list[2]
@@ -113,7 +127,7 @@ def write_dataelement_to_dataframe(final_dataframe, row_index, dataframe_row, te
         dataframe_row = parse_paragraph_in_middle_column_to_dataframe(
             paragraph=middle_cell.paragraphs[0], dataframe_row=dataframe_row
         )
-        final_dataframe.loc[row_index] = dataframe_row
+        dataframe.loc[row_index] = dataframe_row
         row_index = row_index + 1
     elif has_middle_cell_multiple_codes(paragraphs=middle_cell.paragraphs):
         # here we have to look into the next row to see, if we can add a new datarow or
@@ -140,11 +154,11 @@ def write_dataelement_to_dataframe(final_dataframe, row_index, dataframe_row, te
 
             if len(create_new_dataframe_row_indicator_list) > i + 1:
                 if create_new_dataframe_row_indicator_list[i + 1]:
-                    final_dataframe.loc[row_index] = dataframe_row
-                    dataframe_row = (len(final_dataframe.columns)) * [""]
+                    dataframe.loc[row_index] = dataframe_row
+                    dataframe_row = (len(dataframe.columns)) * [""]
                     row_index = row_index + 1
             else:
-                final_dataframe.loc[row_index] = dataframe_row
+                dataframe.loc[row_index] = dataframe_row
                 row_index = row_index + 1
 
     else:
@@ -171,6 +185,71 @@ def write_dataelement_to_dataframe(final_dataframe, row_index, dataframe_row, te
             else:
                 raise NotImplementedError(f"The row with {repr(paragraph.text)} can not be read.")
 
-        final_dataframe.loc[row_index] = dataframe_row
+        dataframe.loc[row_index] = dataframe_row
         row_index = row_index + 1
     return row_index
+
+
+def write_new_row_in_dataframe(
+    row_type,
+    table,
+    row,
+    index_for_middle_column,
+    dataframe,
+    dataframe_row_index,
+    dataframe_row,
+    row_cell_texts_as_list,
+):
+    if row_type is RowType.HEADER:
+        # continue
+        pass
+
+    elif row_type is RowType.SEGMENTNAME:
+        write_segment_name_to_dataframe(
+            dataframe=dataframe,
+            row_index=dataframe_row_index,
+            dataframe_row=dataframe_row,
+            text_in_row_as_list=row_cell_texts_as_list,
+        )
+        dataframe_row_index = dataframe_row_index + 1
+        # continue
+
+    elif row_type is RowType.SEGMENTGRUPPE:
+        write_segmentgruppe_to_dataframe(
+            dataframe=dataframe,
+            row_index=dataframe_row_index,
+            dataframe_row=dataframe_row,
+            text_in_row_as_list=row_cell_texts_as_list,
+            middle_cell=table.row_cells(row)[index_for_middle_column],
+        )
+        dataframe_row_index = dataframe_row_index + 1
+        # continue
+
+    elif row_type is RowType.SEGMENT:
+        write_segment_to_dataframe(
+            dataframe=dataframe,
+            row_index=dataframe_row_index,
+            dataframe_row=dataframe_row,
+            text_in_row_as_list=row_cell_texts_as_list,
+            middle_cell=table.row_cells(row)[index_for_middle_column],
+        )
+        dataframe_row_index = dataframe_row_index + 1
+        # continue
+
+    elif row_type is RowType.DATENELEMENT:
+        dataframe_row_index = write_dataelement_to_dataframe(
+            dataframe=dataframe,
+            row_index=dataframe_row_index,
+            dataframe_row=dataframe_row,
+            text_in_row_as_list=row_cell_texts_as_list,
+            middle_cell=table.row_cells(row)[index_for_middle_column],
+        )
+        # continue
+
+    elif row_type is RowType.EMPTY:
+
+        # row_index um eins zurücksetzen
+        # actual_df_row_index = actual_df_row_index - 1
+        pass
+
+    return dataframe_row_index

@@ -5,12 +5,7 @@ import docx
 import pandas as pd
 
 from check_row_type import RowType, define_row_type
-from write_functions import (
-    write_dataelement_to_dataframe,
-    write_segment_name_to_dataframe,
-    write_segment_to_dataframe,
-    write_segmentgruppe_to_dataframe,
-)
+from write_functions import write_new_row_in_dataframe
 
 directory_path = Path.cwd() / "documents"
 file_name = "UTILMD_AHB_WiM_3_1c_2021_04_01_2021_03_30.docx"
@@ -24,6 +19,8 @@ def main():
 
         # TODO for each section get header to get prüfidentifaktoren for dataframe header
 
+        # Initialize help variables
+        last_two_row_types: List = [RowType.EMPTY, RowType.EMPTY]
         actual_df_row_index: int = 0
 
         df = pd.DataFrame(
@@ -81,7 +78,7 @@ def main():
 
                 actual_edifact_struktur_cell = table.row_cells(row)[0]
 
-                # check here for row type
+                # check for row type
                 actual_row_type = define_row_type(
                     table=table,
                     edifact_struktur_cell=actual_edifact_struktur_cell,
@@ -89,57 +86,37 @@ def main():
                 )
                 print(actual_row_type.name)
 
-                if actual_row_type is row_type.HEADER:
-                    continue
+                # write actual row into dataframe
 
-                elif actual_row_type is row_type.SEGMENTNAME:
-                    write_segment_name_to_dataframe(
-                        final_dataframe=df,
-                        row_index=actual_df_row_index,
+                #
+                if actual_row_type is RowType.EMPTY and last_two_row_types[0] is RowType.HEADER:
+                    actual_df_row_index = actual_df_row_index - 1
+                    actual_df_row_index = write_new_row_in_dataframe(
+                        row_type=last_two_row_types[1],
+                        table=table,
+                        row=row,
+                        index_for_middle_column=index_for_middle_column,
+                        dataframe=df,
+                        dataframe_row_index=actual_df_row_index,
                         dataframe_row=actual_dataframe_row,
-                        text_in_row_as_list=row_cell_texts_as_list,
+                        row_cell_texts_as_list=row_cell_texts_as_list,
                     )
-                    actual_df_row_index = actual_df_row_index + 1
-                    continue
 
-                elif actual_row_type is row_type.SEGMENTGRUPPE:
-                    write_segmentgruppe_to_dataframe(
-                        final_dataframe=df,
-                        row_index=actual_df_row_index,
+                else:
+                    actual_df_row_index = write_new_row_in_dataframe(
+                        row_type=actual_row_type,
+                        table=table,
+                        row=row,
+                        index_for_middle_column=index_for_middle_column,
+                        dataframe=df,
+                        dataframe_row_index=actual_df_row_index,
                         dataframe_row=actual_dataframe_row,
-                        text_in_row_as_list=row_cell_texts_as_list,
-                        middle_cell=table.row_cells(row)[index_for_middle_column],
+                        row_cell_texts_as_list=row_cell_texts_as_list,
                     )
-                    actual_df_row_index = actual_df_row_index + 1
-                    continue
 
-                elif actual_row_type is row_type.SEGMENT:
-                    write_segment_to_dataframe(
-                        final_dataframe=df,
-                        row_index=actual_df_row_index,
-                        dataframe_row=actual_dataframe_row,
-                        text_in_row_as_list=row_cell_texts_as_list,
-                        middle_cell=table.row_cells(row)[index_for_middle_column],
-                    )
-                    actual_df_row_index = actual_df_row_index + 1
-                    continue
-
-                elif actual_row_type is row_type.DATENELEMENT:
-                    actual_df_row_index = write_dataelement_to_dataframe(
-                        final_dataframe=df,
-                        row_index=actual_df_row_index,
-                        dataframe_row=actual_dataframe_row,
-                        text_in_row_as_list=row_cell_texts_as_list,
-                        middle_cell=table.row_cells(row)[index_for_middle_column],
-                    )
-                    continue
-
-                elif actual_row_type is row_type.EMPTY:
-                    # IDEE: merke immer den letzten row_type
-
-                    # row_index um eins zurücksetzen
-                    # actual_df_row_index = actual_df_row_index - 1
-                    pass
+                # remember last row type for empty cells
+                last_two_row_types[1] = last_two_row_types[0]
+                last_two_row_types[0] = actual_row_type
 
         df.to_csv("export.csv")
         # df.to_excel("export.xlsx")
