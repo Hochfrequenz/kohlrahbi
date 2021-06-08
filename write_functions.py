@@ -1,5 +1,7 @@
 from typing import List
 
+from check_row_type import RowType
+
 
 def parse_paragraph_in_middle_column_to_dataframe(paragraph, dataframe_row):
 

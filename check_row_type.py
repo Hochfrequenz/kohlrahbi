@@ -2,7 +2,7 @@ from enum import Enum
 from typing import List
 
 
-class row_type(Enum):
+class RowType(Enum):
     SEGMENTNAME = 1
     SEGMENTGRUPPE = 2
     SEGMENT = 3
@@ -90,22 +90,22 @@ def is_row_empty(edifact_struktur_cell):
 
 def define_row_type(table, edifact_struktur_cell, text_in_row_as_list):
     if is_row_header(text_in_row_as_list=text_in_row_as_list):
-        return row_type.HEADER
+        return RowType.HEADER
 
     elif is_row_segmentname(table=table, text_in_row_as_list=text_in_row_as_list):
-        return row_type.SEGMENTNAME
+        return RowType.SEGMENTNAME
 
     elif is_row_segmentgruppe(edifact_struktur_cell=edifact_struktur_cell):
-        return row_type.SEGMENTGRUPPE
+        return RowType.SEGMENTGRUPPE
 
     elif is_row_segment(edifact_struktur_cell=edifact_struktur_cell):
-        return row_type.SEGMENT
+        return RowType.SEGMENT
 
     elif is_row_datenelement(edifact_struktur_cell=edifact_struktur_cell):
-        return row_type.DATENELEMENT
+        return RowType.DATENELEMENT
 
     elif is_row_empty(edifact_struktur_cell=edifact_struktur_cell):
-        return row_type.EMPTY
+        return RowType.EMPTY
 
     else:
         raise NotImplemented(f"Could not define row type of {text_in_row_as_list}")

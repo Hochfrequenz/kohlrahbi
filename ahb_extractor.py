@@ -4,7 +4,7 @@ from typing import List
 import docx
 import pandas as pd
 
-from check_row_type import define_row_type, row_type
+from check_row_type import RowType, define_row_type
 from write_functions import (
     write_dataelement_to_dataframe,
     write_segment_name_to_dataframe,
