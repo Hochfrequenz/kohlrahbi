@@ -25,7 +25,7 @@ def main():
         # TODO for each section get header to get prüfidentifaktoren for dataframe header
 
         actual_df_row_index: int = 0
-        # df = pd.DataFrame(columns=["text", "tab1", "tab2", "tab3", "tab4", "tab5"])
+
         df = pd.DataFrame(
             columns=[
                 "Segment Gruppe",
