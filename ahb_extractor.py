@@ -16,6 +16,13 @@ file_name = "UTILMD_AHB_WiM_3_1c_2021_04_01_2021_03_30.docx"
 path_to_file = directory_path / file_name
 
 
+def get_tabstop_positions(paragraph):
+    tabstop_positions: List = []
+    for tabstop in paragraph.paragraph_format.tab_stops._pPr.tabs:
+        tabstop_positions.append(tabstop.pos)
+    return tabstop_positions
+
+
 def main():
     try:
         doc = docx.Document(path_to_file)  # Creating word reader object.
@@ -26,16 +33,27 @@ def main():
         for item in iter_block_items(parent=doc):
             if isinstance(item, Paragraph) and "Heading" in item.style.name:
                 chapter_title = item.text
-            elif isinstance(item, Table) and item.cell(0, 0).text == "EDIFACT Struktur":
+            elif isinstance(item, Table) and item.cell(row_idx=0, col_idx=0).text == "EDIFACT Struktur":
                 print(chapter_title)
                 print([cell.text for cell in item.row_cells(0)])
                 print("\n NEW TABLE \n")
+
+                header_cells = [cell.text for cell in item.row_cells(0)]
+                look_up_term = "Prüfidentifikator"
+                cutter_index = header_cells[-1].find(look_up_term) + 1
+                # +1 cause of \t after Prüfidentifikator
+                pruefidentifikatoren: List = header_cells[-1][cutter_index + len(look_up_term) :].split("\t")
+
+                tabstop_positions: List = get_tabstop_positions(item.cell(row_idx=2, col_idx=1).paragraphs[0])
+
+                pass
 
                 # read the following information from the table
                 # * all Prüfidentifikatoren
                 # * tabstop position in middle cell
                 # initial new dataframe with the known Prüfidentifikatoren
-
+            # elif isinstance(item, Table):
+            #     print(item.cell(0, 0).text)
             else:
                 continue
 
