@@ -3,8 +3,11 @@ from typing import List
 
 import docx
 import pandas as pd
+from docx.table import Table
+from docx.text.paragraph import Paragraph
 
 from check_row_type import RowType, define_row_type
+from get_sections import get_chapter_with_ahb_tables, iter_block_items
 from write_functions import write_new_row_in_dataframe
 
 directory_path = Path.cwd() / "documents"
@@ -18,6 +21,23 @@ def main():
         doc = docx.Document(path_to_file)  # Creating word reader object.
 
         # TODO for each section get header to get prüfidentifaktoren for dataframe header
+
+        # get_chapter_with_ahb_tables(document=doc)
+        for item in iter_block_items(parent=doc):
+            if isinstance(item, Paragraph) and "Heading" in item.style.name:
+                chapter_title = item.text
+            elif isinstance(item, Table) and item.cell(0, 0).text == "EDIFACT Struktur":
+                print(chapter_title)
+                print([cell.text for cell in item.row_cells(0)])
+                print("\n NEW TABLE \n")
+
+                # read the following information from the table
+                # * all Prüfidentifikatoren
+                # * tabstop position in middle cell
+                # initial new dataframe with the known Prüfidentifikatoren
+
+            else:
+                continue
 
         # Initialize help variables
         last_two_row_types: List = [RowType.EMPTY, RowType.EMPTY]
