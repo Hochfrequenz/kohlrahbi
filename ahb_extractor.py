@@ -85,8 +85,8 @@ def main():
                         # 3:'Beschreibung\tKündigung\tBestätigung\tAblehnung\tBedingung\n\tMSB \tKündigung\tKündigung\n\tMSB \tMSB \nKommunikation von\tMSBN an\tMSBA an\tMSBA an\n\tMSBA\tMSBN\tMSBN\nPrüfidentifikator\t11039\t11040\t11041'
                         # len():4
                         del row_cell_texts_as_list[1]
-                        row_cell_texts_as_list[2] == ""
-                    elif row_cell_texts_as_list[0] == row_cell_texts_as_list[1] and row_cell_texts_as_list[3] == "":
+                        row_cell_texts_as_list[2] = ""
+                    elif row_cell_texts_as_list[1] == row_cell_texts_as_list[2]:
                         # Dataelement row with header in the table
                         # 0:'SG2\tNAD\t3035'
                         # 1:'SG2\tNAD\t3035'
@@ -94,6 +94,9 @@ def main():
                         # 3:''
                         # len():4
                         del row_cell_texts_as_list[1]
+                    elif row_cell_texts_as_list[0] == row_cell_texts_as_list[1]:
+                        del row_cell_texts_as_list[1]
+
                     index_for_middle_column = 2
 
                 actual_edifact_struktur_cell = table.row_cells(row)[0]
