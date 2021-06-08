@@ -1,7 +1,7 @@
 from typing import List
 
 
-def parse_first_paragraph_in_middle_column_to_dataframe(paragraph, dataframe_row):
+def parse_paragraph_in_middle_column_to_dataframe(paragraph, dataframe_row):
 
     # Codenummer, e.g. 332 or
     # Freitext, e.g. Vorgangsnummer
@@ -40,9 +40,7 @@ def write_segmentgruppe_to_dataframe(final_dataframe, row_index, dataframe_row, 
     dataframe_row[0] = text_in_row_as_list[0]
 
     for paragraph in middle_cell.paragraphs:
-        dataframe_row = parse_first_paragraph_in_middle_column_to_dataframe(
-            paragraph=paragraph, dataframe_row=dataframe_row
-        )
+        dataframe_row = parse_paragraph_in_middle_column_to_dataframe(paragraph=paragraph, dataframe_row=dataframe_row)
 
     final_dataframe.loc[row_index] = dataframe_row
 
@@ -60,9 +58,7 @@ def write_segment_to_dataframe(final_dataframe, row_index, dataframe_row, text_i
         dataframe_row[1] = splitted_edifact_struktur_cell[1]
 
     for paragraph in middle_cell.paragraphs:
-        dataframe_row = parse_first_paragraph_in_middle_column_to_dataframe(
-            paragraph=paragraph, dataframe_row=dataframe_row
-        )
+        dataframe_row = parse_paragraph_in_middle_column_to_dataframe(paragraph=paragraph, dataframe_row=dataframe_row)
 
     final_dataframe.loc[row_index] = dataframe_row
 
@@ -112,7 +108,7 @@ def write_dataelement_to_dataframe(final_dataframe, row_index, dataframe_row, te
 
     if len(middle_cell.paragraphs) == 1:
         # -> single line row
-        dataframe_row = parse_first_paragraph_in_middle_column_to_dataframe(
+        dataframe_row = parse_paragraph_in_middle_column_to_dataframe(
             paragraph=middle_cell.paragraphs[0], dataframe_row=dataframe_row
         )
         final_dataframe.loc[row_index] = dataframe_row
@@ -132,7 +128,7 @@ def write_dataelement_to_dataframe(final_dataframe, row_index, dataframe_row, te
                 # next_row_index = row_index + 1
 
                 # if paragraph.paragraph_format.left_indent == 36830 and "\t" in paragraph.text:
-                dataframe_row = parse_first_paragraph_in_middle_column_to_dataframe(
+                dataframe_row = parse_paragraph_in_middle_column_to_dataframe(
                     paragraph=paragraph, dataframe_row=dataframe_row
                 )
 
@@ -158,7 +154,7 @@ def write_dataelement_to_dataframe(final_dataframe, row_index, dataframe_row, te
                 # 11040 -> 6 -> 2578735
                 # 11041 -> 7 -> 3192780
 
-                dataframe_row = parse_first_paragraph_in_middle_column_to_dataframe(
+                dataframe_row = parse_paragraph_in_middle_column_to_dataframe(
                     paragraph=paragraph, dataframe_row=dataframe_row
                 )
 
@@ -169,7 +165,7 @@ def write_dataelement_to_dataframe(final_dataframe, row_index, dataframe_row, te
                 # multi line Beschreibung
                 dataframe_row[4] += " " + paragraph.text
             elif paragraph.paragraph_format.left_indent is None:
-                parse_first_paragraph_in_middle_column_to_dataframe(paragraph=paragraph, dataframe_row=dataframe_row)
+                parse_paragraph_in_middle_column_to_dataframe(paragraph=paragraph, dataframe_row=dataframe_row)
             else:
                 raise NotImplementedError(f"The row with {repr(paragraph.text)} can not be read.")
 
