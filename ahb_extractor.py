@@ -206,25 +206,6 @@ def write_dataelement_to_dataframe(final_dataframe, row_index, dataframe_row, te
     return row_index
 
 
-def has_cell_in_edifact_struktur_column_a_segmentgruppe(cell):
-    """
-    Checks if the cell contains a Segementgruppe like e.g. "SG2" or "SG2\tNAD\t3035"
-    (should only be called for cells in EDIFACT Struktur column)
-    """
-    if cell.paragraphs[0].paragraph_format.left_indent == 36830:
-        return True
-    return False
-
-
-def is_cell_in_middle_column_a_dataelement(cell):
-    # IDEE: ERSTELLE FUNKTION DIE BEREITS DIE GESAMTE ZEILE PRÜFT; WAS SIE IST
-    # * segment name: MP-ID Absender
-    # * segment gruppe: SG2
-    # * segment: SG2\tNAD
-    # * datenelement: SG2\tNAD\t3035
-    pass
-
-
 def main():
     try:
         doc = docx.Document(path_to_file)  # Creating word reader object.
