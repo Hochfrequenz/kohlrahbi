@@ -18,7 +18,7 @@ file_name = "UTILMD_AHB_WiM_3_1c_2021_04_01_2021_03_30.docx"
 path_to_file = directory_path / file_name
 
 
-def create_list_of_column_indices(table):
+def create_list_of_column_indices(table) -> List:
     """
     The amount of columns of the tables can switch between 3 and 4.
     If the actual table contains the header with "EDIFACT Struktur", then the table has 4 columns.
