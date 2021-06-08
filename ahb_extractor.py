@@ -41,7 +41,7 @@ def main():
             dtype="str",
         )
 
-        # for table in doc.tables[2 : len(doc.tables)]:
+        # for table in doc.tables[1 : len(doc.tables)]:
         for table in doc.tables[1:20]:
 
             for row in range(len(table.rows)):
