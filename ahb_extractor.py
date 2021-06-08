@@ -2,7 +2,6 @@ from pathlib import Path
 from typing import List
 
 import docx
-import numpy as np
 import pandas as pd
 
 directory_path = Path.cwd() / "documents"
