@@ -154,6 +154,13 @@ def main():
                     )
                     continue
 
+                elif actual_row_type is row_type.EMPTY:
+                    # IDEE: merke immer den letzten row_type
+
+                    # row_index um eins zurücksetzen
+                    # actual_df_row_index = actual_df_row_index - 1
+                    pass
+
         df.to_csv("export.csv")
         # df.to_excel("export.xlsx")
         print(len(doc.tables[1].columns))
