@@ -119,24 +119,29 @@ def main():
 
         pruefidentifikatoren: List = []
         # get_chapter_with_ahb_tables(document=doc)
+
+        # Iterate through the whole word document
         for item in iter_block_items(parent=doc):
+
+            # Check if there is just a text paragraph,
             if isinstance(item, Paragraph) and not "Heading" in item.style.name:
                 continue
+
+            # Check if the paragraph is a chapter or section title
             elif isinstance(item, Paragraph) and "Heading" in item.style.name:
                 chapter_title = item.text
+
+            # Check if a table comes with new Prüfidentifikatoren
             elif isinstance(item, Table) and item.cell(row_idx=0, col_idx=0).text == "EDIFACT Struktur":
+                # check if list of pruefidentifikatoren is empty
                 if pruefidentifikatoren:
-                    # check if list of pruefidentifikatoren is empty
+                    # write for each pruefi an extra file
                     for pruefi in pruefidentifikatoren:
                         columns_to_export = base_columns + [pruefi]
                         columns_to_export.append("Bedingung")  # TODO: save string "Bedingung" in variable
                         df_to_export = df[columns_to_export]
                         with pd.ExcelWriter(f"{pruefi}.xlsx") as writer:
-
                             df_to_export.to_excel(writer, sheet_name=f"{pruefi}")
-                # except UnboundLocalError:
-                #     # have to catch UnboundLocalError cause variable pruefidentifikatoren does not exist in the first loop
-                #     pass
 
                 print(chapter_title)
                 print([cell.text for cell in item.row_cells(0)])
