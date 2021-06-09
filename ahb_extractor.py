@@ -23,7 +23,7 @@ def get_tabstop_positions(paragraph):
     return tabstop_positions
 
 
-def read_table(table, dataframe, actual_df_row_index, last_two_row_types):
+def read_table(table, dataframe, actual_df_row_index, last_two_row_types, tabstop_positions: List):
     # row_cell_texts_as_list = [cell.text for cell in table.row_cells(0)]
 
     if table._column_count == 4:
@@ -88,6 +88,7 @@ def read_table(table, dataframe, actual_df_row_index, last_two_row_types):
                 dataframe_row_index=actual_df_row_index,
                 dataframe_row=actual_dataframe_row,
                 row_cell_texts_as_list=row_cell_texts_as_list,
+                tabstop_positions=tabstop_positions,
             )
 
         else:
@@ -100,6 +101,7 @@ def read_table(table, dataframe, actual_df_row_index, last_two_row_types):
                 dataframe_row_index=actual_df_row_index,
                 dataframe_row=actual_dataframe_row,
                 row_cell_texts_as_list=row_cell_texts_as_list,
+                tabstop_positions=tabstop_positions,
             )
 
         # remember last row type for empty cells
@@ -146,7 +148,7 @@ def main():
                 # +1 cause of \t after Prüfidentifikator
                 pruefidentifikatoren: List = header_cells[-1][cutter_index + len(look_up_term) :].split("\t")
 
-                tabstop_positions: List = get_tabstop_positions(item.cell(row_idx=2, col_idx=1).paragraphs[0])
+                tabstop_positions: List = get_tabstop_positions(item.cell(row_idx=4, col_idx=1).paragraphs[0])
 
                 base_columns: List = [
                     "Segment Gruppe",
@@ -171,6 +173,7 @@ def main():
                     dataframe=df,
                     actual_df_row_index=actual_df_row_index,
                     last_two_row_types=last_two_row_types,
+                    tabstop_positions=tabstop_positions,
                 )
 
             elif isinstance(item, Table) and "df" in locals():
@@ -179,6 +182,7 @@ def main():
                     dataframe=df,
                     actual_df_row_index=actual_df_row_index,
                     last_two_row_types=last_two_row_types,
+                    tabstop_positions=tabstop_positions,
                 )
 
     except IOError:
