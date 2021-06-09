@@ -23,7 +23,9 @@ def get_tabstop_positions(paragraph):
     return tabstop_positions
 
 
-def read_table(table, dataframe, actual_df_row_index, last_two_row_types, tabstop_positions: List):
+def read_table(
+    table, dataframe, actual_df_row_index, last_two_row_types, left_indent_position: int, tabstop_positions: List
+):
     # row_cell_texts_as_list = [cell.text for cell in table.row_cells(0)]
 
     if table._column_count == 4:
@@ -34,7 +36,10 @@ def read_table(table, dataframe, actual_df_row_index, last_two_row_types, tabsto
     for row in range(len(table.rows)):
 
         # initial empty list for the next row in the dataframe
+        # actual_dataframe_row = (len(dataframe.columns)) * [""]
         actual_dataframe_row = (len(dataframe.columns)) * [""]
+        dataframe.loc[actual_df_row_index] = actual_dataframe_row
+        # TODO: IDEE, füge direkt eine leere Zeile zum Dataframe hinzu und fülle diese nur noch.
 
         # idea: cause of double information in 4 column tables, remove entry [2] from row_cell_texts_as_list
         row_cell_texts_as_list = [cell.text for cell in table.row_cells(row)]
@@ -73,6 +78,7 @@ def read_table(table, dataframe, actual_df_row_index, last_two_row_types, tabsto
             text_in_row_as_list=row_cell_texts_as_list,
         )
         print(actual_row_type.name)
+        print(actual_edifact_struktur_cell.text)
 
         # write actual row into dataframe
 
@@ -88,6 +94,7 @@ def read_table(table, dataframe, actual_df_row_index, last_two_row_types, tabsto
                 dataframe_row_index=actual_df_row_index,
                 dataframe_row=actual_dataframe_row,
                 row_cell_texts_as_list=row_cell_texts_as_list,
+                left_indent_position=left_indent_position,
                 tabstop_positions=tabstop_positions,
             )
 
@@ -101,6 +108,7 @@ def read_table(table, dataframe, actual_df_row_index, last_two_row_types, tabsto
                 dataframe_row_index=actual_df_row_index,
                 dataframe_row=actual_dataframe_row,
                 row_cell_texts_as_list=row_cell_texts_as_list,
+                left_indent_position=left_indent_position,
                 tabstop_positions=tabstop_positions,
             )
 
@@ -131,6 +139,10 @@ def main():
             elif isinstance(item, Paragraph) and "Heading" in item.style.name:
                 chapter_title = item.text
 
+                # Stop iterating at the section "Änderungshistorie"
+                if chapter_title == "Änderungshistorie":
+                    return 0
+
             # Check if a table comes with new Prüfidentifikatoren
             elif isinstance(item, Table) and item.cell(row_idx=0, col_idx=0).text == "EDIFACT Struktur":
                 # check if list of pruefidentifikatoren is empty
@@ -140,8 +152,16 @@ def main():
                         columns_to_export = base_columns + [pruefi]
                         columns_to_export.append("Bedingung")  # TODO: save string "Bedingung" in variable
                         df_to_export = df[columns_to_export]
+                        df_to_export.to_csv(f"{pruefi}.csv")
                         with pd.ExcelWriter(f"{pruefi}.xlsx") as writer:
                             df_to_export.to_excel(writer, sheet_name=f"{pruefi}")
+
+                        try:
+                            with pd.ExcelWriter(f"{file_name[:-5]}.xlsx", mode="a") as writer:
+                                df_to_export.to_excel(writer, sheet_name=f"{pruefi}")
+                        except FileNotFoundError:
+                            with pd.ExcelWriter(f"{file_name[:-5]}.xlsx", mode="w") as writer:
+                                df_to_export.to_excel(writer, sheet_name=f"{pruefi}")
 
                 print(chapter_title)
                 print([cell.text for cell in item.row_cells(0)])
@@ -153,7 +173,10 @@ def main():
                 # +1 cause of \t after Prüfidentifikator
                 pruefidentifikatoren: List = header_cells[-1][cutter_index + len(look_up_term) :].split("\t")
 
-                tabstop_positions: List = get_tabstop_positions(item.cell(row_idx=4, col_idx=1).paragraphs[0])
+                indicator_paragraph = item.cell(row_idx=4, col_idx=1).paragraphs[0]
+
+                left_indent_position = indicator_paragraph.paragraph_format.left_indent
+                tabstop_positions: List = get_tabstop_positions(indicator_paragraph)
 
                 base_columns: List = [
                     "Segment Gruppe",
@@ -178,6 +201,7 @@ def main():
                     dataframe=df,
                     actual_df_row_index=actual_df_row_index,
                     last_two_row_types=last_two_row_types,
+                    left_indent_position=left_indent_position,
                     tabstop_positions=tabstop_positions,
                 )
 
@@ -187,6 +211,7 @@ def main():
                     dataframe=df,
                     actual_df_row_index=actual_df_row_index,
                     last_two_row_types=last_two_row_types,
+                    left_indent_position=left_indent_position,
                     tabstop_positions=tabstop_positions,
                 )
 
