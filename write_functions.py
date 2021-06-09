@@ -53,9 +53,8 @@ def parse_paragraph_in_middle_column_to_dataframe(paragraph: Paragraph, datafram
     return dataframe_row
 
 
-def write_segment_name_to_dataframe(dataframe, row_index, dataframe_row, text_in_row_as_list):
-    dataframe_row[0] = text_in_row_as_list[0]
-    dataframe.loc[row_index] = dataframe_row
+def write_segment_name_to_dataframe(dataframe, row_index, text_in_row_as_list):
+    dataframe.at[row_index, "Segment Gruppe"] = text_in_row_as_list[0]
 
 
 def write_segmentgruppe_to_dataframe(
@@ -258,7 +257,6 @@ def write_new_row_in_dataframe(
         write_segment_name_to_dataframe(
             dataframe=dataframe,
             row_index=dataframe_row_index,
-            dataframe_row=dataframe_row,
             text_in_row_as_list=row_cell_texts_as_list,
         )
         dataframe_row_index = dataframe_row_index + 1
