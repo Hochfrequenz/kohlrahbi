@@ -136,3 +136,7 @@ dmypy.json
 # document folders
 documents/
 backup_documents/
+
+# output files
+*.xlsx
+*.csv
