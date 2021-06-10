@@ -140,3 +140,4 @@ backup_documents/
 # output files
 *.xlsx
 *.csv
+*.json
