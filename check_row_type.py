@@ -11,7 +11,7 @@ class RowType(Enum):
     EMPTY = 6
 
 
-def is_row_header(text_in_row_as_list):
+def is_row_header(text_in_row_as_list) -> bool:
     if text_in_row_as_list[0] == "EDIFACT Struktur":
         return True
 
@@ -29,7 +29,7 @@ def is_row_segmentname(table, text_in_row_as_list: List) -> bool:
     return False
 
 
-def is_row_segmentgruppe(edifact_struktur_cell):
+def is_row_segmentgruppe(edifact_struktur_cell) -> bool:
     if (
         edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == 36830
         and not "\t" in edifact_struktur_cell.text
@@ -39,7 +39,7 @@ def is_row_segmentgruppe(edifact_struktur_cell):
     return False
 
 
-def is_row_segment(edifact_struktur_cell):
+def is_row_segment(edifact_struktur_cell) -> bool:
     # |   UNH    |
     if (
         not edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == 36830
@@ -58,7 +58,7 @@ def is_row_segment(edifact_struktur_cell):
     return False
 
 
-def is_row_datenelement(edifact_struktur_cell):
+def is_row_datenelement(edifact_struktur_cell) -> bool:
     # |   UNH\t0062 |
     if (
         not edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == 36830
@@ -76,13 +76,13 @@ def is_row_datenelement(edifact_struktur_cell):
     return False
 
 
-def is_row_empty(edifact_struktur_cell):
+def is_row_empty(edifact_struktur_cell) -> bool:
     if edifact_struktur_cell.text == "":
         return True
     return False
 
 
-def define_row_type(table, edifact_struktur_cell, text_in_row_as_list):
+def define_row_type(table, edifact_struktur_cell, text_in_row_as_list) -> RowType:
     if is_row_header(text_in_row_as_list=text_in_row_as_list):
         return RowType.HEADER
 
