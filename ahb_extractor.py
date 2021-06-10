@@ -184,7 +184,16 @@ def main():
                         df["Bedingung"] = df["Bedingung"].apply(beautify_bedingungen)
                         df_to_export = df[columns_to_export]
                         df_to_export.to_csv(csv_output_directory_path / f"{pruefi}.csv")
-                        df_to_export.to_json(json_output_directory_path / f"{pruefi}.json", force_ascii=False)
+
+                        # for orient in ["split", "records", "index", "columns", "values", "table"]:
+
+                        #     df_to_export.to_json(
+                        #         json_output_directory_path / f"{pruefi}-{orient}.json", force_ascii=False, orient=orient
+                        #     )
+                        df_to_export.to_json(
+                            json_output_directory_path / f"{pruefi}.json", force_ascii=False, orient="records"
+                        )
+
                         with pd.ExcelWriter(
                             xlsx_output_directory_path / f"{pruefi}.xlsx", engine="xlsxwriter"
                         ) as writer:
