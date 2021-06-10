@@ -191,7 +191,7 @@ def main():
                             for column_letter, column_width in zip(column_letters, column_widths):
                                 excel_header = f"{column_letter}:{column_letter}"
                                 worksheet.set_column(excel_header, column_width, wrap_format)
-                            writer.save()
+
                         # try:
                         #     with pd.ExcelWriter(f"{file_name[:-5]}.xlsx", mode="a") as writer:
                         #         df_to_export.to_excel(writer, sheet_name=f"{pruefi}")
