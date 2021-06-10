@@ -99,17 +99,13 @@ def write_segment_to_dataframe(
         # Example: "UNH"
         dataframe.at[row_index, "Segment"] = splitted_edifact_struktur_cell[0]
     else:
-        # dataframe_row[0] = splitted_edifact_struktur_cell[0]
         dataframe.at[row_index, "Segment Gruppe"] = splitted_edifact_struktur_cell[0]
-        # dataframe_row[1] = splitted_edifact_struktur_cell[1]
         dataframe.at[row_index, "Segment"] = splitted_edifact_struktur_cell[1]
 
     # Write Bedingung
     if middle_cell.text == "":
-        # dataframe_row[8] += text_in_row_as_list[2]
         dataframe.at[row_index, "Bedingung"] += text_in_row_as_list[2]
     else:
-        # dataframe_row[8] += text_in_row_as_list[2]
         dataframe.at[row_index, "Bedingung"] += text_in_row_as_list[2]
         for paragraph in middle_cell.paragraphs:
             dataframe_row = parse_paragraph_in_middle_column_to_dataframe(
@@ -121,13 +117,9 @@ def write_segment_to_dataframe(
                 tabstop_positions=tabstop_positions,
             )
 
-    # dataframe.loc[row_index] = dataframe_row
-
 
 def count_matching(condition, seq):
     """Returns the amount of items in seq that return true from condition"""
-    # return sum(1 for item in seq if condition(item))
-
     return sum(condition(item) for item in seq)
 
 
@@ -166,7 +158,6 @@ def write_dataelement_to_dataframe(
         dataframe.at[row_index, "Segment"] = splitted_edifact_struktur_cell[0]
         dataframe.at[row_index, "Datenelement"] = splitted_edifact_struktur_cell[1]
 
-        # dataframe_row[1] = splitted_edifact_struktur_cell[1]
     elif text_in_row_as_list[0].count("\t") == 2:
         dataframe.at[row_index, "Segment Gruppe"] = splitted_edifact_struktur_cell[0]
         dataframe.at[row_index, "Segment"] = splitted_edifact_struktur_cell[1]
