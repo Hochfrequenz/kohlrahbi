@@ -18,7 +18,17 @@ file_name = "UTILMD_AHB_WiM_3_1c_2021_04_01_2021_03_30.docx"
 path_to_file = directory_path / file_name
 
 
-def get_tabstop_positions(paragraph):
+def get_tabstop_positions(paragraph: Paragraph) -> List[int]:
+    """Find all tabstop positions in a given paragraph
+
+    Mainly the tabstop positions of cells from the middle column are determined
+
+    Args:
+        paragraph (Paragraph): Paragraph
+
+    Returns:
+        List[int]: All tabstop positions in the given paragraph
+    """
     tabstop_positions: List = []
     for tabstop in paragraph.paragraph_format.tab_stops._pPr.tabs:
         tabstop_positions.append(tabstop.pos)
