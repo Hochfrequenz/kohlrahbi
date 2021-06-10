@@ -15,6 +15,15 @@ from write_functions import write_new_row_in_dataframe
 directory_path = Path.cwd() / "documents"
 file_name = "UTILMD_AHB_WiM_3_1c_2021_04_01_2021_03_30.docx"
 
+output_directory_path = Path.cwd() / "output"
+json_output_directory_path = output_directory_path / "json"
+csv_output_directory_path = output_directory_path / "csv"
+xlsx_output_directory_path = output_directory_path / "xlsx"
+
+json_output_directory_path.mkdir(parents=True, exist_ok=True)
+csv_output_directory_path.mkdir(parents=True, exist_ok=True)
+xlsx_output_directory_path.mkdir(parents=True, exist_ok=True)
+
 path_to_file = directory_path / file_name
 
 
@@ -167,8 +176,11 @@ def main():
                         columns_to_export.append("Bedingung")  # TODO: save string "Bedingung" in variable
                         df["Bedingung"] = df["Bedingung"].apply(beautify_bedingungen)
                         df_to_export = df[columns_to_export]
-                        df_to_export.to_csv(f"{pruefi}.csv")
-                        with pd.ExcelWriter(f"{pruefi}.xlsx", engine="xlsxwriter") as writer:
+                        df_to_export.to_csv(csv_output_directory_path / f"{pruefi}.csv")
+                        df_to_export.to_json(json_output_directory_path / f"{pruefi}.json", force_ascii=False)
+                        with pd.ExcelWriter(
+                            xlsx_output_directory_path / f"{pruefi}.xlsx", engine="xlsxwriter"
+                        ) as writer:
                             df_to_export.to_excel(writer, sheet_name=f"{pruefi}")
                             workbook = writer.book
                             worksheet = writer.sheets[f"{pruefi}"]
