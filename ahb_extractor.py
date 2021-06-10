@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 from typing import List
 
@@ -113,6 +114,17 @@ def read_table(
     return last_two_row_types, actual_df_row_index
 
 
+def beautify_bedingungen(bedingung):
+
+    if isinstance(bedingung, str):
+        bedingung = bedingung.replace("\n", " ")
+        matches = re.findall(r"\[\d*\]", bedingung)
+        for match in matches[1:]:
+            index = bedingung.find(match)
+            bedingung = bedingung[:index] + "\n" + bedingung[index:]
+    return bedingung
+
+
 def main():
     try:
         doc = docx.Document(path_to_file)  # Creating word reader object.
@@ -142,6 +154,7 @@ def main():
                     for pruefi in pruefidentifikatoren:
                         columns_to_export = base_columns + [pruefi]
                         columns_to_export.append("Bedingung")  # TODO: save string "Bedingung" in variable
+                        df["Bedingung"] = df["Bedingung"].apply(beautify_bedingungen)
                         df_to_export = df[columns_to_export]
                         df_to_export.to_csv(f"{pruefi}.csv")
                         with pd.ExcelWriter(f"{pruefi}.xlsx") as writer:
