@@ -159,8 +159,6 @@ def write_dataelement_to_dataframe(
         dataframe.at[row_index, "Segment Gruppe"] = splitted_edifact_struktur_cell[0]
         dataframe.at[row_index, "Segment"] = splitted_edifact_struktur_cell[1]
         dataframe.at[row_index, "Datenelement"] = splitted_edifact_struktur_cell[2]
-    # here we can also distinguish between Freitext (graue Schrift Felder) und nicht Freitext (fette geschriebene Felder)
-    # if middle_cell.paragraphs[0].runs[0].bold:
 
     # MIDDLE COLUMN
     if "\t" in middle_cell.text:
