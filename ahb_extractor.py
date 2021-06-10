@@ -93,6 +93,7 @@ def read_table(
             table=table,
             edifact_struktur_cell=actual_edifact_struktur_cell,
             text_in_row_as_list=row_cell_texts_as_list,
+            left_indent_position=left_indent_position,
         )
         print(actual_row_type.name)
         print(actual_edifact_struktur_cell.text)

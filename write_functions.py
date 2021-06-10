@@ -247,7 +247,7 @@ def write_dataelement_to_dataframe(
     else:
         # we come to this case if the EDIFACT Struktur cell is empty
         for paragraph in middle_cell.paragraphs:
-            if paragraph.paragraph_format.left_indent == 36830 and not "\t" in paragraph.text:
+            if paragraph.paragraph_format.left_indent == left_indent_position and not "\t" in paragraph.text:
                 # multi line Freitext
                 dataframe.at[row_index, "Codes und Qualifier"] += text_in_row_as_list[2]
 

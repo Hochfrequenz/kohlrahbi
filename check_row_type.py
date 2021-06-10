@@ -29,9 +29,9 @@ def is_row_segmentname(table, text_in_row_as_list: List) -> bool:
     return False
 
 
-def is_row_segmentgruppe(edifact_struktur_cell) -> bool:
+def is_row_segmentgruppe(edifact_struktur_cell, left_indent_position: int) -> bool:
     if (
-        edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == 36830
+        edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == left_indent_position
         and not "\t" in edifact_struktur_cell.text
     ):
         return True
@@ -39,10 +39,10 @@ def is_row_segmentgruppe(edifact_struktur_cell) -> bool:
     return False
 
 
-def is_row_segment(edifact_struktur_cell) -> bool:
+def is_row_segment(edifact_struktur_cell, left_indent_position: int) -> bool:
     # |   UNH    |
     if (
-        not edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == 36830
+        not edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == left_indent_position
         and not "\t" in edifact_struktur_cell.text
         and not edifact_struktur_cell.text == ""
     ):
@@ -50,7 +50,7 @@ def is_row_segment(edifact_struktur_cell) -> bool:
 
     # | SG2\tNAD |
     if (
-        edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == 36830
+        edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == left_indent_position
         and edifact_struktur_cell.text.count("\t") == 1
     ):
         return True
@@ -58,17 +58,17 @@ def is_row_segment(edifact_struktur_cell) -> bool:
     return False
 
 
-def is_row_datenelement(edifact_struktur_cell) -> bool:
+def is_row_datenelement(edifact_struktur_cell, left_indent_position: int) -> bool:
     # |   UNH\t0062 |
     if (
-        not edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == 36830
+        not edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == left_indent_position
         and "\t" in edifact_struktur_cell.text
     ):
         return True
 
     # | SG2\tNAD\t3035 |
     if (
-        edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == 36830
+        edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == left_indent_position
         and edifact_struktur_cell.text.count("\t") == 2
     ):
         return True
@@ -82,20 +82,20 @@ def is_row_empty(edifact_struktur_cell) -> bool:
     return False
 
 
-def define_row_type(table, edifact_struktur_cell, text_in_row_as_list) -> RowType:
+def define_row_type(table, edifact_struktur_cell, text_in_row_as_list, left_indent_position: int) -> RowType:
     if is_row_header(text_in_row_as_list=text_in_row_as_list):
         return RowType.HEADER
 
     elif is_row_segmentname(table=table, text_in_row_as_list=text_in_row_as_list):
         return RowType.SEGMENTNAME
 
-    elif is_row_segmentgruppe(edifact_struktur_cell=edifact_struktur_cell):
+    elif is_row_segmentgruppe(edifact_struktur_cell=edifact_struktur_cell, left_indent_position=left_indent_position):
         return RowType.SEGMENTGRUPPE
 
-    elif is_row_segment(edifact_struktur_cell=edifact_struktur_cell):
+    elif is_row_segment(edifact_struktur_cell=edifact_struktur_cell, left_indent_position=left_indent_position):
         return RowType.SEGMENT
 
-    elif is_row_datenelement(edifact_struktur_cell=edifact_struktur_cell):
+    elif is_row_datenelement(edifact_struktur_cell=edifact_struktur_cell, left_indent_position=left_indent_position):
         return RowType.DATENELEMENT
 
     elif is_row_empty(edifact_struktur_cell=edifact_struktur_cell):
