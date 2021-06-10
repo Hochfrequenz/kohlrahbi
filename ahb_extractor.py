@@ -176,12 +176,12 @@ def main():
                             excel_header = "H:H"
                             worksheet.set_column(excel_header, 150, wrap_format)
                             writer.save()
-                        try:
-                            with pd.ExcelWriter(f"{file_name[:-5]}.xlsx", mode="a") as writer:
-                                df_to_export.to_excel(writer, sheet_name=f"{pruefi}")
-                        except FileNotFoundError:
-                            with pd.ExcelWriter(f"{file_name[:-5]}.xlsx", mode="w") as writer:
-                                df_to_export.to_excel(writer, sheet_name=f"{pruefi}")
+                        # try:
+                        #     with pd.ExcelWriter(f"{file_name[:-5]}.xlsx", mode="a") as writer:
+                        #         df_to_export.to_excel(writer, sheet_name=f"{pruefi}")
+                        # except FileNotFoundError:
+                        #     with pd.ExcelWriter(f"{file_name[:-5]}.xlsx", mode="w") as writer:
+                        #         df_to_export.to_excel(writer, sheet_name=f"{pruefi}")
 
                 print(chapter_title)
                 print([cell.text for cell in item.row_cells(0)])
