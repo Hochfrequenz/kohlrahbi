@@ -30,12 +30,6 @@ def is_row_segmentname(table, text_in_row_as_list: List) -> bool:
 
 
 def is_row_segmentgruppe(edifact_struktur_cell):
-    # if (
-    #     not edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == 36830
-    #     and not "\t" in edifact_struktur_cell.text
-    # ):
-    #     return True
-
     if (
         edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == 36830
         and not "\t" in edifact_struktur_cell.text

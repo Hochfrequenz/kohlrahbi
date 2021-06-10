@@ -24,9 +24,3 @@ def iter_block_items(parent):
             yield Paragraph(child, parent)
         elif isinstance(child, CT_Tbl):
             yield Table(child, parent)
-
-
-def get_chapter_with_ahb_tables(document):
-
-    for paragraph in document.paragraphs:
-        pass

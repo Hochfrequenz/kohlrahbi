@@ -26,7 +26,6 @@ def get_tabstop_positions(paragraph):
 def read_table(
     table, dataframe, actual_df_row_index, last_two_row_types, left_indent_position: int, tabstop_positions: List
 ):
-    # row_cell_texts_as_list = [cell.text for cell in table.row_cells(0)]
 
     if table._column_count == 4:
         index_for_middle_column = 2
@@ -36,12 +35,9 @@ def read_table(
     for row in range(len(table.rows)):
 
         # initial empty list for the next row in the dataframe
-        # actual_dataframe_row = (len(dataframe.columns)) * [""]
         actual_dataframe_row = (len(dataframe.columns)) * [""]
         dataframe.loc[actual_df_row_index] = actual_dataframe_row
-        # TODO: IDEE, füge direkt eine leere Zeile zum Dataframe hinzu und fülle diese nur noch.
 
-        # idea: cause of double information in 4 column tables, remove entry [2] from row_cell_texts_as_list
         row_cell_texts_as_list = [cell.text for cell in table.row_cells(row)]
 
         if table._column_count == 4:
@@ -81,8 +77,6 @@ def read_table(
         print(actual_edifact_struktur_cell.text)
 
         # write actual row into dataframe
-
-        #
         if actual_row_type is RowType.EMPTY and last_two_row_types[0] is RowType.HEADER:
             actual_df_row_index = actual_df_row_index - 1
             actual_df_row_index = write_new_row_in_dataframe(
@@ -123,10 +117,7 @@ def main():
     try:
         doc = docx.Document(path_to_file)  # Creating word reader object.
 
-        # TODO for each section get header to get prüfidentifaktoren for dataframe header
-
         pruefidentifikatoren: List = []
-        # get_chapter_with_ahb_tables(document=doc)
 
         # Iterate through the whole word document
         for item in iter_block_items(parent=doc):
