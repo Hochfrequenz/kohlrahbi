@@ -24,21 +24,18 @@ def parse_paragraph_in_middle_column_to_dataframe(
     # left_indent_position is characteristic for Datenelemente
     if paragraph.paragraph_format.left_indent == left_indent_position:
         dataframe.at[row_index, "Codes und Qualifier"] += splitted_text_at_tabs.pop(0)
+        column_indezes = list(range(4, 4 + len(tabstop_positions)))
 
-        # distinguish between Freifelder and Codes
-        if paragraph.runs[0].bold == True:
-            i = 4
-        else:
-            i = 5
-    else:
-        i = 5
+    elif splitted_text_at_tabs[0] == "":
+        tabstop_positions = tabstop_positions[1:]
         del splitted_text_at_tabs[0]
 
+        column_indezes = list(range(5, 5 + len(tabstop_positions)))
+
     for tabstop in paragraph.paragraph_format.tab_stops._pPr.tabs:
-        for tabstop_position in tabstop_positions:
+        for tabstop_position, column_index in zip(tabstop_positions, column_indezes):
             if tabstop.pos == tabstop_position:
-                dataframe.iat[row_index, i] = splitted_text_at_tabs.pop(0)
-                i += 1
+                dataframe.iat[row_index, column_index] += splitted_text_at_tabs.pop(0)
 
     return dataframe_row
 
