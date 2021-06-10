@@ -186,8 +186,11 @@ def main():
                             workbook = writer.book
                             worksheet = writer.sheets[f"{pruefi}"]
                             wrap_format = workbook.add_format({"text_wrap": True})
-                            excel_header = "H:H"
-                            worksheet.set_column(excel_header, 150, wrap_format)
+                            column_letters = ["A", "B", "C", "D", "E", "F", "G", "H"]
+                            column_widths = [3.5, 47, 9, 14, 39, 33, 18, 102]
+                            for column_letter, column_width in zip(column_letters, column_widths):
+                                excel_header = f"{column_letter}:{column_letter}"
+                                worksheet.set_column(excel_header, column_width, wrap_format)
                             writer.save()
                         # try:
                         #     with pd.ExcelWriter(f"{file_name[:-5]}.xlsx", mode="a") as writer:
