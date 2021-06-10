@@ -26,6 +26,12 @@ xlsx_output_directory_path.mkdir(parents=True, exist_ok=True)
 
 path_to_file = directory_path / file_name
 
+path_to_all_in_one_excel = xlsx_output_directory_path / f"{file_name[:-5]}.xlsx"
+
+# Remove old all in one excel file if it exists
+if path_to_all_in_one_excel.exists():
+    path_to_all_in_one_excel.unlink(missing_ok=False)
+
 
 def get_tabstop_positions(paragraph: Paragraph) -> List[int]:
     """Find all tabstop positions in a given paragraph
@@ -192,12 +198,12 @@ def main():
                                 excel_header = f"{column_letter}:{column_letter}"
                                 worksheet.set_column(excel_header, column_width, wrap_format)
 
-                        # try:
-                        #     with pd.ExcelWriter(f"{file_name[:-5]}.xlsx", mode="a") as writer:
-                        #         df_to_export.to_excel(writer, sheet_name=f"{pruefi}")
-                        # except FileNotFoundError:
-                        #     with pd.ExcelWriter(f"{file_name[:-5]}.xlsx", mode="w") as writer:
-                        #         df_to_export.to_excel(writer, sheet_name=f"{pruefi}")
+                        try:
+                            with pd.ExcelWriter(path=path_to_all_in_one_excel, mode="a", engine="openpyxl") as writer:
+                                df_to_export.to_excel(writer, sheet_name=f"{pruefi}")
+                        except FileNotFoundError:
+                            with pd.ExcelWriter(path=path_to_all_in_one_excel, mode="w", engine="openpyxl") as writer:
+                                df_to_export.to_excel(writer, sheet_name=f"{pruefi}")
 
                 print(chapter_title)
                 print([cell.text for cell in item.row_cells(0)])
