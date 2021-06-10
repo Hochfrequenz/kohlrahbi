@@ -4,6 +4,7 @@ from typing import List
 
 import docx
 import pandas as pd
+import xlsxwriter
 from docx.table import Table
 from docx.text.paragraph import Paragraph
 
@@ -157,9 +158,14 @@ def main():
                         df["Bedingung"] = df["Bedingung"].apply(beautify_bedingungen)
                         df_to_export = df[columns_to_export]
                         df_to_export.to_csv(f"{pruefi}.csv")
-                        with pd.ExcelWriter(f"{pruefi}.xlsx") as writer:
+                        with pd.ExcelWriter(f"{pruefi}.xlsx", engine="xlsxwriter") as writer:
                             df_to_export.to_excel(writer, sheet_name=f"{pruefi}")
-
+                            workbook = writer.book
+                            worksheet = writer.sheets[f"{pruefi}"]
+                            wrap_format = workbook.add_format({"text_wrap": True})
+                            excel_header = "H:H"
+                            worksheet.set_column(excel_header, 150, wrap_format)
+                            writer.save()
                         try:
                             with pd.ExcelWriter(f"{file_name[:-5]}.xlsx", mode="a") as writer:
                                 df_to_export.to_excel(writer, sheet_name=f"{pruefi}")
