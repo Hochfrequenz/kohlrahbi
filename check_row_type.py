@@ -11,8 +11,8 @@ class RowType(Enum):
     EMPTY = 6
 
 
-def is_row_header(text_in_row_as_list) -> bool:
-    if text_in_row_as_list[0] == "EDIFACT Struktur":
+def is_row_header(edifact_struktur_cell) -> bool:
+    if edifact_struktur_cell.text == "EDIFACT Struktur":
         return True
 
     return False
@@ -83,7 +83,7 @@ def is_row_empty(edifact_struktur_cell) -> bool:
 
 
 def define_row_type(edifact_struktur_cell, text_in_row_as_list, left_indent_position: int) -> RowType:
-    if is_row_header(text_in_row_as_list=text_in_row_as_list):
+    if is_row_header(edifact_struktur_cell, text_in_row_as_list=text_in_row_as_list):
         return RowType.HEADER
 
     elif is_row_segmentname(text_in_row_as_list=text_in_row_as_list):
