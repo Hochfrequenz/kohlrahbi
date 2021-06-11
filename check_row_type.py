@@ -18,7 +18,7 @@ def is_row_header(text_in_row_as_list) -> bool:
     return False
 
 
-def is_row_segmentname(table, text_in_row_as_list: List) -> bool:
+def is_row_segmentname(text_in_row_as_list: List) -> bool:
     """
     Checks if the actual row contains just the segment name like "Nachrichten-Kopfsegment"
     """
