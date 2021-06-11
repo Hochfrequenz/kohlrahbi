@@ -83,7 +83,7 @@ def is_row_empty(edifact_struktur_cell) -> bool:
 
 
 def define_row_type(edifact_struktur_cell, text_in_row_as_list, left_indent_position: int) -> RowType:
-    if is_row_header(edifact_struktur_cell, text_in_row_as_list=text_in_row_as_list):
+    if is_row_header(edifact_struktur_cell):
         return RowType.HEADER
 
     elif is_row_segmentname(text_in_row_as_list=text_in_row_as_list):
