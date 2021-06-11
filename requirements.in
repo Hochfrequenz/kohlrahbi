@@ -1,3 +1,4 @@
 openpyxl
 pandas
 python-docx
+XlsxWriter
