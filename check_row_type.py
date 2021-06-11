@@ -82,11 +82,11 @@ def is_row_empty(edifact_struktur_cell) -> bool:
     return False
 
 
-def define_row_type(table, edifact_struktur_cell, text_in_row_as_list, left_indent_position: int) -> RowType:
+def define_row_type(edifact_struktur_cell, text_in_row_as_list, left_indent_position: int) -> RowType:
     if is_row_header(text_in_row_as_list=text_in_row_as_list):
         return RowType.HEADER
 
-    elif is_row_segmentname(table=table, text_in_row_as_list=text_in_row_as_list):
+    elif is_row_segmentname(text_in_row_as_list=text_in_row_as_list):
         return RowType.SEGMENTNAME
 
     elif is_row_segmentgruppe(edifact_struktur_cell=edifact_struktur_cell, left_indent_position=left_indent_position):
