@@ -35,8 +35,9 @@ def is_row_segmentname(edifact_struktur_cell) -> bool:
 
 def is_row_segmentgruppe(edifact_struktur_cell, left_indent_position: int) -> bool:
     if (
-        edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == left_indent_position
+        not edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == left_indent_position
         and not "\t" in edifact_struktur_cell.text
+        and not edifact_struktur_cell.text == ""
     ):
         return True
 
@@ -46,7 +47,7 @@ def is_row_segmentgruppe(edifact_struktur_cell, left_indent_position: int) -> bo
 def is_row_segment(edifact_struktur_cell, left_indent_position: int) -> bool:
     # |   UNH    |
     if (
-        not edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == left_indent_position
+        edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == left_indent_position
         and not "\t" in edifact_struktur_cell.text
         and not edifact_struktur_cell.text == ""
     ):
@@ -54,7 +55,7 @@ def is_row_segment(edifact_struktur_cell, left_indent_position: int) -> bool:
 
     # | SG2\tNAD |
     if (
-        edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == left_indent_position
+        not edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == left_indent_position
         and edifact_struktur_cell.text.count("\t") == 1
     ):
         return True
@@ -65,14 +66,14 @@ def is_row_segment(edifact_struktur_cell, left_indent_position: int) -> bool:
 def is_row_datenelement(edifact_struktur_cell, left_indent_position: int) -> bool:
     # |   UNH\t0062 |
     if (
-        not edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == left_indent_position
+        edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == left_indent_position
         and "\t" in edifact_struktur_cell.text
     ):
         return True
 
     # | SG2\tNAD\t3035 |
     if (
-        edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == left_indent_position
+        not edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == left_indent_position
         and edifact_struktur_cell.text.count("\t") == 2
     ):
         return True
