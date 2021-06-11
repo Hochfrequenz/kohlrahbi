@@ -22,6 +22,7 @@ class TestCheckRowType:
             pytest.param(
                 "SG2\tNAD\t3035", 1270, RGBColor(0, 0, 0), RowType.DATENELEMENT, id="DATENELEMENT w Segementgruppe"
             ),
+            pytest.param("", 635, RGBColor(0, 0, 0), RowType.EMPTY, id="EMPTY"),
         ],
     )
     def test_define_row_type(self, text: str, left_indent_position: int, font_color: RGBColor, expected: RowType):
