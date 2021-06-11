@@ -1,6 +1,8 @@
 from enum import Enum
 from typing import List
 
+from docx.shared import RGBColor
+
 
 class RowType(Enum):
     SEGMENTNAME = 1
@@ -18,13 +20,15 @@ def is_row_header(edifact_struktur_cell) -> bool:
     return False
 
 
-def is_row_segmentname(text_in_row_as_list: List) -> bool:
+def is_row_segmentname(edifact_struktur_cell) -> bool:
     """
     Checks if the actual row contains just the segment name like "Nachrichten-Kopfsegment"
     """
-
-    if text_in_row_as_list[0] and not text_in_row_as_list[1] and not text_in_row_as_list[2]:
-        return True
+    try:
+        if edifact_struktur_cell.paragraphs[0].runs[0].font.color.rgb == RGBColor(128, 128, 128):
+            return True
+    except IndexError:
+        return False
 
     return False
 
@@ -82,11 +86,11 @@ def is_row_empty(edifact_struktur_cell) -> bool:
     return False
 
 
-def define_row_type(edifact_struktur_cell, text_in_row_as_list, left_indent_position: int) -> RowType:
-    if is_row_header(edifact_struktur_cell):
+def define_row_type(edifact_struktur_cell, left_indent_position: int) -> RowType:
+    if is_row_header(edifact_struktur_cell=edifact_struktur_cell):
         return RowType.HEADER
 
-    elif is_row_segmentname(text_in_row_as_list=text_in_row_as_list):
+    elif is_row_segmentname(edifact_struktur_cell=edifact_struktur_cell):
         return RowType.SEGMENTNAME
 
     elif is_row_segmentgruppe(edifact_struktur_cell=edifact_struktur_cell, left_indent_position=left_indent_position):
