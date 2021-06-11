@@ -14,6 +14,7 @@ from write_functions import write_new_row_in_dataframe
 
 directory_path = Path.cwd() / "documents"
 file_name = "UTILMD_AHB_WiM_3_1c_2021_04_01_2021_03_30.docx"
+# file_name = "UTILMD_AHB_Einspeiser_2_1c_2021_04_01_2021_03_30.docx"
 
 output_directory_path = Path.cwd() / "output"
 json_output_directory_path = output_directory_path / "json"
@@ -51,7 +52,13 @@ def get_tabstop_positions(paragraph: Paragraph) -> List[int]:
 
 
 def read_table(
-    table, dataframe, actual_df_row_index, last_two_row_types, left_indent_position: int, tabstop_positions: List
+    table,
+    dataframe,
+    current_df_row_index,
+    last_two_row_types,
+    edifact_struktur_cell_left_indent_position: int,
+    middle_cell_left_indent_position: int,
+    tabstop_positions: List,
 ):
 
     if table._column_count == 4:
@@ -62,8 +69,7 @@ def read_table(
     for row in range(len(table.rows)):
 
         # initial empty list for the next row in the dataframe
-        actual_dataframe_row = (len(dataframe.columns)) * [""]
-        dataframe.loc[actual_df_row_index] = actual_dataframe_row
+        dataframe.loc[current_df_row_index] = (len(dataframe.columns)) * [""]
 
         row_cell_texts_as_list = [cell.text for cell in table.row_cells(row)]
 
@@ -92,51 +98,49 @@ def read_table(
             elif row_cell_texts_as_list[0] == row_cell_texts_as_list[1]:
                 del row_cell_texts_as_list[1]
 
-        actual_edifact_struktur_cell = table.row_cells(row)[0]
+        current_edifact_struktur_cell = table.row_cells(row)[0]
 
         # check for row type
-        actual_row_type = define_row_type(
-            edifact_struktur_cell=actual_edifact_struktur_cell,
-            left_indent_position=left_indent_position,
+        current_row_type = define_row_type(
+            edifact_struktur_cell=current_edifact_struktur_cell,
+            left_indent_position=edifact_struktur_cell_left_indent_position,
         )
-        print(actual_row_type.name)
-        print(actual_edifact_struktur_cell.text)
+        print(current_row_type.name)
+        print(current_edifact_struktur_cell.text)
 
         # write actual row into dataframe
-        if actual_row_type is RowType.EMPTY and last_two_row_types[0] is RowType.HEADER:
-            actual_df_row_index = actual_df_row_index - 1
-            actual_df_row_index = write_new_row_in_dataframe(
+        if not (current_row_type is RowType.EMPTY and last_two_row_types[0] is RowType.HEADER):
+            current_df_row_index = write_new_row_in_dataframe(
+                row_type=current_row_type,
+                table=table,
+                row=row,
+                index_for_middle_column=index_for_middle_column,
+                dataframe=dataframe,
+                dataframe_row_index=current_df_row_index,
+                edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
+                middle_cell_left_indent_position=middle_cell_left_indent_position,
+                tabstop_positions=tabstop_positions,
+            )
+
+        else:
+            current_df_row_index = current_df_row_index - 1
+            current_df_row_index = write_new_row_in_dataframe(
                 row_type=last_two_row_types[1],
                 table=table,
                 row=row,
                 index_for_middle_column=index_for_middle_column,
                 dataframe=dataframe,
-                dataframe_row_index=actual_df_row_index,
-                dataframe_row=actual_dataframe_row,
-                row_cell_texts_as_list=row_cell_texts_as_list,
-                left_indent_position=left_indent_position,
-                tabstop_positions=tabstop_positions,
-            )
-
-        else:
-            actual_df_row_index = write_new_row_in_dataframe(
-                row_type=actual_row_type,
-                table=table,
-                row=row,
-                index_for_middle_column=index_for_middle_column,
-                dataframe=dataframe,
-                dataframe_row_index=actual_df_row_index,
-                dataframe_row=actual_dataframe_row,
-                row_cell_texts_as_list=row_cell_texts_as_list,
-                left_indent_position=left_indent_position,
+                dataframe_row_index=current_df_row_index,
+                edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
+                middle_cell_left_indent_position=middle_cell_left_indent_position,
                 tabstop_positions=tabstop_positions,
             )
 
         # remember last row type for empty cells
         last_two_row_types[1] = last_two_row_types[0]
-        last_two_row_types[0] = actual_row_type
+        last_two_row_types[0] = current_row_type
 
-    return last_two_row_types, actual_df_row_index
+    return last_two_row_types, current_df_row_index
 
 
 def beautify_bedingungen(bedingung):
@@ -179,7 +183,7 @@ def main():
                     for pruefi in pruefidentifikatoren:
                         columns_to_export = base_columns + [pruefi]
                         columns_to_export.append("Bedingung")  # TODO: save string "Bedingung" in variable
-                        df["Bedingung"] = df["Bedingung"].apply(beautify_bedingungen)
+                        # df["Bedingung"] = df["Bedingung"].apply(beautify_bedingungen)
                         df_to_export = df[columns_to_export]
                         df_to_export.to_csv(csv_output_directory_path / f"{pruefi}.csv")
 
@@ -222,10 +226,15 @@ def main():
                 # +1 cause of \t after Prüfidentifikator
                 pruefidentifikatoren: List = header_cells[-1][cutter_index + len(look_up_term) :].split("\t")
 
-                indicator_paragraph = item.cell(row_idx=4, col_idx=1).paragraphs[0]
+                edifact_struktur_indicator_paragraph = item.cell(row_idx=4, col_idx=0).paragraphs[0]
+                edifact_struktur_left_indent_position = (
+                    edifact_struktur_indicator_paragraph.paragraph_format.left_indent
+                )
 
-                left_indent_position = indicator_paragraph.paragraph_format.left_indent
-                tabstop_positions: List = get_tabstop_positions(indicator_paragraph)
+                middle_cell_indicator_paragraph = item.cell(row_idx=4, col_idx=1).paragraphs[0]
+
+                middle_cell_left_indent_position = middle_cell_indicator_paragraph.paragraph_format.left_indent
+                tabstop_positions: List = get_tabstop_positions(middle_cell_indicator_paragraph)
 
                 base_columns: List = [
                     "Segment Gruppe",
@@ -248,9 +257,10 @@ def main():
                 last_two_row_types, actual_df_row_index = read_table(
                     table=item,
                     dataframe=df,
-                    actual_df_row_index=actual_df_row_index,
+                    current_df_row_index=actual_df_row_index,
                     last_two_row_types=last_two_row_types,
-                    left_indent_position=left_indent_position,
+                    edifact_struktur_cell_left_indent_position=edifact_struktur_left_indent_position,
+                    middle_cell_left_indent_position=middle_cell_left_indent_position,
                     tabstop_positions=tabstop_positions,
                 )
 
@@ -258,9 +268,10 @@ def main():
                 last_two_row_types, actual_df_row_index = read_table(
                     table=item,
                     dataframe=df,
-                    actual_df_row_index=actual_df_row_index,
+                    current_df_row_index=actual_df_row_index,
                     last_two_row_types=last_two_row_types,
-                    left_indent_position=left_indent_position,
+                    edifact_struktur_cell_left_indent_position=edifact_struktur_left_indent_position,
+                    middle_cell_left_indent_position=middle_cell_left_indent_position,
                     tabstop_positions=tabstop_positions,
                 )
 
