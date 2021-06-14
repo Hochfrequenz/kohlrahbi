@@ -10,6 +10,8 @@ from write_functions import (
     parse_paragraph_in_edifact_struktur_column_to_dataframe,
     parse_paragraph_in_middle_column_to_dataframe,
     write_segment_name_to_dataframe,
+    write_segment_to_dataframe,
+    write_segmentgruppe_to_dataframe,
 )
 
 
@@ -556,6 +558,120 @@ class TestWriteFunctions:
 
         assert expected_df.equals(df)
 
+    @pytest.mark.parametrize(
+        "row_cells, expected_df_row",
+        [
+            pytest.param(
+                {
+                    "edifact_struktur_cell": [
+                        _Paragraph(
+                            text="SG2",
+                            tabstop_positions=None,
+                            left_indent_position=edifact_struktur_cell_left_indent_position_of_segmentgroup_cells,
+                        )
+                    ],
+                    "middle_cell": [
+                        _Paragraph(
+                            text="\tMuss\tMuss\tMuss",
+                            tabstop_positions=middle_cell_tabstop_positions_of_indicator_paragraph[1:],
+                            left_indent_position=None,
+                        )
+                    ],
+                    "bedingung_cell": "",
+                },
+                {
+                    "Segment Gruppe": "SG2",
+                    "Segment": "",
+                    "Datenelement": "",
+                    "Codes und Qualifier": "",
+                    "Beschreibung": "",
+                    "77777": "Muss",
+                    "88888": "Muss",
+                    "99999": "Muss",
+                    "Bedingung": "",
+                },
+                id="SG2",
+            ),
+            pytest.param(
+                {
+                    "edifact_struktur_cell": [
+                        _Paragraph(
+                            text="SG6",
+                            tabstop_positions=None,
+                            left_indent_position=edifact_struktur_cell_left_indent_position_of_segmentgroup_cells,
+                        )
+                    ],
+                    "middle_cell": [
+                        _Paragraph(
+                            text="\tMuss\tMuss",
+                            tabstop_positions=middle_cell_tabstop_positions_of_indicator_paragraph[2:],
+                            left_indent_position=None,
+                        )
+                    ],
+                    "bedingung_cell": "",
+                },
+                {
+                    "Segment Gruppe": "SG6",
+                    "Segment": "",
+                    "Datenelement": "",
+                    "Codes und Qualifier": "",
+                    "Beschreibung": "",
+                    "77777": "",
+                    "88888": "Muss",
+                    "99999": "Muss",
+                    "Bedingung": "",
+                },
+                id="SG6 Referenz Vorgangsnummer",
+            ),
+            pytest.param(
+                {
+                    "edifact_struktur_cell": [
+                        _Paragraph(
+                            text="SG8",
+                            tabstop_positions=None,
+                            left_indent_position=edifact_struktur_cell_left_indent_position_of_segmentgroup_cells,
+                        )
+                    ],
+                    "middle_cell": [
+                        _Paragraph(
+                            text="\tMuss [138]\tMuss",
+                            tabstop_positions=middle_cell_tabstop_positions_of_indicator_paragraph[1:3],
+                            left_indent_position=None,
+                        )
+                    ],
+                    "bedingung_cell": """[138] Wenn SG5
+LOC+172 (Meldepunkt)
+nicht vorhanden""",
+                },
+                {
+                    "Segment Gruppe": "SG8",
+                    "Segment": "",
+                    "Datenelement": "",
+                    "Codes und Qualifier": "",
+                    "Beschreibung": "",
+                    "77777": "Muss [138]",
+                    "88888": "Muss",
+                    "99999": "",
+                    "Bedingung": "[138] Wenn SG5 LOC+172 (Meldepunkt) nicht vorhanden",
+                },
+                id="SG8",
+            ),
+        ],
+    )
+    def test_write_segmentgruppe_to_dataframe(
+        self,
+        row_cells,
+        expected_df_row,
+    ):
+        # create table test cell
+        # it contains per default an empty paragraph
+        test_document = docx.Document()
+        test_table = test_document.add_table(rows=1, cols=3)
+
+        self.edifact_struktur_cell = test_table.add_row().cells[0]
+        self.middle_cell = test_table.add_row().cells[1]
+        self.bedingung_cell = test_table.add_row().cells[2]
+
         # prepare edifact struktur cell
         current_paragraph = self.edifact_struktur_cell.paragraphs[0]
 
@@ -564,7 +680,7 @@ class TestWriteFunctions:
 
         if row_cells["edifact_struktur_cell"][0].tabstop_positions is not None:
             for tabstop_position in row_cells["edifact_struktur_cell"][0].tabstop_positions:
-                self.edifact_struktur_cell.paragraphs[0].add_tab_stop(tabstop_position)
+                self.edifact_struktur_cell.paragraphs[0].paragraph_format.tab_stops.add_tab_stop(tabstop_position)
 
         for _paragraph, i in zip(
             row_cells["edifact_struktur_cell"][1:], range(1, len(row_cells["edifact_struktur_cell"]))
@@ -580,6 +696,32 @@ class TestWriteFunctions:
                 for tabstop_position in _paragraph.tabstop_positions:
                     current_tab_stops.add_tab_stop(tabstop_position)
 
+        # prepare middle cell
+        current_paragraph = self.middle_cell.paragraphs[0]
+
+        current_paragraph.text = row_cells["middle_cell"][0].text
+        current_paragraph.paragraph_format.left_indent = row_cells["middle_cell"][0].left_indent_position
+
+        if row_cells["middle_cell"][0].tabstop_positions is not None:
+            for tabstop_position in row_cells["middle_cell"][0].tabstop_positions:
+                self.middle_cell.paragraphs[0].paragraph_format.tab_stops.add_tab_stop(tabstop_position)
+
+        for _paragraph, i in zip(row_cells["middle_cell"][1:], range(1, len(row_cells["middle_cell"]))):
+            self.middle_cell.add_paragraph()
+            current_paragraph = self.middle_cell.paragraphs[i]
+            current_paragraph.text = _paragraph.text
+
+            current_paragraph.paragraph_format.left_indent = _paragraph.left_indent_position
+            current_tab_stops = current_paragraph.paragraph_format.tab_stops
+
+            if _paragraph.tabstop_positions is not None:
+                for tabstop_position in _paragraph.tabstop_positions:
+                    current_tab_stops.add_tab_stop(tabstop_position)
+
+        # prepare bedingung cell
+        current_paragraph = self.bedingung_cell.paragraphs[0]
+        current_paragraph.text = row_cells["bedingung_cell"]
+
         # Initial two dataframes ...
         df = pd.DataFrame(columns=expected_df_row.keys(), dtype="str")
         expected_df = pd.DataFrame(columns=expected_df_row.keys(), dtype="str")
@@ -589,7 +731,353 @@ class TestWriteFunctions:
         df.loc[row_index] = initial_dataframe_row
         expected_df.loc[row_index] = initial_dataframe_row
 
-        write_segment_name_to_dataframe(
+        write_segmentgruppe_to_dataframe(
+            dataframe=df,
+            row_index=row_index,
+            edifact_struktur_cell=self.edifact_struktur_cell,
+            edifact_struktur_cell_left_indent_position=self.edifact_struktur_cell_left_indent_position_of_indicator_paragraph,
+            middle_cell=self.middle_cell,
+            middle_cell_left_indent_position=self.middle_cell_left_indent_position_of_indicator_paragraph,
+            tabstop_positions=self.middle_cell_tabstop_positions_of_indicator_paragraph,
+            bedingung_cell=self.bedingung_cell,
+        )
+
+        expected_df.loc[row_index] = expected_df_row
+
+        assert expected_df.equals(df)
+
+    @pytest.mark.parametrize(
+        "row_cells, expected_df_row",
+        [
+            pytest.param(
+                {
+                    "edifact_struktur_cell": [
+                        _Paragraph(
+                            text="UNH",
+                            tabstop_positions=None,
+                            left_indent_position=edifact_struktur_cell_left_indent_position_of_indicator_paragraph,
+                        )
+                    ],
+                    "middle_cell": [
+                        _Paragraph(
+                            text="\tMuss\tMuss\tMuss",
+                            tabstop_positions=middle_cell_tabstop_positions_of_indicator_paragraph[1:],
+                            left_indent_position=None,
+                        )
+                    ],
+                    "bedingung_cell": "",
+                },
+                {
+                    "Segment Gruppe": "",
+                    "Segment": "UNH",
+                    "Datenelement": "",
+                    "Codes und Qualifier": "",
+                    "Beschreibung": "",
+                    "77777": "Muss",
+                    "88888": "Muss",
+                    "99999": "Muss",
+                    "Bedingung": "",
+                },
+                id="UNH",
+            ),
+            pytest.param(
+                {
+                    "edifact_struktur_cell": [
+                        _Paragraph(
+                            text="SG2\tNAD",
+                            tabstop_positions=edifact_struktur_cell_tabstop_positions[:1],
+                            left_indent_position=edifact_struktur_cell_left_indent_position_of_segmentgroup_cells,
+                        )
+                    ],
+                    "middle_cell": [
+                        _Paragraph(
+                            text="\tMuss\tMuss\tMuss",
+                            tabstop_positions=middle_cell_tabstop_positions_of_indicator_paragraph[1:],
+                            left_indent_position=None,
+                        )
+                    ],
+                    "bedingung_cell": "",
+                },
+                {
+                    "Segment Gruppe": "SG2",
+                    "Segment": "NAD",
+                    "Datenelement": "",
+                    "Codes und Qualifier": "",
+                    "Beschreibung": "",
+                    "77777": "Muss",
+                    "88888": "Muss",
+                    "99999": "Muss",
+                    "Bedingung": "",
+                },
+                id="Segmentgroup, Segment and Bedingung",
+            ),
+            pytest.param(
+                {
+                    "edifact_struktur_cell": [
+                        _Paragraph(
+                            text="SG4\tSTS",
+                            tabstop_positions=edifact_struktur_cell_tabstop_positions[:1],
+                            left_indent_position=edifact_struktur_cell_left_indent_position_of_segmentgroup_cells,
+                        )
+                    ],
+                    "middle_cell": [
+                        _Paragraph(
+                            text="\tMuss [249]\tMuss [249]",
+                            tabstop_positions=middle_cell_tabstop_positions_of_indicator_paragraph[2:],
+                            left_indent_position=None,
+                        )
+                    ],
+                    "bedingung_cell": """[249] Innerhalb eines
+SG4 IDE müssen alle
+DE1131 der SG4
+STS+E01 den
+identischen Wert
+enthalten""",
+                },
+                {
+                    "Segment Gruppe": "SG4",
+                    "Segment": "STS",
+                    "Datenelement": "",
+                    "Codes und Qualifier": "",
+                    "Beschreibung": "",
+                    "77777": "",
+                    "88888": "Muss [249]",
+                    "99999": "Muss [249]",
+                    "Bedingung": "[249] Innerhalb eines SG4 IDE müssen alle DE1131 der SG4 STS+E01 den identischen Wert enthalten",
+                },
+                id="Segmentgroup and Segment",
+            ),
+        ],
+    )
+    def test_write_segment_to_dataframe(
+        self,
+        row_cells,
+        expected_df_row,
+    ):
+        # create table test cell
+        # it contains per default an empty paragraph
+        test_document = docx.Document()
+        test_table = test_document.add_table(rows=1, cols=3)
+
+        self.edifact_struktur_cell = test_table.add_row().cells[0]
+        self.middle_cell = test_table.add_row().cells[1]
+        self.bedingung_cell = test_table.add_row().cells[2]
+
+        # prepare edifact struktur cell
+        current_paragraph = self.edifact_struktur_cell.paragraphs[0]
+
+        current_paragraph.text = row_cells["edifact_struktur_cell"][0].text
+        current_paragraph.paragraph_format.left_indent = row_cells["edifact_struktur_cell"][0].left_indent_position
+
+        if row_cells["edifact_struktur_cell"][0].tabstop_positions is not None:
+            for tabstop_position in row_cells["edifact_struktur_cell"][0].tabstop_positions:
+                self.edifact_struktur_cell.paragraphs[0].paragraph_format.tab_stops.add_tab_stop(tabstop_position)
+
+        for _paragraph, i in zip(
+            row_cells["edifact_struktur_cell"][1:], range(1, len(row_cells["edifact_struktur_cell"]))
+        ):
+            self.edifact_struktur_cell.add_paragraph()
+            current_paragraph = self.edifact_struktur_cell.paragraphs[i]
+            current_paragraph.text = _paragraph.text
+
+            current_paragraph.paragraph_format.left_indent = _paragraph.left_indent_position
+            current_tab_stops = current_paragraph.paragraph_format.tab_stops
+
+            if _paragraph.tabstop_positions is not None:
+                for tabstop_position in _paragraph.tabstop_positions:
+                    current_tab_stops.add_tab_stop(tabstop_position)
+
+        # prepare middle cell
+        current_paragraph = self.middle_cell.paragraphs[0]
+
+        current_paragraph.text = row_cells["middle_cell"][0].text
+        current_paragraph.paragraph_format.left_indent = row_cells["middle_cell"][0].left_indent_position
+
+        if row_cells["middle_cell"][0].tabstop_positions is not None:
+            for tabstop_position in row_cells["middle_cell"][0].tabstop_positions:
+                self.middle_cell.paragraphs[0].paragraph_format.tab_stops.add_tab_stop(tabstop_position)
+
+        for _paragraph, i in zip(row_cells["middle_cell"][1:], range(1, len(row_cells["middle_cell"]))):
+            self.middle_cell.add_paragraph()
+            current_paragraph = self.middle_cell.paragraphs[i]
+            current_paragraph.text = _paragraph.text
+
+            current_paragraph.paragraph_format.left_indent = _paragraph.left_indent_position
+            current_tab_stops = current_paragraph.paragraph_format.tab_stops
+
+            if _paragraph.tabstop_positions is not None:
+                for tabstop_position in _paragraph.tabstop_positions:
+                    current_tab_stops.add_tab_stop(tabstop_position)
+
+        # prepare bedingung cell
+        current_paragraph = self.bedingung_cell.paragraphs[0]
+        current_paragraph.text = row_cells["bedingung_cell"]
+
+        # Initial two dataframes ...
+        df = pd.DataFrame(columns=expected_df_row.keys(), dtype="str")
+        expected_df = pd.DataFrame(columns=expected_df_row.keys(), dtype="str")
+        row_index = 0
+        # ... with a row full of emtpy strings
+        initial_dataframe_row = (len(df.columns)) * [""]
+        df.loc[row_index] = initial_dataframe_row
+        expected_df.loc[row_index] = initial_dataframe_row
+
+        write_segment_to_dataframe(
+            dataframe=df,
+            row_index=row_index,
+            edifact_struktur_cell=self.edifact_struktur_cell,
+            edifact_struktur_cell_left_indent_position=self.edifact_struktur_cell_left_indent_position_of_indicator_paragraph,
+            middle_cell=self.middle_cell,
+            middle_cell_left_indent_position=self.middle_cell_left_indent_position_of_indicator_paragraph,
+            tabstop_positions=self.middle_cell_tabstop_positions_of_indicator_paragraph,
+            bedingung_cell=self.bedingung_cell,
+        )
+
+        expected_df.loc[row_index] = expected_df_row
+
+        assert expected_df.equals(df)
+
+    @pytest.mark.parametrize(
+        "row_cells, expected_df_row",
+        [
+            pytest.param(
+                {
+                    "edifact_struktur_cell": [
+                        _Paragraph(
+                            text="UNH",
+                            tabstop_positions=None,
+                            left_indent_position=edifact_struktur_cell_left_indent_position_of_indicator_paragraph,
+                        )
+                    ],
+                    "middle_cell": [
+                        _Paragraph(
+                            text="\tMuss\tMuss\tMuss",
+                            tabstop_positions=middle_cell_tabstop_positions_of_indicator_paragraph[1:],
+                            left_indent_position=None,
+                        )
+                    ],
+                    "bedingung_cell": "",
+                },
+                {
+                    "Segment Gruppe": "",
+                    "Segment": "UNH",
+                    "Datenelement": "",
+                    "Codes und Qualifier": "",
+                    "Beschreibung": "",
+                    "77777": "Muss",
+                    "88888": "Muss",
+                    "99999": "Muss",
+                    "Bedingung": "",
+                },
+                id="UNH",
+            ),
+            pytest.param(
+                {
+                    "edifact_struktur_cell": [
+                        _Paragraph(
+                            text="SG2\tNAD",
+                            tabstop_positions=edifact_struktur_cell_tabstop_positions[:1],
+                            left_indent_position=edifact_struktur_cell_left_indent_position_of_segmentgroup_cells,
+                        )
+                    ],
+                    "middle_cell": [
+                        _Paragraph(
+                            text="\tMuss\tMuss\tMuss",
+                            tabstop_positions=middle_cell_tabstop_positions_of_indicator_paragraph[1:],
+                            left_indent_position=middle_cell_left_indent_position_of_indicator_paragraph,
+                        )
+                    ],
+                    "bedingung_cell": "",
+                },
+                {
+                    "Segment Gruppe": "SG2",
+                    "Segment": "NAD",
+                    "Datenelement": "",
+                    "Codes und Qualifier": "",
+                    "Beschreibung": "",
+                    "77777": "Muss",
+                    "88888": "Muss",
+                    "99999": "Muss",
+                    "Bedingung": "",
+                },
+                id="Segmentgroup and Segment",
+            ),
+        ],
+    )
+    def test_write_dataelement_to_dataframe(
+        self,
+        row_cells,
+        expected_df_row,
+    ):
+        # create table test cell
+        # it contains per default an empty paragraph
+        test_document = docx.Document()
+        test_table = test_document.add_table(rows=1, cols=3)
+
+        self.edifact_struktur_cell = test_table.add_row().cells[0]
+        self.middle_cell = test_table.add_row().cells[1]
+        self.bedingung_cell = test_table.add_row().cells[2]
+
+        # prepare edifact struktur cell
+        current_paragraph = self.edifact_struktur_cell.paragraphs[0]
+
+        current_paragraph.text = row_cells["edifact_struktur_cell"][0].text
+        current_paragraph.paragraph_format.left_indent = row_cells["edifact_struktur_cell"][0].left_indent_position
+
+        if row_cells["edifact_struktur_cell"][0].tabstop_positions is not None:
+            for tabstop_position in row_cells["edifact_struktur_cell"][0].tabstop_positions:
+                self.edifact_struktur_cell.paragraphs[0].paragraph_format.tab_stops.add_tab_stop(tabstop_position)
+
+        for _paragraph, i in zip(
+            row_cells["edifact_struktur_cell"][1:], range(1, len(row_cells["edifact_struktur_cell"]))
+        ):
+            self.edifact_struktur_cell.add_paragraph()
+            current_paragraph = self.edifact_struktur_cell.paragraphs[i]
+            current_paragraph.text = _paragraph.text
+
+            current_paragraph.paragraph_format.left_indent = _paragraph.left_indent_position
+            current_tab_stops = current_paragraph.paragraph_format.tab_stops
+
+            if _paragraph.tabstop_positions is not None:
+                for tabstop_position in _paragraph.tabstop_positions:
+                    current_tab_stops.add_tab_stop(tabstop_position)
+
+        # prepare middle cell
+        current_paragraph = self.middle_cell.paragraphs[0]
+
+        current_paragraph.text = row_cells["middle_cell"][0].text
+        current_paragraph.paragraph_format.left_indent = row_cells["middle_cell"][0].left_indent_position
+
+        if row_cells["middle_cell"][0].tabstop_positions is not None:
+            for tabstop_position in row_cells["middle_cell"][0].tabstop_positions:
+                self.middle_cell.paragraphs[0].paragraph_format.tab_stops.add_tab_stop(tabstop_position)
+
+        for _paragraph, i in zip(row_cells["middle_cell"][1:], range(1, len(row_cells["middle_cell"]))):
+            self.middle_cell.add_paragraph()
+            current_paragraph = self.middle_cell.paragraphs[i]
+            current_paragraph.text = _paragraph.text
+
+            current_paragraph.paragraph_format.left_indent = _paragraph.left_indent_position
+            current_tab_stops = current_paragraph.paragraph_format.tab_stops
+
+            if _paragraph.tabstop_positions is not None:
+                for tabstop_position in _paragraph.tabstop_positions:
+                    current_tab_stops.add_tab_stop(tabstop_position)
+
+        # prepare bedingung cell
+        current_paragraph = self.bedingung_cell.paragraphs[0]
+        current_paragraph.text = row_cells["bedingung_cell"]
+
+        # Initial two dataframes ...
+        df = pd.DataFrame(columns=expected_df_row.keys(), dtype="str")
+        expected_df = pd.DataFrame(columns=expected_df_row.keys(), dtype="str")
+        row_index = 0
+        # ... with a row full of emtpy strings
+        initial_dataframe_row = (len(df.columns)) * [""]
+        df.loc[row_index] = initial_dataframe_row
+        expected_df.loc[row_index] = initial_dataframe_row
+
+        write_segment_to_dataframe(
             dataframe=df,
             row_index=row_index,
             edifact_struktur_cell=self.edifact_struktur_cell,
