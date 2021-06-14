@@ -11,7 +11,7 @@ from write_functions import (
 )
 
 
-class TestWriteFunctions:
+class TestParseFunctions:
 
     # create table test cell
     # it contains per default an empty paragraph
@@ -261,7 +261,7 @@ class TestWriteFunctions:
                     "99999": "",
                     "Bedingung": "",
                 },
-                id="Segment",
+                id="Segment with Dataelement",
             ),
             pytest.param(
                 "SG2",
@@ -360,7 +360,7 @@ class TestWriteFunctions:
                     "99999": "",
                     "Bedingung": "",
                 },
-                id="Segmentname",
+                id="Empty Bedingung",
             ),
             pytest.param(
                 """[12] Wenn SG4
@@ -385,7 +385,7 @@ nicht vorhanden
                     "99999": "",
                     "Bedingung": """[12] Wenn SG4 DTM+471 (Ende zum nächstmöglichem Termin) nicht vorhanden  \n[13] Wenn SG4 STS+E01++Z01 (Status der Antwort: Zustimmung mit Terminänderung) nicht vorhanden """,
                 },
-                id="Segmentname",
+                id="First Bedingung in UTILMD AHB WiM",
             ),
         ],
     )
