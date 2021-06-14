@@ -83,8 +83,9 @@ def parse_paragraph_in_middle_column_to_dataframe(
         dataframe.at[row_index, "Beschreibung"] += splitted_text_at_tabs.pop(0)
     elif tab_stops is None:
         pass
-    else:
-        raise NotImplementedError(f"Could not parse paragraphe in middle cell with {paragraph.text}")
+    # Could not figure out a scenario where this error could be raised.
+    # else:
+    #     raise NotImplementedError(f"Could not parse paragraphe in middle cell with {paragraph.text}")
 
 
 def parse_bedingung_cell(bedingung_cell, dataframe, row_index):
