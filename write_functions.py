@@ -21,14 +21,19 @@ def parse_paragraph_in_edifact_struktur_column_to_dataframe(
     if paragraph.paragraph_format.left_indent != edifact_struktur_cell_left_indent_position:
 
         if tab_count == 2:
-            dataframe.at[row_index, "Segment Gruppe"] += splitted_text_at_tabs[0]
-            dataframe.at[row_index, "Segment"] += splitted_text_at_tabs[1]
-            dataframe.at[row_index, "Datenelement"] += splitted_text_at_tabs[2]
+            dataframe.at[row_index, "Segment Gruppe"] = splitted_text_at_tabs[0]
+            dataframe.at[row_index, "Segment"] = splitted_text_at_tabs[1]
+            dataframe.at[row_index, "Datenelement"] = splitted_text_at_tabs[2]
         elif tab_count == 1:
-            dataframe.at[row_index, "Segment Gruppe"] += splitted_text_at_tabs[0]
-            dataframe.at[row_index, "Segment"] += splitted_text_at_tabs[1]
-        elif tab_count == 0:
-            dataframe.at[row_index, "Segment Gruppe"] += splitted_text_at_tabs[0]
+            dataframe.at[row_index, "Segment Gruppe"] = splitted_text_at_tabs[0]
+            dataframe.at[row_index, "Segment"] = splitted_text_at_tabs[1]
+        elif tab_count == 0 and not paragraph.text == "":
+            if paragraph.runs[0].bold:
+                # Segmentgruppe: SG8
+                dataframe.at[row_index, "Segment Gruppe"] = splitted_text_at_tabs[0]
+            else:
+                # Segmentname: Referenzen auf die ID der\nTranche
+                dataframe.at[row_index, "Segment Gruppe"] += splitted_text_at_tabs[0]
 
     # Now the text should start in middle of the EDIFACT Struktur column
     else:
@@ -59,9 +64,10 @@ def parse_paragraph_in_middle_column_to_dataframe(
         dataframe.at[row_index, "Codes und Qualifier"] += splitted_text_at_tabs.pop(0)
         column_indezes = list(range(4, 4 + len(tabstop_positions)))
 
-    elif splitted_text_at_tabs[0] == "":
-        tabstop_positions = tabstop_positions[1:]
-        del splitted_text_at_tabs[0]
+    else:
+        if splitted_text_at_tabs[0] == "":
+            tabstop_positions = tabstop_positions[1:]
+            del splitted_text_at_tabs[0]
 
         column_indezes = list(range(5, 5 + len(tabstop_positions)))
 
@@ -258,15 +264,6 @@ def write_dataelement_to_dataframe(
 
     else:
         # The middle cell contains now multiple Codes
-        # For reasons of good readability the EDIFACT Struktur information gets written again
-
-        # EDIFACT STRUKTUR COLUMN
-        parse_paragraph_in_edifact_struktur_column_to_dataframe(
-            paragraph=edifact_struktur_cell.paragraphs[0],
-            dataframe=dataframe,
-            row_index=row_index,
-            edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
-        )
 
         # here we have to look into the next row to see, if we have to add a new datarow or
         # if we have to collect more information in the next row which we have to add to the current row
@@ -276,6 +273,16 @@ def write_dataelement_to_dataframe(
         ]
 
         for paragraph, i in zip(middle_cell.paragraphs, range(len(create_new_dataframe_row_indicator_list))):
+
+            # For reasons of good readability the EDIFACT Struktur information gets written again
+
+            # EDIFACT STRUKTUR COLUMN
+            parse_paragraph_in_edifact_struktur_column_to_dataframe(
+                paragraph=edifact_struktur_cell.paragraphs[0],
+                dataframe=dataframe,
+                row_index=row_index,
+                edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
+            )
 
             if paragraph.runs[0].bold:
                 parse_paragraph_in_middle_column_to_dataframe(
