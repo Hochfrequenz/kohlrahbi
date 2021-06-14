@@ -33,7 +33,12 @@ def parse_paragraph_in_edifact_struktur_column_to_dataframe(
                 dataframe.at[row_index, "Segment Gruppe"] = splitted_text_at_tabs[0]
             else:
                 # Segmentname: Referenzen auf die ID der\nTranche
-                dataframe.at[row_index, "Segment Gruppe"] += splitted_text_at_tabs[0]
+                if dataframe.at[row_index, "Segment Gruppe"] == "":
+                    # Referenzen auf die ID der
+                    dataframe.at[row_index, "Segment Gruppe"] = splitted_text_at_tabs[0]
+                else:
+                    # Tranche
+                    dataframe.at[row_index, "Segment Gruppe"] += " " + splitted_text_at_tabs[0]
 
     # Now the text should start in middle of the EDIFACT Struktur column
     else:
@@ -112,12 +117,13 @@ def write_segment_name_to_dataframe(
 ):
 
     # EDIFACT STRUKTUR COLUMN
-    parse_paragraph_in_edifact_struktur_column_to_dataframe(
-        paragraph=edifact_struktur_cell.paragraphs[0],
-        dataframe=dataframe,
-        row_index=row_index,
-        edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
-    )
+    for paragraph in edifact_struktur_cell.paragraphs:
+        parse_paragraph_in_edifact_struktur_column_to_dataframe(
+            paragraph=paragraph,
+            dataframe=dataframe,
+            row_index=row_index,
+            edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
+        )
 
     # MIDDLE COLUMN
     # I do not expect to a multiline Segementgruppe,
