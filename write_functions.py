@@ -98,7 +98,6 @@ def parse_bedingung_cell(bedingung_cell, dataframe, row_index):
         bedingung = bedingung[:index] + "\n" + bedingung[index:]
 
     dataframe.at[row_index, "Bedingung"] += bedingung
-    pass
 
 
 def write_segment_name_to_dataframe(
