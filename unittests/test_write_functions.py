@@ -433,8 +433,8 @@ class TestWriteFunctions:
     middle_cell_tabstop_positions_of_indicator_paragraph = [436245, 1962785, 2578735, 3192780]
 
     edifact_struktur_cell_left_indent_position_of_indicator_paragraph = 364490
-    edifact_struktur_cell_tabstop_positions = [364490, 692150]
     edifact_struktur_cell_left_indent_position_of_segmentgroup_cells = 36830
+    edifact_struktur_cell_tabstop_positions = [364490, 692150]
 
     @pytest.mark.parametrize(
         "row_cells, expected_df_row",
@@ -944,45 +944,14 @@ enthalten""",
                 {
                     "edifact_struktur_cell": [
                         _Paragraph(
-                            text="UNH",
-                            tabstop_positions=None,
+                            text="UNH\t0062",
+                            tabstop_positions=edifact_struktur_cell_tabstop_positions[1:],
                             left_indent_position=edifact_struktur_cell_left_indent_position_of_indicator_paragraph,
                         )
                     ],
                     "middle_cell": [
                         _Paragraph(
-                            text="\tMuss\tMuss\tMuss",
-                            tabstop_positions=middle_cell_tabstop_positions_of_indicator_paragraph[1:],
-                            left_indent_position=None,
-                        )
-                    ],
-                    "bedingung_cell": "",
-                },
-                {
-                    "Segment Gruppe": "",
-                    "Segment": "UNH",
-                    "Datenelement": "",
-                    "Codes und Qualifier": "",
-                    "Beschreibung": "",
-                    "77777": "Muss",
-                    "88888": "Muss",
-                    "99999": "Muss",
-                    "Bedingung": "",
-                },
-                id="UNH",
-            ),
-            pytest.param(
-                {
-                    "edifact_struktur_cell": [
-                        _Paragraph(
-                            text="SG2\tNAD",
-                            tabstop_positions=edifact_struktur_cell_tabstop_positions[:1],
-                            left_indent_position=edifact_struktur_cell_left_indent_position_of_segmentgroup_cells,
-                        )
-                    ],
-                    "middle_cell": [
-                        _Paragraph(
-                            text="\tMuss\tMuss\tMuss",
+                            text="Nachrichten-Referenznummer\tX\tX\tX",
                             tabstop_positions=middle_cell_tabstop_positions_of_indicator_paragraph[1:],
                             left_indent_position=middle_cell_left_indent_position_of_indicator_paragraph,
                         )
@@ -990,17 +959,53 @@ enthalten""",
                     "bedingung_cell": "",
                 },
                 {
-                    "Segment Gruppe": "SG2",
-                    "Segment": "NAD",
-                    "Datenelement": "",
-                    "Codes und Qualifier": "",
+                    "Segment Gruppe": "",
+                    "Segment": "UNH",
+                    "Datenelement": "0062",
+                    "Codes und Qualifier": "Nachrichten-Referenznummer",
                     "Beschreibung": "",
-                    "77777": "Muss",
-                    "88888": "Muss",
-                    "99999": "Muss",
+                    "77777": "X",
+                    "88888": "X",
+                    "99999": "X",
                     "Bedingung": "",
                 },
-                id="Segmentgroup and Segment",
+                id="UNH\t0062",
+            ),
+            pytest.param(
+                {
+                    "edifact_struktur_cell": [
+                        _Paragraph(
+                            text="UNH\t0065",
+                            tabstop_positions=edifact_struktur_cell_tabstop_positions[:1],
+                            left_indent_position=edifact_struktur_cell_left_indent_position_of_indicator_paragraph,
+                        )
+                    ],
+                    "middle_cell": [
+                        _Paragraph(
+                            text="UTILM\tNetzanschluss-\tX\tX\tX",
+                            tabstop_positions=middle_cell_tabstop_positions_of_indicator_paragraph,
+                            left_indent_position=middle_cell_left_indent_position_of_indicator_paragraph,
+                        ),
+                        _Paragraph(
+                            text="D\tStammdaten",
+                            tabstop_positions=middle_cell_tabstop_positions_of_indicator_paragraph[:1],
+                            left_indent_position=middle_cell_left_indent_position_of_indicator_paragraph,
+                        ),
+                    ],
+                    "bedingung_cell": "",
+                },
+                {
+                    "Segment Gruppe": "",
+                    "Segment": "UNH",
+                    "Datenelement": "0065",
+                    "Codes und Qualifier": "UTILMD",
+                    "Beschreibung": "Netzanschluss-Stammdaten",
+                    "77777": "X",
+                    "88888": "X",
+                    "99999": "X",
+                    "Bedingung": "",
+                },
+                id="UNH\t0065",
             ),
         ],
     )
