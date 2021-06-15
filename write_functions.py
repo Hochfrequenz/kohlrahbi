@@ -208,25 +208,25 @@ def write_segment_to_dataframe(
     parse_bedingung_cell(bedingung_cell=bedingung_cell, dataframe=dataframe, row_index=row_index)
 
 
-def count_matching(condition, seq):
+def count_matching(condition, condition_argument, seq):
     """Returns the amount of items in seq that return true from condition"""
-    return sum(condition(item) for item in seq)
+    return sum(condition(item, condition_argument) for item in seq)
 
 
-def code_condition(paragraph):
+def code_condition(paragraph, pruefi_tabstops):
     try:
         tabstop_positions = [tab_position.pos for tab_position in paragraph.paragraph_format.tab_stops._pPr.tabs]
     except TypeError:
         return False
 
-    if paragraph.runs[0].bold == True and any(x in tabstop_positions for x in [1962785, 2578735, 3192780]):
+    if paragraph.runs[0].bold == True and any(x in tabstop_positions for x in pruefi_tabstops):
         return True
     return False
 
 
-def has_middle_cell_multiple_codes(paragraphs) -> bool:
+def has_middle_cell_multiple_codes(paragraphs, pruefi_tabstops) -> bool:
 
-    if count_matching(code_condition, paragraphs) > 1:
+    if count_matching(condition=code_condition, condition_argument=pruefi_tabstops, seq=paragraphs) > 1:
         return True
     return False
 
@@ -257,7 +257,7 @@ def write_dataelement_to_dataframe(
     parse_bedingung_cell(bedingung_cell=bedingung_cell, dataframe=dataframe, row_index=row_index)
 
     # MIDDLE COLUMN
-    if not has_middle_cell_multiple_codes(paragraphs=middle_cell.paragraphs):
+    if not has_middle_cell_multiple_codes(paragraphs=middle_cell.paragraphs, pruefi_tabstops=tabstop_positions[1:]):
         for paragraph in middle_cell.paragraphs:
             parse_paragraph_in_middle_column_to_dataframe(
                 paragraph=paragraph,
