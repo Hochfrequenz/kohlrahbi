@@ -2,7 +2,7 @@ import docx
 import pytest
 from docx.shared import RGBColor
 
-from check_row_type import RowType, define_row_type
+from AHB_Extractor.check_row_type import RowType, define_row_type
 
 
 class TestCheckRowType:

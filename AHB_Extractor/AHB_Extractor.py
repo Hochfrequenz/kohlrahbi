@@ -5,10 +5,9 @@ from typing import List
 import docx
 import pandas as pd
 import xlsxwriter
+from check_row_type import RowType, define_row_type
 from docx.table import Table
 from docx.text.paragraph import Paragraph
-
-from check_row_type import RowType, define_row_type
 from get_sections import iter_block_items
 from write_functions import write_new_row_in_dataframe
 

@@ -4,7 +4,7 @@ from typing import List
 import pandas as pd
 from docx.text.paragraph import Paragraph
 
-from check_row_type import RowType
+from .check_row_type import RowType
 
 
 def parse_paragraph_in_edifact_struktur_column_to_dataframe(
