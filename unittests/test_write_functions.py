@@ -9,6 +9,7 @@ from write_functions import (
     parse_bedingung_cell,
     parse_paragraph_in_edifact_struktur_column_to_dataframe,
     parse_paragraph_in_middle_column_to_dataframe,
+    write_dataelement_to_dataframe,
     write_segment_name_to_dataframe,
     write_segment_to_dataframe,
     write_segmentgruppe_to_dataframe,
@@ -423,6 +424,7 @@ class _Paragraph:
     text: str
     tabstop_positions: List[int]
     left_indent_position: int
+    is_bold: bool = False
 
 
 class TestWriteFunctions:
@@ -474,6 +476,7 @@ class TestWriteFunctions:
         current_paragraph = self.middle_cell.paragraphs[0]
 
         current_paragraph.text = row_cells["middle_cell"][0].text
+        current_paragraph.runs[0].bold = row_cells["middle_cell"][0].is_bold
         current_paragraph.paragraph_format.left_indent = row_cells["middle_cell"][0].left_indent_position
 
         if row_cells["middle_cell"][0].tabstop_positions is not None:
@@ -484,6 +487,7 @@ class TestWriteFunctions:
             self.middle_cell.add_paragraph()
             current_paragraph = self.middle_cell.paragraphs[i]
             current_paragraph.text = _paragraph.text
+            current_paragraph.runs[0].bold = row_cells["middle_cell"][i].is_bold
 
             current_paragraph.paragraph_format.left_indent = _paragraph.left_indent_position
             current_tab_stops = current_paragraph.paragraph_format.tab_stops
@@ -936,7 +940,126 @@ enthalten""",
 
         row_index, df, expected_df = self._prepare_docx_table_row(row_cells, expected_df_rows)
 
-        write_segment_to_dataframe(
+        write_dataelement_to_dataframe(
+            dataframe=df,
+            row_index=row_index,
+            edifact_struktur_cell=self.edifact_struktur_cell,
+            edifact_struktur_cell_left_indent_position=self.edifact_struktur_cell_left_indent_position_of_indicator_paragraph,
+            middle_cell=self.middle_cell,
+            middle_cell_left_indent_position=self.middle_cell_left_indent_position_of_indicator_paragraph,
+            tabstop_positions=self.middle_cell_tabstop_positions_of_indicator_paragraph,
+            bedingung_cell=self.bedingung_cell,
+        )
+
+        expected_df.loc[row_index] = expected_df_rows[0]
+
+        assert expected_df.equals(df)
+
+    @pytest.mark.parametrize(
+        "row_cells, expected_df_rows",
+        [
+            pytest.param(
+                {
+                    "edifact_struktur_cell": [
+                        _Paragraph(
+                            text="SG2\tNAD\t3055",
+                            tabstop_positions=edifact_struktur_cell_tabstop_positions,
+                            left_indent_position=edifact_struktur_cell_left_indent_position_of_segmentgroup_cells,
+                        )
+                    ],
+                    "middle_cell": [
+                        _Paragraph(
+                            text="9\tGS1\tX\tX\tX",
+                            is_bold=True,
+                            tabstop_positions=middle_cell_tabstop_positions_of_indicator_paragraph,
+                            left_indent_position=middle_cell_left_indent_position_of_indicator_paragraph,
+                        ),
+                        _Paragraph(
+                            text="293\tDE, BDEW\tX\tX\tX",
+                            is_bold=True,
+                            tabstop_positions=middle_cell_tabstop_positions_of_indicator_paragraph,
+                            left_indent_position=middle_cell_left_indent_position_of_indicator_paragraph,
+                        ),
+                        _Paragraph(
+                            text="(Bundesverband der",
+                            is_bold=False,
+                            tabstop_positions=None,
+                            left_indent_position=middle_cell_tabstop_positions_of_indicator_paragraph[0],
+                        ),
+                        _Paragraph(
+                            text="Energie- und",
+                            is_bold=False,
+                            tabstop_positions=None,
+                            left_indent_position=middle_cell_tabstop_positions_of_indicator_paragraph[0],
+                        ),
+                        _Paragraph(
+                            text="Wasserwirtschaft e.V.)",
+                            is_bold=False,
+                            tabstop_positions=None,
+                            left_indent_position=middle_cell_tabstop_positions_of_indicator_paragraph[0],
+                        ),
+                        _Paragraph(
+                            text="332\tDE, DVGW Service &\tX\tX\tX",
+                            is_bold=True,
+                            tabstop_positions=middle_cell_tabstop_positions_of_indicator_paragraph,
+                            left_indent_position=middle_cell_left_indent_position_of_indicator_paragraph,
+                        ),
+                        _Paragraph(
+                            text="Consult GmbH",
+                            is_bold=False,
+                            tabstop_positions=None,
+                            left_indent_position=middle_cell_tabstop_positions_of_indicator_paragraph[0],
+                        ),
+                    ],
+                    "bedingung_cell": "",
+                },
+                [
+                    {
+                        "Segment Gruppe": "SG2",
+                        "Segment": "NAD",
+                        "Datenelement": "3055",
+                        "Codes und Qualifier": "9",
+                        "Beschreibung": "GS1",
+                        "77777": "X",
+                        "88888": "X",
+                        "99999": "X",
+                        "Bedingung": "",
+                    },
+                    {
+                        "Segment Gruppe": "SG2",
+                        "Segment": "NAD",
+                        "Datenelement": "3055",
+                        "Codes und Qualifier": "293",
+                        "Beschreibung": "DE, BDEW (Bundesverband der Energie- und Wasserwirtschaft e.V.)",
+                        "77777": "X",
+                        "88888": "X",
+                        "99999": "X",
+                        "Bedingung": "",
+                    },
+                    {
+                        "Segment Gruppe": "SG2",
+                        "Segment": "NAD",
+                        "Datenelement": "3055",
+                        "Codes und Qualifier": "332",
+                        "Beschreibung": "DE, DVGW Service & Consult GmbH",
+                        "77777": "X",
+                        "88888": "X",
+                        "99999": "X",
+                        "Bedingung": "",
+                    },
+                ],
+                id="SG2\tNAD\t3055",
+            ),
+        ],
+    )
+    def test_multi_line_write_dataelement_to_dataframe(
+        self,
+        row_cells,
+        expected_df_rows,
+    ):
+        row_index, df, expected_df = self._prepare_docx_table_row(row_cells, expected_df_rows)
+
+        write_dataelement_to_dataframe(
             dataframe=df,
             row_index=row_index,
             edifact_struktur_cell=self.edifact_struktur_cell,
