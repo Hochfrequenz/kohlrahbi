@@ -1,66 +1,94 @@
-# Python Template Repository including Tox.ini, Unittests, Linting Actions and Coverage Measurements
-<!--- you need to replace the `organization/repo_name` in the status badge URLs --->
-![Unittests status badge](https://github.com/Hochfrequenz/python_template_repository/workflows/Unittests/badge.svg)
-![Coverage status badge](https://github.com/Hochfrequenz/python_template_repository/workflows/Coverage/badge.svg)
-![Linting status badge](https://github.com/Hochfrequenz/python_template_repository/workflows/Linting/badge.svg)
-![Black status badge](https://github.com/Hochfrequenz/python_template_repository/workflows/Black/badge.svg)
+# AHB Extractor
+![Unittests status badge](https://github.com/Hochfrequenz/AHBExtractor/workflows/Unittests/badge.svg)
+![Coverage status badge](https://github.com/Hochfrequenz/AHBExtractor/workflows/Coverage/badge.svg)
+![Linting status badge](https://github.com/Hochfrequenz/AHBExtractor/workflows/Linting/badge.svg)
+![Black status badge](https://github.com/Hochfrequenz/AHBExtractor/workflows/Black/badge.svg)
 
-This is a template repository. It doesn't contain any useful code but only a minimal working setup for a Python project including:
 
-+ a basic **project structure** with
-    + tox.ini
-    + requirements.in
-    + and a requirements.txt derived from it
-    + an example class
-    + an example unit test (using pytest)
-+ ready to use **Github Actions** for
-    + [pytest](https://pytest.org)
-    + [code coverage measurement](https://coverage.readthedocs.io) (fails below 80% by default)
-    + [pylint](https://pylint.org/) (only accepts 10/10 code rating by default)
-    + [black](https://github.com/psf/black) code formatter check
-      using [lgeiger/black-action](https://github.com/lgeiger/black-action)
+This tool helps to generate machine readable files from tables inside docx documents.
 
-By default it uses Python version 3.9.
 
-## How to use this Repository on Your Machine
+# PDF Dokumente
 
-This introduction assumes that you have tox installed already (
-see [installation instructions](https://tox.readthedocs.io/en/latest/install.html)) and that a `.toxbase` environment
-has been created.
+The following sections give a short overview where to find the start and end for the Formate.
 
-If this is the case, clone this repository and create the `dev` environment on your machine.
+## APERAK (Fehlermeldung)
+* Datei: `CONTRL_APERAK_AHB_2_3h_20201016.pdf`
+* Start: `4.2 Tabellarische Darstellung der APERAK`
+* Ende einschließlich: `4.2 Tabellarische Darstellung der APERAK`
 
-```bash
-tox -e dev
-```
+## IFTSTA (Infomeldung)
+* Dateiname: `IFTSTA_AHB_2_0b_20201016.pdf`
+* Start: `4.1 Übermittlung des Status des Gesamtvorgangs im Rahmen des MSB-Wechsels 1/2`
+* Ende einschließlich: `4.9 Information zur Ablehnung eines Angebots oder einer Anfrage`
 
-### How to use with PyCharm
+## INSRPT (Prüfbericht)
+* Datei: `INSRPT_AHB_1_1f_Lesefassung_20191002.pdf`
+* Start: `3.1 Anwendungsfälle: Störungsmeldung, Ablehnung bzw. Bestätigung der Störungsmeldung und Ergebnisbericht`
+* Ende einschließlich: `3.3 Anwendungsfälle: Informationsmeldungen des MSB in der Sparte Strom`
 
-1. Create a new project using existing sources with your local working copy of this repository as root directory. Choose
-   the path `your_repo/.tox/dev/` as path of the "previously configured interpreter".
-2. Set the
-   default [test runner of your project](https://www.jetbrains.com/help/pycharm/choosing-your-testing-framework.html) to
-   pytest.
-3. Set
-   the [working directory of the unit tests](https://www.jetbrains.com/help/pycharm/creating-run-debug-configuration-for-tests.html)
-   to the project root (instead of the unittest directory)
+## INVOIC (Rechnung)
+* Datei: `INVOIC_REMADV_AHB_2_4_Lesefassung_20200701.pdf`
+* Start: `2.1.1 Abschlags-, NN-, WiM- und MSB-Rechnung`
+* Ende einschließlich: `2.1.4 Kapazitätsrechnung`
+* Start: `3.1 Anwendungsfälle REMADV`
+* Ende einschließlich: `3.1 Anwendungsfälle REMADV`
+## MSCONS (Messwerte und Zählerstände)
+* Datei: `MSCONS_AHB_2_3c_20201001_v2.pdf`
+* Start: `4.2 Anwendungsübersicht Messwert Lastgang`
+* Ende einschließlich: `4.2 Anwendungsübersicht Messwert Lastgang`
+* Start: `4.4 Anwendungsübersicht Messwert Energiemenge`
+* Ende einschließlich: `4.4 Anwendungsübersicht Messwert Energiemenge`
+* Start: `4.6 Anwendungsübersicht Messwert Zählerstand`
+* Ende einschließlich: `4.6 Anwendungsübersicht Messwert Zählerstand`
+* Start: `4.8 Anwendungsübersicht Messwert Storno`
+* Ende einschließlich: `4.8 Anwendungsübersicht Messwert Storno`
+* Start: `4.10Anwendungsübersicht Bilanzkreissummen`
+* Ende einschließlich: `4.10Anwendungsübersicht Bilanzkreissummen`
+* Start: `4.12Anwendungsübersicht Normiertes Profil / Profilschar / Vergangenheitsw. TEP`
+* Ende eischließlich: `4.12Anwendungsübersicht Normiertes Profil / Profilschar / Vergangenheitsw. TEP`
+* Start: `4.14Anwendungsübersicht EEG-Überführungszeitreihen`
+* Ende einschließlich: `4.14Anwendungsübersicht EEG-Überführungszeitreihen`
+* Start: `4.16Anwendungsübersicht Gasbeschaffenheitsdaten`
+* Ende einschließlich: `4.16Anwendungsübersicht Gasbeschaffenheitsdaten`
+* Start: `4.18Anwendungsübersicht Allokationsliste Gas / bilanzierte Menge Strom/Gas`
+* Ende einschließlich: `4.18Anwendungsübersicht Allokationsliste Gas / bilanzierte Menge Strom/Gas`
+* Start: `4.20Anwendungsübersicht Bewegungsdaten im Kalenderjahr vor Lieferbeginn`
+* Ende einschließlich: `4.20Anwendungsübersicht Bewegungsdaten im Kalenderjahr vor Lieferbeginn`
+* Start: `4.22Anwendungsübersicht Energiemenge und Leistungsmaximum`
+* Ende einschließlich: `4.22Anwendungsübersicht Energiemenge und Leistungsmaximum`
 
-### How to use with VS Code
+## ORDERS (Bestellung)
+* Datei: `REQOTE_QUOTES_ORDERS_ORDRSP_AHB_1_0c_20201001.pdf`
+* Start: `3.1.1 Anfrage zur Übermittlung von Stammdaten im Initialprozess`
+* Ende einschließlich: `3.5 Reklamation von Werten/Lastgängen`
+* Start: `3.6.1 Anforderung eines Geräteübernahmeangebots (REQOTE)`
+* Ende einschließlich: `3.10.4 Bestätigung bzw. Ablehnung der Beendigung der Rechnungsabwicklung des Messstellenbetriebs über den LF (ORDRSP`
 
-1. Open the folder with VS Code.
-2. **Select the python interpreter** which is created by tox. Open the command pallett with `CTRL + P` and type `Python: Select Interpreter`. Select the interpreter which is placed in `.tox/dev/Scripts/python.exe` under Windows or `.tox/dev/bin/python` under Linux and macOS.
-3. **Setup pytest and pylint**. Therefore we open the file `.vscode/settings.json` which should be automatically generated during the interpreter setup. Insert the following lines into the settings:
-```json
-    "python.testing.unittestEnabled": false,
-    "python.testing.nosetestsEnabled": false,
-    "python.testing.pytestEnabled": true,
-    "pythonTestExplorer.testFramework": "pytest",
-    "python.testing.pytestArgs": [
-        "unittests"
-    ],
-    "python.linting.pylintEnabled": true
-```
-4. Enjoy 🤗
+## ORDRSP (Bestellantwort)
+* Datei: `REQOTE_QUOTES_ORDERS_ORDRSP_AHB_1_0c_20201001.pdf`
+* selbe Datei wie `ORDERS (Bestellung)`
+* Start: ``
+* Ende einschließlich: ``
 
-## Contribute
-You are very welcome to contribute to this template repository by opening a pull request against the main branch.
+## QUOTES (Angebot)
+* Datei: `REQOTE_QUOTES_ORDERS_ORDRSP_AHB_1_0c_20201001.pdf`
+* selbe Datei wie `ORDERS (Bestellung)`
+* Start: ``
+* Ende einschließlich: ``
+
+## REQOTE (Anfrage)
+* Datei: `REQOTE_QUOTES_ORDERS_ORDRSP_AHB_1_0c_20201001.pdf`
+* selbe Datei wie `ORDERS (Bestellung)`
+* Start: ``
+* Ende einschließlich: ``
+
+## UTILMD (Stammdaten)
+* Datei: `UTILMD_AHB_Stammdatenänderung_1_1b_20201016.pdf`
+* Start: `8.1 Nicht bilanzierungsrelevante Änderung vom LF ohne Abhängigkeiten (jedes Stammdatum kann einzeln übermittelt werden)`
+* Ende einschließlich: `9.10 Anfrage zur Stammdatenänderung von ÜNB`
+
+## UTILTS (Berechnungsformel)
+* Datei: `UTILTS_AHB_Berechnungsformel_1_0b_20201016.pdf`
+* Start: `4 Übermittlung der Berechnungsformel`
+* Ende einschließlich: `4 Übermittlung der Berechnungsformel`
