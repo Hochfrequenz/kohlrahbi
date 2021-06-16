@@ -4,7 +4,7 @@ from typing import List
 import pandas as pd
 from docx.text.paragraph import Paragraph
 
-from .check_row_type import RowType
+from ahb_extractor.helper.check_row_type import RowType
 
 
 def parse_paragraph_in_edifact_struktur_column_to_dataframe(
@@ -66,7 +66,7 @@ def parse_paragraph_in_middle_column_to_dataframe(
     # Qualifier / Code
     # left_indent_position is characteristic for Datenelemente
     if paragraph.paragraph_format.left_indent == left_indent_position:
-        dataframe.at[row_index, "Codes und Qualifier"] += splitted_text_at_tabs.pop(0)
+        dataframe.at[row_index, "Codes und Qualifier"] += " " + splitted_text_at_tabs.pop(0)
         column_indezes = list(range(4, 4 + len(tabstop_positions)))
 
     else:
