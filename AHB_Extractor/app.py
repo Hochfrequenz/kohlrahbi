@@ -12,6 +12,11 @@ def main():
     path_to_ahb_file = input_directory_path / ahb_file_name
 
     output_directory_path = Path.cwd() / "output"
+    path_to_all_in_one_excel = output_directory_path / "xlsx" / f"{ahb_file_name[:-5]}.xlsx"
+
+    # Remove old "all in one excel file" if it already exists
+    if path_to_all_in_one_excel.exists():
+        path_to_all_in_one_excel.unlink(missing_ok=False)
 
     try:
         doc = docx.Document(path_to_ahb_file)  # Creating word reader object.

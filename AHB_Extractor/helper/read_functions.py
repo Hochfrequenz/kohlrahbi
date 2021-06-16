@@ -9,7 +9,7 @@ from docx.table import Table, _Cell
 from docx.text.paragraph import Paragraph
 
 from ahb_extractor.helper.check_row_type import RowType, define_row_type
-from ahb_extractor.helper.export_functions import export_ahb
+from ahb_extractor.helper.export_functions import export_all_pruefidentifikatoren_in_one_file, export_pruefidentifikator
 from ahb_extractor.helper.write_functions import write_new_row_in_dataframe
 
 
@@ -121,7 +121,6 @@ def read_table(
             )
 
         else:
-            current_df_row_index = current_df_row_index - 1
             current_df_row_index = write_new_row_in_dataframe(
                 row_type=last_two_row_types[1],
                 table=table,
@@ -203,6 +202,23 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
 
             # Stop iterating at the section "Änderungshistorie"
             if current_chapter_title == "Änderungshistorie":
+                # export last pruefidentifikatoren in AHB
+                for pruefi in pruefidentifikatoren:
+
+                    export_pruefidentifikator(
+                        pruefi=pruefi,
+                        df=df,
+                        output_directory_path=output_directory_path,
+                        file_name=ahb_file_name,
+                    )
+
+                    export_all_pruefidentifikatoren_in_one_file(
+                        pruefi=pruefi,
+                        df=df,
+                        output_directory_path=output_directory_path,
+                        file_name=ahb_file_name,
+                    )
+
                 return 0
 
         # Check if a table comes with new Prüfidentifikatoren
@@ -212,7 +228,14 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
             if pruefidentifikatoren:
                 for pruefi in pruefidentifikatoren:
 
-                    export_ahb(
+                    export_pruefidentifikator(
+                        pruefi=pruefi,
+                        df=df,
+                        output_directory_path=output_directory_path,
+                        file_name=ahb_file_name,
+                    )
+
+                    export_all_pruefidentifikatoren_in_one_file(
                         pruefi=pruefi,
                         df=df,
                         output_directory_path=output_directory_path,

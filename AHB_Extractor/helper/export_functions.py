@@ -14,17 +14,11 @@ def beautify_bedingungen(bedingung):
     return bedingung
 
 
-def export_ahb(pruefi, df, output_directory_path, file_name):
+def export_pruefidentifikator(pruefi, df, output_directory_path, file_name):
 
     json_output_directory_path = output_directory_path / "json"
     csv_output_directory_path = output_directory_path / "csv"
     xlsx_output_directory_path = output_directory_path / "xlsx"
-
-    path_to_all_in_one_excel = xlsx_output_directory_path / f"{file_name[:-5]}.xlsx"
-
-    # Remove old "all in one excel file" if it already exists
-    if path_to_all_in_one_excel.exists():
-        path_to_all_in_one_excel.unlink(missing_ok=False)
 
     json_output_directory_path.mkdir(parents=True, exist_ok=True)
     csv_output_directory_path.mkdir(parents=True, exist_ok=True)
@@ -58,6 +52,19 @@ def export_ahb(pruefi, df, output_directory_path, file_name):
             print(f"💾 Saved file for Pruefidentifikator {pruefi}")
     except PermissionError:
         print(f"💥 The Excel file {pruefi}.xlsx is open. Please close this file and try again.")
+
+
+def export_all_pruefidentifikatoren_in_one_file(pruefi, df, output_directory_path, file_name):
+
+    xlsx_output_directory_path = output_directory_path / "xlsx"
+    xlsx_output_directory_path.mkdir(parents=True, exist_ok=True)
+
+    path_to_all_in_one_excel = xlsx_output_directory_path / f"{file_name[:-5]}.xlsx"
+
+    # write for each pruefi an extra file
+    columns_to_export = list(df.columns)[:5] + [pruefi]
+    columns_to_export.append("Bedingung")
+    df_to_export = df[columns_to_export]
 
     try:
         with pd.ExcelWriter(path=path_to_all_in_one_excel, mode="a", engine="openpyxl") as writer:
