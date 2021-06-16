@@ -6,6 +6,10 @@ from ahb_extractor.helper.read_functions import get_ahb_extract
 
 
 def main():
+    """
+    Main function of the module ahb_extractor.
+    It reads the docx file and calls the function to extract all infos.
+    """
 
     input_directory_path = Path.cwd() / "documents"
     ahb_file_name = "UTILMD_AHB_WiM_3_1c_2021_04_01_2021_03_30.docx"
