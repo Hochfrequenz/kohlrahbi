@@ -2,6 +2,7 @@ import re
 from typing import List
 
 import pandas as pd
+from docx.table import Table, _Cell
 from docx.text.paragraph import Paragraph
 
 from ahb_extractor.helper.check_row_type import RowType
@@ -13,6 +14,15 @@ def parse_paragraph_in_edifact_struktur_column_to_dataframe(
     row_index: int,
     edifact_struktur_cell_left_indent_position: int,
 ):
+    """Parses a paragraph in the edifact struktur column and puts the information into the in the appropriate columns
+
+    Args:
+        paragraph (Paragraph): Current paragraph in the edifact struktur cell
+        dataframe (pd.DataFrame): Saves all infos
+        row_index (int): Current index of the DataFrame
+        edifact_struktur_cell_left_indent_position (int): Position of the left indent from the indicator edifact
+            struktur cell
+    """
 
     splitted_text_at_tabs = paragraph.text.split("\t")
     tab_count = paragraph.text.count("\t")
@@ -58,8 +68,17 @@ def parse_paragraph_in_middle_column_to_dataframe(
     dataframe: pd.DataFrame,
     row_index: int,
     left_indent_position: int,
-    tabstop_positions: List,
+    tabstop_positions: List[int],
 ):
+    """Parses a paragraph in the middle column and puts the information into the in the appropriate columns
+
+    Args:
+        paragraph (Paragraph): Current paragraph in the edifact struktur cell
+        dataframe (pd.DataFrame): Saves all infos
+        row_index (int): Current index of the DataFrame
+        left_indent_position (int): Position of the left indent from the indicator middle cell
+        tabstop_positions (List[int]): All tabstop positions of the indicator middle cell
+    """
 
     splitted_text_at_tabs = paragraph.text.split("\t")
 
@@ -93,7 +112,14 @@ def parse_paragraph_in_middle_column_to_dataframe(
     #     raise NotImplementedError(f"Could not parse paragraphe in middle cell with {paragraph.text}")
 
 
-def parse_bedingung_cell(bedingung_cell, dataframe, row_index):
+def parse_bedingung_cell(bedingung_cell: _Cell, dataframe: pd.DataFrame, row_index: int):
+    """Parses a cell in the Bedingung column and puts the information into the in the appropriate column
+
+    Args:
+        bedingung_cell (_Cell): Cell from the Bedingung column
+        dataframe (pd.DataFrame): Saves all infos
+        row_index (int): Current index of the DataFrame
+    """
 
     bedingung = bedingung_cell.text.replace("\n", " ")
     # TODO regex condition auslagern
@@ -106,15 +132,28 @@ def parse_bedingung_cell(bedingung_cell, dataframe, row_index):
 
 
 def write_segment_name_to_dataframe(
-    dataframe,
-    row_index,
-    edifact_struktur_cell,
-    edifact_struktur_cell_left_indent_position,
-    middle_cell,
+    dataframe: pd.DataFrame,
+    row_index: int,
+    edifact_struktur_cell: _Cell,
+    edifact_struktur_cell_left_indent_position: int,
+    middle_cell: _Cell,
     middle_cell_left_indent_position: int,
-    tabstop_positions: List,
-    bedingung_cell,
+    tabstop_positions: List[int],
+    bedingung_cell: _Cell,
 ):
+    """Writes all infos from a segment name row into a DataFrame.
+
+    Args:
+        dataframe (pd.DataFrame): Saves all infos
+        row_index (int): Current index of the DataFrame
+        edifact_struktur_cell (_Cell): Cell from the edifact struktur column
+        edifact_struktur_cell_left_indent_position (int): Position of the left indent from the indicator edifact
+            struktur cell
+        middle_cell (_Cell): Cell from the middle column
+        middle_cell_left_indent_position (int): Position of the left indent from the indicator middle cell
+        tabstop_positions (List[int]): All tabstop positions of the indicator middle cell
+        bedingung_cell (_Cell): Cell from the Bedingung column
+    """
 
     # EDIFACT STRUKTUR COLUMN
     for paragraph in edifact_struktur_cell.paragraphs:
@@ -142,15 +181,29 @@ def write_segment_name_to_dataframe(
 
 
 def write_segmentgruppe_to_dataframe(
-    dataframe,
-    row_index,
-    edifact_struktur_cell,
-    edifact_struktur_cell_left_indent_position,
-    middle_cell,
+    dataframe: pd.DataFrame,
+    row_index: int,
+    edifact_struktur_cell: _Cell,
+    edifact_struktur_cell_left_indent_position: int,
+    middle_cell: _Cell,
     middle_cell_left_indent_position: int,
-    tabstop_positions: List,
-    bedingung_cell,
+    tabstop_positions: List[int],
+    bedingung_cell: _Cell,
 ):
+    """Writes all infos from a segmentgruppe row into a DataFrame.
+
+    Args:
+        dataframe (pd.DataFrame): Saves all infos
+        row_index (int): Current index of the DataFrame
+        edifact_struktur_cell (_Cell): Cell from the edifact struktur column
+        edifact_struktur_cell_left_indent_position (int): Position of the left indent from the indicator edifact
+            struktur cell
+        middle_cell (_Cell): Cell from the middle column
+        middle_cell_left_indent_position (int): Position of the left indent from the indicator middle cell
+        tabstop_positions (List[int]): All tabstop positions of the indicator middle cell
+        bedingung_cell (_Cell): Cell from the Bedingung column
+    """
+
     # EDIFACT STRUKTUR COLUMN
     parse_paragraph_in_edifact_struktur_column_to_dataframe(
         paragraph=edifact_struktur_cell.paragraphs[0],
@@ -176,15 +229,28 @@ def write_segmentgruppe_to_dataframe(
 
 
 def write_segment_to_dataframe(
-    dataframe,
-    row_index,
-    edifact_struktur_cell,
-    edifact_struktur_cell_left_indent_position,
-    middle_cell,
+    dataframe: pd.DataFrame,
+    row_index: int,
+    edifact_struktur_cell: _Cell,
+    edifact_struktur_cell_left_indent_position: int,
+    middle_cell: _Cell,
     middle_cell_left_indent_position: int,
-    tabstop_positions: List,
-    bedingung_cell,
+    tabstop_positions: List[int],
+    bedingung_cell: _Cell,
 ):
+    """Writes all infos from a segment row into a DataFrame.
+
+    Args:
+        dataframe (pd.DataFrame): Saves all infos
+        row_index (int): Current index of the DataFrame
+        edifact_struktur_cell (_Cell): Cell from the edifact struktur column
+        edifact_struktur_cell_left_indent_position (int): Position of the left indent from the indicator edifact
+            struktur cell
+        middle_cell (_Cell): Cell from the middle column
+        middle_cell_left_indent_position (int): Position of the left indent from the indicator middle cell
+        tabstop_positions (List[int]): All tabstop positions of the indicator middle cell
+        bedingung_cell (_Cell): Cell from the Bedingung column
+    """
 
     # EDIFACT STRUKTUR COLUMN
     parse_paragraph_in_edifact_struktur_column_to_dataframe(
@@ -213,7 +279,19 @@ def count_matching(condition, condition_argument, seq):
     return sum(condition(item, condition_argument) for item in seq)
 
 
-def code_condition(paragraph, pruefi_tabstops):
+def code_condition(paragraph: Paragraph, pruefi_tabstops: List[int]) -> bool:
+    """Checks if the paragraph contains a Code by checking for bold style.
+
+    Example for Codes: UTILMD, 11A, UN,
+
+
+    Args:
+        paragraph (Paragraph): Current paragraph
+        pruefi_tabstops (List[int]): All tabstop positions of the indicator middle cell
+
+    Returns:
+        [bool]:
+    """
     try:
         tabstop_positions = [tab_position.pos for tab_position in paragraph.paragraph_format.tab_stops._pPr.tabs]
     except TypeError:
@@ -224,7 +302,16 @@ def code_condition(paragraph, pruefi_tabstops):
     return False
 
 
-def has_middle_cell_multiple_codes(paragraphs, pruefi_tabstops) -> bool:
+def has_middle_cell_multiple_codes(paragraphs: List[Paragraph], pruefi_tabstops: List[int]) -> bool:
+    """Checks if the paragraphs of a middle cell contains more than one Code.
+
+    Args:
+        paragraphs (List[Paragraph]): All paragraphs in the current middle cell
+        pruefi_tabstops (List[int]): All tabstop positions of the indicator middle cell
+
+    Returns:
+        bool:
+    """
 
     if count_matching(condition=code_condition, condition_argument=pruefi_tabstops, seq=paragraphs) > 1:
         return True
@@ -232,15 +319,28 @@ def has_middle_cell_multiple_codes(paragraphs, pruefi_tabstops) -> bool:
 
 
 def write_dataelement_to_dataframe(
-    dataframe,
-    row_index,
-    edifact_struktur_cell,
+    dataframe: pd.DataFrame,
+    row_index: int,
+    edifact_struktur_cell: _Cell,
     edifact_struktur_cell_left_indent_position: int,
-    middle_cell,
+    middle_cell: _Cell,
     middle_cell_left_indent_position: int,
-    tabstop_positions: List,
-    bedingung_cell,
+    tabstop_positions: List[int],
+    bedingung_cell: _Cell,
 ):
+    """Writes all infos from a dataelement row into a DataFrame.
+
+    Args:
+        dataframe (pd.DataFrame): Saves all infos
+        row_index (int): Current index of the DataFrame
+        edifact_struktur_cell (_Cell): Cell from the edifact struktur column
+        edifact_struktur_cell_left_indent_position (int): Position of the left indent from the indicator edifact
+            struktur cell
+        middle_cell (_Cell): Cell from the middle column
+        middle_cell_left_indent_position (int): Position of the left indent from the indicator middle cell
+        tabstop_positions (List[int]): All tabstop positions of the indicator middle cell
+        bedingung_cell (_Cell): Cell from the Bedingung column
+    """
 
     # EDIFACT STRUKTUR COLUMN
     parse_paragraph_in_edifact_struktur_column_to_dataframe(
@@ -320,16 +420,34 @@ def write_dataelement_to_dataframe(
 
 
 def write_new_row_in_dataframe(
-    row_type,
-    table,
-    row,
-    index_for_middle_column,
-    dataframe,
-    dataframe_row_index,
-    edifact_struktur_cell_left_indent_position,
-    middle_cell_left_indent_position,
-    tabstop_positions,
-):
+    row_type: RowType,
+    table: Table,
+    row: int,
+    index_for_middle_column: int,
+    dataframe: pd.DataFrame,
+    dataframe_row_index: int,
+    edifact_struktur_cell_left_indent_position: int,
+    middle_cell_left_indent_position: int,
+    tabstop_positions: List[int],
+) -> int:
+    """Writes the current row of the current table into the DataFrame depending on the type of the row
+
+    Args:
+        row_type (RowType): Type of the current row
+        table (Table): Current table
+        row (int): Row of the current table
+        index_for_middle_column (int): Index of the actual middle column
+        dataframe (pd.DataFrame): Contains all infos
+        dataframe_row_index (int): Current index of the DataFrame
+        edifact_struktur_cell_left_indent_position (int): Position of the left indent from the indicator edifact
+            struktur cell
+        middle_cell_left_indent_position (int): Position of the left indent from the indicator middle cell
+        tabstop_positions (List[int]): All tabstop positions of the indicator middle cell
+
+    Returns:
+        [int]: the next DataFrame row index
+    """
+
     if row_type is RowType.HEADER:
         pass
 
