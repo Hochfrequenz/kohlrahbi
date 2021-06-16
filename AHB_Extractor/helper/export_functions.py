@@ -1,9 +1,35 @@
 import re
+from pathlib import Path
 
 import pandas as pd
 
 
-def beautify_bedingungen(bedingung):
+def beautify_bedingungen(bedingung: str) -> str:
+    """Inserts newline characters before each Bedingung key [###]
+
+        Example:
+        [12] Wenn SG4
+    DTM+471 (Ende zum
+    nächstmöglichem
+    Termin) nicht vorhanden
+
+    [13] Wenn SG4
+    STS+E01++Z01 (Status
+    der Antwort: Zustimmung
+    mit Terminänderung)
+    nicht vorhanden
+
+    ->
+
+    [12] Wenn SG4 DTM+471 (Ende zum nächstmöglichem Termin) nicht vorhanden
+    [13] Wenn SG4 STS+E01++Z01 (Status der Antwort: Zustimmung mit Terminänderung) nicht vorhanden
+
+    Args:
+        bedingung (str): Text in a Bedingung cell
+
+    Returns:
+        str: Beautified text with one Bedingung per line
+    """
 
     if isinstance(bedingung, str):
         bedingung = bedingung.replace("\n", " ")
@@ -14,7 +40,15 @@ def beautify_bedingungen(bedingung):
     return bedingung
 
 
-def export_pruefidentifikator(pruefi, df, output_directory_path):
+def export_pruefidentifikator(pruefi: str, df: pd.DataFrame, output_directory_path: Path):
+    """Exports the current Prüfidentifikator in different file formats: json, csv and xlsx
+    Each Prüfidentifikator is saved in an extra file.
+
+    Args:
+        pruefi (str): Current Prüfidentifikator
+        df (pd.DataFrame): DataFrame which contains all information
+        output_directory_path (Path): Path to the output directory
+    """
 
     json_output_directory_path = output_directory_path / "json"
     csv_output_directory_path = output_directory_path / "csv"
@@ -54,7 +88,17 @@ def export_pruefidentifikator(pruefi, df, output_directory_path):
         print(f"💥 The Excel file {pruefi}.xlsx is open. Please close this file and try again.")
 
 
-def export_all_pruefidentifikatoren_in_one_file(pruefi, df, output_directory_path, file_name):
+def export_all_pruefidentifikatoren_in_one_file(
+    pruefi: str, df: pd.DataFrame, output_directory_path: Path, file_name: str
+):
+    """Exports all Prüfidentifikatoren in one AHB into **one** Excel file
+
+    Args:
+        pruefi (str): Current Prüfidentifikator
+        df (pd.DataFrame): DataFrame which contains all information
+        output_directory_path (Path): Path to the output directory
+        file_name (str): Name of the readed AHB file
+    """
 
     xlsx_output_directory_path = output_directory_path / "xlsx"
     xlsx_output_directory_path.mkdir(parents=True, exist_ok=True)
