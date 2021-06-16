@@ -209,7 +209,6 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
                         pruefi=pruefi,
                         df=df,
                         output_directory_path=output_directory_path,
-                        file_name=ahb_file_name,
                     )
 
                     export_all_pruefidentifikatoren_in_one_file(
@@ -232,7 +231,6 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
                         pruefi=pruefi,
                         df=df,
                         output_directory_path=output_directory_path,
-                        file_name=ahb_file_name,
                     )
 
                     export_all_pruefidentifikatoren_in_one_file(

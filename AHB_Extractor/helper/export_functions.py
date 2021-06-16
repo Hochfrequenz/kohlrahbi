@@ -14,7 +14,7 @@ def beautify_bedingungen(bedingung):
     return bedingung
 
 
-def export_pruefidentifikator(pruefi, df, output_directory_path, file_name):
+def export_pruefidentifikator(pruefi, df, output_directory_path):
 
     json_output_directory_path = output_directory_path / "json"
     csv_output_directory_path = output_directory_path / "csv"
