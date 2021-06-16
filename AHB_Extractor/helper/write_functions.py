@@ -283,12 +283,18 @@ def write_dataelement_to_dataframe(
             # For reasons of good readability the EDIFACT Struktur information gets written again
 
             # EDIFACT STRUKTUR COLUMN
-            parse_paragraph_in_edifact_struktur_column_to_dataframe(
-                paragraph=edifact_struktur_cell.paragraphs[0],
-                dataframe=dataframe,
-                row_index=row_index,
-                edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
-            )
+
+            if edifact_struktur_cell.paragraphs[0].text != "":
+                parse_paragraph_in_edifact_struktur_column_to_dataframe(
+                    paragraph=edifact_struktur_cell.paragraphs[0],
+                    dataframe=dataframe,
+                    row_index=row_index,
+                    edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
+                )
+            else:
+                dataframe.at[row_index, "Segment Gruppe"] = dataframe.loc[row_index - 1, "Segment Gruppe"]
+                dataframe.at[row_index, "Segment"] = dataframe.loc[row_index - 1, "Segment"]
+                dataframe.at[row_index, "Datenelement"] = dataframe.loc[row_index - 1, "Datenelement"]
 
             if paragraph.runs[0].bold:
                 parse_paragraph_in_middle_column_to_dataframe(
