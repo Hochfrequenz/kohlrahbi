@@ -9,6 +9,10 @@ from docx.table import _Cell
 
 
 class RowType(Enum):
+    """
+    All possible row types.
+    """
+
     SEGMENTNAME = 1
     SEGMENTGRUPPE = 2
     SEGMENT = 3
@@ -159,20 +163,19 @@ def define_row_type(edifact_struktur_cell: _Cell, left_indent_position: int) -> 
     if is_row_header(edifact_struktur_cell=edifact_struktur_cell):
         return RowType.HEADER
 
-    elif is_row_segmentname(edifact_struktur_cell=edifact_struktur_cell):
+    if is_row_segmentname(edifact_struktur_cell=edifact_struktur_cell):
         return RowType.SEGMENTNAME
 
-    elif is_row_segmentgruppe(edifact_struktur_cell=edifact_struktur_cell, left_indent_position=left_indent_position):
+    if is_row_segmentgruppe(edifact_struktur_cell=edifact_struktur_cell, left_indent_position=left_indent_position):
         return RowType.SEGMENTGRUPPE
 
-    elif is_row_segment(edifact_struktur_cell=edifact_struktur_cell, left_indent_position=left_indent_position):
+    if is_row_segment(edifact_struktur_cell=edifact_struktur_cell, left_indent_position=left_indent_position):
         return RowType.SEGMENT
 
-    elif is_row_datenelement(edifact_struktur_cell=edifact_struktur_cell, left_indent_position=left_indent_position):
+    if is_row_datenelement(edifact_struktur_cell=edifact_struktur_cell, left_indent_position=left_indent_position):
         return RowType.DATENELEMENT
 
-    elif is_row_empty(edifact_struktur_cell=edifact_struktur_cell):
+    if is_row_empty(edifact_struktur_cell=edifact_struktur_cell):
         return RowType.EMPTY
 
-    else:
-        raise NotImplemented(f"Could not define row type of {text_in_row_as_list}")
+    raise NotImplementedError(f"Could not define row type of cell with text: {edifact_struktur_cell.text}")

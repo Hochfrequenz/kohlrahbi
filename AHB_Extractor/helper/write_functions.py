@@ -99,6 +99,7 @@ def parse_paragraph_in_middle_column_to_dataframe(
 
         column_indezes = list(range(5, 5 + len(tabstop_positions)))
 
+    # pylint: disable=protected-access
     tab_stops = paragraph.paragraph_format.tab_stops._pPr.tabs
 
     if tab_stops is not None:
@@ -126,7 +127,6 @@ def parse_bedingung_cell(bedingung_cell: _Cell, dataframe: pd.DataFrame, row_ind
     """
 
     bedingung = bedingung_cell.text.replace("\n", " ")
-    # TODO regex condition auslagern
     matches = re.findall(r"\[\d*\]", bedingung)
     for match in matches[1:]:
         index = bedingung.find(match)
@@ -135,6 +135,7 @@ def parse_bedingung_cell(bedingung_cell: _Cell, dataframe: pd.DataFrame, row_ind
     dataframe.at[row_index, "Bedingung"] += bedingung
 
 
+# pylint: disable=too-many-arguments
 def write_segment_name_to_dataframe(
     dataframe: pd.DataFrame,
     row_index: int,
@@ -184,6 +185,7 @@ def write_segment_name_to_dataframe(
     parse_bedingung_cell(bedingung_cell=bedingung_cell, dataframe=dataframe, row_index=row_index)
 
 
+# pylint: disable=too-many-arguments
 def write_segmentgruppe_to_dataframe(
     dataframe: pd.DataFrame,
     row_index: int,
@@ -232,6 +234,7 @@ def write_segmentgruppe_to_dataframe(
     parse_bedingung_cell(bedingung_cell=bedingung_cell, dataframe=dataframe, row_index=row_index)
 
 
+# pylint: disable=too-many-arguments
 def write_segment_to_dataframe(
     dataframe: pd.DataFrame,
     row_index: int,
@@ -297,11 +300,12 @@ def code_condition(paragraph: Paragraph, pruefi_tabstops: List[int]) -> bool:
         [bool]:
     """
     try:
+        # pylint: disable=protected-access
         tabstop_positions = [tab_position.pos for tab_position in paragraph.paragraph_format.tab_stops._pPr.tabs]
     except TypeError:
         return False
 
-    if paragraph.runs[0].bold == True and any(x in tabstop_positions for x in pruefi_tabstops):
+    if paragraph.runs[0].bold is True and any(x in tabstop_positions for x in pruefi_tabstops):
         return True
     return False
 
@@ -322,6 +326,7 @@ def has_middle_cell_multiple_codes(paragraphs: List[Paragraph], pruefi_tabstops:
     return False
 
 
+# pylint: disable=too-many-arguments
 def write_dataelement_to_dataframe(
     dataframe: pd.DataFrame,
     row_index: int,
@@ -379,7 +384,7 @@ def write_dataelement_to_dataframe(
         # if we have to collect more information in the next row which we have to add to the current row
 
         create_new_dataframe_row_indicator_list: List = [
-            paragraph.runs[0].bold == True for paragraph in middle_cell.paragraphs
+            paragraph.runs[0].bold is True for paragraph in middle_cell.paragraphs
         ]
 
         for paragraph, i in zip(middle_cell.paragraphs, range(len(create_new_dataframe_row_indicator_list))):

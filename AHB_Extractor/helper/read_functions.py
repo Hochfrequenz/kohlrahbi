@@ -24,6 +24,7 @@ def get_all_paragraphs_and_tables(parent):
     *parent* would most commonly be a reference to a main Document object, but
     also works for a _Cell object, which itself can contain paragraphs and tables.
     """
+    # pylint: disable=protected-access
     if isinstance(parent, Document):
         parent_elm = parent.element.body
     elif isinstance(parent, _Cell):
@@ -50,11 +51,13 @@ def get_tabstop_positions(paragraph: Paragraph) -> List[int]:
         List[int]: All tabstop positions in the given paragraph
     """
     tabstop_positions: List = []
+    # pylint: disable=protected-access
     for tabstop in paragraph.paragraph_format.tab_stops._pPr.tabs:
         tabstop_positions.append(tabstop.pos)
     return tabstop_positions
 
 
+# pylint: disable=too-many-arguments
 def read_table(
     table: Table,
     dataframe: pd.DataFrame,
@@ -72,14 +75,15 @@ def read_table(
         dataframe (pd.DataFrame): Contains all infos of the Prüfidentifikators
         current_df_row_index (int): Current row of the dataframe
         last_two_row_types (List[RowType]): Contains the two last RowType. Is needed for the case of empty rows.
-        edifact_struktur_cell_left_indent_position (int): Position of the left indent in the indicator edifact struktur cell
+        edifact_struktur_cell_left_indent_position (int): Position of the left indent in the
+            indicator edifact struktur cell
         middle_cell_left_indent_position (int): Position of the left indent in the indicator middle cell
         tabstop_positions (List[int]): All tabstop positions of the indicator middle cell
 
     Returns:
         Tuple[List[RowType], int]: Last two RowTypes and the new row index for the DataFrame
     """
-
+    # pylint: disable=protected-access
     if table._column_count == 4:
         index_for_middle_column = 2
     else:
@@ -92,12 +96,14 @@ def read_table(
 
         row_cell_texts_as_list = [cell.text for cell in table.row_cells(row)]
 
+        # pylint: disable=protected-access
         if table._column_count == 4:
             # remove redundant information for tables with 4 columns
             if (
                 row_cell_texts_as_list[0] == row_cell_texts_as_list[1]
                 and row_cell_texts_as_list[2] == row_cell_texts_as_list[3]
             ):
+                # pylint: disable=line-too-long
                 # HEADER looks like
                 # 0:'EDIFACT Struktur'
                 # 1:'EDIFACT Struktur'
@@ -223,6 +229,7 @@ def initial_setup_for_tables_with_pruefidentifikatoren(
     )
 
 
+# pylint: disable=inconsistent-return-statements
 def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_name: str) -> int:
     """Reads a docx file and extracts all information for each Prüfidentifikator.
 
@@ -245,7 +252,7 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
             continue
 
         # Check if the paragraph is a chapter or section title
-        elif isinstance(item, Paragraph) and "Heading" in item.style.name:
+        if isinstance(item, Paragraph) and "Heading" in item.style.name:
             current_chapter_title = item.text
 
             # Stop iterating at the section "Änderungshistorie"
@@ -266,6 +273,7 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
                         file_name=ahb_file_name,
                     )
 
+                # I don't know how to exit the program without a return
                 return 0
 
         # Check if a table comes with new Prüfidentifikatoren
