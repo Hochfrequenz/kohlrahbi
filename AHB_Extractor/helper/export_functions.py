@@ -51,6 +51,7 @@ def beautify_bedingungen(bedingung: str) -> str:
     return bedingung
 
 
+# pylint: disable=too-many-locals
 def export_pruefidentifikator(pruefi: str, df: pd.DataFrame, output_directory_path: Path):
     """Exports the current Prüfidentifikator in different file formats: json, csv and xlsx
     Each Prüfidentifikator is saved in an extra file.
@@ -84,8 +85,10 @@ def export_pruefidentifikator(pruefi: str, df: pd.DataFrame, output_directory_pa
     df_to_export.to_json(json_output_directory_path / f"{pruefi}.json", force_ascii=False, orient="records")
 
     try:
+        # https://github.com/PyCQA/pylint/issues/3060 pylint: disable=abstract-class-instantiated
         with pd.ExcelWriter(xlsx_output_directory_path / f"{pruefi}.xlsx", engine="xlsxwriter") as writer:
             df_to_export.to_excel(writer, sheet_name=f"{pruefi}")
+            # pylint: disable=no-member
             workbook = writer.book
             worksheet = writer.sheets[f"{pruefi}"]
             wrap_format = workbook.add_format({"text_wrap": True})
@@ -122,9 +125,11 @@ def export_all_pruefidentifikatoren_in_one_file(
     df_to_export = df[columns_to_export]
 
     try:
+        # https://github.com/PyCQA/pylint/issues/3060 pylint: disable=abstract-class-instantiated
         with pd.ExcelWriter(path=path_to_all_in_one_excel, mode="a", engine="openpyxl") as writer:
             df_to_export.to_excel(writer, sheet_name=f"{pruefi}")
     except FileNotFoundError:
+        # https://github.com/PyCQA/pylint/issues/3060 pylint: disable=abstract-class-instantiated
         with pd.ExcelWriter(path=path_to_all_in_one_excel, mode="w", engine="openpyxl") as writer:
             df_to_export.to_excel(writer, sheet_name=f"{pruefi}")
     except PermissionError:
