@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Union
+from typing import List, Tuple, Union
 
 import pandas as pd
 from docx.document import Document
@@ -52,14 +52,29 @@ def get_tabstop_positions(paragraph: Paragraph) -> List[int]:
 
 
 def read_table(
-    table,
-    dataframe,
-    current_df_row_index,
-    last_two_row_types,
+    table: Table,
+    dataframe: pd.DataFrame,
+    current_df_row_index: int,
+    last_two_row_types: List[RowType],
     edifact_struktur_cell_left_indent_position: int,
     middle_cell_left_indent_position: int,
-    tabstop_positions: List,
-):
+    tabstop_positions: List[int],
+) -> Tuple[List[RowType], int]:
+    """
+    Iterates through all rows in a given table and writes all extracted infos in a DataFrame.
+
+    Args:
+        table (Table): Current table in the docx
+        dataframe (pd.DataFrame): Contains all infos of the Prüfidentifikators
+        current_df_row_index (int): Current row of the dataframe
+        last_two_row_types (List[RowType]): Contains the two last RowType. Is needed for the case of empty rows.
+        edifact_struktur_cell_left_indent_position (int): Position of the left indent in the indicator edifact struktur cell
+        middle_cell_left_indent_position (int): Position of the left indent in the indicator middle cell
+        tabstop_positions (List[int]): All tabstop positions of the indicator middle cell
+
+    Returns:
+        Tuple[List[RowType], int]: Last two RowTypes and the new row index for the DataFrame
+    """
 
     if table._column_count == 4:
         index_for_middle_column = 2
@@ -140,7 +155,26 @@ def read_table(
     return last_two_row_types, current_df_row_index
 
 
-def initial_setup_for_tables_with_pruefidentifikatoren(item: Union[Paragraph, Table]):
+def initial_setup_for_tables_with_pruefidentifikatoren(
+    item: Union[Paragraph, Table]
+) -> Tuple[List[str], pd.DataFrame, int, int, List[int], List[RowType], int]:
+    """Prepare DataFrame for a new table with new Prüfidentifikatoren
+
+
+
+    Args:
+        item (Union[Paragraph, Table]): A paragraph or table from the docx
+
+    Returns:
+        Tuple[List[str], pd.DataFrame, int, int, List[int], List[RowType], int]: Returns
+            all detected Prüfidentifikatoren,
+            prepared DataFrame,
+            left intend position of the Edifact struktur cell,
+            left intend position of the middle cell,
+            list of tabstop positions of the middle cell,
+            list of the last two RowTypes,
+            the current row index for the DataFrame
+    """
     header_cells = [cell.text for cell in item.row_cells(0)]
     look_up_term = "Prüfidentifikator"
     cutter_index = header_cells[-1].find(look_up_term) + 1
@@ -185,7 +219,17 @@ def initial_setup_for_tables_with_pruefidentifikatoren(item: Union[Paragraph, Ta
     )
 
 
-def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_name: str):
+def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_name: str) -> int:
+    """Reads a docx file and extracts all information for each Prüfidentifikator.
+
+    Args:
+        document (Document): AHB which is read by python-docx package
+        output_directory_path (Path): Location of the output files
+        ahb_file_name (str): Name of the AHB document
+
+    Returns:
+        int: Error code, 0 means success
+    """
 
     pruefidentifikatoren: List = []
 
