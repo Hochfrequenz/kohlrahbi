@@ -1,3 +1,14 @@
+"""Collections of functions which are needed to export the created DataFrame into a file.
+
+The possible file types are:
+    * csv
+    * json
+    * xlsx
+
+You can save each Prüfidentifikator into a separate file or
+save all Prüfidentifikators of one AHB in one Excel file.
+"""
+
 import re
 from pathlib import Path
 

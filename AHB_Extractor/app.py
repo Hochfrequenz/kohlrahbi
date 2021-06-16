@@ -1,3 +1,7 @@
+"""
+Main script of the AHB Extractor
+"""
+
 from pathlib import Path
 
 import docx

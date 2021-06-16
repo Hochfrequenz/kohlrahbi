@@ -1,3 +1,7 @@
+"""
+This module contains all functions to define the type of a row of the tables in a AHB.
+"""
+
 from enum import Enum
 
 from docx.shared import RGBColor

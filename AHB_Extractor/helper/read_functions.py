@@ -1,3 +1,7 @@
+"""
+A collection of functions to get information from AHB tables.
+"""
+
 from pathlib import Path
 from typing import List, Tuple, Union
 

@@ -1,3 +1,7 @@
+"""
+Collection of functions to write the extracted infos from the AHB tables into a DataFrame.
+"""
+
 import re
 from typing import List
 
