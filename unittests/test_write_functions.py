@@ -5,7 +5,7 @@ import docx
 import pandas as pd
 import pytest
 
-from ahb_extractor.helper.write_functions import (
+from ahbextractor.helper.write_functions import (
     parse_bedingung_cell,
     parse_paragraph_in_edifact_struktur_column_to_dataframe,
     parse_paragraph_in_middle_column_to_dataframe,
