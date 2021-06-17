@@ -9,7 +9,7 @@ import pandas as pd
 from docx.table import Table, _Cell
 from docx.text.paragraph import Paragraph
 
-from ahb_extractor.helper.check_row_type import RowType
+from ahbextractor.helper.check_row_type import RowType
 
 
 def parse_paragraph_in_edifact_struktur_column_to_dataframe(

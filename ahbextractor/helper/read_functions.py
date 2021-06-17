@@ -12,9 +12,9 @@ from docx.oxml.text.paragraph import CT_P
 from docx.table import Table, _Cell
 from docx.text.paragraph import Paragraph
 
-from ahb_extractor.helper.check_row_type import RowType, define_row_type
-from ahb_extractor.helper.export_functions import export_all_pruefidentifikatoren_in_one_file, export_pruefidentifikator
-from ahb_extractor.helper.write_functions import write_new_row_in_dataframe
+from ahbextractor.helper.check_row_type import RowType, define_row_type
+from ahbextractor.helper.export_functions import export_all_pruefidentifikatoren_in_one_file, export_pruefidentifikator
+from ahbextractor.helper.write_functions import write_new_row_in_dataframe
 
 
 def get_all_paragraphs_and_tables(parent):

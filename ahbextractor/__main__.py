@@ -2,11 +2,11 @@
 This file makes the package itself executable.
 You can run it with:
 
-    python -m ahb_extractor
+    python -m ahbextractor
 
 """
 
-from ahb_extractor import app
+from ahbextractor import ahbextractor
 
 if __name__ == "__main__":
-    app.main()
+    ahbextractor.main()

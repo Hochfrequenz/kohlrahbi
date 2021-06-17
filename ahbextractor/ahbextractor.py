@@ -6,12 +6,12 @@ from pathlib import Path
 
 import docx
 
-from ahb_extractor.helper.read_functions import get_ahb_extract
+from ahbextractor.helper.read_functions import get_ahb_extract
 
 
 def main():
     """
-    Main function of the module ahb_extractor.
+    Main function of the module ahbextractor.
     It reads the docx file and calls the function to extract all infos.
     """
 

@@ -1,7 +1,7 @@
 from setuptools import find_packages, setup
 
 setup(
-    name="ahb_extractor",
+    name="ahbextractor",
     version="0.0.0",
     author="Kevin Krechan",
     author_email="kevin.krechan@hochfrequenz.de",
