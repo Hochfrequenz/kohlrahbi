@@ -7,8 +7,53 @@
 
 This tool helps to generate machine readable files from tables inside docx documents.
 
+## Installation
+The AHB Extractor is a Python based tool. Therefor you have to make sure, that Python is running on your machine.
+### Plain
 
-# PDF Dokumente
+Create a new virtual environment
+```bash
+python -m venv .venv
+```
+Activate it
+#### Windows
+```
+.venv\Scripts\activate
+```
+#### MacOS/Linux
+```
+source .venv/bin/activate
+```
+
+Install the requirements with
+```
+pip install -r requirements.txt
+```
+Done.
+### With tox
+If tox is installed system-wide, then you can just run
+```
+tox
+```
+in the root directory.
+
+## Execution
+
+At the moment you have to define the filename of the AHB you want to extract in [`ahbextractor\ahbextractor.py`](./ahbextractor/ahbextractor.py).
+
+If the filename is set, you can run the script with
+```bash
+python -m ahbextractor
+```
+You should see some output like this in your terminal
+```
+🔍 Extracting Pruefidentifikatoren: 11039, 11040, 11041
+💥 The Excel file 11039.xlsx is open. Please close this file and try again.
+💾 Saved file for Pruefidentifikator 11040
+💾 Saved file for Pruefidentifikator 11041
+```
+
+## PDF Dokumente
 
 The following sections give a short overview where to find the start and end for the Formate.
 
