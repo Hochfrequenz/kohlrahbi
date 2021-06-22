@@ -12,7 +12,7 @@ from ahbextractor.helper.read_functions import get_ahb_extract
 def main():
     """
     Main function of the module ahbextractor.
-    It reads the docx file and calls the function to extract all infos.
+    It reads the docx file and calls the function to extract all Prüfindentifikatoren tables.
     """
 
     input_directory_path = Path.cwd() / "documents"
