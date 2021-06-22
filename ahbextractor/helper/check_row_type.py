@@ -166,7 +166,7 @@ def define_row_type(edifact_struktur_cell: _Cell, left_indent_position: int) -> 
         left_indent_position (int): Position of the left indent
 
     Raises:
-        NotImplemented: Gets raised if the RowType got not be defined
+        NotImplemented: Gets raised if the RowType got not to be defined
 
     Returns:
         RowType: Type of the current row
