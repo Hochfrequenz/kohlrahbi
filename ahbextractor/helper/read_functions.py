@@ -33,7 +33,7 @@ def get_all_paragraphs_and_tables(parent):
     elif isinstance(parent, _Cell):
         parent_elm = parent._tc
     else:
-        raise ValueError("something's not right")
+        raise ValueError("Passed parent argument must be of type Document or _Cell")
 
     for child in parent_elm.iterchildren():
         if isinstance(child, CT_P):
