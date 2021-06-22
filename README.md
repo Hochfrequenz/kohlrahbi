@@ -5,8 +5,7 @@
 ![Black status badge](https://github.com/Hochfrequenz/AHBExtractor/workflows/Black/badge.svg)
 
 
-This tool helps to generate machine readable files from tables inside docx documents.
-
+This tool helps to generate machine readable files from AHB documents.
 ## Installation
 The AHB Extractor is a Python based tool. Therefor you have to make sure, that Python is running on your machine.
 ### Plain
