@@ -71,7 +71,7 @@ def is_row_segmentname(edifact_struktur_cell: _Cell) -> bool:
         bool:
     """
     try:
-        if edifact_struktur_cell.paragraphs[0].runs[0].font.color.rgb == RGBColor(128, 128, 128):
+        if edifact_struktur_cell.paragraphs[0].runs[0].font.color.rgb == RGBColor(128, 128, 128):  # grey
             return True
     except IndexError:
         return False
