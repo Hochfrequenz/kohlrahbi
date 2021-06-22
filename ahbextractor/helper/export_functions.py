@@ -52,7 +52,7 @@ def beautify_bedingungen(bedingung: str) -> str:
 
 
 # pylint: disable=too-many-locals
-def export_pruefidentifikator(pruefi: str, df: pd.DataFrame, output_directory_path: Path):
+def export_single_pruefidentifikator(pruefi: str, df: pd.DataFrame, output_directory_path: Path):
     """Exports the current Prüfidentifikator in different file formats: json, csv and xlsx
     Each Prüfidentifikator is saved in an extra file.
 

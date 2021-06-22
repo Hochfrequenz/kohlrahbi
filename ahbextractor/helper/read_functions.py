@@ -13,7 +13,10 @@ from docx.table import Table, _Cell
 from docx.text.paragraph import Paragraph
 
 from ahbextractor.helper.check_row_type import RowType, define_row_type
-from ahbextractor.helper.export_functions import export_all_pruefidentifikatoren_in_one_file, export_pruefidentifikator
+from ahbextractor.helper.export_functions import (
+    export_all_pruefidentifikatoren_in_one_file,
+    export_single_pruefidentifikator,
+)
 from ahbextractor.helper.write_functions import write_new_row_in_dataframe
 
 
@@ -260,7 +263,7 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
                 # export last pruefidentifikatoren in AHB
                 for pruefi in pruefidentifikatoren:
 
-                    export_pruefidentifikator(
+                    export_single_pruefidentifikator(
                         pruefi=pruefi,
                         df=df,
                         output_directory_path=output_directory_path,
@@ -283,7 +286,7 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
             if pruefidentifikatoren:
                 for pruefi in pruefidentifikatoren:
 
-                    export_pruefidentifikator(
+                    export_single_pruefidentifikator(
                         pruefi=pruefi,
                         df=df,
                         output_directory_path=output_directory_path,
