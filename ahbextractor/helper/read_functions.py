@@ -48,7 +48,7 @@ def get_tabstop_positions(paragraph: Paragraph) -> List[int]:
     Mainly the tabstop positions of cells from the middle column are determined
 
     Args:
-        paragraph (Paragraph): Paragraph
+        paragraph (Paragraph):
 
     Returns:
         List[int]: All tabstop positions in the given paragraph
