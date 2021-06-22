@@ -9,8 +9,32 @@ from docx.table import _Cell
 
 
 class RowType(Enum):
-    """
-    All possible row types.
+    """All possible row types.
+
+    The RowType is defined by the first cell in each row.
+
+    Examples for each row type.
+
+    SEGMENTNAME
+    | Nachrichten-Kopfsegment |            |   |
+
+    SEGMENTGRUPPE
+    |      UNH       |  Muss   Muss   Muss |   |
+    | SG2  NAD       |  Muss   Muss   Muss |   |
+
+    SEGMENT
+    | SG2            | Muss    Muss   Muss |   |
+
+    DATENELEMENT
+    |      UNH  0062 | Nachrichten-Referenznummer  X  X  X |   |
+    |      UNH  0052 | D Entwurfs-Version          X  X  X |   |
+
+    HEADER
+    | EDIFACT Struktur | Beschreibung        ...  ...  ... | Bedingung  |
+
+    EMPTY
+    |                |                                     |   |
+
     """
 
     SEGMENTNAME = 1
