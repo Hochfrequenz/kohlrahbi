@@ -77,11 +77,6 @@ def export_pruefidentifikator(pruefi: str, df: pd.DataFrame, output_directory_pa
     df_to_export = df[columns_to_export]
     df_to_export.to_csv(csv_output_directory_path / f"{pruefi}.csv")
 
-    # for orient in ["split", "records", "index", "columns", "values", "table"]:
-
-    #     df_to_export.to_json(
-    #         json_output_directory_path / f"{pruefi}-{orient}.json", force_ascii=False, orient=orient
-    #     )
     df_to_export.to_json(json_output_directory_path / f"{pruefi}.json", force_ascii=False, orient="records")
 
     try:
