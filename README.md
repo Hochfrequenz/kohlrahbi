@@ -14,12 +14,12 @@ Create a new virtual environment
 ```bash
 python -m venv .venv
 ```
-Activate it
-#### Windows
+The activation of the virtual environment depends on your used OS.
+#### Activate virtual environment under Windows
 ```
 .venv\Scripts\activate
 ```
-#### MacOS/Linux
+#### Activate virtual environment under MacOS/Linux
 ```
 source .venv/bin/activate
 ```
