@@ -111,7 +111,7 @@ def export_all_pruefidentifikatoren_in_one_file(
         pruefi (str): Current Prüfidentifikator
         df (pd.DataFrame): DataFrame which contains all information
         output_directory_path (Path): Path to the output directory
-        file_name (str): Name of the readed AHB file
+        file_name (str): Name of the read AHB file
     """
 
     xlsx_output_directory_path = output_directory_path / "xlsx"

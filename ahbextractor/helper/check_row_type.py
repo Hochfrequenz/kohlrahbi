@@ -1,5 +1,5 @@
 """
-This module contains all functions to define the type of a row of the tables in a AHB.
+This module contains all functions to define the type of a row of the tables in an AHB.
 """
 
 from enum import Enum
@@ -22,7 +22,7 @@ class RowType(Enum):
 
 
 def is_row_header(edifact_struktur_cell: _Cell) -> bool:
-    """Checks if the current row is a header
+    """Checks if the current row is a header.
 
     Args:
         edifact_struktur_cell (_Cell): Indicator cell
@@ -77,7 +77,7 @@ def is_row_segmentgruppe(edifact_struktur_cell: _Cell, left_indent_position: int
 
 
 def is_row_segment(edifact_struktur_cell: _Cell, left_indent_position: int) -> bool:
-    """Checks if the current row is a segmentgruppe.
+    """Checks if the current row is a segment.
        Example: "UNH", "SG2\tNAD"
 
     Args:

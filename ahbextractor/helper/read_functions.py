@@ -40,7 +40,7 @@ def get_all_paragraphs_and_tables(parent):
 
 
 def get_tabstop_positions(paragraph: Paragraph) -> List[int]:
-    """Find all tabstop positions in a given paragraph
+    """Find all tabstop positions in a given paragraph.
 
     Mainly the tabstop positions of cells from the middle column are determined
 
