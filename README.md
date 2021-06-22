@@ -8,7 +8,7 @@
 This tool helps to generate machine readable files from AHB documents.
 ## Installation
 The AHB Extractor is a Python based tool. Therefor you have to make sure, that Python is running on your machine.
-### Plain
+### Without tox
 
 Create a new virtual environment
 ```bash
@@ -32,7 +32,7 @@ Done.
 ### With tox
 If tox is installed system-wide, then you can just run
 ```
-tox
+tox -e dev
 ```
 in the root directory.
 
@@ -52,7 +52,7 @@ You should see some output like this in your terminal
 💾 Saved file for Pruefidentifikator 11041
 ```
 
-## PDF Dokumente
+## PDF Documents
 
 The following sections give a short overview where to find the start and end for the Formate.
 
@@ -112,20 +112,14 @@ The following sections give a short overview where to find the start and end for
 ## ORDRSP (Bestellantwort)
 * Datei: `REQOTE_QUOTES_ORDERS_ORDRSP_AHB_1_0c_20201001.pdf`
 * selbe Datei wie `ORDERS (Bestellung)`
-* Start: ``
-* Ende einschließlich: ``
 
 ## QUOTES (Angebot)
 * Datei: `REQOTE_QUOTES_ORDERS_ORDRSP_AHB_1_0c_20201001.pdf`
 * selbe Datei wie `ORDERS (Bestellung)`
-* Start: ``
-* Ende einschließlich: ``
 
 ## REQOTE (Anfrage)
 * Datei: `REQOTE_QUOTES_ORDERS_ORDRSP_AHB_1_0c_20201001.pdf`
 * selbe Datei wie `ORDERS (Bestellung)`
-* Start: ``
-* Ende einschließlich: ``
 
 ## UTILMD (Stammdaten)
 * Datei: `UTILMD_AHB_Stammdatenänderung_1_1b_20201016.pdf`
