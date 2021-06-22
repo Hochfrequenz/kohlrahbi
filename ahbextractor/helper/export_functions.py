@@ -92,7 +92,7 @@ def export_single_pruefidentifikator(pruefi: str, df: pd.DataFrame, output_direc
             for column_letter, column_width in zip(column_letters, column_widths):
                 excel_header = f"{column_letter}:{column_letter}"
                 worksheet.set_column(excel_header, column_width, wrap_format)
-            print(f"💾 Saved file for Pruefidentifikator {pruefi}")
+            print(f"💾 Saved files for Pruefidentifikator {pruefi}")
     except PermissionError:
         print(f"💥 The Excel file {pruefi}.xlsx is open. Please close this file and try again.")
 
