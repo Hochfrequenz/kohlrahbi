@@ -115,6 +115,7 @@ def export_all_pruefidentifikatoren_in_one_file(
     path_to_all_in_one_excel = xlsx_output_directory_path / f"{file_name[:-5]}.xlsx"
 
     # write for each pruefi an extra file
+    # take the first five column header's names and add the current pruefi
     columns_to_export = list(df.columns)[:5] + [pruefi]
     columns_to_export.append("Bedingung")
     df_to_export = df[columns_to_export]
