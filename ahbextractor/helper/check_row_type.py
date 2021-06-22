@@ -13,27 +13,14 @@ class RowType(Enum):
 
     The RowType is defined by the first cell in each row.
 
-    Examples for each row type.
+    Example content for each row type:
 
-    SEGMENTNAME
-    | Nachrichten-Kopfsegment |            |   |
-
-    SEGMENTGRUPPE
-    |      UNH       |  Muss   Muss   Muss |   |
-    | SG2  NAD       |  Muss   Muss   Muss |   |
-
-    SEGMENT
-    | SG2            | Muss    Muss   Muss |   |
-
-    DATENELEMENT
-    |      UNH  0062 | Nachrichten-Referenznummer  X  X  X |   |
-    |      UNH  0052 | D Entwurfs-Version          X  X  X |   |
-
-    HEADER
-    | EDIFACT Struktur | Beschreibung        ...  ...  ... | Bedingung  |
-
-    EMPTY
-    |                |                                     |   |
+    SEGMENTNAME:   "Nachrichten-Kopfsegment"
+    SEGMENTGRUPPE: "SG2"
+    SEGMENT:       "    UNH" or "SG2  NAD"
+    DATENELEMENT:  "    UNH 0062"
+    HEADER:        "EDIFACT Struktur"
+    EMPTY:         ""
 
     """
 
