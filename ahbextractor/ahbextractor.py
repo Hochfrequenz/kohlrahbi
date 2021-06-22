@@ -30,7 +30,7 @@ def main():
         doc = docx.Document(path_to_ahb_file)  # Creating word reader object.
 
     except IOError:
-        print("There was an error opening the file!")
+        print(f"There was an error opening the file {ahb_file_name}!")
         return
 
     get_ahb_extract(document=doc, output_directory_path=output_directory_path, ahb_file_name=ahb_file_name)
