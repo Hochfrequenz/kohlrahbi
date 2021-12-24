@@ -10,7 +10,7 @@ lxml==4.6.5
     # via python-docx
 numpy==1.20.3
     # via pandas
-openpyxl==3.0.7
+openpyxl==3.0.9
     # via -r requirements.in
 pandas==1.2.4
     # via -r requirements.in
