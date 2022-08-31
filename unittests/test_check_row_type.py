@@ -75,7 +75,7 @@ class TestCheckRowType:
             font_color (RGBColor): A class from docx to define colors
             expected (RowType): The expected RowType for each test case
         """
-        # ! Attention: It seems that you can set the left indent to discret numbers!
+        # ! Attention: It seems that you can set the left indent only to discret numbers!
         # edifact_struktur_left_indent_position = 1270
 
         # create table test cell, it contains per default an empty paragraph
