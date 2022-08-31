@@ -18,7 +18,7 @@ def parse_paragraph_in_edifact_struktur_column_to_dataframe(
     row_index: int,
     edifact_struktur_cell_left_indent_position: int,
 ):
-    """Parses a paragraph in the edifact struktur column and puts the information into the in the appropriate columns
+    """Parses a paragraph in the edifact struktur column and puts the information into the appropriate columns
 
     Args:
         paragraph (Paragraph): Current paragraph in the edifact struktur cell
