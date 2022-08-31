@@ -1,7 +1,7 @@
 """
 A collection of functions to get information from AHB tables.
 """
-
+import re
 from pathlib import Path
 from typing import List, Tuple, Union
 
@@ -18,6 +18,8 @@ from ahbextractor.helper.export_functions import (
     export_single_pruefidentifikator,
 )
 from ahbextractor.helper.write_functions import write_new_row_in_dataframe
+
+_pruefi_pattern = re.compile(r"^\d{5}$")
 
 
 def get_all_paragraphs_and_tables(parent):
@@ -233,7 +235,7 @@ def initial_setup_for_tables_with_pruefidentifikatoren(
 
 
 # pylint: disable=inconsistent-return-statements
-def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_name: str) -> int:
+def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_name: Path) -> int:
     """Reads a docx file and extracts all information for each Prüfidentifikator.
 
     Args:
@@ -245,7 +247,7 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
         int: Error code, 0 means success
     """
 
-    pruefidentifikatoren: List = []
+    pruefidentifikatoren: List[str] = []
 
     # Iterate through the whole word document
     for item in get_all_paragraphs_and_tables(parent=document):
@@ -262,7 +264,8 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
             if current_chapter_title == "Änderungshistorie":
                 # export last pruefidentifikatoren in AHB
                 for pruefi in pruefidentifikatoren:
-
+                    if not _pruefi_pattern.match(pruefi):
+                        continue
                     export_single_pruefidentifikator(
                         pruefi=pruefi,
                         df=df,
@@ -285,7 +288,8 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
             # but at the first loop we check if list of pruefidentifikatoren is empty
             if pruefidentifikatoren:
                 for pruefi in pruefidentifikatoren:
-
+                    if not _pruefi_pattern.match(pruefi):
+                        continue
                     export_single_pruefidentifikator(
                         pruefi=pruefi,
                         df=df,

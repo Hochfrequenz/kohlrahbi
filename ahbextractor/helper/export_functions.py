@@ -98,7 +98,7 @@ def export_single_pruefidentifikator(pruefi: str, df: pd.DataFrame, output_direc
 
 
 def export_all_pruefidentifikatoren_in_one_file(
-    pruefi: str, df: pd.DataFrame, output_directory_path: Path, file_name: str
+    pruefi: str, df: pd.DataFrame, output_directory_path: Path, file_name: Path
 ):
     """Exports all Prüfidentifikatoren in one AHB into **one** Excel file
 
@@ -112,7 +112,7 @@ def export_all_pruefidentifikatoren_in_one_file(
     xlsx_output_directory_path = output_directory_path / "xlsx"
     xlsx_output_directory_path.mkdir(parents=True, exist_ok=True)
 
-    path_to_all_in_one_excel = xlsx_output_directory_path / f"{file_name[:-5]}.xlsx"
+    path_to_all_in_one_excel = xlsx_output_directory_path / f"{str(file_name.parts[-1])[:-5]}.xlsx"
 
     # write for each pruefi an extra file
     # take the first five column header's names and add the current pruefi
@@ -122,7 +122,9 @@ def export_all_pruefidentifikatoren_in_one_file(
 
     try:
         # https://github.com/PyCQA/pylint/issues/3060 pylint: disable=abstract-class-instantiated
-        with pd.ExcelWriter(path=path_to_all_in_one_excel, mode="a", engine="openpyxl") as writer:
+        with pd.ExcelWriter(
+            path=path_to_all_in_one_excel, mode="a", engine="openpyxl", if_sheet_exists="replace"
+        ) as writer:
             df_to_export.to_excel(writer, sheet_name=f"{pruefi}")
     except FileNotFoundError:
         # https://github.com/PyCQA/pylint/issues/3060 pylint: disable=abstract-class-instantiated
