@@ -378,7 +378,7 @@ def write_dataelement_to_dataframe(
         row_index = row_index + 1
 
     else:
-        # The middle cell contains now multiple Codes
+        # The middle cell contains multiple Codes
 
         # here we have to look into the next row to see, if we have to add a new datarow or
         # if we have to collect more information in the next row which we have to add to the current row
