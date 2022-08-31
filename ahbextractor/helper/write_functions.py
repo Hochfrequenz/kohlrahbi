@@ -74,7 +74,7 @@ def parse_paragraph_in_middle_column_to_dataframe(
     left_indent_position: int,
     tabstop_positions: List[int],
 ):
-    """Parses a paragraph in the middle column and puts the information into the in the appropriate columns
+    """Parses a paragraph in the middle column and puts the information into the appropriate columns
 
     Args:
         paragraph (Paragraph): Current paragraph in the edifact struktur cell
