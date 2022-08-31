@@ -340,7 +340,7 @@ def write_dataelement_to_dataframe(
     """Writes all infos from a dataelement row into a DataFrame.
 
     Args:
-        dataframe (pd.DataFrame): Saves all infos
+        dataframe (pd.DataFrame): Contains all infos
         row_index (int): Current index of the DataFrame
         edifact_struktur_cell (_Cell): Cell from the edifact struktur column
         edifact_struktur_cell_left_indent_position (int): Position of the left indent from the indicator edifact
