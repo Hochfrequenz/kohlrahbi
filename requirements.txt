@@ -8,7 +8,7 @@ et-xmlfile==1.1.0
     # via openpyxl
 lxml==4.9.1
     # via python-docx
-numpy==1.21.5
+numpy==1.22.0
     # via pandas
 openpyxl==3.0.9
     # via -r requirements.in
