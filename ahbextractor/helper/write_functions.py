@@ -78,7 +78,7 @@ def parse_paragraph_in_middle_column_to_dataframe(
 
     Args:
         paragraph (Paragraph): Current paragraph in the edifact struktur cell
-        dataframe (pd.DataFrame): Saves all infos
+        dataframe (pd.DataFrame): Contains all infos
         row_index (int): Current index of the DataFrame
         left_indent_position (int): Position of the left indent from the indicator middle cell
         tabstop_positions (List[int]): All tabstop positions of the indicator middle cell
