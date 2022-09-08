@@ -33,6 +33,8 @@ if __name__ == "__main__":
             sys.exit(f"No files found in {path_to_either_file_or_dir}")
     elif not path_to_either_file_or_dir.exists():
         sys.exit(f"The path {path_to_either_file_or_dir} was not found")
+    elif not path_to_either_file_or_dir.is_dir():
+        sys.exit(f"The path {path_to_either_file_or_dir} is not a directory")
     elif not str(path_to_either_file_or_dir).endswith(".docx"):
         sys.exit(f"The path {path_to_either_file_or_dir} is no directory and does not end with '.docx'")
     else:
