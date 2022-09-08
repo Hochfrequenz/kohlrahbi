@@ -35,7 +35,7 @@ if __name__ == "__main__":
         sys.exit(f"The path {path_to_either_file_or_dir} was not found")
     elif not path_to_either_file_or_dir.is_dir():
         sys.exit(f"The path {path_to_either_file_or_dir} is not a directory")
-    elif not str(path_to_either_file_or_dir).endswith(".docx"):
+    elif not path_to_either_file_or_dir.suffix == ".docx":
         sys.exit(f"The path {path_to_either_file_or_dir} is no directory and does not end with '.docx'")
     else:
         docx_file_paths = [path_to_either_file_or_dir]
