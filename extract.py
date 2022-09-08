@@ -36,7 +36,7 @@ if __name__ == "__main__":
     elif not path_to_either_file_or_dir.is_dir():
         sys.exit(f"The path {path_to_either_file_or_dir} is not a directory")
     elif not path_to_either_file_or_dir.suffix == ".docx":
-        sys.exit(f"The path {path_to_either_file_or_dir} is no directory and does not end with '.docx'")
+        sys.exit(f"The path {path_to_either_file_or_dir} is does not end with '.docx'")
     else:
         docx_file_paths = [path_to_either_file_or_dir]
     docx_file_paths = [x for x in docx_file_paths if "ahb" in str(x).lower()]  # filter out migs, codelisten foo, etc
