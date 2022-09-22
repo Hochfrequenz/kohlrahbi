@@ -320,10 +320,6 @@ def has_middle_cell_multiple_codes(paragraphs: List[Paragraph], pruefi_tabstops:
 
 # pylint: disable=too-many-arguments
 def write_dataelement_to_dataframe(
-    # dataframe: pd.DataFrame,
-    # edifact_struktur_cell_left_indent_position: int,
-    # middle_cell_left_indent_position: int,
-    # tabstop_positions: List[int],
     elixir: Elixir,
     row_index: int,
     edifact_struktur_cell: _Cell,
@@ -366,11 +362,11 @@ def write_dataelement_to_dataframe(
             parse_paragraph_in_middle_column_to_dataframe(
                 paragraph=paragraph,
                 dataframe=elixir.soul,
-                row_index=row_index,
+                row_index=elixir.current_df_row_index,
                 left_indent_position=elixir.middle_cell_left_indent_position,
                 tabstop_positions=elixir.tabstop_positions,
             )
-        row_index = row_index + 1
+        elixir.current_df_row_index = elixir.current_df_row_index + 1
 
     else:
         # The middle cell contains multiple Codes
@@ -396,15 +392,19 @@ def write_dataelement_to_dataframe(
                     edifact_struktur_cell_left_indent_position=elixir.edifact_struktur_left_indent_position,
                 )
             else:
-                elixir.soul.at[row_index, "Segment Gruppe"] = elixir.soul.loc[row_index - 1, "Segment Gruppe"]
-                elixir.soul.at[row_index, "Segment"] = elixir.soul.loc[row_index - 1, "Segment"]
-                elixir.soul.at[row_index, "Datenelement"] = elixir.soul.loc[row_index - 1, "Datenelement"]
+                elixir.soul.at[elixir.current_df_row_index, "Segment Gruppe"] = elixir.soul.loc[
+                    row_index - 1, "Segment Gruppe"
+                ]
+                elixir.soul.at[elixir.current_df_row_index, "Segment"] = elixir.soul.loc[row_index - 1, "Segment"]
+                elixir.soul.at[elixir.current_df_row_index, "Datenelement"] = elixir.soul.loc[
+                    row_index - 1, "Datenelement"
+                ]
 
             if paragraph.runs[0].bold:
                 parse_paragraph_in_middle_column_to_dataframe(
                     paragraph=paragraph,
                     dataframe=elixir.soul,
-                    row_index=row_index,
+                    row_index=elixir.current_df_row_index,
                     left_indent_position=elixir.middle_cell_left_indent_position,
                     tabstop_positions=elixir.tabstop_positions,
                 )
@@ -415,12 +415,12 @@ def write_dataelement_to_dataframe(
 
             if len(create_new_dataframe_row_indicator_list) > i + 1:
                 if create_new_dataframe_row_indicator_list[i + 1]:
-                    row_index = row_index + 1
-                    elixir.soul.loc[row_index] = (len(elixir.soul.columns)) * [""]
+                    elixir.current_df_row_index = elixir.current_df_row_index + 1
+                    elixir.soul.loc[elixir.current_df_row_index] = (len(elixir.soul.columns)) * [""]
             else:
-                row_index = row_index + 1
+                elixir.current_df_row_index = elixir.current_df_row_index + 1
 
-    return row_index
+    return elixir.current_df_row_index
 
 
 def write_new_row_in_dataframe(
