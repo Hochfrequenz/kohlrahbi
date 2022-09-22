@@ -115,7 +115,7 @@ def parse_paragraph_in_middle_column_to_dataframe(
         pass
     # Could not figure out a scenario where this error could be raised.
     # else:
-    #     raise NotImplementedError(f"Could not parse paragraphe in middle cell with {paragraph.text}")
+    #     raise NotImplementedError(f"Could not parse paragraph in middle cell with {paragraph.text}")
 
 
 def parse_bedingung_cell(bedingung_cell: _Cell, dataframe: pd.DataFrame, row_index: int):
@@ -146,14 +146,9 @@ def write_segment_name_to_dataframe(
     """Writes all infos from a segment name row into a DataFrame.
 
     Args:
-        dataframe (pd.DataFrame): Saves all infos
-        row_index (int): Current index of the DataFrame
+        elixir (Elixir):
         edifact_struktur_cell (_Cell): Cell from the edifact struktur column
-        edifact_struktur_cell_left_indent_position (int): Position of the left indent from the indicator edifact
-            struktur cell
         middle_cell (_Cell): Cell from the middle column
-        middle_cell_left_indent_position (int): Position of the left indent from the indicator middle cell
-        tabstop_positions (List[int]): All tabstop positions of the indicator middle cell
         bedingung_cell (_Cell): Cell from the Bedingung column
     """
 
@@ -167,7 +162,7 @@ def write_segment_name_to_dataframe(
         )
 
     # MIDDLE COLUMN
-    # I do not expect to get a multiline Segementgruppe,
+    # I do not expect to get a multiline Segmentgruppe,
     # but just in case we loop through all paragraphs
     for paragraph in middle_cell.paragraphs:
         parse_paragraph_in_middle_column_to_dataframe(
@@ -192,14 +187,9 @@ def write_segmentgruppe_to_dataframe(
     """Writes all infos from a segmentgruppe row into a DataFrame.
 
     Args:
-        dataframe (pd.DataFrame): Saves all infos
-        row_index (int): Current index of the DataFrame
+        elixir (Elixir):
         edifact_struktur_cell (_Cell): Cell from the edifact struktur column
-        edifact_struktur_cell_left_indent_position (int): Position of the left indent from the indicator edifact
-            struktur cell
         middle_cell (_Cell): Cell from the middle column
-        middle_cell_left_indent_position (int): Position of the left indent from the indicator middle cell
-        tabstop_positions (List[int]): All tabstop positions of the indicator middle cell
         bedingung_cell (_Cell): Cell from the Bedingung column
     """
 
@@ -237,14 +227,9 @@ def write_segment_to_dataframe(
     """Writes all infos from a segment row into a DataFrame.
 
     Args:
-        dataframe (pd.DataFrame): Saves all infos
-        row_index (int): Current index of the DataFrame
+        elixir (Elixir):
         edifact_struktur_cell (_Cell): Cell from the edifact struktur column
-        edifact_struktur_cell_left_indent_position (int): Position of the left indent from the indicator edifact
-            struktur cell
         middle_cell (_Cell): Cell from the middle column
-        middle_cell_left_indent_position (int): Position of the left indent from the indicator middle cell
-        tabstop_positions (List[int]): All tabstop positions of the indicator middle cell
         bedingung_cell (_Cell): Cell from the Bedingung column
     """
 
@@ -325,14 +310,9 @@ def write_dataelement_to_dataframe(
     """Writes all infos from a dataelement row into a DataFrame.
 
     Args:
-        dataframe (pd.DataFrame): Contains all infos
-        row_index (int): Current index of the DataFrame
+        elixir (Elixir):
         edifact_struktur_cell (_Cell): Cell from the edifact struktur column
-        edifact_struktur_cell_left_indent_position (int): Position of the left indent from the indicator edifact
-            struktur cell
         middle_cell (_Cell): Cell from the middle column
-        middle_cell_left_indent_position (int): Position of the left indent from the indicator middle cell
-        tabstop_positions (List[int]): All tabstop positions of the indicator middle cell
         bedingung_cell (_Cell): Cell from the Bedingung column
     """
 
@@ -431,19 +411,11 @@ def write_new_row_in_dataframe(
     """Writes the current row of the current table into the DataFrame depending on the type of the row
 
     Args:
+        elixir (Elixir):
         row_type (RowType): Type of the current row
         table (Table): Current table
         row (int): Row of the current table
         index_for_middle_column (int): Index of the actual middle column
-        dataframe (pd.DataFrame): Contains all infos
-        dataframe_row_index (int): Current index of the DataFrame
-        edifact_struktur_cell_left_indent_position (int): Position of the left indent from the indicator edifact
-            struktur cell
-        middle_cell_left_indent_position (int): Position of the left indent from the indicator middle cell
-        tabstop_positions (List[int]): All tabstop positions of the indicator middle cell
-
-    Returns:
-        [int]: the next DataFrame row index
     """
 
     if row_type is RowType.HEADER:
