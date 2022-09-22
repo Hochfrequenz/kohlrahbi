@@ -16,7 +16,7 @@ def main():
     """
 
     input_directory_path = Path.cwd() / "documents"
-    ahb_file_name = "UTILMD_AHB_WiM_3_1c_2021_04_01_2021_03_30.docx"
+    ahb_file_name = "UTILMD_AHB_WiM_3_1e_Info_Fehlerkorrektur_20220706.docx"
     path_to_ahb_file = input_directory_path / ahb_file_name
 
     output_directory_path = Path.cwd() / "output"
