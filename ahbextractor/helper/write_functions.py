@@ -10,6 +10,7 @@ from docx.table import Table, _Cell
 from docx.text.paragraph import Paragraph
 
 from ahbextractor.helper.check_row_type import RowType
+from ahbextractor.helper.elixir import Elixir
 
 
 def parse_paragraph_in_edifact_struktur_column_to_dataframe(
@@ -137,13 +138,10 @@ def parse_bedingung_cell(bedingung_cell: _Cell, dataframe: pd.DataFrame, row_ind
 
 # pylint: disable=too-many-arguments
 def write_segment_name_to_dataframe(
-    dataframe: pd.DataFrame,
+    elixir: Elixir,
     row_index: int,
     edifact_struktur_cell: _Cell,
-    edifact_struktur_cell_left_indent_position: int,
     middle_cell: _Cell,
-    middle_cell_left_indent_position: int,
-    tabstop_positions: List[int],
     bedingung_cell: _Cell,
 ):
     """Writes all infos from a segment name row into a DataFrame.
@@ -164,36 +162,37 @@ def write_segment_name_to_dataframe(
     for paragraph in edifact_struktur_cell.paragraphs:
         parse_paragraph_in_edifact_struktur_column_to_dataframe(
             paragraph=paragraph,
-            dataframe=dataframe,
+            dataframe=elixir.soul,
             row_index=row_index,
-            edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
+            edifact_struktur_cell_left_indent_position=elixir.edifact_struktur_left_indent_position,
         )
 
     # MIDDLE COLUMN
-    # I do not expect to a multiline Segementgruppe,
+    # I do not expect to get a multiline Segementgruppe,
     # but just in case we loop through all paragraphs
     for paragraph in middle_cell.paragraphs:
         parse_paragraph_in_middle_column_to_dataframe(
             paragraph=paragraph,
-            dataframe=dataframe,
+            dataframe=elixir.soul,
             row_index=row_index,
-            left_indent_position=middle_cell_left_indent_position,
-            tabstop_positions=tabstop_positions,
+            left_indent_position=elixir.middle_cell_left_indent_position,
+            tabstop_positions=elixir.tabstop_positions,
         )
 
     # BEDINGUNG COLUMN
-    parse_bedingung_cell(bedingung_cell=bedingung_cell, dataframe=dataframe, row_index=row_index)
+    parse_bedingung_cell(bedingung_cell=bedingung_cell, dataframe=elixir.soul, row_index=row_index)
 
 
 # pylint: disable=too-many-arguments
 def write_segmentgruppe_to_dataframe(
-    dataframe: pd.DataFrame,
+    # dataframe: pd.DataFrame,
+    # edifact_struktur_cell_left_indent_position: int,
+    # middle_cell_left_indent_position: int,
+    # tabstop_positions: List[int],
+    elixir: Elixir,
     row_index: int,
     edifact_struktur_cell: _Cell,
-    edifact_struktur_cell_left_indent_position: int,
     middle_cell: _Cell,
-    middle_cell_left_indent_position: int,
-    tabstop_positions: List[int],
     bedingung_cell: _Cell,
 ):
     """Writes all infos from a segmentgruppe row into a DataFrame.
@@ -213,9 +212,9 @@ def write_segmentgruppe_to_dataframe(
     # EDIFACT STRUKTUR COLUMN
     parse_paragraph_in_edifact_struktur_column_to_dataframe(
         paragraph=edifact_struktur_cell.paragraphs[0],
-        dataframe=dataframe,
+        dataframe=elixir.soul,
         row_index=row_index,
-        edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
+        edifact_struktur_cell_left_indent_position=elixir.edifact_struktur_left_indent_position,
     )
 
     # MIDDLE COLUMN
@@ -224,25 +223,26 @@ def write_segmentgruppe_to_dataframe(
     for paragraph in middle_cell.paragraphs:
         parse_paragraph_in_middle_column_to_dataframe(
             paragraph=paragraph,
-            dataframe=dataframe,
+            dataframe=elixir.soul,
             row_index=row_index,
-            left_indent_position=middle_cell_left_indent_position,
-            tabstop_positions=tabstop_positions,
+            left_indent_position=elixir.middle_cell_left_indent_position,
+            tabstop_positions=elixir.tabstop_positions,
         )
 
     # BEDINGUNG COLUMN
-    parse_bedingung_cell(bedingung_cell=bedingung_cell, dataframe=dataframe, row_index=row_index)
+    parse_bedingung_cell(bedingung_cell=bedingung_cell, dataframe=elixir.soul, row_index=row_index)
 
 
 # pylint: disable=too-many-arguments
 def write_segment_to_dataframe(
-    dataframe: pd.DataFrame,
+    # dataframe: pd.DataFrame,
+    # edifact_struktur_cell_left_indent_position: int,
+    # middle_cell_left_indent_position: int,
+    # tabstop_positions: List[int],
+    elixir: Elixir,
     row_index: int,
     edifact_struktur_cell: _Cell,
-    edifact_struktur_cell_left_indent_position: int,
     middle_cell: _Cell,
-    middle_cell_left_indent_position: int,
-    tabstop_positions: List[int],
     bedingung_cell: _Cell,
 ):
     """Writes all infos from a segment row into a DataFrame.
@@ -262,23 +262,23 @@ def write_segment_to_dataframe(
     # EDIFACT STRUKTUR COLUMN
     parse_paragraph_in_edifact_struktur_column_to_dataframe(
         paragraph=edifact_struktur_cell.paragraphs[0],
-        dataframe=dataframe,
+        dataframe=elixir.soul,
         row_index=row_index,
-        edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
+        edifact_struktur_cell_left_indent_position=elixir.edifact_struktur_left_indent_position,
     )
 
     # MIDDLE COLUMN
     for paragraph in middle_cell.paragraphs:
         parse_paragraph_in_middle_column_to_dataframe(
             paragraph=paragraph,
-            dataframe=dataframe,
+            dataframe=elixir.soul,
             row_index=row_index,
-            left_indent_position=middle_cell_left_indent_position,
-            tabstop_positions=tabstop_positions,
+            left_indent_position=elixir.middle_cell_left_indent_position,
+            tabstop_positions=elixir.tabstop_positions,
         )
 
     # BEDINGUNG COLUMN
-    parse_bedingung_cell(bedingung_cell=bedingung_cell, dataframe=dataframe, row_index=row_index)
+    parse_bedingung_cell(bedingung_cell=bedingung_cell, dataframe=elixir.soul, row_index=row_index)
 
 
 def count_matching(condition, condition_argument, seq):
@@ -328,13 +328,14 @@ def has_middle_cell_multiple_codes(paragraphs: List[Paragraph], pruefi_tabstops:
 
 # pylint: disable=too-many-arguments
 def write_dataelement_to_dataframe(
-    dataframe: pd.DataFrame,
+    # dataframe: pd.DataFrame,
+    # edifact_struktur_cell_left_indent_position: int,
+    # middle_cell_left_indent_position: int,
+    # tabstop_positions: List[int],
+    elixir: Elixir,
     row_index: int,
     edifact_struktur_cell: _Cell,
-    edifact_struktur_cell_left_indent_position: int,
     middle_cell: _Cell,
-    middle_cell_left_indent_position: int,
-    tabstop_positions: List[int],
     bedingung_cell: _Cell,
 ):
     """Writes all infos from a dataelement row into a DataFrame.
@@ -354,26 +355,28 @@ def write_dataelement_to_dataframe(
     # EDIFACT STRUKTUR COLUMN
     parse_paragraph_in_edifact_struktur_column_to_dataframe(
         paragraph=edifact_struktur_cell.paragraphs[0],
-        dataframe=dataframe,
+        dataframe=elixir.soul,
         row_index=row_index,
-        edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
+        edifact_struktur_cell_left_indent_position=elixir.edifact_struktur_left_indent_position,
     )
 
     # BEDINGUNG COLUMN
     # Bedingung have to be parsed before MIDDLE COLUMN
     # The cell with multiple codes counts up the row_index
     # This will cause then an IndexError for Bedingung
-    parse_bedingung_cell(bedingung_cell=bedingung_cell, dataframe=dataframe, row_index=row_index)
+    parse_bedingung_cell(bedingung_cell=bedingung_cell, dataframe=elixir.soul, row_index=row_index)
 
     # MIDDLE COLUMN
-    if not has_middle_cell_multiple_codes(paragraphs=middle_cell.paragraphs, pruefi_tabstops=tabstop_positions[1:]):
+    if not has_middle_cell_multiple_codes(
+        paragraphs=middle_cell.paragraphs, pruefi_tabstops=elixir.tabstop_positions[1:]
+    ):
         for paragraph in middle_cell.paragraphs:
             parse_paragraph_in_middle_column_to_dataframe(
                 paragraph=paragraph,
-                dataframe=dataframe,
+                dataframe=elixir.soul,
                 row_index=row_index,
-                left_indent_position=middle_cell_left_indent_position,
-                tabstop_positions=tabstop_positions,
+                left_indent_position=elixir.middle_cell_left_indent_position,
+                tabstop_positions=elixir.tabstop_positions,
             )
         row_index = row_index + 1
 
@@ -396,32 +399,32 @@ def write_dataelement_to_dataframe(
             if edifact_struktur_cell.paragraphs[0].text != "":
                 parse_paragraph_in_edifact_struktur_column_to_dataframe(
                     paragraph=edifact_struktur_cell.paragraphs[0],
-                    dataframe=dataframe,
+                    dataframe=elixir.soul,
                     row_index=row_index,
-                    edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
+                    edifact_struktur_cell_left_indent_position=elixir.edifact_struktur_left_indent_position,
                 )
             else:
-                dataframe.at[row_index, "Segment Gruppe"] = dataframe.loc[row_index - 1, "Segment Gruppe"]
-                dataframe.at[row_index, "Segment"] = dataframe.loc[row_index - 1, "Segment"]
-                dataframe.at[row_index, "Datenelement"] = dataframe.loc[row_index - 1, "Datenelement"]
+                elixir.soul.at[row_index, "Segment Gruppe"] = elixir.soul.loc[row_index - 1, "Segment Gruppe"]
+                elixir.soul.at[row_index, "Segment"] = elixir.soul.loc[row_index - 1, "Segment"]
+                elixir.soul.at[row_index, "Datenelement"] = elixir.soul.loc[row_index - 1, "Datenelement"]
 
             if paragraph.runs[0].bold:
                 parse_paragraph_in_middle_column_to_dataframe(
                     paragraph=paragraph,
-                    dataframe=dataframe,
+                    dataframe=elixir.soul,
                     row_index=row_index,
-                    left_indent_position=middle_cell_left_indent_position,
-                    tabstop_positions=tabstop_positions,
+                    left_indent_position=elixir.middle_cell_left_indent_position,
+                    tabstop_positions=elixir.tabstop_positions,
                 )
 
-            elif paragraph.paragraph_format.left_indent == tabstop_positions[0]:
+            elif paragraph.paragraph_format.left_indent == elixir.tabstop_positions[0]:
                 # multi line Beschreibung
-                dataframe.at[row_index, "Beschreibung"] += " " + paragraph.text
+                elixir.soul.at[row_index, "Beschreibung"] += " " + paragraph.text
 
             if len(create_new_dataframe_row_indicator_list) > i + 1:
                 if create_new_dataframe_row_indicator_list[i + 1]:
                     row_index = row_index + 1
-                    dataframe.loc[row_index] = (len(dataframe.columns)) * [""]
+                    elixir.soul.loc[row_index] = (len(elixir.soul.columns)) * [""]
             else:
                 row_index = row_index + 1
 
@@ -429,15 +432,15 @@ def write_dataelement_to_dataframe(
 
 
 def write_new_row_in_dataframe(
+    elixir: Elixir,
     row_type: RowType,
     table: Table,
     row: int,
     index_for_middle_column: int,
-    dataframe: pd.DataFrame,
-    dataframe_row_index: int,
-    edifact_struktur_cell_left_indent_position: int,
-    middle_cell_left_indent_position: int,
-    tabstop_positions: List[int],
+    # dataframe: pd.DataFrame,
+    # edifact_struktur_cell_left_indent_position: int,
+    # middle_cell_left_indent_position: int,
+    # tabstop_positions: List[int],
 ) -> int:
     """Writes the current row of the current table into the DataFrame depending on the type of the row
 
@@ -462,56 +465,56 @@ def write_new_row_in_dataframe(
 
     elif row_type is RowType.SEGMENTNAME:
         write_segment_name_to_dataframe(
-            dataframe=dataframe,
-            row_index=dataframe_row_index,
+            elixir=elixir,
+            row_index=elixir.current_df_row_index,
             edifact_struktur_cell=table.row_cells(row)[0],
-            edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
             middle_cell=table.row_cells(row)[index_for_middle_column],
-            middle_cell_left_indent_position=middle_cell_left_indent_position,
-            tabstop_positions=tabstop_positions,
             bedingung_cell=table.row_cells(row)[-1],
         )
-        dataframe_row_index = dataframe_row_index + 1
+        elixir.current_df_row_index = elixir.current_df_row_index + 1
 
     elif row_type is RowType.SEGMENTGRUPPE:
         write_segmentgruppe_to_dataframe(
-            dataframe=dataframe,
-            row_index=dataframe_row_index,
+            elixir=elixir,
+            row_index=elixir.current_df_row_index,
             edifact_struktur_cell=table.row_cells(row)[0],
-            edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
             middle_cell=table.row_cells(row)[index_for_middle_column],
-            middle_cell_left_indent_position=middle_cell_left_indent_position,
-            tabstop_positions=tabstop_positions,
             bedingung_cell=table.row_cells(row)[-1],
         )
-        dataframe_row_index = dataframe_row_index + 1
+        elixir.current_df_row_index = elixir.current_df_row_index + 1
+        # dataframe_row_index = dataframe_row_index + 1
 
     elif row_type is RowType.SEGMENT:
         write_segment_to_dataframe(
-            dataframe=dataframe,
-            row_index=dataframe_row_index,
+            # dataframe=dataframe,
+            # edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
+            # middle_cell_left_indent_position=middle_cell_left_indent_position,
+            # tabstop_positions=tabstop_positions,
+            elixir=elixir,
+            row_index=elixir.current_df_row_index,
+            # row_index=dataframe_row_index,
             edifact_struktur_cell=table.row_cells(row)[0],
-            edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
             middle_cell=table.row_cells(row)[index_for_middle_column],
-            middle_cell_left_indent_position=middle_cell_left_indent_position,
-            tabstop_positions=tabstop_positions,
             bedingung_cell=table.row_cells(row)[-1],
         )
-        dataframe_row_index = dataframe_row_index + 1
+        elixir.current_df_row_index = elixir.current_df_row_index + 1
+        # dataframe_row_index = dataframe_row_index + 1
 
     elif row_type is RowType.DATENELEMENT:
         dataframe_row_index = write_dataelement_to_dataframe(
-            dataframe=dataframe,
-            row_index=dataframe_row_index,
+            # dataframe=dataframe,
+            # edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
+            # middle_cell_left_indent_position=middle_cell_left_indent_position,
+            # tabstop_positions=tabstop_positions,
+            elixir=elixir,
+            row_index=elixir.current_df_row_index,
+            # row_index=dataframe_row_index,
             edifact_struktur_cell=table.row_cells(row)[0],
-            edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
             middle_cell=table.row_cells(row)[index_for_middle_column],
-            middle_cell_left_indent_position=middle_cell_left_indent_position,
-            tabstop_positions=tabstop_positions,
             bedingung_cell=table.row_cells(row)[-1],
         )
 
     elif row_type is RowType.EMPTY:
         pass
 
-    return dataframe_row_index
+    # return dataframe_row_index
