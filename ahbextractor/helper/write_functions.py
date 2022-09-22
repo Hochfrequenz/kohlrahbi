@@ -185,10 +185,6 @@ def write_segment_name_to_dataframe(
 
 # pylint: disable=too-many-arguments
 def write_segmentgruppe_to_dataframe(
-    # dataframe: pd.DataFrame,
-    # edifact_struktur_cell_left_indent_position: int,
-    # middle_cell_left_indent_position: int,
-    # tabstop_positions: List[int],
     elixir: Elixir,
     row_index: int,
     edifact_struktur_cell: _Cell,
@@ -235,10 +231,6 @@ def write_segmentgruppe_to_dataframe(
 
 # pylint: disable=too-many-arguments
 def write_segment_to_dataframe(
-    # dataframe: pd.DataFrame,
-    # edifact_struktur_cell_left_indent_position: int,
-    # middle_cell_left_indent_position: int,
-    # tabstop_positions: List[int],
     elixir: Elixir,
     row_index: int,
     edifact_struktur_cell: _Cell,
@@ -437,11 +429,7 @@ def write_new_row_in_dataframe(
     table: Table,
     row: int,
     index_for_middle_column: int,
-    # dataframe: pd.DataFrame,
-    # edifact_struktur_cell_left_indent_position: int,
-    # middle_cell_left_indent_position: int,
-    # tabstop_positions: List[int],
-) -> int:
+):
     """Writes the current row of the current table into the DataFrame depending on the type of the row
 
     Args:
@@ -482,33 +470,21 @@ def write_new_row_in_dataframe(
             bedingung_cell=table.row_cells(row)[-1],
         )
         elixir.current_df_row_index = elixir.current_df_row_index + 1
-        # dataframe_row_index = dataframe_row_index + 1
 
     elif row_type is RowType.SEGMENT:
         write_segment_to_dataframe(
-            # dataframe=dataframe,
-            # edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
-            # middle_cell_left_indent_position=middle_cell_left_indent_position,
-            # tabstop_positions=tabstop_positions,
             elixir=elixir,
             row_index=elixir.current_df_row_index,
-            # row_index=dataframe_row_index,
             edifact_struktur_cell=table.row_cells(row)[0],
             middle_cell=table.row_cells(row)[index_for_middle_column],
             bedingung_cell=table.row_cells(row)[-1],
         )
         elixir.current_df_row_index = elixir.current_df_row_index + 1
-        # dataframe_row_index = dataframe_row_index + 1
 
     elif row_type is RowType.DATENELEMENT:
         dataframe_row_index = write_dataelement_to_dataframe(
-            # dataframe=dataframe,
-            # edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
-            # middle_cell_left_indent_position=middle_cell_left_indent_position,
-            # tabstop_positions=tabstop_positions,
             elixir=elixir,
             row_index=elixir.current_df_row_index,
-            # row_index=dataframe_row_index,
             edifact_struktur_cell=table.row_cells(row)[0],
             middle_cell=table.row_cells(row)[index_for_middle_column],
             bedingung_cell=table.row_cells(row)[-1],
@@ -516,5 +492,3 @@ def write_new_row_in_dataframe(
 
     elif row_type is RowType.EMPTY:
         pass
-
-    # return dataframe_row_index

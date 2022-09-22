@@ -43,34 +43,10 @@ def get_all_paragraphs_and_tables(parent):
             yield Table(child, parent)
 
 
-# def get_tabstop_positions(paragraph: Paragraph) -> List[int]:
-#     """Find all tabstop positions in a given paragraph.
-
-#     Mainly the tabstop positions of cells from the middle column are determined
-
-#     Args:
-#         paragraph (Paragraph):
-
-#     Returns:
-#         List[int]: All tabstop positions in the given paragraph
-#     """
-#     tabstop_positions: List = []
-#     # pylint: disable=protected-access
-#     for tabstop in paragraph.paragraph_format.tab_stops._pPr.tabs:
-#         tabstop_positions.append(tabstop.pos)
-#     return tabstop_positions
-
-
 # pylint: disable=too-many-arguments
 def read_table(
     elixir: Elixir,
     table: Table,
-    # dataframe: pd.DataFrame,
-    # current_df_row_index: int,
-    # last_two_row_types: List[RowType],
-    # edifact_struktur_cell_left_indent_position: int,
-    # middle_cell_left_indent_position: int,
-    # tabstop_positions: List[int],
 ) -> Tuple[List[RowType], int]:
     """
     Iterates through all rows in a given table and writes all extracted infos in a DataFrame.
@@ -143,12 +119,7 @@ def read_table(
                 table=table,
                 row=row,
                 index_for_middle_column=index_for_middle_column,
-                # dataframe_row_index=elixir.current_df_row_index,
-                elixir=elixir
-                # dataframe=dataframe,
-                # edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
-                # middle_cell_left_indent_position=middle_cell_left_indent_position,
-                # tabstop_positions=tabstop_positions,
+                elixir=elixir,
             )
 
         else:
@@ -158,11 +129,6 @@ def read_table(
                 row=row,
                 index_for_middle_column=index_for_middle_column,
                 elixir=elixir,
-                # dataframe_row_index=elixir.current_df_row_index,
-                # dataframe=dataframe,
-                # edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
-                # middle_cell_left_indent_position=middle_cell_left_indent_position,
-                # tabstop_positions=tabstop_positions,
             )
 
         # remember last row type for empty cells
@@ -185,8 +151,6 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
         int: Error code, 0 means success
     """
 
-    pruefidentifikatoren: List = []
-    # elixir = Elixir()
     is_initial_run = True
 
     # Iterate through the whole word document
@@ -240,17 +204,6 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
                         output_directory_path=output_directory_path,
                         file_name=ahb_file_name,
                     )
-
-            # Prepare a DataFrame, get all characteristic postions and initialize help variables
-            # (
-            #     pruefidentifikatoren,
-            #     df,
-            #     edifact_struktur_left_indent_position,
-            #     middle_cell_left_indent_position,
-            #     tabstop_positions,
-            #     last_two_row_types,
-            #     current_df_row_index,
-            # ) = initial_setup_for_tables_with_pruefidentifikatoren(item=item)
 
             elixir = Elixir.from_table(docx_table=item)
 
