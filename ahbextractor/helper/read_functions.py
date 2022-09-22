@@ -13,6 +13,7 @@ from docx.table import Table, _Cell
 from docx.text.paragraph import Paragraph
 
 from ahbextractor.helper.check_row_type import RowType, define_row_type
+from ahbextractor.helper.elixir import Elixir
 from ahbextractor.helper.export_functions import (
     export_all_pruefidentifikatoren_in_one_file,
     export_single_pruefidentifikator,
@@ -168,68 +169,67 @@ def read_table(
     return last_two_row_types, current_df_row_index
 
 
-def initial_setup_for_tables_with_pruefidentifikatoren(
-    item: Union[Paragraph, Table]
-) -> Tuple[List[str], pd.DataFrame, int, int, List[int], List[RowType], int]:
-    """Prepare DataFrame for a new table with new Prüfidentifikatoren
+# def initial_setup_for_tables_with_pruefidentifikatoren(
+#     item: Union[Paragraph, Table]
+# ) -> Tuple[List[str], pd.DataFrame, int, int, List[int], List[RowType], int]:
+#     """Prepare DataFrame for a new table with new Prüfidentifikatoren
 
 
+#     Args:
+#         item (Union[Paragraph, Table]): A paragraph or table from the docx
 
-    Args:
-        item (Union[Paragraph, Table]): A paragraph or table from the docx
+#     Returns:
+#         Tuple[List[str], pd.DataFrame, int, int, List[int], List[RowType], int]: Returns
+#             all detected Prüfidentifikatoren,
+#             prepared DataFrame,
+#             left intend position of the Edifact struktur cell,
+#             left intend position of the middle cell,
+#             list of tabstop positions of the middle cell,
+#             list of the last two RowTypes,
+#             the current row index for the DataFrame
+#     """
+#     header_cells = [cell.text for cell in item.row_cells(0)]
+#     look_up_term = "Prüfidentifikator"
+#     cutter_index = header_cells[-1].find(look_up_term) + 1
+#     # +1 cause of \t after Prüfidentifikator
+#     pruefidentifikatoren: List = header_cells[-1][cutter_index + len(look_up_term) :].split("\t")
 
-    Returns:
-        Tuple[List[str], pd.DataFrame, int, int, List[int], List[RowType], int]: Returns
-            all detected Prüfidentifikatoren,
-            prepared DataFrame,
-            left intend position of the Edifact struktur cell,
-            left intend position of the middle cell,
-            list of tabstop positions of the middle cell,
-            list of the last two RowTypes,
-            the current row index for the DataFrame
-    """
-    header_cells = [cell.text for cell in item.row_cells(0)]
-    look_up_term = "Prüfidentifikator"
-    cutter_index = header_cells[-1].find(look_up_term) + 1
-    # +1 cause of \t after Prüfidentifikator
-    pruefidentifikatoren: List = header_cells[-1][cutter_index + len(look_up_term) :].split("\t")
+#     # edifact struktur cell
+#     edifact_struktur_indicator_paragraph = item.cell(row_idx=4, col_idx=0).paragraphs[0]
+#     edifact_struktur_left_indent_position = edifact_struktur_indicator_paragraph.paragraph_format.left_indent
 
-    # edifact struktur cell
-    edifact_struktur_indicator_paragraph = item.cell(row_idx=4, col_idx=0).paragraphs[0]
-    edifact_struktur_left_indent_position = edifact_struktur_indicator_paragraph.paragraph_format.left_indent
+#     # middle cell
+#     middle_cell_indicator_paragraph = item.cell(row_idx=4, col_idx=1).paragraphs[0]
+#     middle_cell_left_indent_position = middle_cell_indicator_paragraph.paragraph_format.left_indent
+#     tabstop_positions: List = get_tabstop_positions(middle_cell_indicator_paragraph)
 
-    # middle cell
-    middle_cell_indicator_paragraph = item.cell(row_idx=4, col_idx=1).paragraphs[0]
-    middle_cell_left_indent_position = middle_cell_indicator_paragraph.paragraph_format.left_indent
-    tabstop_positions: List = get_tabstop_positions(middle_cell_indicator_paragraph)
+#     base_columns: List = [
+#         "Segment Gruppe",
+#         "Segment",
+#         "Datenelement",
+#         "Codes und Qualifier",
+#         "Beschreibung",
+#     ]
+#     columns = base_columns + pruefidentifikatoren
+#     columns.append("Bedingung")
 
-    base_columns: List = [
-        "Segment Gruppe",
-        "Segment",
-        "Datenelement",
-        "Codes und Qualifier",
-        "Beschreibung",
-    ]
-    columns = base_columns + pruefidentifikatoren
-    columns.append("Bedingung")
+#     df = pd.DataFrame(
+#         columns=columns,
+#         dtype="str",
+#     )
+#     # Initialize help variables
+#     last_two_row_types: List = [RowType.EMPTY, RowType.EMPTY]
+#     current_df_row_index: int = 0
 
-    df = pd.DataFrame(
-        columns=columns,
-        dtype="str",
-    )
-    # Initialize help variables
-    last_two_row_types: List = [RowType.EMPTY, RowType.EMPTY]
-    current_df_row_index: int = 0
-
-    return (
-        pruefidentifikatoren,
-        df,
-        edifact_struktur_left_indent_position,
-        middle_cell_left_indent_position,
-        tabstop_positions,
-        last_two_row_types,
-        current_df_row_index,
-    )
+#     return (
+#         pruefidentifikatoren,
+#         df,
+#         edifact_struktur_left_indent_position,
+#         middle_cell_left_indent_position,
+#         tabstop_positions,
+#         last_two_row_types,
+#         current_df_row_index,
+#     )
 
 
 # pylint: disable=inconsistent-return-statements
