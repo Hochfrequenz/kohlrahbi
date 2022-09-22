@@ -511,7 +511,12 @@ class TestWriteFunctions:
         df.loc[row_index] = initial_dataframe_row
         expected_df.loc[row_index] = initial_dataframe_row
 
-        elixir = Elixir(soul=df)
+        elixir = Elixir(
+            soul=df,
+            edifact_struktur_left_indent_position=self.edifact_struktur_cell_left_indent_position_of_indicator_paragraph,
+            middle_cell_left_indent_position=self.middle_cell_left_indent_position_of_indicator_paragraph,
+            tabstop_positions=self.middle_cell_tabstop_positions_of_indicator_paragraph,
+        )
 
         return row_index, elixir, expected_df
 
