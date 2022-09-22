@@ -3,9 +3,8 @@ A collection of functions to get information from AHB tables.
 """
 
 from pathlib import Path
-from typing import List, Tuple, Union
+from typing import List, Tuple
 
-import pandas as pd
 from docx.document import Document
 from docx.oxml.table import CT_Tbl
 from docx.oxml.text.paragraph import CT_P
@@ -114,7 +113,7 @@ def read_table(
 
         # write actual row into dataframe
         if not (current_row_type is RowType.EMPTY and elixir.last_two_row_types[0] is RowType.HEADER):
-            current_df_row_index = write_new_row_in_dataframe(
+            write_new_row_in_dataframe(
                 row_type=current_row_type,
                 table=table,
                 row=row,
@@ -123,7 +122,7 @@ def read_table(
             )
 
         else:
-            current_df_row_index = write_new_row_in_dataframe(
+            write_new_row_in_dataframe(
                 row_type=elixir.last_two_row_types[1],
                 table=table,
                 row=row,
@@ -189,7 +188,7 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
         elif isinstance(item, Table) and item.cell(row_idx=0, col_idx=0).text == "EDIFACT Struktur":
             # before we go to the next pruefidentifikatoren we save the current ones
             # but at the first loop we have to skip the export
-            if is_initial_run == False:
+            if is_initial_run is False:
                 for pruefi in elixir.pruefidentifikatoren:
 
                     export_single_pruefidentifikator(
@@ -209,7 +208,7 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
 
             print("\n🔍 Extracting Pruefidentifikatoren:", ", ".join(elixir.pruefidentifikatoren))
 
-            last_two_row_types, current_df_row_index = read_table(
+            read_table(
                 elixir=elixir,
                 table=item,
             )
@@ -217,7 +216,7 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
             is_initial_run = False
 
         elif isinstance(item, Table) and "elixir" in locals():
-            last_two_row_types, current_df_row_index = read_table(
+            read_table(
                 elixir=elixir,
                 table=item,
             )

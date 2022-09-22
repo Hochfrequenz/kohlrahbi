@@ -1,3 +1,7 @@
+"""
+This module provides a class to collect information which of need for all parsing functions
+"""
+
 from typing import List
 
 import pandas as pd
@@ -26,6 +30,7 @@ def get_tabstop_positions(paragraph: Paragraph) -> List[int]:
     return tabstop_positions
 
 
+# pylint: disable=too-few-public-methods
 @define
 class Elixir:
     """
@@ -72,17 +77,16 @@ class Elixir:
         columns = base_columns + pruefidentifikatoren
         columns.append("Bedingung")
 
-        df = pd.DataFrame(
-            columns=columns,
-            dtype="str",
-        )
         # Initialize help variables
         last_two_row_types: List = [RowType.EMPTY, RowType.EMPTY]
         current_df_row_index: int = 0
 
         return cls(
             pruefidentifikatoren=pruefidentifikatoren,
-            soul=df,
+            soul=pd.DataFrame(
+                columns=columns,
+                dtype="str",
+            ),
             edifact_struktur_left_indent_position=edifact_struktur_left_indent_position,
             middle_cell_left_indent_position=middle_cell_left_indent_position,
             tabstop_positions=tabstop_positions,
