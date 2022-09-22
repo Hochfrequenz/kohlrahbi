@@ -15,6 +15,8 @@ from ahbextractor.helper.write_functions import (
     write_segmentgruppe_to_dataframe,
 )
 
+from ahbextractor.helper.elixir import Elixir
+
 
 class TestParseFunctions:
 
@@ -509,7 +511,9 @@ class TestWriteFunctions:
         df.loc[row_index] = initial_dataframe_row
         expected_df.loc[row_index] = initial_dataframe_row
 
-        return row_index, df, expected_df
+        elixir = Elixir(soul=df)
+
+        return row_index, elixir, expected_df
 
     @pytest.mark.parametrize(
         "row_cells, expected_df_rows",
@@ -580,22 +584,18 @@ class TestWriteFunctions:
         row_cells,
         expected_df_rows,
     ):
-        row_index, df, expected_df = self._prepare_docx_table_row(row_cells, expected_df_rows)
+        row_index, elixir, expected_df = self._prepare_docx_table_row(row_cells, expected_df_rows)
 
         write_segment_name_to_dataframe(
-            dataframe=df,
-            row_index=row_index,
+            elixir=elixir,
             edifact_struktur_cell=self.edifact_struktur_cell,
-            edifact_struktur_cell_left_indent_position=self.edifact_struktur_cell_left_indent_position_of_indicator_paragraph,
             middle_cell=self.middle_cell,
-            middle_cell_left_indent_position=self.middle_cell_left_indent_position_of_indicator_paragraph,
-            tabstop_positions=self.middle_cell_tabstop_positions_of_indicator_paragraph,
             bedingung_cell=self.bedingung_cell,
         )
 
         expected_df.loc[row_index] = expected_df_rows[0]
 
-        assert expected_df.equals(df)
+        assert expected_df.equals(elixir.soul)
 
     @pytest.mark.parametrize(
         "row_cells, expected_df_rows",
@@ -708,22 +708,18 @@ nicht vorhanden""",
         row_cells,
         expected_df_rows,
     ):
-        row_index, df, expected_df = self._prepare_docx_table_row(row_cells, expected_df_rows)
+        row_index, elixir, expected_df = self._prepare_docx_table_row(row_cells, expected_df_rows)
 
         write_segmentgruppe_to_dataframe(
-            dataframe=df,
-            row_index=row_index,
+            elixir=elixir,
             edifact_struktur_cell=self.edifact_struktur_cell,
-            edifact_struktur_cell_left_indent_position=self.edifact_struktur_cell_left_indent_position_of_indicator_paragraph,
             middle_cell=self.middle_cell,
-            middle_cell_left_indent_position=self.middle_cell_left_indent_position_of_indicator_paragraph,
-            tabstop_positions=self.middle_cell_tabstop_positions_of_indicator_paragraph,
             bedingung_cell=self.bedingung_cell,
         )
 
         expected_df.loc[row_index] = expected_df_rows[0]
 
-        assert expected_df.equals(df)
+        assert expected_df.equals(elixir.soul)
 
     @pytest.mark.parametrize(
         "row_cells, expected_df_rows",
@@ -839,22 +835,18 @@ enthalten""",
         row_cells,
         expected_df_rows,
     ):
-        row_index, df, expected_df = self._prepare_docx_table_row(row_cells, expected_df_rows)
+        row_index, elixir, expected_df = self._prepare_docx_table_row(row_cells, expected_df_rows)
 
         write_segment_to_dataframe(
-            dataframe=df,
-            row_index=row_index,
+            elixir=elixir,
             edifact_struktur_cell=self.edifact_struktur_cell,
-            edifact_struktur_cell_left_indent_position=self.edifact_struktur_cell_left_indent_position_of_indicator_paragraph,
             middle_cell=self.middle_cell,
-            middle_cell_left_indent_position=self.middle_cell_left_indent_position_of_indicator_paragraph,
-            tabstop_positions=self.middle_cell_tabstop_positions_of_indicator_paragraph,
             bedingung_cell=self.bedingung_cell,
         )
 
         expected_df.loc[row_index] = expected_df_rows[0]
 
-        assert expected_df.equals(df)
+        assert expected_df.equals(elixir.soul)
 
     @pytest.mark.parametrize(
         "row_cells, expected_df_rows",
@@ -938,22 +930,18 @@ enthalten""",
         expected_df_rows,
     ):
 
-        row_index, df, expected_df = self._prepare_docx_table_row(row_cells, expected_df_rows)
+        row_index, elixir, expected_df = self._prepare_docx_table_row(row_cells, expected_df_rows)
 
         write_dataelement_to_dataframe(
-            dataframe=df,
-            row_index=row_index,
+            elixir=elixir,
             edifact_struktur_cell=self.edifact_struktur_cell,
-            edifact_struktur_cell_left_indent_position=self.edifact_struktur_cell_left_indent_position_of_indicator_paragraph,
             middle_cell=self.middle_cell,
-            middle_cell_left_indent_position=self.middle_cell_left_indent_position_of_indicator_paragraph,
-            tabstop_positions=self.middle_cell_tabstop_positions_of_indicator_paragraph,
             bedingung_cell=self.bedingung_cell,
         )
 
         expected_df.loc[row_index] = expected_df_rows[0]
 
-        assert expected_df.equals(df)
+        assert expected_df.equals(elixir.soul)
 
     @pytest.mark.parametrize(
         "row_cells, expected_df_rows",
@@ -1057,16 +1045,12 @@ enthalten""",
         row_cells,
         expected_df_rows,
     ):
-        row_index, df, expected_df = self._prepare_docx_table_row(row_cells, expected_df_rows)
+        row_index, elixir, expected_df = self._prepare_docx_table_row(row_cells, expected_df_rows)
 
         write_dataelement_to_dataframe(
-            dataframe=df,
-            row_index=row_index,
+            elixir=elixir,
             edifact_struktur_cell=self.edifact_struktur_cell,
-            edifact_struktur_cell_left_indent_position=self.edifact_struktur_cell_left_indent_position_of_indicator_paragraph,
             middle_cell=self.middle_cell,
-            middle_cell_left_indent_position=self.middle_cell_left_indent_position_of_indicator_paragraph,
-            tabstop_positions=self.middle_cell_tabstop_positions_of_indicator_paragraph,
             bedingung_cell=self.bedingung_cell,
         )
 
@@ -1075,4 +1059,4 @@ enthalten""",
             expected_df.loc[row_index] = expected_df_row
             row_index += 1
 
-        assert expected_df.equals(df)
+        assert expected_df.equals(elixir.soul)
