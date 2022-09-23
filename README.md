@@ -5,7 +5,7 @@
 ![Black status badge](https://github.com/Hochfrequenz/AHBExtractor/workflows/Black/badge.svg)
 
 
-This tool helps to generate machine readable files from AHB documents.
+This tool helps to generate machine-readable files from AHB documents.
 ## Installation
 The AHB Extractor is a Python based tool. Therefor you have to make sure, that Python is running on your machine.
 ### Without tox
@@ -37,13 +37,12 @@ tox -e dev
 in the root directory.
 
 ## Execution
-
-At the moment you have to define the filename of the AHB you want to extract in [`ahbextractor\ahbextractor.py`](./ahbextractor/ahbextractor.py).
-
 If the filename is set, you can run the script with
 ```bash
-python -m ahbextractor
+python extract.py --path ../edi_energy_mirror/
 ```
+(or replace the path with whatever you like, [`edi_energy_mirror`](https://github.com/Hochfrequenz/edi_energy_mirror) is just conventient).
+
 You should see some output like this in your terminal
 ```
 🔍 Extracting Pruefidentifikatoren: 11039, 11040, 11041
