@@ -5,9 +5,9 @@ Collection of functions to write the extracted infos from the AHB tables into a 
 import re
 from typing import List
 
-import pandas as pd
-from docx.table import Table, _Cell
-from docx.text.paragraph import Paragraph
+import pandas as pd  # type:ignore[import]
+from docx.table import Table, _Cell  # type:ignore[import]
+from docx.text.paragraph import Paragraph  # type:ignore[import]
 
 from ahbextractor.helper.check_row_type import RowType
 

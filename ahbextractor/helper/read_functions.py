@@ -5,12 +5,12 @@ import re
 from pathlib import Path
 from typing import List, Tuple, Union
 
-import pandas as pd
-from docx.document import Document
-from docx.oxml.table import CT_Tbl
-from docx.oxml.text.paragraph import CT_P
-from docx.table import Table, _Cell
-from docx.text.paragraph import Paragraph
+import pandas as pd  # type:ignore[import]
+from docx.document import Document  # type:ignore[import]
+from docx.oxml.table import CT_Tbl  # type:ignore[import]
+from docx.oxml.text.paragraph import CT_P  # type:ignore[import]
+from docx.table import Table, _Cell  # type:ignore[import]
+from docx.text.paragraph import Paragraph  # type:ignore[import]
 
 from ahbextractor.helper.check_row_type import RowType, define_row_type
 from ahbextractor.helper.export_functions import (
@@ -268,13 +268,13 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
                         continue
                     export_single_pruefidentifikator(
                         pruefi=pruefi,
-                        df=df,
+                        df=df,  # type:ignore[has-type]
                         output_directory_path=output_directory_path,
                     )
 
                     export_all_pruefidentifikatoren_in_one_file(
                         pruefi=pruefi,
-                        df=df,
+                        df=df,  # type:ignore[has-type]
                         output_directory_path=output_directory_path,
                         file_name=ahb_file_name,
                     )
@@ -292,13 +292,13 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
                         continue
                     export_single_pruefidentifikator(
                         pruefi=pruefi,
-                        df=df,
+                        df=df,  # type:ignore[has-type]
                         output_directory_path=output_directory_path,
                     )
 
                     export_all_pruefidentifikatoren_in_one_file(
                         pruefi=pruefi,
-                        df=df,
+                        df=df,  # type:ignore[has-type]
                         output_directory_path=output_directory_path,
                         file_name=ahb_file_name,
                     )
@@ -336,3 +336,4 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
                 middle_cell_left_indent_position=middle_cell_left_indent_position,
                 tabstop_positions=tabstop_positions,
             )
+    return 0  # you need to return something when the type hint states that you return something
