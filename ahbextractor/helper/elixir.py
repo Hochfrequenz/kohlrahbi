@@ -56,7 +56,7 @@ class Elixir:
         look_up_term = "Prüfidentifikator"
         cutter_index = header_cells[-1].find(look_up_term) + 1
         # +1 cause of \t after Prüfidentifikator
-        pruefidentifikatoren: List = header_cells[-1][cutter_index + len(look_up_term) :].split("\t")
+        pruefidentifikatoren = header_cells[-1][cutter_index + len(look_up_term) :].split("\t")
 
         # edifact struktur cell
         edifact_struktur_indicator_paragraph = docx_table.cell(row_idx=4, col_idx=0).paragraphs[0]
