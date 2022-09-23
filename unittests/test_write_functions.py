@@ -5,6 +5,7 @@ import docx
 import pandas as pd
 import pytest
 
+from ahbextractor.helper.elixir import Elixir
 from ahbextractor.helper.write_functions import (
     parse_bedingung_cell,
     parse_paragraph_in_edifact_struktur_column_to_dataframe,
@@ -14,8 +15,6 @@ from ahbextractor.helper.write_functions import (
     write_segment_to_dataframe,
     write_segmentgruppe_to_dataframe,
 )
-
-from ahbextractor.helper.elixir import Elixir
 
 
 class TestParseFunctions:
