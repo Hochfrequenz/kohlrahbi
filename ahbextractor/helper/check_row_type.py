@@ -4,8 +4,8 @@ This module contains all functions to define the type of a row of the tables in 
 
 from enum import Enum
 
-from docx.shared import RGBColor
-from docx.table import _Cell
+from docx.shared import RGBColor  # type:ignore[import]
+from docx.table import _Cell  # type:ignore[import]
 
 
 class RowType(Enum):

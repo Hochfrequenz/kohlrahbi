@@ -1,40 +1,38 @@
 """
 Main script of the AHB Extractor
 """
-
+import sys
 from pathlib import Path
+from typing import List
 
-import docx
+import docx  # type:ignore[import]
 
 from ahbextractor.helper.read_functions import get_ahb_extract
 
 
-def main():
+def main(file_paths: List[Path]):
     """
     Main function of the module ahbextractor.
-    It reads the docx file and calls the function to extract all Prüfindentifikatoren tables.
+    It reads the docx files and calls the function to extract all Prüfindentifikatoren tables.
     """
+    for ahb_file_path in file_paths:
+        print(f"Processing file {ahb_file_path}")
+        output_directory_path = Path.cwd() / Path("output")
+        if not output_directory_path.exists():
+            output_directory_path.mkdir()
+        xlsx_out_path = output_directory_path / Path("xlsx")
+        if not xlsx_out_path.exists():
+            xlsx_out_path.mkdir()
+        path_to_all_in_one_excel = xlsx_out_path / Path(str(ahb_file_path.parts[-1])[:-5] + ".xls")
 
-    input_directory_path = Path.cwd() / "documents"
-    ahb_file_name = "UTILMD_AHB_WiM_3_1e_Info_Fehlerkorrektur_20220706.docx"
-    path_to_ahb_file = input_directory_path / ahb_file_name
+        # Remove old "all in one excel file" if it already exists
+        if path_to_all_in_one_excel.exists():
+            path_to_all_in_one_excel.unlink(missing_ok=False)
 
-    output_directory_path = Path.cwd() / "output"
-    path_to_all_in_one_excel = output_directory_path / "xlsx" / f"{ahb_file_name[:-5]}.xlsx"
+        try:
+            doc = docx.Document(ahb_file_path)  # Creating word reader object.
 
-    # Remove old "all in one excel file" if it already exists
-    if path_to_all_in_one_excel.exists():
-        path_to_all_in_one_excel.unlink(missing_ok=False)
+        except IOError as io_error:
+            sys.exit(f"There was an error opening the file {ahb_file_path}: {io_error}")
 
-    try:
-        doc = docx.Document(path_to_ahb_file)  # Creating word reader object.
-
-    except IOError:
-        print(f"There was an error opening the file {ahb_file_name}!")
-        return
-
-    get_ahb_extract(document=doc, output_directory_path=output_directory_path, ahb_file_name=ahb_file_name)
-
-
-if __name__ == "__main__":
-    main()
+        get_ahb_extract(document=doc, output_directory_path=output_directory_path, ahb_file_name=ahb_file_path)

@@ -1,15 +1,16 @@
 """
 A collection of functions to get information from AHB tables.
 """
-
+import re
 from pathlib import Path
 from typing import List, Tuple
 
-from docx.document import Document
-from docx.oxml.table import CT_Tbl
-from docx.oxml.text.paragraph import CT_P
-from docx.table import Table, _Cell
-from docx.text.paragraph import Paragraph
+import pandas as pd  # type:ignore[import]
+from docx.document import Document  # type:ignore[import]
+from docx.oxml.table import CT_Tbl  # type:ignore[import]
+from docx.oxml.text.paragraph import CT_P  # type:ignore[import]
+from docx.table import Table, _Cell  # type:ignore[import]
+from docx.text.paragraph import Paragraph  # type:ignore[import]
 
 from ahbextractor.helper.check_row_type import RowType, define_row_type
 from ahbextractor.helper.elixir import Elixir
@@ -18,6 +19,8 @@ from ahbextractor.helper.export_functions import (
     export_single_pruefidentifikator,
 )
 from ahbextractor.helper.write_functions import write_new_row_in_dataframe
+
+_pruefi_pattern = re.compile(r"^\d{5}$")
 
 
 def get_all_paragraphs_and_tables(parent):
@@ -138,7 +141,7 @@ def read_table(
 
 
 # pylint: disable=inconsistent-return-statements
-def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_name: str) -> int:
+def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_name: Path) -> int:
     """Reads a docx file and extracts all information for each Prüfidentifikator.
 
     Args:
@@ -150,7 +153,7 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
         int: Error code, 0 means success
     """
 
-    is_initial_run = True
+    pruefidentifikatoren: List = []
 
     # Iterate through the whole word document
     for item in get_all_paragraphs_and_tables(parent=document):
@@ -166,17 +169,17 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
             # Stop iterating at the section "Änderungshistorie"
             if current_chapter_title == "Änderungshistorie":
                 # export last pruefidentifikatoren in AHB
-                for pruefi in elixir.pruefidentifikatoren:
+                for pruefi in pruefidentifikatoren:
 
                     export_single_pruefidentifikator(
                         pruefi=pruefi,
-                        df=elixir.soul,
+                        df=df,
                         output_directory_path=output_directory_path,
                     )
 
                     export_all_pruefidentifikatoren_in_one_file(
                         pruefi=pruefi,
-                        df=elixir.soul,
+                        df=df,
                         output_directory_path=output_directory_path,
                         file_name=ahb_file_name,
                     )
@@ -187,19 +190,19 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
         # Check if a table comes with new Prüfidentifikatoren
         elif isinstance(item, Table) and item.cell(row_idx=0, col_idx=0).text == "EDIFACT Struktur":
             # before we go to the next pruefidentifikatoren we save the current ones
-            # but at the first loop we have to skip the export
-            if is_initial_run is False:
-                for pruefi in elixir.pruefidentifikatoren:
+            # but at the first loop we check if list of pruefidentifikatoren is empty
+            if pruefidentifikatoren:
+                for pruefi in pruefidentifikatoren:
 
                     export_single_pruefidentifikator(
                         pruefi=pruefi,
-                        df=elixir.soul,
+                        df=df,
                         output_directory_path=output_directory_path,
                     )
 
                     export_all_pruefidentifikatoren_in_one_file(
                         pruefi=pruefi,
-                        df=elixir.soul,
+                        df=df,
                         output_directory_path=output_directory_path,
                         file_name=ahb_file_name,
                     )
@@ -220,3 +223,4 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
                 elixir=elixir,
                 table=item,
             )
+    return 0  # you need to return something when the type hint states that you return something
