@@ -56,7 +56,7 @@ class Elixir:
         look_up_term = "Prüfidentifikator"
         cutter_index = header_cells[-1].find(look_up_term) + 1
         # +1 cause of \t after Prüfidentifikator
-        pruefidentifikatoren: List = header_cells[-1][cutter_index + len(look_up_term) :].split("\t")
+        pruefidentifikatoren = header_cells[-1][cutter_index + len(look_up_term) :].split("\t")
 
         # edifact struktur cell
         edifact_struktur_indicator_paragraph = docx_table.cell(row_idx=4, col_idx=0).paragraphs[0]
@@ -65,7 +65,7 @@ class Elixir:
         # middle cell
         middle_cell_indicator_paragraph = docx_table.cell(row_idx=4, col_idx=1).paragraphs[0]
         middle_cell_left_indent_position = middle_cell_indicator_paragraph.paragraph_format.left_indent
-        tabstop_positions: List = get_tabstop_positions(middle_cell_indicator_paragraph)
+        tabstop_positions = get_tabstop_positions(middle_cell_indicator_paragraph)
 
         base_columns: List = [
             "Segment Gruppe",
