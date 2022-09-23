@@ -153,7 +153,7 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
         int: Error code, 0 means success
     """
 
-    pruefidentifikatoren: List = []
+    is_initial_run = True
 
     # Iterate through the whole word document
     for item in get_all_paragraphs_and_tables(parent=document):
@@ -169,17 +169,17 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
             # Stop iterating at the section "Änderungshistorie"
             if current_chapter_title == "Änderungshistorie":
                 # export last pruefidentifikatoren in AHB
-                for pruefi in pruefidentifikatoren:
+                for pruefi in elixir.pruefidentifikatoren:
 
                     export_single_pruefidentifikator(
                         pruefi=pruefi,
-                        df=df,
+                        df=elixir.soul,
                         output_directory_path=output_directory_path,
                     )
 
                     export_all_pruefidentifikatoren_in_one_file(
                         pruefi=pruefi,
-                        df=df,
+                        df=elixir.soul,
                         output_directory_path=output_directory_path,
                         file_name=ahb_file_name,
                     )
@@ -191,18 +191,18 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
         elif isinstance(item, Table) and item.cell(row_idx=0, col_idx=0).text == "EDIFACT Struktur":
             # before we go to the next pruefidentifikatoren we save the current ones
             # but at the first loop we check if list of pruefidentifikatoren is empty
-            if pruefidentifikatoren:
-                for pruefi in pruefidentifikatoren:
+            if is_initial_run is False:
+                for pruefi in elixir.pruefidentifikatoren:
 
                     export_single_pruefidentifikator(
                         pruefi=pruefi,
-                        df=df,
+                        df=elixir.soul,
                         output_directory_path=output_directory_path,
                     )
 
                     export_all_pruefidentifikatoren_in_one_file(
                         pruefi=pruefi,
-                        df=df,
+                        df=elixir.soul,
                         output_directory_path=output_directory_path,
                         file_name=ahb_file_name,
                     )
