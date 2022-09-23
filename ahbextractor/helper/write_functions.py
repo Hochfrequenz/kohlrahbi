@@ -42,7 +42,7 @@ def parse_paragraph_in_edifact_struktur_column_to_dataframe(
         elif tab_count == 1:
             dataframe.at[row_index, "Segment Gruppe"] = splitted_text_at_tabs[0]
             dataframe.at[row_index, "Segment"] = splitted_text_at_tabs[1]
-        elif tab_count == 0 and joined_text != "":
+        elif tab_count == 0 and joined_text.strip() != "":
             if paragraphs[0].runs[0].bold:
                 # Segmentgruppe: SG8
                 dataframe.at[row_index, "Segment Gruppe"] = splitted_text_at_tabs[0]
