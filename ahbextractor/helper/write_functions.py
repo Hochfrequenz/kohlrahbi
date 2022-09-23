@@ -157,9 +157,9 @@ def write_segment_name_to_dataframe(
     for paragraph in edifact_struktur_cell.paragraphs:
         parse_paragraph_in_edifact_struktur_column_to_dataframe(
             paragraphs=[paragraph],
-            dataframe=dataframe,
-            row_index=row_index,
-            edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
+            dataframe=elixir.soul,
+            row_index=elixir.current_df_row_index,
+            edifact_struktur_cell_left_indent_position=elixir.edifact_struktur_left_indent_position,
         )
 
     # MIDDLE COLUMN
@@ -197,9 +197,9 @@ def write_segmentgruppe_to_dataframe(
     # EDIFACT STRUKTUR COLUMN
     parse_paragraph_in_edifact_struktur_column_to_dataframe(
         paragraphs=edifact_struktur_cell.paragraphs,  # there might be 2 paragraphs in case of multi line headings, so we're handing over all the paragraphs
-        dataframe=dataframe,
-        row_index=row_index,
-        edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
+        dataframe=elixir.soul,
+        row_index=elixir.current_df_row_index,
+        edifact_struktur_cell_left_indent_position=elixir.edifact_struktur_left_indent_position,
     )
 
     # MIDDLE COLUMN
@@ -237,9 +237,9 @@ def write_segment_to_dataframe(
     # EDIFACT STRUKTUR COLUMN
     parse_paragraph_in_edifact_struktur_column_to_dataframe(
         paragraphs=edifact_struktur_cell.paragraphs,
-        dataframe=dataframe,
-        row_index=row_index,
-        edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
+        dataframe=elixir.soul,
+        row_index=elixir.current_df_row_index,
+        edifact_struktur_cell_left_indent_position=elixir.edifact_struktur_left_indent_position,
     )
 
     # MIDDLE COLUMN
@@ -320,9 +320,9 @@ def write_dataelement_to_dataframe(
     # EDIFACT STRUKTUR COLUMN
     parse_paragraph_in_edifact_struktur_column_to_dataframe(
         paragraphs=edifact_struktur_cell.paragraphs,
-        dataframe=dataframe,
-        row_index=row_index,
-        edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
+        dataframe=elixir.soul,
+        row_index=elixir.current_df_row_index,
+        edifact_struktur_cell_left_indent_position=elixir.edifact_struktur_left_indent_position,
     )
 
     # BEDINGUNG COLUMN
@@ -364,9 +364,9 @@ def write_dataelement_to_dataframe(
             if edifact_struktur_cell.paragraphs[0].text != "":
                 parse_paragraph_in_edifact_struktur_column_to_dataframe(
                     paragraphs=edifact_struktur_cell.paragraphs,
-                    dataframe=dataframe,
-                    row_index=row_index,
-                    edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
+                    dataframe=elixir.soul,
+                    row_index=elixir.current_df_row_index,
+                    edifact_struktur_cell_left_indent_position=elixir.edifact_struktur_left_indent_position,
                 )
             else:
                 elixir.soul.at[elixir.current_df_row_index, "Segment Gruppe"] = elixir.soul.loc[
