@@ -325,10 +325,10 @@ class TestParseFunctions:
 
         # insert text
         self.test_cell.text = text_content
-        test_paragraph = self.test_cell.paragraphs[0]
+        test_paragraph = [self.test_cell.paragraphs[0]]
 
         # set left indent positon
-        test_paragraph.paragraph_format.left_indent = left_indent_position
+        test_paragraph[0].paragraph_format.left_indent = left_indent_position
 
         # Initial two dataframes ...
         df = pd.DataFrame(columns=expected_df_row.keys(), dtype="str")
@@ -340,7 +340,7 @@ class TestParseFunctions:
         expected_df.loc[row_index] = initial_dataframe_row
 
         parse_paragraph_in_edifact_struktur_column_to_dataframe(
-            paragraph=test_paragraph,
+            paragraphs=test_paragraph,
             dataframe=df,
             row_index=row_index,
             edifact_struktur_cell_left_indent_position=self.edifact_struktur_cell_left_indent_position_of_indicator_paragraph,

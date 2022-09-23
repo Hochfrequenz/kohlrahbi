@@ -14,7 +14,7 @@ from ahbextractor.helper.elixir import Elixir
 
 
 def parse_paragraph_in_edifact_struktur_column_to_dataframe(
-    paragraph: Paragraph,
+    paragraphs: List[Paragraph],
     dataframe: pd.DataFrame,
     row_index: int,
     edifact_struktur_cell_left_indent_position: int,
@@ -22,18 +22,18 @@ def parse_paragraph_in_edifact_struktur_column_to_dataframe(
     """Parses a paragraph in the edifact struktur column and puts the information into the appropriate columns
 
     Args:
-        paragraph (Paragraph): Current paragraph in the edifact struktur cell
+        paragraphs (Paragraph): Current paragraphs in the edifact struktur cell
         dataframe (pd.DataFrame): Contains all infos
         row_index (int): Current index of the DataFrame
         edifact_struktur_cell_left_indent_position (int): Position of the left indent from the indicator edifact
             struktur cell
     """
-
-    splitted_text_at_tabs = paragraph.text.split("\t")
-    tab_count = paragraph.text.count("\t")
+    joined_text = " ".join(p.text for p in paragraphs)
+    splitted_text_at_tabs = joined_text.split("\t")
+    tab_count = joined_text.count("\t")
 
     # Check if the line starts on the far left
-    if paragraph.paragraph_format.left_indent != edifact_struktur_cell_left_indent_position:
+    if paragraphs[0].paragraph_format.left_indent != edifact_struktur_cell_left_indent_position:
 
         if tab_count == 2:
             dataframe.at[row_index, "Segment Gruppe"] = splitted_text_at_tabs[0]
@@ -42,13 +42,14 @@ def parse_paragraph_in_edifact_struktur_column_to_dataframe(
         elif tab_count == 1:
             dataframe.at[row_index, "Segment Gruppe"] = splitted_text_at_tabs[0]
             dataframe.at[row_index, "Segment"] = splitted_text_at_tabs[1]
-        elif tab_count == 0 and not paragraph.text == "":
-            if paragraph.runs[0].bold:
+        elif tab_count == 0 and joined_text.strip() != "":
+            if paragraphs[0].runs[0].bold:
                 # Segmentgruppe: SG8
                 dataframe.at[row_index, "Segment Gruppe"] = splitted_text_at_tabs[0]
             else:
                 # Segmentname: Referenzen auf die ID der\nTranche
-                if dataframe.at[row_index, "Segment Gruppe"] == "":
+                _sg_text = dataframe.at[row_index, "Segment Gruppe"]
+                if _sg_text == "":
                     # Referenzen auf die ID der
                     dataframe.at[row_index, "Segment Gruppe"] = splitted_text_at_tabs[0]
                 else:
@@ -155,7 +156,7 @@ def write_segment_name_to_dataframe(
     # EDIFACT STRUKTUR COLUMN
     for paragraph in edifact_struktur_cell.paragraphs:
         parse_paragraph_in_edifact_struktur_column_to_dataframe(
-            paragraph=paragraph,
+            paragraphs=[paragraph],
             dataframe=elixir.soul,
             row_index=elixir.current_df_row_index,
             edifact_struktur_cell_left_indent_position=elixir.edifact_struktur_left_indent_position,
@@ -195,7 +196,8 @@ def write_segmentgruppe_to_dataframe(
 
     # EDIFACT STRUKTUR COLUMN
     parse_paragraph_in_edifact_struktur_column_to_dataframe(
-        paragraph=edifact_struktur_cell.paragraphs[0],
+        # there might be 2 paragraphs in case of multi line headings, so we're handing over all the paragraphs
+        paragraphs=edifact_struktur_cell.paragraphs,
         dataframe=elixir.soul,
         row_index=elixir.current_df_row_index,
         edifact_struktur_cell_left_indent_position=elixir.edifact_struktur_left_indent_position,
@@ -235,7 +237,7 @@ def write_segment_to_dataframe(
 
     # EDIFACT STRUKTUR COLUMN
     parse_paragraph_in_edifact_struktur_column_to_dataframe(
-        paragraph=edifact_struktur_cell.paragraphs[0],
+        paragraphs=edifact_struktur_cell.paragraphs,
         dataframe=elixir.soul,
         row_index=elixir.current_df_row_index,
         edifact_struktur_cell_left_indent_position=elixir.edifact_struktur_left_indent_position,
@@ -318,7 +320,7 @@ def write_dataelement_to_dataframe(
 
     # EDIFACT STRUKTUR COLUMN
     parse_paragraph_in_edifact_struktur_column_to_dataframe(
-        paragraph=edifact_struktur_cell.paragraphs[0],
+        paragraphs=edifact_struktur_cell.paragraphs,
         dataframe=elixir.soul,
         row_index=elixir.current_df_row_index,
         edifact_struktur_cell_left_indent_position=elixir.edifact_struktur_left_indent_position,
@@ -362,7 +364,7 @@ def write_dataelement_to_dataframe(
 
             if edifact_struktur_cell.paragraphs[0].text != "":
                 parse_paragraph_in_edifact_struktur_column_to_dataframe(
-                    paragraph=edifact_struktur_cell.paragraphs[0],
+                    paragraphs=edifact_struktur_cell.paragraphs,
                     dataframe=elixir.soul,
                     row_index=elixir.current_df_row_index,
                     edifact_struktur_cell_left_indent_position=elixir.edifact_struktur_left_indent_position,
