@@ -74,8 +74,7 @@ class Elixir:
             "Codes und Qualifier",
             "Beschreibung",
         ]
-        columns = base_columns + pruefidentifikatoren
-        columns.append("Bedingung")
+        columns = base_columns + pruefidentifikatoren + ["Bedingung"]
 
         # Initialize help variables
         last_two_row_types: List = [RowType.EMPTY, RowType.EMPTY]
