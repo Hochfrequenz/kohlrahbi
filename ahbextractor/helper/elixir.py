@@ -67,14 +67,14 @@ class Elixir:
         middle_cell_left_indent_position = middle_cell_indicator_paragraph.paragraph_format.left_indent
         tabstop_positions = get_tabstop_positions(middle_cell_indicator_paragraph)
 
-        base_columns: List = [
+        base_column_names: List = [
             "Segment Gruppe",
             "Segment",
             "Datenelement",
             "Codes und Qualifier",
             "Beschreibung",
         ]
-        columns = base_columns + pruefidentifikatoren + ["Bedingung"]
+        columns = base_column_names + pruefidentifikatoren + ["Bedingung"]
 
         # Initialize help variables
         last_two_row_types: List = [RowType.EMPTY, RowType.EMPTY]
