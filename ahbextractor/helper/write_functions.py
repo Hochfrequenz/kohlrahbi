@@ -42,7 +42,7 @@ def parse_paragraph_in_edifact_struktur_column_to_dataframe(
         elif tab_count == 1:
             dataframe.at[row_index, "Segment Gruppe"] = splitted_text_at_tabs[0]
             dataframe.at[row_index, "Segment"] = splitted_text_at_tabs[1]
-        elif tab_count == 0 and not joined_text == "":
+        elif tab_count == 0 and joined_text != "":
             if paragraphs[0].runs[0].bold:
                 # Segmentgruppe: SG8
                 dataframe.at[row_index, "Segment Gruppe"] = splitted_text_at_tabs[0]
@@ -196,7 +196,8 @@ def write_segmentgruppe_to_dataframe(
 
     # EDIFACT STRUKTUR COLUMN
     parse_paragraph_in_edifact_struktur_column_to_dataframe(
-        paragraphs=edifact_struktur_cell.paragraphs,  # there might be 2 paragraphs in case of multi line headings, so we're handing over all the paragraphs
+        # there might be 2 paragraphs in case of multi line headings, so we're handing over all the paragraphs
+        paragraphs=edifact_struktur_cell.paragraphs,
         dataframe=elixir.soul,
         row_index=elixir.current_df_row_index,
         edifact_struktur_cell_left_indent_position=elixir.edifact_struktur_left_indent_position,
