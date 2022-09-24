@@ -124,6 +124,7 @@ def read_table(
             )
 
         else:
+            elixir.current_df_row_index = elixir.current_df_row_index - 1
             write_new_row_in_dataframe(
                 row_type=elixir.last_two_row_types[1],
                 table=table,
