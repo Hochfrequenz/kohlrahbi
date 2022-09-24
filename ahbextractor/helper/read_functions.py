@@ -5,7 +5,6 @@ import re
 from pathlib import Path
 from typing import List, Tuple
 
-import pandas as pd  # type:ignore[import]
 from docx.document import Document  # type:ignore[import]
 from docx.oxml.table import CT_Tbl  # type:ignore[import]
 from docx.oxml.text.paragraph import CT_P  # type:ignore[import]
