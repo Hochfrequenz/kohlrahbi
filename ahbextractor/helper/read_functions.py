@@ -114,6 +114,8 @@ def read_table(
         )
 
         # write actual row into dataframe
+
+        # this case covers the "normal" docx table row
         if not (current_row_type is RowType.EMPTY and elixir.last_two_row_types[0] is RowType.HEADER):
             write_new_row_in_dataframe(
                 row_type=current_row_type,
@@ -122,7 +124,10 @@ def read_table(
                 index_for_middle_column=index_for_middle_column,
                 elixir=elixir,
             )
-
+        # this case covers the page break situation
+        # the current RowType is EMPTY and the row before is of RowTyp HEADER
+        # important is here to decrease the current_df_row_index by one to avoid an empty row in the output file
+        # which only contains the Bedingung.
         else:
             elixir.current_df_row_index = elixir.current_df_row_index - 1
             write_new_row_in_dataframe(
