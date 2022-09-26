@@ -5,6 +5,7 @@ import docx
 import pandas as pd
 import pytest
 
+from ahbextractor.helper.elixir import Elixir
 from ahbextractor.helper.write_functions import (
     parse_bedingung_cell,
     parse_paragraph_in_edifact_struktur_column_to_dataframe,
@@ -324,10 +325,10 @@ class TestParseFunctions:
 
         # insert text
         self.test_cell.text = text_content
-        test_paragraph = self.test_cell.paragraphs[0]
+        test_paragraph = [self.test_cell.paragraphs[0]]
 
         # set left indent positon
-        test_paragraph.paragraph_format.left_indent = left_indent_position
+        test_paragraph[0].paragraph_format.left_indent = left_indent_position
 
         # Initial two dataframes ...
         df = pd.DataFrame(columns=expected_df_row.keys(), dtype="str")
@@ -339,7 +340,7 @@ class TestParseFunctions:
         expected_df.loc[row_index] = initial_dataframe_row
 
         parse_paragraph_in_edifact_struktur_column_to_dataframe(
-            paragraph=test_paragraph,
+            paragraphs=test_paragraph,
             dataframe=df,
             row_index=row_index,
             edifact_struktur_cell_left_indent_position=self.edifact_struktur_cell_left_indent_position_of_indicator_paragraph,
@@ -509,7 +510,14 @@ class TestWriteFunctions:
         df.loc[row_index] = initial_dataframe_row
         expected_df.loc[row_index] = initial_dataframe_row
 
-        return row_index, df, expected_df
+        elixir = Elixir(
+            soul=df,
+            edifact_struktur_left_indent_position=self.edifact_struktur_cell_left_indent_position_of_indicator_paragraph,
+            middle_cell_left_indent_position=self.middle_cell_left_indent_position_of_indicator_paragraph,
+            tabstop_positions=self.middle_cell_tabstop_positions_of_indicator_paragraph,
+        )
+
+        return row_index, elixir, expected_df
 
     @pytest.mark.parametrize(
         "row_cells, expected_df_rows",
@@ -580,22 +588,18 @@ class TestWriteFunctions:
         row_cells,
         expected_df_rows,
     ):
-        row_index, df, expected_df = self._prepare_docx_table_row(row_cells, expected_df_rows)
+        row_index, elixir, expected_df = self._prepare_docx_table_row(row_cells, expected_df_rows)
 
         write_segment_name_to_dataframe(
-            dataframe=df,
-            row_index=row_index,
+            elixir=elixir,
             edifact_struktur_cell=self.edifact_struktur_cell,
-            edifact_struktur_cell_left_indent_position=self.edifact_struktur_cell_left_indent_position_of_indicator_paragraph,
             middle_cell=self.middle_cell,
-            middle_cell_left_indent_position=self.middle_cell_left_indent_position_of_indicator_paragraph,
-            tabstop_positions=self.middle_cell_tabstop_positions_of_indicator_paragraph,
             bedingung_cell=self.bedingung_cell,
         )
 
         expected_df.loc[row_index] = expected_df_rows[0]
 
-        assert expected_df.equals(df)
+        assert expected_df.equals(elixir.soul)
 
     @pytest.mark.parametrize(
         "row_cells, expected_df_rows",
@@ -708,22 +712,18 @@ nicht vorhanden""",
         row_cells,
         expected_df_rows,
     ):
-        row_index, df, expected_df = self._prepare_docx_table_row(row_cells, expected_df_rows)
+        row_index, elixir, expected_df = self._prepare_docx_table_row(row_cells, expected_df_rows)
 
         write_segmentgruppe_to_dataframe(
-            dataframe=df,
-            row_index=row_index,
+            elixir=elixir,
             edifact_struktur_cell=self.edifact_struktur_cell,
-            edifact_struktur_cell_left_indent_position=self.edifact_struktur_cell_left_indent_position_of_indicator_paragraph,
             middle_cell=self.middle_cell,
-            middle_cell_left_indent_position=self.middle_cell_left_indent_position_of_indicator_paragraph,
-            tabstop_positions=self.middle_cell_tabstop_positions_of_indicator_paragraph,
             bedingung_cell=self.bedingung_cell,
         )
 
         expected_df.loc[row_index] = expected_df_rows[0]
 
-        assert expected_df.equals(df)
+        assert expected_df.equals(elixir.soul)
 
     @pytest.mark.parametrize(
         "row_cells, expected_df_rows",
@@ -839,22 +839,18 @@ enthalten""",
         row_cells,
         expected_df_rows,
     ):
-        row_index, df, expected_df = self._prepare_docx_table_row(row_cells, expected_df_rows)
+        row_index, elixir, expected_df = self._prepare_docx_table_row(row_cells, expected_df_rows)
 
         write_segment_to_dataframe(
-            dataframe=df,
-            row_index=row_index,
+            elixir=elixir,
             edifact_struktur_cell=self.edifact_struktur_cell,
-            edifact_struktur_cell_left_indent_position=self.edifact_struktur_cell_left_indent_position_of_indicator_paragraph,
             middle_cell=self.middle_cell,
-            middle_cell_left_indent_position=self.middle_cell_left_indent_position_of_indicator_paragraph,
-            tabstop_positions=self.middle_cell_tabstop_positions_of_indicator_paragraph,
             bedingung_cell=self.bedingung_cell,
         )
 
         expected_df.loc[row_index] = expected_df_rows[0]
 
-        assert expected_df.equals(df)
+        assert expected_df.equals(elixir.soul)
 
     @pytest.mark.parametrize(
         "row_cells, expected_df_rows",
@@ -938,22 +934,18 @@ enthalten""",
         expected_df_rows,
     ):
 
-        row_index, df, expected_df = self._prepare_docx_table_row(row_cells, expected_df_rows)
+        row_index, elixir, expected_df = self._prepare_docx_table_row(row_cells, expected_df_rows)
 
         write_dataelement_to_dataframe(
-            dataframe=df,
-            row_index=row_index,
+            elixir=elixir,
             edifact_struktur_cell=self.edifact_struktur_cell,
-            edifact_struktur_cell_left_indent_position=self.edifact_struktur_cell_left_indent_position_of_indicator_paragraph,
             middle_cell=self.middle_cell,
-            middle_cell_left_indent_position=self.middle_cell_left_indent_position_of_indicator_paragraph,
-            tabstop_positions=self.middle_cell_tabstop_positions_of_indicator_paragraph,
             bedingung_cell=self.bedingung_cell,
         )
 
         expected_df.loc[row_index] = expected_df_rows[0]
 
-        assert expected_df.equals(df)
+        assert expected_df.equals(elixir.soul)
 
     @pytest.mark.parametrize(
         "row_cells, expected_df_rows",
@@ -1057,16 +1049,12 @@ enthalten""",
         row_cells,
         expected_df_rows,
     ):
-        row_index, df, expected_df = self._prepare_docx_table_row(row_cells, expected_df_rows)
+        row_index, elixir, expected_df = self._prepare_docx_table_row(row_cells, expected_df_rows)
 
         write_dataelement_to_dataframe(
-            dataframe=df,
-            row_index=row_index,
+            elixir=elixir,
             edifact_struktur_cell=self.edifact_struktur_cell,
-            edifact_struktur_cell_left_indent_position=self.edifact_struktur_cell_left_indent_position_of_indicator_paragraph,
             middle_cell=self.middle_cell,
-            middle_cell_left_indent_position=self.middle_cell_left_indent_position_of_indicator_paragraph,
-            tabstop_positions=self.middle_cell_tabstop_positions_of_indicator_paragraph,
             bedingung_cell=self.bedingung_cell,
         )
 
@@ -1075,4 +1063,4 @@ enthalten""",
             expected_df.loc[row_index] = expected_df_row
             row_index += 1
 
-        assert expected_df.equals(df)
+        assert expected_df.equals(elixir.soul)

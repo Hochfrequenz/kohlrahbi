@@ -3,9 +3,8 @@ A collection of functions to get information from AHB tables.
 """
 import re
 from pathlib import Path
-from typing import List, Tuple, Union
+from typing import List, Tuple
 
-import pandas as pd  # type:ignore[import]
 from docx.document import Document  # type:ignore[import]
 from docx.oxml.table import CT_Tbl  # type:ignore[import]
 from docx.oxml.text.paragraph import CT_P  # type:ignore[import]
@@ -13,6 +12,7 @@ from docx.table import Table, _Cell  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
 
 from ahbextractor.helper.check_row_type import RowType, define_row_type
+from ahbextractor.helper.elixir import Elixir
 from ahbextractor.helper.export_functions import (
     export_all_pruefidentifikatoren_in_one_file,
     export_single_pruefidentifikator,
@@ -44,33 +44,10 @@ def get_all_paragraphs_and_tables(parent):
             yield Table(child, parent)
 
 
-def get_tabstop_positions(paragraph: Paragraph) -> List[int]:
-    """Find all tabstop positions in a given paragraph.
-
-    Mainly the tabstop positions of cells from the middle column are determined
-
-    Args:
-        paragraph (Paragraph):
-
-    Returns:
-        List[int]: All tabstop positions in the given paragraph
-    """
-    tabstop_positions: List = []
-    # pylint: disable=protected-access
-    for tabstop in paragraph.paragraph_format.tab_stops._pPr.tabs:
-        tabstop_positions.append(tabstop.pos)
-    return tabstop_positions
-
-
 # pylint: disable=too-many-arguments
 def read_table(
+    elixir: Elixir,
     table: Table,
-    dataframe: pd.DataFrame,
-    current_df_row_index: int,
-    last_two_row_types: List[RowType],
-    edifact_struktur_cell_left_indent_position: int,
-    middle_cell_left_indent_position: int,
-    tabstop_positions: List[int],
 ) -> Tuple[List[RowType], int]:
     """
     Iterates through all rows in a given table and writes all extracted infos in a DataFrame.
@@ -97,7 +74,7 @@ def read_table(
     for row in range(len(table.rows)):
 
         # initial empty list for the next row in the dataframe
-        dataframe.loc[current_df_row_index] = (len(dataframe.columns)) * [""]
+        elixir.soul.loc[elixir.current_df_row_index] = (len(elixir.soul.columns)) * [""]
 
         row_cell_texts_as_list = [cell.text for cell in table.row_cells(row)]
 
@@ -133,105 +110,39 @@ def read_table(
         # check for row type
         current_row_type = define_row_type(
             edifact_struktur_cell=current_edifact_struktur_cell,
-            left_indent_position=edifact_struktur_cell_left_indent_position,
+            left_indent_position=elixir.edifact_struktur_left_indent_position,
         )
 
         # write actual row into dataframe
-        if not (current_row_type is RowType.EMPTY and last_two_row_types[0] is RowType.HEADER):
-            current_df_row_index = write_new_row_in_dataframe(
+
+        # this case covers the "normal" docx table row
+        if not (current_row_type is RowType.EMPTY and elixir.last_two_row_types[0] is RowType.HEADER):
+            write_new_row_in_dataframe(
                 row_type=current_row_type,
                 table=table,
                 row=row,
                 index_for_middle_column=index_for_middle_column,
-                dataframe=dataframe,
-                dataframe_row_index=current_df_row_index,
-                edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
-                middle_cell_left_indent_position=middle_cell_left_indent_position,
-                tabstop_positions=tabstop_positions,
+                elixir=elixir,
             )
-
+        # this case covers the page break situation
+        # the current RowType is EMPTY and the row before is of RowTyp HEADER
+        # important is here to decrease the current_df_row_index by one to avoid an empty row in the output file
+        # which only contains the Bedingung.
         else:
-            current_df_row_index = write_new_row_in_dataframe(
-                row_type=last_two_row_types[1],
+            elixir.current_df_row_index = elixir.current_df_row_index - 1
+            write_new_row_in_dataframe(
+                row_type=elixir.last_two_row_types[1],
                 table=table,
                 row=row,
                 index_for_middle_column=index_for_middle_column,
-                dataframe=dataframe,
-                dataframe_row_index=current_df_row_index,
-                edifact_struktur_cell_left_indent_position=edifact_struktur_cell_left_indent_position,
-                middle_cell_left_indent_position=middle_cell_left_indent_position,
-                tabstop_positions=tabstop_positions,
+                elixir=elixir,
             )
 
         # remember last row type for empty cells
-        last_two_row_types[1] = last_two_row_types[0]
-        last_two_row_types[0] = current_row_type
+        elixir.last_two_row_types[1] = elixir.last_two_row_types[0]
+        elixir.last_two_row_types[0] = current_row_type
 
-    return last_two_row_types, current_df_row_index
-
-
-def initial_setup_for_tables_with_pruefidentifikatoren(
-    item: Union[Paragraph, Table]
-) -> Tuple[List[str], pd.DataFrame, int, int, List[int], List[RowType], int]:
-    """Prepare DataFrame for a new table with new Prüfidentifikatoren
-
-
-
-    Args:
-        item (Union[Paragraph, Table]): A paragraph or table from the docx
-
-    Returns:
-        Tuple[List[str], pd.DataFrame, int, int, List[int], List[RowType], int]: Returns
-            all detected Prüfidentifikatoren,
-            prepared DataFrame,
-            left intend position of the Edifact struktur cell,
-            left intend position of the middle cell,
-            list of tabstop positions of the middle cell,
-            list of the last two RowTypes,
-            the current row index for the DataFrame
-    """
-    header_cells = [cell.text for cell in item.row_cells(0)]
-    look_up_term = "Prüfidentifikator"
-    cutter_index = header_cells[-1].find(look_up_term) + 1
-    # +1 cause of \t after Prüfidentifikator
-    pruefidentifikatoren: List = header_cells[-1][cutter_index + len(look_up_term) :].split("\t")
-
-    # edifact struktur cell
-    edifact_struktur_indicator_paragraph = item.cell(row_idx=4, col_idx=0).paragraphs[0]
-    edifact_struktur_left_indent_position = edifact_struktur_indicator_paragraph.paragraph_format.left_indent
-
-    # middle cell
-    middle_cell_indicator_paragraph = item.cell(row_idx=4, col_idx=1).paragraphs[0]
-    middle_cell_left_indent_position = middle_cell_indicator_paragraph.paragraph_format.left_indent
-    tabstop_positions: List = get_tabstop_positions(middle_cell_indicator_paragraph)
-
-    base_columns: List = [
-        "Segment Gruppe",
-        "Segment",
-        "Datenelement",
-        "Codes und Qualifier",
-        "Beschreibung",
-    ]
-    columns = base_columns + pruefidentifikatoren
-    columns.append("Bedingung")
-
-    df = pd.DataFrame(
-        columns=columns,
-        dtype="str",
-    )
-    # Initialize help variables
-    last_two_row_types: List = [RowType.EMPTY, RowType.EMPTY]
-    current_df_row_index: int = 0
-
-    return (
-        pruefidentifikatoren,
-        df,
-        edifact_struktur_left_indent_position,
-        middle_cell_left_indent_position,
-        tabstop_positions,
-        last_two_row_types,
-        current_df_row_index,
-    )
+    return elixir.last_two_row_types, elixir.current_df_row_index
 
 
 # pylint: disable=inconsistent-return-statements
@@ -247,7 +158,7 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
         int: Error code, 0 means success
     """
 
-    pruefidentifikatoren: List[str] = []
+    is_initial_run = True
 
     # Iterate through the whole word document
     for item in get_all_paragraphs_and_tables(parent=document):
@@ -263,18 +174,17 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
             # Stop iterating at the section "Änderungshistorie"
             if current_chapter_title == "Änderungshistorie":
                 # export last pruefidentifikatoren in AHB
-                for pruefi in pruefidentifikatoren:
-                    if not _pruefi_pattern.match(pruefi):
-                        continue
+                for pruefi in elixir.pruefidentifikatoren:
+
                     export_single_pruefidentifikator(
                         pruefi=pruefi,
-                        df=df,  # type:ignore[has-type]
+                        df=elixir.soul,
                         output_directory_path=output_directory_path,
                     )
 
                     export_all_pruefidentifikatoren_in_one_file(
                         pruefi=pruefi,
-                        df=df,  # type:ignore[has-type]
+                        df=elixir.soul,
                         output_directory_path=output_directory_path,
                         file_name=ahb_file_name,
                     )
@@ -286,54 +196,36 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
         elif isinstance(item, Table) and item.cell(row_idx=0, col_idx=0).text == "EDIFACT Struktur":
             # before we go to the next pruefidentifikatoren we save the current ones
             # but at the first loop we check if list of pruefidentifikatoren is empty
-            if pruefidentifikatoren:
-                for pruefi in pruefidentifikatoren:
-                    if not _pruefi_pattern.match(pruefi):
-                        continue
+            if is_initial_run is False:
+                for pruefi in elixir.pruefidentifikatoren:
+
                     export_single_pruefidentifikator(
                         pruefi=pruefi,
-                        df=df,  # type:ignore[has-type]
+                        df=elixir.soul,
                         output_directory_path=output_directory_path,
                     )
 
                     export_all_pruefidentifikatoren_in_one_file(
                         pruefi=pruefi,
-                        df=df,  # type:ignore[has-type]
+                        df=elixir.soul,
                         output_directory_path=output_directory_path,
                         file_name=ahb_file_name,
                     )
 
-            # Prepare a DataFrame, get all characteristic postions and initialize help variables
-            (
-                pruefidentifikatoren,
-                df,
-                edifact_struktur_left_indent_position,
-                middle_cell_left_indent_position,
-                tabstop_positions,
-                last_two_row_types,
-                current_df_row_index,
-            ) = initial_setup_for_tables_with_pruefidentifikatoren(item=item)
+            elixir = Elixir.from_table(docx_table=item)
 
-            print("\n🔍 Extracting Pruefidentifikatoren:", ", ".join(pruefidentifikatoren))
+            print("\n🔍 Extracting Pruefidentifikatoren:", ", ".join(elixir.pruefidentifikatoren))
 
-            last_two_row_types, current_df_row_index = read_table(
+            read_table(
+                elixir=elixir,
                 table=item,
-                dataframe=df,
-                current_df_row_index=current_df_row_index,
-                last_two_row_types=last_two_row_types,
-                edifact_struktur_cell_left_indent_position=edifact_struktur_left_indent_position,
-                middle_cell_left_indent_position=middle_cell_left_indent_position,
-                tabstop_positions=tabstop_positions,
             )
 
-        elif isinstance(item, Table) and "df" in locals():
-            last_two_row_types, current_df_row_index = read_table(
+            is_initial_run = False
+
+        elif isinstance(item, Table) and "elixir" in locals():
+            read_table(
+                elixir=elixir,
                 table=item,
-                dataframe=df,
-                current_df_row_index=current_df_row_index,
-                last_two_row_types=last_two_row_types,
-                edifact_struktur_cell_left_indent_position=edifact_struktur_left_indent_position,
-                middle_cell_left_indent_position=middle_cell_left_indent_position,
-                tabstop_positions=tabstop_positions,
             )
     return 0  # you need to return something when the type hint states that you return something

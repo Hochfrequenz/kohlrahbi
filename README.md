@@ -51,6 +51,31 @@ You should see some output like this in your terminal
 💾 Saved file for Pruefidentifikator 11041
 ```
 
+## Persona
+
+Jochen möchte gerne die AHB Tabelle in maschinenlesbarer Form.
+
+
+## Workflow
+
+```mermaid
+flowchart TB
+    S[Start] --> RD[Read docx]
+    RD --> RPT[Read all paragraphs <br> and tables]
+    RPT --> I[Start iterating]
+    I --> NI[Read next item]
+    %% check for text paragraph %%
+    NI --> CTP{Text Paragraph?}
+    CTP -- Yes --> NI
+    CTP -- No --> CCST{Is item just<br>Chapter or Section Title?}
+    CCST -- Yes --> CTAenderunghistorie{Is Chapter Title<br>'Änderungshistorie'?}
+    CTAenderunghistorie -- Yes --> EXPORT[Export Extract]
+    CCST -- No --> CT{Is item a table<br>with prüfis?}
+    CT -- Yes --> Extract[Create Extract]
+```
+
+
+
 ## PDF Documents
 
 The following sections give a short overview where to find the start and end for the Formate.
