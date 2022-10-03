@@ -10,7 +10,7 @@ import docx  # type:ignore[import]
 from ahbextractor.helper.read_functions import get_ahb_extract
 
 
-def main(file_paths: List[Path]):
+def main(file_paths: List[Path]) -> None:
     """
     Main function of the module ahbextractor.
     It reads the docx files and calls the function to extract all Prüfindentifikatoren tables.
