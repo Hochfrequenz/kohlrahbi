@@ -49,12 +49,9 @@ def is_row_segmentname(edifact_struktur_cell: _Cell) -> bool:
         bool:
     """
     try:
-        if edifact_struktur_cell.paragraphs[0].runs[0].font.color.rgb == RGBColor(128, 128, 128):  # grey
-            return True
+        return edifact_struktur_cell.paragraphs[0].runs[0].font.color.rgb == RGBColor(128, 128, 128)  # grey
     except IndexError:
         return False
-
-    return False
 
 
 def is_row_segmentgruppe(edifact_struktur_cell: _Cell, left_indent_position: int) -> bool:
@@ -68,14 +65,11 @@ def is_row_segmentgruppe(edifact_struktur_cell: _Cell, left_indent_position: int
     Returns:
         bool:
     """
-    if (
+    return (
         not edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == left_indent_position
-        and not "\t" in edifact_struktur_cell.text
+        and "\t" not in edifact_struktur_cell.text
         and not edifact_struktur_cell.text == ""
-    ):
-        return True
-
-    return False
+    )
 
 
 def is_row_segment(edifact_struktur_cell: _Cell, left_indent_position: int) -> bool:
@@ -92,7 +86,7 @@ def is_row_segment(edifact_struktur_cell: _Cell, left_indent_position: int) -> b
     # |   UNH    |
     if (
         edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == left_indent_position
-        and not "\t" in edifact_struktur_cell.text
+        and "\t" not in edifact_struktur_cell.text
         and not edifact_struktur_cell.text == ""
     ):
         return True
@@ -144,9 +138,7 @@ def is_row_empty(edifact_struktur_cell: _Cell) -> bool:
     Returns:
         bool:
     """
-    if edifact_struktur_cell.text == "":
-        return True
-    return False
+    return edifact_struktur_cell.text == ""
 
 
 def define_row_type(edifact_struktur_cell: _Cell, left_indent_position: int) -> RowType:

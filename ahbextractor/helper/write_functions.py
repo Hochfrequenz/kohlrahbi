@@ -3,7 +3,7 @@ Collection of functions to write the extracted infos from the AHB tables into a 
 """
 
 import re
-from typing import List
+from typing import Callable, Iterable, List, TypeVar
 
 import pandas as pd  # type:ignore[import]
 from docx.table import Table, _Cell  # type:ignore[import]
@@ -18,7 +18,7 @@ def parse_paragraph_in_edifact_struktur_column_to_dataframe(
     dataframe: pd.DataFrame,
     row_index: int,
     edifact_struktur_cell_left_indent_position: int,
-):
+) -> None:
     """Parses a paragraph in the edifact struktur column and puts the information into the appropriate columns
 
     Args:
@@ -75,7 +75,7 @@ def parse_paragraph_in_middle_column_to_dataframe(
     row_index: int,
     left_indent_position: int,
     tabstop_positions: List[int],
-):
+) -> None:
     """Parses a paragraph in the middle column and puts the information into the appropriate columns
 
     Args:
@@ -119,7 +119,7 @@ def parse_paragraph_in_middle_column_to_dataframe(
     #     raise NotImplementedError(f"Could not parse paragraph in middle cell with {paragraph.text}")
 
 
-def parse_bedingung_cell(bedingung_cell: _Cell, dataframe: pd.DataFrame, row_index: int):
+def parse_bedingung_cell(bedingung_cell: _Cell, dataframe: pd.DataFrame, row_index: int) -> None:
     """Parses a cell in the Bedingung column and puts the information into the in the appropriate column
 
     Args:
@@ -143,7 +143,7 @@ def write_segment_name_to_dataframe(
     edifact_struktur_cell: _Cell,
     middle_cell: _Cell,
     bedingung_cell: _Cell,
-):
+) -> None:
     """Writes all infos from a segment name row into a DataFrame.
 
     Args:
@@ -184,7 +184,7 @@ def write_segmentgruppe_to_dataframe(
     edifact_struktur_cell: _Cell,
     middle_cell: _Cell,
     bedingung_cell: _Cell,
-):
+) -> None:
     """Writes all infos from a segmentgruppe row into a DataFrame.
 
     Args:
@@ -225,7 +225,7 @@ def write_segment_to_dataframe(
     edifact_struktur_cell: _Cell,
     middle_cell: _Cell,
     bedingung_cell: _Cell,
-):
+) -> None:
     """Writes all infos from a segment row into a DataFrame.
 
     Args:
@@ -257,7 +257,11 @@ def write_segment_to_dataframe(
     parse_bedingung_cell(bedingung_cell=bedingung_cell, dataframe=elixir.soul, row_index=elixir.current_df_row_index)
 
 
-def count_matching(condition, condition_argument, seq):
+T = TypeVar("T")
+X = TypeVar("X")
+
+
+def count_matching(condition: Callable[[T, X], bool], condition_argument: X, seq: Iterable[T]):
     """Returns the amount of items in seq that return true from condition"""
     return sum(condition(item, condition_argument) for item in seq)
 
@@ -308,7 +312,7 @@ def write_dataelement_to_dataframe(
     edifact_struktur_cell: _Cell,
     middle_cell: _Cell,
     bedingung_cell: _Cell,
-):
+) -> int:
     """Writes all infos from a dataelement row into a DataFrame.
 
     Args:
@@ -409,7 +413,7 @@ def write_new_row_in_dataframe(
     table: Table,
     row: int,
     index_for_middle_column: int,
-):
+) -> None:
     """Writes the current row of the current table into the DataFrame depending on the type of the row
 
     Args:

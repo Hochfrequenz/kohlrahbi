@@ -49,7 +49,7 @@ class Elixir:
     # to decouple the data structure of Elixir from the input data
     # more background can be found on https://www.attrs.org/en/stable/init.html#initialization
     @classmethod
-    def from_table(cls, docx_table: Table):
+    def from_table(cls, docx_table: Table) -> "Elixir":
         """Prepare DataFrame for a new table with new Prüfidentifikatoren
 
         Args:
