@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 from typing import List
 
-import docx
+import docx  # type:ignore[import]
 
 from ahbextractor.helper.read_functions import get_ahb_extract
 

@@ -12,7 +12,7 @@ save all Prüfidentifikators of one AHB in one Excel file.
 import re
 from pathlib import Path
 
-import pandas as pd
+import pandas as pd  # type:ignore[import]
 
 
 def beautify_bedingungen(bedingung: str) -> str:
@@ -131,4 +131,4 @@ def export_all_pruefidentifikatoren_in_one_file(
         with pd.ExcelWriter(path=path_to_all_in_one_excel, mode="w", engine="openpyxl") as writer:
             df_to_export.to_excel(writer, sheet_name=f"{pruefi}")
     except PermissionError:
-        print(f"💥 The Excel file {file_name[:-5]}.xlsx is open. Please close this file and try again.")
+        print(f"💥 The Excel file {str(file_name)[:-5]}.xlsx is open. Please close this file and try again.")

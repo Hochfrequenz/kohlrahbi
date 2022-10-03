@@ -4,6 +4,8 @@
 #
 #    pip-compile requirements.in
 #
+attrs==22.1.0
+    # via -r requirements.in
 et-xmlfile==1.1.0
     # via openpyxl
 lxml==4.9.1
