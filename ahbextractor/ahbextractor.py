@@ -25,7 +25,7 @@ def main(file_paths: List[Path]):
             xlsx_out_path.mkdir()
         path_to_all_in_one_excel = xlsx_out_path / Path(str(ahb_file_path.parts[-1])[:-5] + ".xls")
 
-        # Remove old "all in one excel file" if it already exists
+        # Remove old "all in one Excel file" if it already exists
         if path_to_all_in_one_excel.exists():
             path_to_all_in_one_excel.unlink(missing_ok=False)
 
