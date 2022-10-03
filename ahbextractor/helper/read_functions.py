@@ -11,6 +11,7 @@ from docx.oxml.text.paragraph import CT_P  # type:ignore[import]
 from docx.table import Table, _Cell  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
 
+from ahbextractor.helper import logger
 from ahbextractor.helper.check_row_type import RowType, define_row_type
 from ahbextractor.helper.elixir import Elixir
 from ahbextractor.helper.export_functions import (
@@ -214,9 +215,8 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
                     )
 
             elixir = Elixir.from_table(docx_table=item)
-
-            print("\n🔍 Extracting Pruefidentifikatoren:", ", ".join(elixir.pruefidentifikatoren))
-
+            comma_separated_pruefis = ", ".join(elixir.pruefidentifikatoren)
+            logger.info("🔍 Extracting Pruefidentifikatoren: %s", comma_separated_pruefis)
             read_table(
                 elixir=elixir,
                 table=item,

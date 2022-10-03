@@ -14,6 +14,8 @@ from pathlib import Path
 
 import pandas as pd  # type:ignore[import]
 
+from ahbextractor.helper import logger
+
 
 def beautify_bedingungen(bedingung: str) -> str:
     """Inserts newline characters before each Bedingung key [###]
@@ -78,10 +80,10 @@ def export_single_pruefidentifikator(pruefi: str, df: pd.DataFrame, output_direc
     df_to_export.to_csv(csv_output_directory_path / f"{pruefi}.csv")
 
     df_to_export.to_json(json_output_directory_path / f"{pruefi}.json", force_ascii=False, orient="records")
-
+    excel_file_name = f"{pruefi}.xlsx"
     try:
         # https://github.com/PyCQA/pylint/issues/3060 pylint: disable=abstract-class-instantiated
-        with pd.ExcelWriter(xlsx_output_directory_path / f"{pruefi}.xlsx", engine="xlsxwriter") as writer:
+        with pd.ExcelWriter(xlsx_output_directory_path / excel_file_name, engine="xlsxwriter") as writer:
             df_to_export.to_excel(writer, sheet_name=f"{pruefi}")
             # pylint: disable=no-member
             workbook = writer.book
@@ -92,9 +94,9 @@ def export_single_pruefidentifikator(pruefi: str, df: pd.DataFrame, output_direc
             for column_letter, column_width in zip(column_letters, column_widths):
                 excel_header = f"{column_letter}:{column_letter}"
                 worksheet.set_column(excel_header, column_width, wrap_format)
-            print(f"💾 Saved files for Pruefidentifikator {pruefi}")
+            logger.info("💾 Saved files for Pruefidentifikator %s", pruefi)
     except PermissionError:
-        print(f"💥 The Excel file {pruefi}.xlsx is open. Please close this file and try again.")
+        logger.error("The Excel file %s is open. Please close this file and try again.", excel_file_name)
 
 
 def export_all_pruefidentifikatoren_in_one_file(
@@ -119,7 +121,7 @@ def export_all_pruefidentifikatoren_in_one_file(
     columns_to_export = list(df.columns)[:5] + [pruefi]
     columns_to_export.append("Bedingung")
     df_to_export = df[columns_to_export]
-
+    excel_file_name = str(file_name)[:-5] + ".xlsx"
     try:
         # https://github.com/PyCQA/pylint/issues/3060 pylint: disable=abstract-class-instantiated
         with pd.ExcelWriter(
@@ -131,4 +133,4 @@ def export_all_pruefidentifikatoren_in_one_file(
         with pd.ExcelWriter(path=path_to_all_in_one_excel, mode="w", engine="openpyxl") as writer:
             df_to_export.to_excel(writer, sheet_name=f"{pruefi}")
     except PermissionError:
-        print(f"💥 The Excel file {str(file_name)[:-5]}.xlsx is open. Please close this file and try again.")
+        logger.error("The Excel file %s is open. Please close this file and try again.", excel_file_name)

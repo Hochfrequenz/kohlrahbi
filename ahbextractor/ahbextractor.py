@@ -1,12 +1,12 @@
 """
 Main script of the AHB Extractor
 """
-import sys
 from pathlib import Path
 from typing import List
 
 import docx  # type:ignore[import]
 
+from ahbextractor import logger
 from ahbextractor.helper.read_functions import get_ahb_extract
 
 
@@ -16,7 +16,7 @@ def main(file_paths: List[Path]) -> None:
     It reads the docx files and calls the function to extract all Prüfindentifikatoren tables.
     """
     for ahb_file_path in file_paths:
-        print(f"Processing file {ahb_file_path}")
+        logger.info("Processing file '%s'", ahb_file_path)
         output_directory_path = Path.cwd() / Path("output")
         if not output_directory_path.exists():
             output_directory_path.mkdir()
@@ -32,7 +32,7 @@ def main(file_paths: List[Path]) -> None:
         try:
             doc = docx.Document(ahb_file_path)  # Creating word reader object.
 
-        except IOError as io_error:
-            sys.exit(f"There was an error opening the file {ahb_file_path}: {io_error}")
+        except IOError:
+            logger.exception("There was an error opening the file '%s'", ahb_file_path, exc_info=True)
 
         get_ahb_extract(document=doc, output_directory_path=output_directory_path, ahb_file_name=ahb_file_path)
