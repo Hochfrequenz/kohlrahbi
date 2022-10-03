@@ -174,7 +174,8 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
             # Stop iterating at the section "Änderungshistorie"
             if current_chapter_title == "Änderungshistorie":
                 # export last pruefidentifikatoren in AHB
-                for pruefi in elixir.pruefidentifikatoren:
+                # elixir should have been initialized here, because the document is at the end of the document
+                for pruefi in elixir.pruefidentifikatoren:  # pylint:disable=used-before-assignment
 
                     export_single_pruefidentifikator(
                         pruefi=pruefi,
