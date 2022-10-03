@@ -23,7 +23,7 @@ def get_tabstop_positions(paragraph: Paragraph) -> List[int]:
     Returns:
         List[int]: All tabstop positions in the given paragraph
     """
-    tabstop_positions: List = []
+    tabstop_positions: List[int] = []
     # pylint: disable=protected-access
     for tabstop in paragraph.paragraph_format.tab_stops._pPr.tabs:
         tabstop_positions.append(tabstop.pos)
