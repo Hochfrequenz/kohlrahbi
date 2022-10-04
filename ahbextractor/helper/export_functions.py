@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pandas as pd  # type:ignore[import]
 
-from ahbextractor.helper import logger
+from ahbextractor import logger
 
 
 def beautify_bedingungen(bedingung: str) -> str:
