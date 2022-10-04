@@ -11,7 +11,7 @@ from docx.oxml.text.paragraph import CT_P  # type:ignore[import]
 from docx.table import Table, _Cell  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
 
-from ahbextractor.helper import logger
+from ahbextractor import logger
 from ahbextractor.helper.check_row_type import RowType, define_row_type
 from ahbextractor.helper.elixir import Elixir
 from ahbextractor.helper.export_functions import (
