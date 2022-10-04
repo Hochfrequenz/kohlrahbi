@@ -66,7 +66,7 @@ def is_row_segmentgruppe(edifact_struktur_cell: _Cell, left_indent_position: int
         bool:
     """
     return (
-        not edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent == left_indent_position
+        edifact_struktur_cell.paragraphs[0].paragraph_format.left_indent != left_indent_position
         and "\t" not in edifact_struktur_cell.text
         and not edifact_struktur_cell.text == ""
     )
