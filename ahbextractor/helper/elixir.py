@@ -23,7 +23,7 @@ def get_tabstop_positions(paragraph: Paragraph) -> List[int]:
     Returns:
         List[int]: All tabstop positions in the given paragraph
     """
-    tabstop_positions: List = []
+    tabstop_positions: List[int] = []
     # pylint: disable=protected-access
     for tabstop in paragraph.paragraph_format.tab_stops._pPr.tabs:
         tabstop_positions.append(tabstop.pos)
@@ -49,7 +49,7 @@ class Elixir:
     # to decouple the data structure of Elixir from the input data
     # more background can be found on https://www.attrs.org/en/stable/init.html#initialization
     @classmethod
-    def from_table(cls, docx_table: Table):
+    def from_table(cls, docx_table: Table) -> "Elixir":
         """Prepare DataFrame for a new table with new Prüfidentifikatoren
 
         Args:

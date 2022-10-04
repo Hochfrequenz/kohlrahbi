@@ -14,7 +14,7 @@ from ahbextractor import ahbextractor
 
 if __name__ == "__main__":
     if sys.version_info.major != 3 or sys.version_info.minor < 9:
-        sys.exit("Python 3.9 is required to run this script")
+        sys.exit("Python >=3.9 is required to run this script")
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--path", "-p", help="relative path to either a directory that contains docx files or a single docx file"
@@ -28,7 +28,7 @@ if __name__ == "__main__":
     else:
         path_to_either_file_or_dir = Path(args.path)
     if path_to_either_file_or_dir.is_dir():
-        docx_file_paths = [x for x in path_to_either_file_or_dir.glob("**/*.docx")]  # all docx recursivly
+        docx_file_paths = [x for x in path_to_either_file_or_dir.glob("**/*.docx")]  # all docx recursively
         if len(docx_file_paths) == 0:
             sys.exit(f"No files found in {path_to_either_file_or_dir}")
     elif not path_to_either_file_or_dir.exists():

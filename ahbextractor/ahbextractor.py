@@ -10,7 +10,7 @@ import docx  # type:ignore[import]
 from ahbextractor.helper.read_functions import get_ahb_extract
 
 
-def main(file_paths: List[Path]):
+def main(file_paths: List[Path]) -> None:
     """
     Main function of the module ahbextractor.
     It reads the docx files and calls the function to extract all Prüfindentifikatoren tables.
@@ -25,7 +25,7 @@ def main(file_paths: List[Path]):
             xlsx_out_path.mkdir()
         path_to_all_in_one_excel = xlsx_out_path / Path(str(ahb_file_path.parts[-1])[:-5] + ".xls")
 
-        # Remove old "all in one excel file" if it already exists
+        # Remove old "all in one Excel file" if it already exists
         if path_to_all_in_one_excel.exists():
             path_to_all_in_one_excel.unlink(missing_ok=False)
 

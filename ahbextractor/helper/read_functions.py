@@ -3,7 +3,7 @@ A collection of functions to get information from AHB tables.
 """
 import re
 from pathlib import Path
-from typing import List, Tuple
+from typing import Generator, List, Tuple, Union
 
 from docx.document import Document  # type:ignore[import]
 from docx.oxml.table import CT_Tbl  # type:ignore[import]
@@ -22,7 +22,7 @@ from ahbextractor.helper.write_functions import write_new_row_in_dataframe
 _pruefi_pattern = re.compile(r"^\d{5}$")
 
 
-def get_all_paragraphs_and_tables(parent):
+def get_all_paragraphs_and_tables(parent: Union[Document, _Cell]) -> Generator[Union[Paragraph, Table], None, None]:
     """
     Yield each paragraph and table child within *parent*, in document order.
     Each returned value is an instance of either Table or Paragraph.
@@ -159,7 +159,7 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
     """
 
     is_initial_run = True
-
+    elixir: Elixir
     # Iterate through the whole word document
     for item in get_all_paragraphs_and_tables(parent=document):
 
@@ -174,7 +174,8 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
             # Stop iterating at the section "Änderungshistorie"
             if current_chapter_title == "Änderungshistorie":
                 # export last pruefidentifikatoren in AHB
-                for pruefi in elixir.pruefidentifikatoren:
+                # elixir should have been initialized here, because the document is at the end of the document
+                for pruefi in elixir.pruefidentifikatoren:  # pylint:disable=used-before-assignment
 
                     export_single_pruefidentifikator(
                         pruefi=pruefi,
