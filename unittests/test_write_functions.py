@@ -1,9 +1,9 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
-import docx
-import pandas as pd
-import pytest
+import docx  # type:ignore[import]
+import pandas as pd  # type:ignore[import]
+import pytest  # type:ignore[import]
 
 from ahbextractor.helper.elixir import Elixir
 from ahbextractor.helper.write_functions import (
@@ -423,8 +423,8 @@ nicht vorhanden
 @dataclass
 class _Paragraph:
     text: str
-    tabstop_positions: List[int]
-    left_indent_position: int
+    tabstop_positions: Optional[List[int]]
+    left_indent_position: Optional[int]
     is_bold: bool = False
 
 
