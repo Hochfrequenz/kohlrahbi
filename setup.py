@@ -8,4 +8,5 @@ setup(
     description="Tool to generate machine readable files from AHB documents.",
     packages=find_packages(),
     install_requires=["openpyxl", "pandas", "python-docx", "XlsxWriter"],
+    package_data={"*": ["py.typed"]},
 )
