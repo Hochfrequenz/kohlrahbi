@@ -11,7 +11,7 @@ save all Prüfidentifikators of one AHB in one Excel file.
 
 import re
 from pathlib import Path
-from typing import Any, Dict, TypeVar, Union, overload
+from typing import Dict, Union
 
 import pandas as pd  # type:ignore[import]
 
