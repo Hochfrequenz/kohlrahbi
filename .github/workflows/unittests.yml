@@ -1,13 +1,13 @@
 name: "Unittests"
 
-on: [push]
+on: [ push ]
 jobs:
   pytest:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: [3.9]
-        os: [ubuntu-latest]
+        python-version: [ 3.9, "3.10" ]
+        os: [ ubuntu-latest ]
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
