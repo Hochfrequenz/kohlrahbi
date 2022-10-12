@@ -11,16 +11,26 @@ save all Prüfidentifikators of one AHB in one Excel file.
 
 import re
 from pathlib import Path
-from typing import TypeVar
+from typing import Any, TypeVar, overload
 
 import pandas as pd  # type:ignore[import]
 
 from ahbextractor import logger
 
-T = TypeVar("T")
+_T = TypeVar("_T")
 
 
-def beautify_bedingungen(bedingung: T) -> T:
+@overload
+def beautify_bedingungen(bedingung: str) -> str:
+    ...
+
+
+@overload
+def beautify_bedingungen(bedingung: _T) -> _T:
+    ...
+
+
+def beautify_bedingungen(bedingung: Any) -> Any:
     """Inserts newline characters before each Bedingung key [###]
 
         Example:
@@ -48,13 +58,17 @@ def beautify_bedingungen(bedingung: T) -> T:
     """
 
     if isinstance(bedingung, str):
-        bedingung = bedingung.replace("\n", " ")
-        matches = re.findall(r"\[\d*\]", bedingung)
+        bedingung_str: str = bedingung
+        bedingung_str = bedingung_str.replace("\n", " ")
+        matches = re.findall(r"\[\d*\]", bedingung_str)
         for match in matches[1:]:
-            index = bedingung.find(match)
-            bedingung = (
-                bedingung[:index].strip().replace("  ", " ") + "\n" + bedingung[index:].strip().replace("  ", " ")
+            index = bedingung_str.find(match)
+            bedingung_str = (
+                bedingung_str[:index].strip().replace("  ", " ")
+                + "\n"
+                + bedingung_str[index:].strip().replace("  ", " ")
             )
+        return bedingung_str
     return bedingung
 
 
