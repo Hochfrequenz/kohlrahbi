@@ -11,13 +11,16 @@ save all Prüfidentifikators of one AHB in one Excel file.
 
 import re
 from pathlib import Path
+from typing import TypeVar
 
 import pandas as pd  # type:ignore[import]
 
 from ahbextractor import logger
 
+T = TypeVar("T")
 
-def beautify_bedingungen(bedingung: str) -> str:
+
+def beautify_bedingungen(bedingung: T) -> T:
     """Inserts newline characters before each Bedingung key [###]
 
         Example:
@@ -34,7 +37,7 @@ def beautify_bedingungen(bedingung: str) -> str:
 
     ->
 
-    [12] Wenn SG4 DTM+471 (Ende zum nächstmöglichem Termin) nicht vorhanden
+    [12] Wenn SG4 DTM+471 (Ende zum nächstmöglichen Termin) nicht vorhanden
     [13] Wenn SG4 STS+E01++Z01 (Status der Antwort: Zustimmung mit Terminänderung) nicht vorhanden
 
     Args:
@@ -49,7 +52,9 @@ def beautify_bedingungen(bedingung: str) -> str:
         matches = re.findall(r"\[\d*\]", bedingung)
         for match in matches[1:]:
             index = bedingung.find(match)
-            bedingung = bedingung[:index] + "\n" + bedingung[index:]
+            bedingung = (
+                bedingung[:index].strip().replace("  ", " ") + "\n" + bedingung[index:].strip().replace("  ", " ")
+            )
     return bedingung
 
 
