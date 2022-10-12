@@ -11,6 +11,7 @@ save all Prüfidentifikators of one AHB in one Excel file.
 
 import re
 from pathlib import Path
+from typing import Any, Dict, TypeVar, Union, overload
 
 import pandas as pd  # type:ignore[import]
 
@@ -53,6 +54,17 @@ def beautify_bedingungen(bedingung: str) -> str:
     return bedingung
 
 
+_column_letter_width_mapping: Dict[str, Union[float, int]] = {
+    "A": 3.5,
+    "B": 47,
+    "C": 9,
+    "D": 14,
+    "E": 39,
+    "F": 33,
+    "G": 18,
+    "H": 102,
+}
+
 # pylint: disable=too-many-locals
 def export_single_pruefidentifikator(pruefi: str, df: pd.DataFrame, output_directory_path: Path) -> None:
     """Exports the current Prüfidentifikator in different file formats: json, csv and xlsx
@@ -89,9 +101,7 @@ def export_single_pruefidentifikator(pruefi: str, df: pd.DataFrame, output_direc
             workbook = writer.book
             worksheet = writer.sheets[f"{pruefi}"]
             wrap_format = workbook.add_format({"text_wrap": True})
-            column_letters = ["A", "B", "C", "D", "E", "F", "G", "H"]
-            column_widths = [3.5, 47, 9, 14, 39, 33, 18, 102]
-            for column_letter, column_width in zip(column_letters, column_widths):
+            for column_letter, column_width in _column_letter_width_mapping.items():
                 excel_header = f"{column_letter}:{column_letter}"
                 worksheet.set_column(excel_header, column_width, wrap_format)
             logger.info("💾 Saved files for Pruefidentifikator %s", pruefi)
