@@ -11,14 +11,26 @@ save all Prüfidentifikators of one AHB in one Excel file.
 
 import re
 from pathlib import Path
-from typing import Dict, Union
+from typing import Any, Dict, TypeVar, overload, Union
 
 import pandas as pd  # type:ignore[import]
 
 from ahbextractor import logger
 
+_T = TypeVar("_T")
 
+
+@overload
 def beautify_bedingungen(bedingung: str) -> str:
+    ...
+
+
+@overload
+def beautify_bedingungen(bedingung: _T) -> _T:
+    ...
+
+
+def beautify_bedingungen(bedingung: Any) -> Any:
     """Inserts newline characters before each Bedingung key [###]
 
         Example:
@@ -35,7 +47,7 @@ def beautify_bedingungen(bedingung: str) -> str:
 
     ->
 
-    [12] Wenn SG4 DTM+471 (Ende zum nächstmöglichem Termin) nicht vorhanden
+    [12] Wenn SG4 DTM+471 (Ende zum nächstmöglichen Termin) nicht vorhanden
     [13] Wenn SG4 STS+E01++Z01 (Status der Antwort: Zustimmung mit Terminänderung) nicht vorhanden
 
     Args:
@@ -46,11 +58,17 @@ def beautify_bedingungen(bedingung: str) -> str:
     """
 
     if isinstance(bedingung, str):
-        bedingung = bedingung.replace("\n", " ")
-        matches = re.findall(r"\[\d*\]", bedingung)
+        bedingung_str: str = bedingung
+        bedingung_str = bedingung_str.replace("\n", " ")
+        matches = re.findall(r"\[\d*\]", bedingung_str)
         for match in matches[1:]:
-            index = bedingung.find(match)
-            bedingung = bedingung[:index] + "\n" + bedingung[index:]
+            index = bedingung_str.find(match)
+            bedingung_str = (
+                bedingung_str[:index].strip().replace("  ", " ")
+                + "\n"
+                + bedingung_str[index:].strip().replace("  ", " ")
+            )
+        return bedingung_str
     return bedingung
 
 
