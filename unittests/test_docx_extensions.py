@@ -1,11 +1,11 @@
 """
 tests all the features the ahbextractor package provides to process Docx files (by using the docx package)
 """
-import pytest
-from _pytest.fixtures import SubRequest
-from docx import Document
-from docx.table import Table
-from docx.text.paragraph import Paragraph
+import pytest  # type:ignore[import]
+from _pytest.fixtures import SubRequest  # type:ignore[import]
+from docx import Document  # type:ignore[import]
+from docx.table import Table  # type:ignore[import]
+from docx.text.paragraph import Paragraph  # type:ignore[import]
 
 from ahbextractor.helper.read_functions import get_all_paragraphs_and_tables
 
@@ -19,7 +19,6 @@ class TestDocxExtensions:
         document = Document(docx_file_path)
         yield document
 
-    # todo:use pytest.mark.datafiles
     @pytest.mark.parametrize(
         "create_docx_from_filename",
         [pytest.param("UTILMD_AHB_WiM-informatorischeLesefassung_3.1e_99991231_20221001.docx")],
