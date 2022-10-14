@@ -12,10 +12,10 @@ from ahbextractor.helper.read_functions import get_all_paragraphs_and_tables
 
 class TestDocxExtensions:
     @pytest.fixture
-    def create_docx_from_filename(self, request: SubRequest) -> Document:
+    def create_docx_from_filename(self, request: SubRequest, datafiles) -> Document:
         """a fixture to quickly instantiate a docx.Document from a given docx file name"""
         docx_file_name = request.param
-        docx_file_path = "docx_files/" + docx_file_name
+        docx_file_path = datafiles / docx_file_name
         document = Document(docx_file_path)
         yield document
 
@@ -26,6 +26,7 @@ class TestDocxExtensions:
         indirect=True,
     )
     @pytest.mark.parametrize("expected_length", [pytest.param(1218)])
+    @pytest.mark.datafiles("unittests/docx_files/UTILMD_AHB_WiM-informatorischeLesefassung_3.1e_99991231_20221001.docx")
     def test_get_all_paragraphs_and_tables(self, create_docx_from_filename: Document, expected_length: int):
         actual = list(get_all_paragraphs_and_tables(create_docx_from_filename))
         assert len(actual) == expected_length
