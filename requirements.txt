@@ -14,7 +14,7 @@ numpy==1.22.0
     # via pandas
 openpyxl==3.0.10
     # via -r requirements.in
-pandas==1.5.0
+pandas==1.5.1
     # via -r requirements.in
 python-dateutil==2.8.1
     # via pandas
