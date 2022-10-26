@@ -3,3 +3,4 @@ openpyxl
 pandas
 python-docx
 XlsxWriter
+maus>=0.1.22
