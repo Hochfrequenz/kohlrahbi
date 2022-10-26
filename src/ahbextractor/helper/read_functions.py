@@ -56,6 +56,7 @@ def remove_duplicates_from_ahb_list(ahb_paths: List[Path]) -> None:
 
 
 def _normalize_ahb_file_name(ahb_path: Path) -> str:
+    # the main idea is, that similar but not equal ahb names shall return the same (equal) string from this function
     match = _ahb_file_name_pattern.match(str(ahb_path.name))
     if match:
         return (match.groupdict()["name"] + match.groupdict()["version"]).lower()
