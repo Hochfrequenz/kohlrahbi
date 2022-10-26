@@ -42,9 +42,8 @@ if __name__ == "__main__":
         docx_file_paths = [path_to_either_file_or_dir]
     docx_file_paths = [x for x in docx_file_paths if "ahb" in str(x).lower()]  # filter out migs, codelisten foo, etc
     remove_duplicates_from_ahb_list(docx_file_paths)
-    print("⚠Considering only GPKE/WiM Files⚠")
     docx_file_paths = [
-        x for x in docx_file_paths if ("gpke" in str(x).lower() or "wim" in str(x).lower())
+        x for x in docx_file_paths if ("aperak" not in str(x).lower() and "contrl" not in str(x).lower())
     ]  # sorry for that
     print(f"Start processing {len(docx_file_paths)} files...")
     ahbextractor.main(file_paths=docx_file_paths)
