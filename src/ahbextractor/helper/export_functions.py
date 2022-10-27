@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any, Dict, TypeVar, Union, overload
 
 import pandas as pd  # type:ignore[import]
+from maus.edifact import pruefidentifikator_to_format
 
 from ahbextractor import logger
 
@@ -94,9 +95,14 @@ def export_single_pruefidentifikator(pruefi: str, df: pd.DataFrame, output_direc
         output_directory_path (Path): Path to the output directory
     """
 
-    json_output_directory_path = output_directory_path / "json"
-    csv_output_directory_path = output_directory_path / "csv"
-    xlsx_output_directory_path = output_directory_path / "xlsx"
+    edifact_format = pruefidentifikator_to_format(pruefi)
+    if edifact_format is None:
+        logger.warning("'%s' is not a pruefidentifikator", pruefi)
+        return
+
+    json_output_directory_path = output_directory_path / "json" / str(edifact_format)
+    csv_output_directory_path = output_directory_path / "csv" / str(edifact_format)
+    xlsx_output_directory_path = output_directory_path / "xlsx" / str(edifact_format)
 
     json_output_directory_path.mkdir(parents=True, exist_ok=True)
     csv_output_directory_path.mkdir(parents=True, exist_ok=True)
@@ -107,6 +113,7 @@ def export_single_pruefidentifikator(pruefi: str, df: pd.DataFrame, output_direc
     columns_to_export.append("Bedingung")
     # df["Bedingung"] = df["Bedingung"].apply(beautify_bedingungen)
     df_to_export = df[columns_to_export]
+
     df_to_export.to_csv(csv_output_directory_path / f"{pruefi}.csv")
 
     df_to_export.to_json(json_output_directory_path / f"{pruefi}.json", force_ascii=False, orient="records")
