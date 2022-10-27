@@ -36,7 +36,7 @@ def remove_duplicates_from_ahb_list(ahb_paths: List[Path]) -> None:
     For example, when using the Hochfrequenz edi_energy_scraper, you'll find both the regular AHB documents
     ("informatorische Lesefassung") and documents with fixes ("Konsolidierte Lesefassung mit Fehlerkorrekturen").
     We want to work only with the youngest documents and if there are two AHBs that describe the same Prüfidentifikators
-    but one of the is outdated, we don't want to process it any further.
+    but one of them is outdated, we don't want to process it any further.
     Example:
         File A: COMDISAHB-informatorischeLesefassung1.0c_99991231_20221001.docx
         File B: COMDISAHB-informatorischeLesefassung1.0cKonsolidierteLesefassungmitFehlerkorrekturenStand06.07.2022_99991231_20221001.docx
