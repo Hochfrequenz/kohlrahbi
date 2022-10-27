@@ -21,6 +21,47 @@ from ahbextractor.helper.export_functions import (
 from ahbextractor.helper.write_functions import write_new_row_in_dataframe
 
 _pruefi_pattern = re.compile(r"^\d{5}$")
+_ahb_file_name_pattern = re.compile(r"^(?P<name>.+Lesefassung)(?P<version>\d+\.\d+[a-z]?)(?P<suffix>.*\.docx)$")
+"""
+https://regex101.com/r/8A4bK8/1
+"""
+
+
+# pylint:disable=line-too-long
+def remove_duplicates_from_ahb_list(ahb_paths: List[Path]) -> None:
+    """
+    Removes duplicates from the given list of AHB paths.
+    In this context a duplicate is not exactly a duplicate but another AHB file that contains content but in different
+    versions.
+    For example, when using the Hochfrequenz edi_energy_scraper, you'll find both the regular AHB documents
+    ("informatorische Lesefassung") and documents with fixes ("Konsolidierte Lesefassung mit Fehlerkorrekturen").
+    We want to work only with the youngest documents and if there are two AHBs that describe the same Prüfidentifikators
+    but one of them is outdated, we don't want to process it any further.
+    "Youngest" means "most recent" => prefer Fehlerkorrekturen over regular documents.
+    Example:
+        File A: COMDISAHB-informatorischeLesefassung1.0c_99991231_20221001.docx
+        File B: COMDISAHB-informatorischeLesefassung1.0cKonsolidierteLesefassungmitFehlerkorrekturenStand06.07.2022_99991231_20221001.docx
+    We only want to keep File B in this case. File A shall be removed from the list.
+    """
+    # create a set of the names:
+    normalized_file_names: List[str] = [_normalize_ahb_file_name(x) for x in ahb_paths]
+    remove_items: List[Path] = []
+    for ahb_path in ahb_paths:
+        # first we collect the items to remove but do not remove them yet because modifying the list while iterating
+        # over it is a bad idea
+        ahb_path_name = _normalize_ahb_file_name(ahb_path)
+        if normalized_file_names.count(ahb_path_name) > 1 and "fehlerkorrekturen" not in str(ahb_path).lower():
+            remove_items.append(ahb_path)
+    for remove_item in remove_items:
+        ahb_paths.remove(remove_item)
+
+
+def _normalize_ahb_file_name(ahb_path: Path) -> str:
+    # the main idea is, that similar but not equal ahb names shall return the same (equal) string from this function
+    match = _ahb_file_name_pattern.match(str(ahb_path.name))
+    if match:
+        return (match.groupdict()["name"] + match.groupdict()["version"]).lower()
+    return str(ahb_path).lower()
 
 
 def get_all_paragraphs_and_tables(parent: Union[Document, _Cell]) -> Generator[Union[Paragraph, Table], None, None]:
