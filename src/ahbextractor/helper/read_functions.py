@@ -192,7 +192,7 @@ def read_table(
 
 _validity_start_date_from_ahbname_pattern = re.compile(r"^.*(?P<germanLocalTimeStartDate>\d{8})\.docx$")
 """
-https://regex101.com/r/T7EMJG/1
+https://regex101.com/r/g4wWrT/1
 This pattern is strictly coupled to the edi_energy_scraper.
 """
 
