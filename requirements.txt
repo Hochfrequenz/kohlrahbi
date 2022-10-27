@@ -16,7 +16,7 @@ lxml==4.9.1
     #   python-docx
 marshmallow==3.18.0
     # via maus
-maus==0.1.22
+maus==0.1.23
     # via -r requirements.in
 numpy==1.22.0
     # via pandas
