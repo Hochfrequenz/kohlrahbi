@@ -2,14 +2,17 @@
 A collection of functions to get information from AHB tables.
 """
 import re
+from datetime import datetime
 from pathlib import Path
 from typing import Generator, List, Tuple, Union
 
+import pytz
 from docx.document import Document  # type:ignore[import]
 from docx.oxml.table import CT_Tbl  # type:ignore[import]
 from docx.oxml.text.paragraph import CT_P  # type:ignore[import]
 from docx.table import Table, _Cell  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
+from maus.edifact import EdifactFormatVersion, get_edifact_format_version
 
 from ahbextractor import logger
 from ahbextractor.helper.check_row_type import RowType, define_row_type
@@ -23,7 +26,7 @@ from ahbextractor.helper.write_functions import write_new_row_in_dataframe
 _pruefi_pattern = re.compile(r"^\d{5}$")
 _ahb_file_name_pattern = re.compile(r"^(?P<name>.+Lesefassung)(?P<version>\d+\.\d+[a-z]?)(?P<suffix>.*\.docx)$")
 """
-https://regex101.com/r/8A4bK8/1
+https://regex101.com/r/g4wWrT/1
 """
 
 
@@ -187,6 +190,30 @@ def read_table(
     return elixir.last_two_row_types, elixir.current_df_row_index
 
 
+_validity_start_date_from_ahbname_pattern = re.compile(r"^.*(?P<germanLocalTimeStartDate>\d{8})\.docx$")
+"""
+https://regex101.com/r/T7EMJG/1
+This pattern is strictly coupled to the edi_energy_scraper.
+"""
+
+
+def _export_format_version_from_ahbfile_name(ahb_docx_name: str) -> EdifactFormatVersion:
+    """
+    We try to extract the validity period of the AHB from its filename.
+    The matching logic here is strictly coupled to the edi_energy_scraper.
+    """
+    match = _validity_start_date_from_ahbname_pattern.match(ahb_docx_name)
+    berlin_local_time: datetime
+    berlin = pytz.timezone("Europe/Berlin")
+    if match:
+        local_date_str = match.groupdict()["germanLocalTimeStartDate"]
+        berlin_local_time = datetime.strptime(local_date_str, "%Y%m%d").astimezone(berlin)
+    else:
+        berlin_local_time = datetime.utcnow().astimezone(berlin)
+    edifact_format_version = get_edifact_format_version(berlin_local_time)
+    return edifact_format_version
+
+
 # pylint: disable=inconsistent-return-statements
 def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_name: Path) -> int:
     """Reads a docx file and extracts all information for each Prüfidentifikator.
@@ -202,6 +229,8 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
 
     is_initial_run = True
     elixir: Elixir
+    edifact_format_version = _export_format_version_from_ahbfile_name(str(ahb_file_name))
+    output_directory_path = output_directory_path / str(edifact_format_version)
     # Iterate through the whole word document
     for item in get_all_paragraphs_and_tables(parent=document):
 
