@@ -1,13 +1,15 @@
 """
 tests all the features the ahbextractor package provides to process Docx files (by using the docx package)
 """
+from pathlib import Path
+
 import pytest  # type:ignore[import]
 from _pytest.fixtures import SubRequest  # type:ignore[import]
 from docx import Document  # type:ignore[import]
 from docx.table import Table  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
 
-from ahbextractor.helper.read_functions import get_all_paragraphs_and_tables
+from ahbextractor.helper.read_functions import get_ahb_extract, get_all_paragraphs_and_tables
 
 
 class TestDocxExtensions:
@@ -30,3 +32,14 @@ class TestDocxExtensions:
         actual = list(get_all_paragraphs_and_tables(create_docx_from_filename))
         assert len(actual) == expected_length
         assert all([isinstance(x, Table) or isinstance(x, Paragraph) for x in actual]) is True
+
+    @pytest.mark.parametrize(
+        "create_docx_from_filename",
+        [pytest.param("test-dataelement-on-after-page-break.docx")],
+        indirect=True,
+    )
+    @pytest.mark.datafiles("unittests/docx_files/test-dataelement-on-after-page-break.docx")
+    def test_write_dataelement_after_page_break(self, create_docx_from_filename: Document):
+        get_ahb_extract(
+            create_docx_from_filename, output_directory_path=Path.cwd() / "test-output", ahb_file_name="foo.bar"
+        )
