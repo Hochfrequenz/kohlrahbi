@@ -62,11 +62,21 @@ class Elixir:
         pruefidentifikatoren = header_cells[-1][cutter_index + len(look_up_term) :].split("\t")
 
         # edifact struktur cell
-        edifact_struktur_indicator_paragraph = docx_table.cell(row_idx=4, col_idx=0).paragraphs[0]
+        try:
+            edifact_struktur_indicator_paragraph = docx_table.cell(row_idx=4, col_idx=0).paragraphs[0]
+        except IndexError:
+            # This exception is for test cases. If you cut the top of an AHB table in the docx file
+            # the header has another structure. So we have to use another row_idx
+            edifact_struktur_indicator_paragraph = docx_table.cell(row_idx=2, col_idx=0).paragraphs[0]
         edifact_struktur_left_indent_position = edifact_struktur_indicator_paragraph.paragraph_format.left_indent
 
         # middle cell
-        middle_cell_indicator_paragraph = docx_table.cell(row_idx=4, col_idx=1).paragraphs[0]
+        try:
+            middle_cell_indicator_paragraph = docx_table.cell(row_idx=4, col_idx=1).paragraphs[0]
+        except IndexError:
+            # This exception is for test cases. If you cut the top of an AHB table in the docx file
+            # the header has another structure. So we have to use another row_idx
+            middle_cell_indicator_paragraph = docx_table.cell(row_idx=2, col_idx=0).paragraphs[0]
         middle_cell_left_indent_position = middle_cell_indicator_paragraph.paragraph_format.left_indent
         tabstop_positions = get_tabstop_positions(middle_cell_indicator_paragraph)
 
@@ -95,3 +105,6 @@ class Elixir:
             last_two_row_types=last_two_row_types,
             current_df_row_index=current_df_row_index,
         )
+
+
+"Beschreibung\tAnmeldung\tBestätigung\tAblehnung\tBedingung\n\tEOG\tEOG\tEOG\n\tAnmeldung\tAnmeldung\nKommunikation von\tNB an LF\tLF an NB\tLF an NB\nPrüfidentifikator\t11013\t11014\t11015"
