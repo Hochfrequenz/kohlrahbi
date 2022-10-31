@@ -23,7 +23,6 @@ from ahbextractor.helper.export_functions import (
 )
 from ahbextractor.helper.write_functions import write_new_row_in_dataframe
 
-_pruefi_pattern = re.compile(r"^\d{5}$")
 _ahb_file_name_pattern = re.compile(r"^(?P<name>.+Lesefassung)(?P<version>\d+\.\d+[a-z]?)(?P<suffix>.*\.docx)$")
 """
 https://regex101.com/r/8A4bK8/1
