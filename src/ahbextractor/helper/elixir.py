@@ -105,6 +105,3 @@ class Elixir:
             last_two_row_types=last_two_row_types,
             current_df_row_index=current_df_row_index,
         )
-
-
-"Beschreibung\tAnmeldung\tBestätigung\tAblehnung\tBedingung\n\tEOG\tEOG\tEOG\n\tAnmeldung\tAnmeldung\nKommunikation von\tNB an LF\tLF an NB\tLF an NB\nPrüfidentifikator\t11013\t11014\t11015"
