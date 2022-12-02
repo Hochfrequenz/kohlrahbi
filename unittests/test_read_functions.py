@@ -4,8 +4,9 @@ from typing import List, Optional
 
 import pytest  # type:ignore[import]
 import pytz
-from ahbextractor.helper.read_functions import _export_format_version_from_ahbfile_name, remove_duplicates_from_ahb_list
 from maus.edifact import EdifactFormatVersion, get_edifact_format_version
+
+from kohlrahbi.helper.read_functions import _export_format_version_from_ahbfile_name, remove_duplicates_from_ahb_list
 
 
 class TestReadFunctions:

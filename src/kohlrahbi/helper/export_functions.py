@@ -14,8 +14,9 @@ from pathlib import Path
 from typing import Any, Dict, TypeVar, Union, overload
 
 import pandas as pd  # type:ignore[import]
-from ahbextractor import logger
 from maus.edifact import pruefidentifikator_to_format
+
+from kohlrahbi import logger
 
 _T = TypeVar("_T")
 

@@ -5,8 +5,9 @@ from pathlib import Path
 from typing import List
 
 import docx  # type:ignore[import]
-from ahbextractor import logger
-from ahbextractor.helper.read_functions import get_ahb_extract
+
+from kohlrahbi import logger
+from kohlrahbi.helper.read_functions import get_ahb_extract
 
 
 def main(file_paths: List[Path]) -> None:

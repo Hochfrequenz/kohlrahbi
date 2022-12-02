@@ -5,10 +5,11 @@ This module provides a class to collect information which of need for all parsin
 from typing import List
 
 import pandas as pd  # type:ignore[import]
-from ahbextractor.helper.check_row_type import RowType
 from attrs import define
 from docx.table import Table  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
+
+from kohlrahbi.helper.check_row_type import RowType
 
 
 def get_tabstop_positions(paragraph: Paragraph) -> List[int]:

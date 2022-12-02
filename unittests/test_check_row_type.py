@@ -1,7 +1,8 @@
 import docx  # type:ignore[import]
 import pytest  # type:ignore[import]
-from ahbextractor.helper.check_row_type import RowType, define_row_type
 from docx.shared import RGBColor  # type:ignore[import]
+
+from kohlrahbi.helper.check_row_type import RowType, define_row_type
 
 
 class TestCheckRowType:

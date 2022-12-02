@@ -10,8 +10,8 @@ import sys
 from pathlib import Path
 from typing import List
 
-from ahbextractor import ahbextractor
-from ahbextractor.helper.read_functions import remove_duplicates_from_ahb_list
+from kohlrahbi import ahbextractor
+from kohlrahbi.helper.read_functions import remove_duplicates_from_ahb_list
 
 if __name__ == "__main__":
     if sys.version_info.major != 3 or sys.version_info.minor < 9:
