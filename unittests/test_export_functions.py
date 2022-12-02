@@ -1,7 +1,6 @@
 from typing import Any
 
 import pytest  # type:ignore[import]
-
 from ahbextractor.helper.export_functions import beautify_bedingungen
 
 

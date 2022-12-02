@@ -4,7 +4,6 @@ from typing import List, Optional
 import docx  # type:ignore[import]
 import pandas as pd  # type:ignore[import]
 import pytest  # type:ignore[import]
-
 from ahbextractor.helper.elixir import Elixir
 from ahbextractor.helper.write_functions import (
     parse_bedingung_cell,
