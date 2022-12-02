@@ -14,14 +14,14 @@ from docx.table import Table, _Cell  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
 from maus.edifact import EdifactFormatVersion, get_edifact_format_version
 
-from ahbextractor import logger
-from ahbextractor.helper.check_row_type import RowType, define_row_type
-from ahbextractor.helper.elixir import Elixir
-from ahbextractor.helper.export_functions import (
+from kohlrahbi import logger
+from kohlrahbi.helper.check_row_type import RowType, define_row_type
+from kohlrahbi.helper.elixir import Elixir
+from kohlrahbi.helper.export_functions import (
     export_all_pruefidentifikatoren_in_one_file,
     export_single_pruefidentifikator,
 )
-from ahbextractor.helper.write_functions import write_new_row_in_dataframe
+from kohlrahbi.helper.write_functions import write_new_row_in_dataframe
 
 _pruefi_pattern = re.compile(r"^\d{5}$")
 _ahb_file_name_pattern = re.compile(r"^(?P<name>.+Lesefassung)(?P<version>\d+\.\d+[a-z]?)(?P<suffix>.*\.docx)$")

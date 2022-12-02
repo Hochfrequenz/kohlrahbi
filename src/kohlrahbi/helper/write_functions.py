@@ -9,8 +9,8 @@ import pandas as pd  # type:ignore[import]
 from docx.table import Table, _Cell  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
 
-from ahbextractor.helper.check_row_type import RowType
-from ahbextractor.helper.elixir import Elixir
+from kohlrahbi.helper.check_row_type import RowType
+from kohlrahbi.helper.elixir import Elixir
 
 
 def parse_paragraph_in_edifact_struktur_column_to_dataframe(

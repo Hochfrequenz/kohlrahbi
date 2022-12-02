@@ -5,8 +5,8 @@ import docx  # type:ignore[import]
 import pandas as pd  # type:ignore[import]
 import pytest  # type:ignore[import]
 
-from ahbextractor.helper.elixir import Elixir
-from ahbextractor.helper.write_functions import (
+from kohlrahbi.helper.elixir import Elixir
+from kohlrahbi.helper.write_functions import (
     parse_bedingung_cell,
     parse_paragraph_in_edifact_struktur_column_to_dataframe,
     parse_paragraph_in_middle_column_to_dataframe,
