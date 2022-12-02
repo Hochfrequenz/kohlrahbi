@@ -1,13 +1,12 @@
 """
-tests all the features the ahbextractor package provides to process Docx files (by using the docx package)
+tests all the features the kohlrahbi package provides to process Docx files (by using the docx package)
 """
 import pytest  # type:ignore[import]
 from _pytest.fixtures import SubRequest  # type:ignore[import]
+from ahbextractor.helper.read_functions import get_all_paragraphs_and_tables
 from docx import Document  # type:ignore[import]
 from docx.table import Table  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
-
-from ahbextractor.helper.read_functions import get_all_paragraphs_and_tables
 
 
 class TestDocxExtensions:

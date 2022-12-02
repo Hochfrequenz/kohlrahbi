@@ -6,11 +6,10 @@ import re
 from typing import Callable, Iterable, List, TypeVar
 
 import pandas as pd  # type:ignore[import]
-from docx.table import Table, _Cell  # type:ignore[import]
-from docx.text.paragraph import Paragraph  # type:ignore[import]
-
 from ahbextractor.helper.check_row_type import RowType
 from ahbextractor.helper.elixir import Elixir
+from docx.table import Table, _Cell  # type:ignore[import]
+from docx.text.paragraph import Paragraph  # type:ignore[import]
 
 
 def parse_paragraph_in_edifact_struktur_column_to_dataframe(

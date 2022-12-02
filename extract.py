@@ -2,7 +2,7 @@
 This file makes the package itself executable.
 You can run it with:
 
-    python -m ahbextractor
+    python -m kohlrahbi
 
 """
 import argparse
