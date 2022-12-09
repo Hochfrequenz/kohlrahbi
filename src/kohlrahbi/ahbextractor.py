@@ -6,13 +6,13 @@ from typing import List
 
 import docx  # type:ignore[import]
 
-from ahbextractor import logger
-from ahbextractor.helper.read_functions import get_ahb_extract
+from kohlrahbi import logger
+from kohlrahbi.helper.read_functions import get_ahb_extract
 
 
 def main(file_paths: List[Path]) -> None:
     """
-    Main function of the module ahbextractor.
+    Main function of the module kohlrahbi.
     It reads the docx files and calls the function to extract all Prüfindentifikatoren tables.
     """
     for ahb_file_path in file_paths:
