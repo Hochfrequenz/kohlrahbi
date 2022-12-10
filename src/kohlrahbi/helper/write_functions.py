@@ -12,57 +12,7 @@ from docx.text.paragraph import Paragraph  # type:ignore[import]
 from kohlrahbi.helper.row_type_checker import RowType
 from kohlrahbi.helper.seed import Seed
 
-from kohlrahbi.parser import parse_edifact_struktur_cell
-
-
-def parse_paragraph_in_middle_column_to_dataframe(
-    paragraph: Paragraph,
-    dataframe: pd.DataFrame,
-    row_index: int,
-    left_indent_position: int,
-    tabstop_positions: List[int],
-) -> None:
-    """Parses a paragraph in the middle column and puts the information into the appropriate columns
-
-    Args:
-        paragraph (Paragraph): Current paragraph in the edifact struktur cell
-        dataframe (pd.DataFrame): Contains all infos
-        row_index (int): Current index of the DataFrame
-        left_indent_position (int): Position of the left indent from the indicator middle cell
-        tabstop_positions (List[int]): All tabstop positions of the indicator middle cell
-    """
-
-    splitted_text_at_tabs = paragraph.text.split("\t")
-
-    # Qualifier / Code
-    # left_indent_position is characteristic for Datenelemente
-    if paragraph.paragraph_format.left_indent == left_indent_position:
-        dataframe.at[row_index, "Codes und Qualifier"] += splitted_text_at_tabs.pop(0)
-        column_indezes = list(range(4, 4 + len(tabstop_positions)))
-
-    else:
-        if splitted_text_at_tabs[0] == "":
-            tabstop_positions = tabstop_positions[1:]
-            del splitted_text_at_tabs[0]
-
-        column_indezes = list(range(5, 5 + len(tabstop_positions)))
-
-    # pylint: disable=protected-access
-    tab_stops = paragraph.paragraph_format.tab_stops._pPr.tabs
-
-    if tab_stops is not None:
-        for tabstop in tab_stops:
-            for tabstop_position, column_index in zip(tabstop_positions, column_indezes):
-                if tabstop.pos == tabstop_position:
-                    dataframe.iat[row_index, column_index] += splitted_text_at_tabs.pop(0)
-    elif tab_stops is None and splitted_text_at_tabs:
-        # in splitted_text_at_tabs list must be an entry
-        dataframe.at[row_index, "Beschreibung"] += splitted_text_at_tabs.pop(0)
-    elif tab_stops is None:
-        pass
-    # Could not figure out a scenario where this error could be raised.
-    # else:
-    #     raise NotImplementedError(f"Could not parse paragraph in middle cell with {paragraph.text}")
+from kohlrahbi.parser import parse_edifact_struktur_cell, parse_middle_cell
 
 
 def parse_bedingung_cell(bedingung_cell: _Cell, dataframe: pd.DataFrame, row_index: int) -> None:
@@ -112,7 +62,7 @@ def write_segment_name_to_dataframe(
     # I do not expect to get a multiline Segmentgruppe,
     # but just in case we loop through all paragraphs
     for paragraph in middle_cell.paragraphs:
-        parse_paragraph_in_middle_column_to_dataframe(
+        parse_middle_cell(
             paragraph=paragraph,
             dataframe=elixir.soul,
             row_index=elixir.current_df_row_index,
@@ -153,7 +103,7 @@ def write_segmentgruppe_to_dataframe(
     # I do not expect to a multiline Segementgruppe,
     # but just in case we loop through all paragraphs
     for paragraph in middle_cell.paragraphs:
-        parse_paragraph_in_middle_column_to_dataframe(
+        parse_middle_cell(
             paragraph=paragraph,
             dataframe=elixir.soul,
             row_index=elixir.current_df_row_index,
@@ -191,7 +141,7 @@ def write_segment_to_dataframe(
 
     # MIDDLE COLUMN
     for paragraph in middle_cell.paragraphs:
-        parse_paragraph_in_middle_column_to_dataframe(
+        parse_middle_cell(
             paragraph=paragraph,
             dataframe=elixir.soul,
             row_index=elixir.current_df_row_index,
@@ -287,7 +237,7 @@ def write_dataelement_to_dataframe(
         paragraphs=middle_cell.paragraphs, pruefi_tabstops=elixir.tabstop_positions[1:]
     ):
         for paragraph in middle_cell.paragraphs:
-            parse_paragraph_in_middle_column_to_dataframe(
+            parse_middle_cell(
                 paragraph=paragraph,
                 dataframe=elixir.soul,
                 row_index=elixir.current_df_row_index,
@@ -331,7 +281,7 @@ def write_dataelement_to_dataframe(
                 ]
 
             if paragraph.runs[0].bold:
-                parse_paragraph_in_middle_column_to_dataframe(
+                parse_middle_cell(
                     paragraph=paragraph,
                     dataframe=elixir.soul,
                     row_index=elixir.current_df_row_index,
