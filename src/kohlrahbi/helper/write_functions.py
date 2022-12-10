@@ -2,7 +2,6 @@
 Collection of functions to write the extracted infos from the AHB tables into a DataFrame.
 """
 
-import re
 from typing import Callable, Iterable, List, TypeVar
 
 import pandas as pd  # type:ignore[import]
@@ -12,25 +11,7 @@ from docx.text.paragraph import Paragraph  # type:ignore[import]
 from kohlrahbi.helper.row_type_checker import RowType
 from kohlrahbi.helper.seed import Seed
 
-from kohlrahbi.parser import parse_edifact_struktur_cell, parse_middle_cell
-
-
-def parse_bedingung_cell(bedingung_cell: _Cell, dataframe: pd.DataFrame, row_index: int) -> None:
-    """Parses a cell in the Bedingung column and puts the information into the in the appropriate column
-
-    Args:
-        bedingung_cell (_Cell): Cell from the Bedingung column
-        dataframe (pd.DataFrame): Saves all infos
-        row_index (int): Current index of the DataFrame
-    """
-
-    bedingung = bedingung_cell.text.replace("\n", " ")
-    matches = re.findall(r"\[\d*\]", bedingung)
-    for match in matches[1:]:
-        index = bedingung.find(match)
-        bedingung = bedingung[:index] + "\n" + bedingung[index:]
-
-    dataframe.at[row_index, "Bedingung"] += bedingung
+from kohlrahbi.parser import parse_edifact_struktur_cell, parse_middle_cell, parse_bedingung_cell
 
 
 # pylint: disable=too-many-arguments
