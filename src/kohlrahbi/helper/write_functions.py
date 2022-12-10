@@ -33,7 +33,7 @@ def write_segment_name_to_dataframe(
     # EDIFACT STRUKTUR COLUMN
     for paragraph in edifact_struktur_cell.paragraphs:
         parse_edifact_struktur_cell(
-            paragraphs=[paragraph],
+            table_cell=edifact_struktur_cell,
             dataframe=elixir.soul,
             row_index=elixir.current_df_row_index,
             edifact_struktur_cell_left_indent_position=elixir.edifact_struktur_left_indent_position,
@@ -74,7 +74,7 @@ def write_segmentgruppe_to_dataframe(
     # EDIFACT STRUKTUR COLUMN
     parse_edifact_struktur_cell(
         # there might be 2 paragraphs in case of multi line headings, so we're handing over all the paragraphs
-        paragraphs=edifact_struktur_cell.paragraphs,
+        table_cell=edifact_struktur_cell,
         dataframe=elixir.soul,
         row_index=elixir.current_df_row_index,
         edifact_struktur_cell_left_indent_position=elixir.edifact_struktur_left_indent_position,
@@ -114,7 +114,7 @@ def write_segment_to_dataframe(
 
     # EDIFACT STRUKTUR COLUMN
     parse_edifact_struktur_cell(
-        paragraphs=edifact_struktur_cell.paragraphs,
+        table_cell=edifact_struktur_cell,
         dataframe=elixir.soul,
         row_index=elixir.current_df_row_index,
         edifact_struktur_cell_left_indent_position=elixir.edifact_struktur_left_indent_position,
@@ -201,7 +201,7 @@ def write_dataelement_to_dataframe(
 
     # EDIFACT STRUKTUR COLUMN
     parse_edifact_struktur_cell(
-        paragraphs=edifact_struktur_cell.paragraphs,
+        table_cell=edifact_struktur_cell,
         dataframe=elixir.soul,
         row_index=elixir.current_df_row_index,
         edifact_struktur_cell_left_indent_position=elixir.edifact_struktur_left_indent_position,
@@ -245,7 +245,7 @@ def write_dataelement_to_dataframe(
 
             if edifact_struktur_cell.paragraphs[0].text != "":
                 parse_edifact_struktur_cell(
-                    paragraphs=edifact_struktur_cell.paragraphs,
+                    table_cell=edifact_struktur_cell,
                     dataframe=elixir.soul,
                     row_index=elixir.current_df_row_index,
                     edifact_struktur_cell_left_indent_position=elixir.edifact_struktur_left_indent_position,
