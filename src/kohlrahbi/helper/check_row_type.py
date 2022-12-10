@@ -2,25 +2,10 @@
 This module contains all functions to define the type of a row of the tables in an AHB.
 """
 
-from enum import Enum
-
 from docx.shared import RGBColor  # type:ignore[import]
 from docx.table import _Cell  # type:ignore[import]
 
-
-class RowType(Enum):
-    """
-    All possible row types.
-    The RowType is defined by the first cell in each row.
-    Example content for each row type is documented at each enum member.
-    """
-
-    SEGMENTNAME = 1  #: e.g. "Nachrichten-Kopfsegment"
-    SEGMENTGRUPPE = 2  #: e.g. "SG2"
-    SEGMENT = 3  #: e.g. "    UNH" or "SG2  NAD"
-    DATENELEMENT = 4  #: e.g. "    UNH 0062"
-    HEADER = 5  #: e.g. "EDIFACT Struktur"
-    EMPTY = 6  #: e.g. ""
+from kohlrahbi.enums import RowType, RowTypeColor
 
 
 def is_row_header(edifact_struktur_cell: _Cell) -> bool:
