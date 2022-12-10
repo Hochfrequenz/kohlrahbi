@@ -9,8 +9,8 @@ import pandas as pd  # type:ignore[import]
 from docx.table import Table, _Cell  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
 
-from ahbextractor.helper.check_row_type import RowType
 from ahbextractor.helper.elixir import Elixir
+from ahbextractor.helper.get_row_type import RowType
 
 
 def parse_paragraph_in_edifact_struktur_column_to_dataframe(
@@ -204,7 +204,7 @@ def write_segmentgruppe_to_dataframe(
     )
 
     # MIDDLE COLUMN
-    # I do not expect to a multiline Segementgruppe,
+    # I do not expect to a multiline Segmentgruppe,
     # but just in case we loop through all paragraphs
     for paragraph in middle_cell.paragraphs:
         parse_paragraph_in_middle_column_to_dataframe(
@@ -306,6 +306,32 @@ def has_middle_cell_multiple_codes(paragraphs: List[Paragraph], pruefi_tabstops:
     return False
 
 
+def has_given_paragraph_a_new_code(paragraph) -> bool:
+    """
+    Checks if the given paragraph contains a new code.
+    At the moment all codes are bold.
+    """
+    if paragraph.runs[0].bold:
+        return True
+    else:
+        return False
+
+
+def has_given_paragraph_only_a_description(paragraph, indicator_tabstop_position) -> bool:
+    """
+    Checks if the current paragraph contains a multiline description.
+    Example:
+    SG2 NAD 3055 | MS   Dokumenten-/            X   X   X
+                        Nachrichtenaussteller
+                        bzw. -absender
+    """
+
+    if paragraph.paragraph_format.left_indent == indicator_tabstop_position:
+        return True
+    else:
+        return False
+
+
 # pylint: disable=too-many-arguments
 def write_dataelement_to_dataframe(
     elixir: Elixir,
@@ -384,7 +410,9 @@ def write_dataelement_to_dataframe(
                     elixir.current_df_row_index - 1, "Datenelement"
                 ]
 
-            if paragraph.runs[0].bold:
+            # MIDDLE COLUMN
+
+            if has_given_paragraph_a_new_code(paragraph=paragraph):
                 parse_paragraph_in_middle_column_to_dataframe(
                     paragraph=paragraph,
                     dataframe=elixir.soul,
@@ -393,11 +421,15 @@ def write_dataelement_to_dataframe(
                     tabstop_positions=elixir.tabstop_positions,
                 )
 
-            elif paragraph.paragraph_format.left_indent == elixir.tabstop_positions[0]:
+            elif has_given_paragraph_only_a_description(
+                paragraph=paragraph, indicator_tabstop_position=elixir.tabstop_positions[0]
+            ):
                 # multi line Beschreibung
                 elixir.soul.at[elixir.current_df_row_index, "Beschreibung"] += " " + paragraph.text
 
-            if len(create_new_dataframe_row_indicator_list) > i + 1:
+            # are we in the last loop?
+            if i < len(create_new_dataframe_row_indicator_list) - 1:
+                # do we need to create a new row because a new code is incoming?
                 if create_new_dataframe_row_indicator_list[i + 1]:
                     elixir.current_df_row_index = elixir.current_df_row_index + 1
                     elixir.soul.loc[elixir.current_df_row_index] = (len(elixir.soul.columns)) * [""]

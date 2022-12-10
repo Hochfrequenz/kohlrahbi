@@ -9,7 +9,7 @@ from attrs import define
 from docx.table import Table  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
 
-from ahbextractor.helper.check_row_type import RowType
+from ahbextractor.enums import RowType
 
 
 def get_tabstop_positions(paragraph: Paragraph) -> List[int]:

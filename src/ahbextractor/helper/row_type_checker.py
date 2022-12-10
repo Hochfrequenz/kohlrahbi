@@ -1,26 +1,4 @@
-"""
-This module contains all functions to define the type of a row of the tables in an AHB.
-"""
-
-from enum import Enum
-
-from docx.shared import RGBColor  # type:ignore[import]
 from docx.table import _Cell  # type:ignore[import]
-
-
-class RowType(Enum):
-    """
-    All possible row types.
-    The RowType is defined by the first cell in each row.
-    Example content for each row type is documented at each enum member.
-    """
-
-    SEGMENTNAME = 1  #: e.g. "Nachrichten-Kopfsegment"
-    SEGMENTGRUPPE = 2  #: e.g. "SG2"
-    SEGMENT = 3  #: e.g. "    UNH" or "SG2  NAD"
-    DATENELEMENT = 4  #: e.g. "    UNH 0062"
-    HEADER = 5  #: e.g. "EDIFACT Struktur"
-    EMPTY = 6  #: e.g. ""
 
 
 def is_row_header(edifact_struktur_cell: _Cell) -> bool:
@@ -139,37 +117,3 @@ def is_row_empty(edifact_struktur_cell: _Cell) -> bool:
         bool:
     """
     return edifact_struktur_cell.text == ""
-
-
-def define_row_type(edifact_struktur_cell: _Cell, left_indent_position: int) -> RowType:
-    """Defines the type of the current row.
-
-    Args:
-        edifact_struktur_cell (_Cell): Indicator cell
-        left_indent_position (int): Position of the left indent
-
-    Raises:
-        NotImplemented: Gets raised if the RowType got not to be defined
-
-    Returns:
-        RowType: Type of the current row
-    """
-    if is_row_header(edifact_struktur_cell=edifact_struktur_cell):
-        return RowType.HEADER
-
-    if is_row_segmentname(edifact_struktur_cell=edifact_struktur_cell):
-        return RowType.SEGMENTNAME
-
-    if is_row_segmentgruppe(edifact_struktur_cell=edifact_struktur_cell, left_indent_position=left_indent_position):
-        return RowType.SEGMENTGRUPPE
-
-    if is_row_segment(edifact_struktur_cell=edifact_struktur_cell, left_indent_position=left_indent_position):
-        return RowType.SEGMENT
-
-    if is_row_datenelement(edifact_struktur_cell=edifact_struktur_cell, left_indent_position=left_indent_position):
-        return RowType.DATENELEMENT
-
-    if is_row_empty(edifact_struktur_cell=edifact_struktur_cell):
-        return RowType.EMPTY
-
-    raise NotImplementedError(f"Could not define row type of cell with text: {edifact_struktur_cell.text}")

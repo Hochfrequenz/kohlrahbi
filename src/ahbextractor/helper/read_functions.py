@@ -15,7 +15,7 @@ from docx.text.paragraph import Paragraph  # type:ignore[import]
 from maus.edifact import EdifactFormatVersion, get_edifact_format_version
 
 from ahbextractor import logger
-from ahbextractor.helper.check_row_type import RowType, define_row_type
+from ahbextractor.helper.check_row_type import RowType, get_row_type
 from ahbextractor.helper.elixir import Elixir
 from ahbextractor.helper.export_functions import (
     export_all_pruefidentifikatoren_in_one_file,
@@ -88,6 +88,44 @@ def get_all_paragraphs_and_tables(parent: Union[Document, _Cell]) -> Generator[U
             yield Table(child, parent)
 
 
+def remove_redundant_information_in_list(input_list: List[str]) -> List[str]:
+    """
+    This function deletes the redundant information and returns a list with three entries which are
+    0: EDIFACT Struktur content
+    1: Middle cell
+    2: Bedingung cell
+    """
+    if input_list[0] == input_list[1] and input_list[2] == input_list[3]:
+        # pylint: disable=line-too-long
+        # HEADER looks like
+        # 0:'EDIFACT Struktur'
+        # 1:'EDIFACT Struktur'
+        # 2:'Beschreibung\tKündigung\tBestätigung\tAblehnung\tBedingung\n\tMSB \tKündigung\tKündigung\n\tMSB \tMSB \nKommunikation von\tMSBN an\tMSBA an\tMSBA an\n\tMSBA\tMSBN\tMSBN\nPrüfidentifikator\t11039\t11040\t11041'
+        # 3:'Beschreibung\tKündigung\tBestätigung\tAblehnung\tBedingung\n\tMSB \tKündigung\tKündigung\n\tMSB \tMSB \nKommunikation von\tMSBN an\tMSBA an\tMSBA an\n\tMSBA\tMSBN\tMSBN\nPrüfidentifikator\t11039\t11040\t11041'
+        # len():4
+        del input_list[1]
+        input_list[2] = ""
+    elif input_list[1] == input_list[2]:
+        # Dataelement row with header in the table
+        # 0:'SG2\tNAD\t3035'
+        # 1:'SG2\tNAD\t3035'
+        # 2:'MR\tNachrichtenempfänger\tX\tX\tX'
+        # 3:''
+        # len():4
+        del input_list[1]
+    elif input_list[0] == input_list[1]:
+        del input_list[1]
+
+    return input_list
+
+
+def has_row_only_conditions(row_cell_text: List[str]) -> bool:
+    if row_cell_text[1] == "":
+        return True
+    else:
+        return False
+
+
 # pylint: disable=too-many-arguments
 def read_table(
     elixir: Elixir,
@@ -125,34 +163,13 @@ def read_table(
         # pylint: disable=protected-access
         if table._column_count == 4:
             # remove redundant information for tables with 4 columns
-            if (
-                row_cell_texts_as_list[0] == row_cell_texts_as_list[1]
-                and row_cell_texts_as_list[2] == row_cell_texts_as_list[3]
-            ):
-                # pylint: disable=line-too-long
-                # HEADER looks like
-                # 0:'EDIFACT Struktur'
-                # 1:'EDIFACT Struktur'
-                # 2:'Beschreibung\tKündigung\tBestätigung\tAblehnung\tBedingung\n\tMSB \tKündigung\tKündigung\n\tMSB \tMSB \nKommunikation von\tMSBN an\tMSBA an\tMSBA an\n\tMSBA\tMSBN\tMSBN\nPrüfidentifikator\t11039\t11040\t11041'
-                # 3:'Beschreibung\tKündigung\tBestätigung\tAblehnung\tBedingung\n\tMSB \tKündigung\tKündigung\n\tMSB \tMSB \nKommunikation von\tMSBN an\tMSBA an\tMSBA an\n\tMSBA\tMSBN\tMSBN\nPrüfidentifikator\t11039\t11040\t11041'
-                # len():4
-                del row_cell_texts_as_list[1]
-                row_cell_texts_as_list[2] = ""
-            elif row_cell_texts_as_list[1] == row_cell_texts_as_list[2]:
-                # Dataelement row with header in the table
-                # 0:'SG2\tNAD\t3035'
-                # 1:'SG2\tNAD\t3035'
-                # 2:'MR\tNachrichtenempfänger\tX\tX\tX'
-                # 3:''
-                # len():4
-                del row_cell_texts_as_list[1]
-            elif row_cell_texts_as_list[0] == row_cell_texts_as_list[1]:
-                del row_cell_texts_as_list[1]
+
+            row_cell_texts_as_list = remove_redundant_information_in_list(input_list=row_cell_texts_as_list)
 
         current_edifact_struktur_cell = table.row_cells(row)[0]
 
         # check for row type
-        current_row_type = define_row_type(
+        current_row_type = get_row_type(
             edifact_struktur_cell=current_edifact_struktur_cell,
             left_indent_position=elixir.edifact_struktur_left_indent_position,
         )
@@ -173,7 +190,11 @@ def read_table(
         # important is here to decrease the current_df_row_index by one to avoid an empty row in the output file
         # which only contains the Bedingung.
         else:
-            elixir.current_df_row_index = elixir.current_df_row_index - 1
+
+            # if elixir.tabstop_positions[0] == elixir.middle_cell_left_indent_position:
+            if has_row_only_conditions(row_cell_text=row_cell_texts_as_list):
+                elixir.current_df_row_index = elixir.current_df_row_index - 1
+
             write_new_row_in_dataframe(
                 row_type=elixir.last_two_row_types[1],
                 table=table,
@@ -230,6 +251,13 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
     elixir: Elixir
     edifact_format_version = _export_format_version_from_ahbfile_name(str(ahb_file_name))
     output_directory_path = output_directory_path / str(edifact_format_version)
+
+    # for item in get_all_paragraphs_and_tables(parent=document):
+    #     define_row_type(
+    #         edifact_struktur_cell=current_edifact_struktur_cell,
+    #         left_indent_position=elixir.edifact_struktur_left_indent_position,
+    #     )
+
     # Iterate through the whole word document
     for item in get_all_paragraphs_and_tables(parent=document):
 
@@ -247,18 +275,19 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
                 # elixir should have been initialized here, because the document is at the end of the document
                 for pruefi in elixir.pruefidentifikatoren:  # pylint:disable=used-before-assignment
 
+                    document.save("colorful-ahb.docx")
                     export_single_pruefidentifikator(
                         pruefi=pruefi,
                         df=elixir.soul,
                         output_directory_path=output_directory_path,
                     )
 
-                    export_all_pruefidentifikatoren_in_one_file(
-                        pruefi=pruefi,
-                        df=elixir.soul,
-                        output_directory_path=output_directory_path,
-                        file_name=ahb_file_name,
-                    )
+                    # export_all_pruefidentifikatoren_in_one_file(
+                    #     pruefi=pruefi,
+                    #     df=elixir.soul,
+                    #     output_directory_path=output_directory_path,
+                    #     file_name=ahb_file_name,
+                    # )
 
                 # I don't know how to exit the program without a return
                 return 0
@@ -276,12 +305,12 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
                         output_directory_path=output_directory_path,
                     )
 
-                    export_all_pruefidentifikatoren_in_one_file(
-                        pruefi=pruefi,
-                        df=elixir.soul,
-                        output_directory_path=output_directory_path,
-                        file_name=ahb_file_name,
-                    )
+                    # export_all_pruefidentifikatoren_in_one_file(
+                    #     pruefi=pruefi,
+                    #     df=elixir.soul,
+                    #     output_directory_path=output_directory_path,
+                    #     file_name=ahb_file_name,
+                    # )
 
             elixir = Elixir.from_table(docx_table=item)
             comma_separated_pruefis = ", ".join(elixir.pruefidentifikatoren)
@@ -298,4 +327,8 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
                 elixir=elixir,
                 table=item,
             )
+
+    # Save document
+    document.save("colorful-ahb.docx")
+
     return 0  # you need to return something when the type hint states that you return something
