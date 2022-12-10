@@ -7,7 +7,7 @@ from typing import List
 import docx  # type:ignore[import]
 
 from kohlrahbi import logger
-from kohlrahbi.helper.read_functions import get_ahb_extract
+from kohlrahbi.helper.read_functions import get_kohlrahbi
 
 
 def main(file_paths: List[Path]) -> None:
@@ -33,4 +33,4 @@ def main(file_paths: List[Path]) -> None:
         except IOError:
             logger.exception("There was an error opening the file '%s'", ahb_file_path, exc_info=True)
 
-        get_ahb_extract(document=doc, output_directory_path=output_directory_path, ahb_file_name=ahb_file_path)
+        get_kohlrahbi(document=doc, output_directory_path=output_directory_path, ahb_file_name=ahb_file_path)

@@ -215,7 +215,7 @@ def _export_format_version_from_ahbfile_name(ahb_docx_name: str) -> EdifactForma
 
 
 # pylint: disable=inconsistent-return-statements
-def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_name: Path) -> int:
+def get_kohlrahbi(document: Document, output_directory_path: Path, ahb_file_name: Path) -> int:
     """Reads a docx file and extracts all information for each Prüfidentifikator.
 
     Args:

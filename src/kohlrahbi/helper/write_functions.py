@@ -9,7 +9,7 @@ import pandas as pd  # type:ignore[import]
 from docx.table import Table, _Cell  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
 
-from kohlrahbi.helper.check_row_type import RowType
+from kohlrahbi.helper.row_type_checker import RowType
 from kohlrahbi.helper.seed import Seed
 
 
