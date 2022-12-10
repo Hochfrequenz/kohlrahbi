@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 from typing import List
 
-from kohlrahbi import ahbextractor
+from kohlrahbi import harvester
 from kohlrahbi.helper.read_functions import remove_duplicates_from_ahb_list
 
 if __name__ == "__main__":
@@ -46,4 +46,4 @@ if __name__ == "__main__":
         x for x in docx_file_paths if ("aperak" not in str(x).lower() and "contrl" not in str(x).lower())
     ]  # sorry for that
     print(f"Start processing {len(docx_file_paths)} files...")
-    ahbextractor.main(file_paths=docx_file_paths)
+    harvester.main(file_paths=docx_file_paths)
