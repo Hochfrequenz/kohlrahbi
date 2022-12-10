@@ -32,7 +32,7 @@ def get_tabstop_positions(paragraph: Paragraph) -> List[int]:
 
 # pylint: disable=too-few-public-methods
 @define
-class Elixir:
+class Seed:
     """
     helper class to store all values to extract the AHB and the final AHB as dataframe
     """
@@ -49,7 +49,7 @@ class Elixir:
     # to decouple the data structure of Elixir from the input data
     # more background can be found on https://www.attrs.org/en/stable/init.html#initialization
     @classmethod
-    def from_table(cls, docx_table: Table) -> "Elixir":
+    def from_table(cls, docx_table: Table) -> "Seed":
         """Prepare DataFrame for a new table with new Prüfidentifikatoren
 
         Args:

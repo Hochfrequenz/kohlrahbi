@@ -5,7 +5,7 @@ import docx  # type:ignore[import]
 import pandas as pd  # type:ignore[import]
 import pytest  # type:ignore[import]
 
-from kohlrahbi.helper.elixir import Elixir
+from kohlrahbi.helper.elixir import Seed
 from kohlrahbi.helper.write_functions import (
     parse_bedingung_cell,
     parse_paragraph_in_edifact_struktur_column_to_dataframe,
@@ -510,7 +510,7 @@ class TestWriteFunctions:
         df.loc[row_index] = initial_dataframe_row
         expected_df.loc[row_index] = initial_dataframe_row
 
-        elixir = Elixir(
+        elixir = Seed(
             soul=df,
             edifact_struktur_left_indent_position=self.edifact_struktur_cell_left_indent_position_of_indicator_paragraph,
             middle_cell_left_indent_position=self.middle_cell_left_indent_position_of_indicator_paragraph,

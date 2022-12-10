@@ -10,7 +10,7 @@ from docx.table import Table, _Cell  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
 
 from kohlrahbi.helper.check_row_type import RowType
-from kohlrahbi.helper.elixir import Elixir
+from kohlrahbi.helper.elixir import Seed
 
 
 def parse_paragraph_in_edifact_struktur_column_to_dataframe(
@@ -139,7 +139,7 @@ def parse_bedingung_cell(bedingung_cell: _Cell, dataframe: pd.DataFrame, row_ind
 
 # pylint: disable=too-many-arguments
 def write_segment_name_to_dataframe(
-    elixir: Elixir,
+    elixir: Seed,
     edifact_struktur_cell: _Cell,
     middle_cell: _Cell,
     bedingung_cell: _Cell,
@@ -180,7 +180,7 @@ def write_segment_name_to_dataframe(
 
 # pylint: disable=too-many-arguments
 def write_segmentgruppe_to_dataframe(
-    elixir: Elixir,
+    elixir: Seed,
     edifact_struktur_cell: _Cell,
     middle_cell: _Cell,
     bedingung_cell: _Cell,
@@ -221,7 +221,7 @@ def write_segmentgruppe_to_dataframe(
 
 # pylint: disable=too-many-arguments
 def write_segment_to_dataframe(
-    elixir: Elixir,
+    elixir: Seed,
     edifact_struktur_cell: _Cell,
     middle_cell: _Cell,
     bedingung_cell: _Cell,
@@ -308,7 +308,7 @@ def has_middle_cell_multiple_codes(paragraphs: List[Paragraph], pruefi_tabstops:
 
 # pylint: disable=too-many-arguments
 def write_dataelement_to_dataframe(
-    elixir: Elixir,
+    elixir: Seed,
     edifact_struktur_cell: _Cell,
     middle_cell: _Cell,
     bedingung_cell: _Cell,
@@ -408,7 +408,7 @@ def write_dataelement_to_dataframe(
 
 
 def write_new_row_in_dataframe(
-    elixir: Elixir,
+    elixir: Seed,
     row_type: RowType,
     table: Table,
     row: int,

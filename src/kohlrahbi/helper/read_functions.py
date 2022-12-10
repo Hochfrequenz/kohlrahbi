@@ -16,7 +16,7 @@ from maus.edifact import EdifactFormatVersion, get_edifact_format_version
 
 from kohlrahbi import logger
 from kohlrahbi.helper.check_row_type import RowType, define_row_type
-from kohlrahbi.helper.elixir import Elixir
+from kohlrahbi.helper.elixir import Seed
 from kohlrahbi.helper.export_functions import (
     export_all_pruefidentifikatoren_in_one_file,
     export_single_pruefidentifikator,
@@ -91,7 +91,7 @@ def get_all_paragraphs_and_tables(parent: Union[Document, _Cell]) -> Generator[U
 
 # pylint: disable=too-many-arguments
 def read_table(
-    elixir: Elixir,
+    elixir: Seed,
     table: Table,
 ) -> Tuple[List[RowType], int]:
     """
@@ -228,7 +228,7 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
     """
 
     is_initial_run = True
-    elixir: Elixir
+    elixir: Seed
     edifact_format_version = _export_format_version_from_ahbfile_name(str(ahb_file_name))
     output_directory_path = output_directory_path / str(edifact_format_version)
     # Iterate through the whole word document
@@ -284,7 +284,7 @@ def get_ahb_extract(document: Document, output_directory_path: Path, ahb_file_na
                         file_name=ahb_file_name,
                     )
 
-            elixir = Elixir.from_table(docx_table=item)
+            elixir = Seed.from_table(docx_table=item)
             comma_separated_pruefis = ", ".join(elixir.pruefidentifikatoren)
             logger.info("🔍 Extracting Pruefidentifikatoren: %s", comma_separated_pruefis)
             read_table(
