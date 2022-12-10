@@ -126,7 +126,7 @@ def is_row_empty(edifact_struktur_cell: _Cell) -> bool:
     return edifact_struktur_cell.text == ""
 
 
-def define_row_type(edifact_struktur_cell: _Cell, left_indent_position: int) -> RowType:
+def get_row_type(edifact_struktur_cell: _Cell, left_indent_position: int) -> RowType:
     """Defines the type of the current row.
 
     Args:

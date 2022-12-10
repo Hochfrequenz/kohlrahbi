@@ -15,7 +15,7 @@ from docx.text.paragraph import Paragraph  # type:ignore[import]
 from maus.edifact import EdifactFormatVersion, get_edifact_format_version
 
 from kohlrahbi import logger
-from kohlrahbi.helper.check_row_type import RowType, define_row_type
+from kohlrahbi.helper.row_type_checker import RowType, get_row_type
 from kohlrahbi.helper.export_functions import (
     export_all_pruefidentifikatoren_in_one_file,
     export_single_pruefidentifikator,
@@ -153,7 +153,7 @@ def read_table(
         current_edifact_struktur_cell = table.row_cells(row)[0]
 
         # check for row type
-        current_row_type = define_row_type(
+        current_row_type = get_row_type(
             edifact_struktur_cell=current_edifact_struktur_cell,
             left_indent_position=elixir.edifact_struktur_left_indent_position,
         )
