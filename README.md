@@ -1,4 +1,4 @@
-# AHB Extractor
+# KohlrAHBi
 ![Unittests status badge](https://github.com/Hochfrequenz/AHBExtractor/workflows/Unittests/badge.svg)
 ![Coverage status badge](https://github.com/Hochfrequenz/AHBExtractor/workflows/Coverage/badge.svg)
 ![Linting status badge](https://github.com/Hochfrequenz/AHBExtractor/workflows/Linting/badge.svg)
