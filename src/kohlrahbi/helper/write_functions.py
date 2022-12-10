@@ -13,7 +13,7 @@ from kohlrahbi.helper.row_type_checker import RowType
 from kohlrahbi.helper.seed import Seed
 
 
-def parse_paragraph_in_edifact_struktur_column_to_dataframe(
+def parse_edifact_struktur_cell(
     paragraphs: List[Paragraph],
     dataframe: pd.DataFrame,
     row_index: int,
@@ -155,7 +155,7 @@ def write_segment_name_to_dataframe(
 
     # EDIFACT STRUKTUR COLUMN
     for paragraph in edifact_struktur_cell.paragraphs:
-        parse_paragraph_in_edifact_struktur_column_to_dataframe(
+        parse_edifact_struktur_cell(
             paragraphs=[paragraph],
             dataframe=elixir.soul,
             row_index=elixir.current_df_row_index,
@@ -195,7 +195,7 @@ def write_segmentgruppe_to_dataframe(
     """
 
     # EDIFACT STRUKTUR COLUMN
-    parse_paragraph_in_edifact_struktur_column_to_dataframe(
+    parse_edifact_struktur_cell(
         # there might be 2 paragraphs in case of multi line headings, so we're handing over all the paragraphs
         paragraphs=edifact_struktur_cell.paragraphs,
         dataframe=elixir.soul,
@@ -236,7 +236,7 @@ def write_segment_to_dataframe(
     """
 
     # EDIFACT STRUKTUR COLUMN
-    parse_paragraph_in_edifact_struktur_column_to_dataframe(
+    parse_edifact_struktur_cell(
         paragraphs=edifact_struktur_cell.paragraphs,
         dataframe=elixir.soul,
         row_index=elixir.current_df_row_index,
@@ -323,7 +323,7 @@ def write_dataelement_to_dataframe(
     """
 
     # EDIFACT STRUKTUR COLUMN
-    parse_paragraph_in_edifact_struktur_column_to_dataframe(
+    parse_edifact_struktur_cell(
         paragraphs=edifact_struktur_cell.paragraphs,
         dataframe=elixir.soul,
         row_index=elixir.current_df_row_index,
@@ -367,7 +367,7 @@ def write_dataelement_to_dataframe(
             # EDIFACT STRUKTUR COLUMN
 
             if edifact_struktur_cell.paragraphs[0].text != "":
-                parse_paragraph_in_edifact_struktur_column_to_dataframe(
+                parse_edifact_struktur_cell(
                     paragraphs=edifact_struktur_cell.paragraphs,
                     dataframe=elixir.soul,
                     row_index=elixir.current_df_row_index,

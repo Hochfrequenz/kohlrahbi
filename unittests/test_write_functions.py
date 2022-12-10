@@ -8,7 +8,7 @@ import pytest  # type:ignore[import]
 from kohlrahbi.helper.seed import Seed
 from kohlrahbi.helper.write_functions import (
     parse_bedingung_cell,
-    parse_paragraph_in_edifact_struktur_column_to_dataframe,
+    parse_edifact_struktur_cell,
     parse_paragraph_in_middle_column_to_dataframe,
     write_dataelement_to_dataframe,
     write_segment_name_to_dataframe,
@@ -339,7 +339,7 @@ class TestParseFunctions:
         df.loc[row_index] = initial_dataframe_row
         expected_df.loc[row_index] = initial_dataframe_row
 
-        parse_paragraph_in_edifact_struktur_column_to_dataframe(
+        parse_edifact_struktur_cell(
             paragraphs=test_paragraph,
             dataframe=df,
             row_index=row_index,
