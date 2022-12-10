@@ -18,11 +18,9 @@ def main(file_paths: List[Path]) -> None:
     for ahb_file_path in file_paths:
         logger.info("Processing file '%s'", ahb_file_path)
         output_directory_path = Path.cwd() / Path("output")
-        if not output_directory_path.exists():
-            output_directory_path.mkdir()
+        output_directory_path.mkdir(exist_ok=True)
         xlsx_out_path = output_directory_path / Path("xlsx")
-        if not xlsx_out_path.exists():
-            xlsx_out_path.mkdir()
+        xlsx_out_path.mkdir(exist_ok=True)
         path_to_all_in_one_excel = xlsx_out_path / Path(str(ahb_file_path.parts[-1])[:-5] + ".xls")
 
         # Remove old "all in one Excel file" if it already exists
