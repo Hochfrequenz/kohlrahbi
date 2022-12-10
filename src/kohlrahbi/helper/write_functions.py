@@ -10,7 +10,7 @@ from docx.table import Table, _Cell  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
 
 from kohlrahbi.helper.check_row_type import RowType
-from kohlrahbi.helper.elixir import Seed
+from kohlrahbi.helper.seed import Seed
 
 
 def parse_paragraph_in_edifact_struktur_column_to_dataframe(

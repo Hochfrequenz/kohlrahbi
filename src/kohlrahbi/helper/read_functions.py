@@ -16,11 +16,11 @@ from maus.edifact import EdifactFormatVersion, get_edifact_format_version
 
 from kohlrahbi import logger
 from kohlrahbi.helper.check_row_type import RowType, define_row_type
-from kohlrahbi.helper.elixir import Seed
 from kohlrahbi.helper.export_functions import (
     export_all_pruefidentifikatoren_in_one_file,
     export_single_pruefidentifikator,
 )
+from kohlrahbi.helper.seed import Seed
 from kohlrahbi.helper.write_functions import write_new_row_in_dataframe
 
 _pruefi_pattern = re.compile(r"^\d{5}$")
