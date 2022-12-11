@@ -5,7 +5,6 @@ from docx.table import _Cell  # type:ignore[import]
 def parse_edifact_struktur_cell(
     table_cell: _Cell,
     dataframe: pd.DataFrame,
-    row_index: int,
     edifact_struktur_cell_left_indent_position: int,
 ) -> None:
     """Parses a paragraph in the edifact struktur column and puts the information into the appropriate columns

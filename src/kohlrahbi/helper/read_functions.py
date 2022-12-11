@@ -23,7 +23,6 @@ from kohlrahbi.helper.export_functions import (
 from kohlrahbi.helper.seed import Seed
 from kohlrahbi.helper.write_functions import write_new_row_in_dataframe
 
-_pruefi_pattern = re.compile(r"^\d{5}$")
 _ahb_file_name_pattern = re.compile(r"^(?P<name>.+Lesefassung)(?P<version>\d+\.\d+[a-z]?)(?P<suffix>.*\.docx)$")
 """
 https://regex101.com/r/8A4bK8/1
@@ -93,7 +92,7 @@ def get_all_paragraphs_and_tables(parent: Union[Document, _Cell]) -> Generator[U
 def read_table(
     seed: Seed,
     table: Table,
-) -> Tuple[List[RowType], int]:
+) -> List[RowType]:
     """
     Iterates through all rows in a given table and writes all extracted infos in a DataFrame.
 
@@ -119,7 +118,7 @@ def read_table(
     for row in range(len(table.rows)):
 
         # initial empty list for the next row in the dataframe
-        seed.soul.loc[seed.current_df_row_index] = (len(seed.soul.columns)) * [""]
+        seed.soul.loc[0] = (len(seed.soul.columns)) * [""]
 
         row_cell_texts_as_list = [cell.text for cell in table.row_cells(row)]
 
@@ -164,8 +163,8 @@ def read_table(
         if not (current_row_type is RowType.EMPTY and seed.last_two_row_types[0] is RowType.HEADER):
             write_new_row_in_dataframe(
                 row_type=current_row_type,
-                table=table,
-                row=row,
+                ahb_table=table,
+                ahb_table_row=row,
                 index_for_middle_column=index_for_middle_column,
                 elixir=seed,
             )
@@ -180,8 +179,8 @@ def read_table(
 
             write_new_row_in_dataframe(
                 row_type=seed.last_two_row_types[1],
-                table=table,
-                row=row,
+                ahb_table=table,
+                ahb_table_row=row,
                 index_for_middle_column=index_for_middle_column,
                 elixir=seed,
                 append_mode=append_mode,
@@ -191,7 +190,7 @@ def read_table(
         seed.last_two_row_types[1] = seed.last_two_row_types[0]
         seed.last_two_row_types[0] = current_row_type
 
-    return seed.last_two_row_types, seed.current_df_row_index
+    return seed.last_two_row_types
 
 
 _validity_start_date_from_ahbname_pattern = re.compile(r"^.*(?P<germanLocalTimeStartDate>\d{8})\.docx$")

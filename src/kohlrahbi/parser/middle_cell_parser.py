@@ -107,9 +107,7 @@ def has_paragraph_tabstops(paragraph) -> bool:
 
 def parse_middle_cell(
     table_cell: _Cell,
-    # paragraph: Paragraph,
     dataframe: pd.DataFrame,
-    row_index: int,
     left_indent_position: int,
     indicator_tabstop_positions: List[int],
 ) -> None:
@@ -172,22 +170,3 @@ def parse_middle_cell(
 
         # recognize that the first loop is over
         is_first_iteration = False
-
-    # if not has_middle_cell_multiple_codes(paragraphs=table_cell.paragraphs, pruefi_tabstops=tabstop_positions[1:]):
-
-    #     for paragraph in table_cell.paragraphs:
-    #         parse_middle_paragraph(
-    #             paragraph=paragraph,
-    #             dataframe=dataframe,
-    #             row_index=row_index,
-    #             left_indent_position=left_indent_position,
-    #             tabstop_positions=tabstop_positions,
-    #         )
-
-    # else:
-
-    #     def create_new_code_indicator_list(table_cell: _Cell) -> List[bool]:
-    #         """
-    #         If a table cell contains multiple codes we have to
-    #         """
-    #         return [paragraph.runs[0].bold is True for paragraph in table_cell.paragraphs]

@@ -24,7 +24,6 @@ def parse_ahb_row(
     parse_edifact_struktur_cell(
         table_cell=edifact_struktur_cell,
         dataframe=seed.soul,
-        row_index=seed.current_df_row_index,
         edifact_struktur_cell_left_indent_position=seed.edifact_struktur_left_indent_position,
     )
 
@@ -32,7 +31,6 @@ def parse_ahb_row(
     parse_middle_cell(
         table_cell=middle_cell,
         dataframe=seed.soul,
-        row_index=seed.current_df_row_index,
         left_indent_position=seed.middle_cell_left_indent_position,
         indicator_tabstop_positions=seed.tabstop_positions,
     )
@@ -45,7 +43,12 @@ def parse_ahb_row(
 
 
 def write_new_row_in_dataframe(
-    elixir: Seed, row_type: RowType, table: Table, row: int, index_for_middle_column: int, append_mode: bool = False
+    elixir: Seed,
+    row_type: RowType,
+    ahb_table: Table,
+    ahb_table_row: int,
+    index_for_middle_column: int,
+    append_mode: bool = False,
 ) -> None:
     """Writes the current row of the current table into the DataFrame depending on the type of the row
 
@@ -53,7 +56,6 @@ def write_new_row_in_dataframe(
         elixir (Elixir):
         row_type (RowType): Type of the current row
         table (Table): Current table
-        row (int): Row of the current table
         index_for_middle_column (int): Index of the actual middle column
     """
 
@@ -62,8 +64,8 @@ def write_new_row_in_dataframe(
     else:
         parse_ahb_row(
             seed=elixir,
-            edifact_struktur_cell=table.row_cells(row)[0],
-            middle_cell=table.row_cells(row)[index_for_middle_column],
-            bedingung_cell=table.row_cells(row)[-1],
+            edifact_struktur_cell=ahb_table.row_cells(ahb_table_row)[0],
+            middle_cell=ahb_table.row_cells(ahb_table_row)[index_for_middle_column],
+            bedingung_cell=ahb_table.row_cells(ahb_table_row)[-1],
             append_mode=append_mode,
         )

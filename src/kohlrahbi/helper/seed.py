@@ -43,7 +43,6 @@ class Seed:
     middle_cell_left_indent_position: int = 0
     tabstop_positions: List[int] = []
     last_two_row_types: List[RowType] = []
-    current_df_row_index: int = 0
 
     # why this classmethod?
     # to decouple the data structure of Elixir from the input data
@@ -81,7 +80,6 @@ class Seed:
 
         # Initialize help variables
         last_two_row_types: List = [RowType.EMPTY, RowType.EMPTY]
-        current_df_row_index: int = 0
 
         return cls(
             pruefidentifikatoren=pruefidentifikatoren,
@@ -93,5 +91,4 @@ class Seed:
             middle_cell_left_indent_position=middle_cell_left_indent_position,
             tabstop_positions=tabstop_positions,
             last_two_row_types=last_two_row_types,
-            current_df_row_index=current_df_row_index,
         )
