@@ -184,6 +184,7 @@ def read_table(
                 row=row,
                 index_for_middle_column=index_for_middle_column,
                 elixir=seed,
+                append_mode=append_mode,
             )
 
         # remember last row type for empty cells
