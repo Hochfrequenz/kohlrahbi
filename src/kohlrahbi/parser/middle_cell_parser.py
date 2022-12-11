@@ -61,40 +61,6 @@ def does_paragraph_contain_qualifier_or_code(paragraph, left_indent_position) ->
         return False
 
 
-def parse_middle_paragraph(paragraph, dataframe, row_index, left_indent_position, tabstop_positions):
-    splitted_text_at_tabs = paragraph.text.split("\t")
-
-    # Qualifier / Code
-    # left_indent_position is characteristic for Datenelemente
-    if paragraph.paragraph_format.left_indent == left_indent_position:
-        dataframe.at[row_index, "Codes und Qualifier"] += splitted_text_at_tabs.pop(0)
-        column_indezes = list(range(4, 4 + len(tabstop_positions)))
-
-    else:
-        if splitted_text_at_tabs[0] == "":
-            tabstop_positions = tabstop_positions[1:]
-            del splitted_text_at_tabs[0]
-
-        column_indezes = list(range(5, 5 + len(tabstop_positions)))
-
-    # pylint: disable=protected-access
-    tab_stops = paragraph.paragraph_format.tab_stops._pPr.tabs
-
-    if tab_stops is not None:
-        for tabstop in tab_stops:
-            for tabstop_position, column_index in zip(tabstop_positions, column_indezes):
-                if tabstop.pos == tabstop_position:
-                    dataframe.iat[row_index, column_index] += splitted_text_at_tabs.pop(0)
-    elif tab_stops is None and splitted_text_at_tabs:
-        # in splitted_text_at_tabs list must be an entry
-        dataframe.at[row_index, "Beschreibung"] += splitted_text_at_tabs.pop(0)
-    elif tab_stops is None:
-        pass
-    # Could not figure out a scenario where this error could be raised.
-    # else:
-    #     raise NotImplementedError(f"Could not parse paragraph in middle cell with {paragraph.text}")
-
-
 def has_paragraph_tabstops(paragraph) -> bool:
     """
     Checks if the given paragraph contains tabstops
@@ -116,7 +82,6 @@ def parse_middle_cell(
     Args:
         paragraph (Paragraph): Current paragraph in the edifact struktur cell
         dataframe (pd.DataFrame): Contains all infos
-        row_index (int): Current index of the DataFrame
         left_indent_position (int): Position of the left indent from the indicator middle cell
         tabstop_positions (List[int]): All tabstop positions of the indicator middle cell
     """
@@ -144,7 +109,6 @@ def parse_middle_cell(
 
         else:
             if splitted_text_at_tabs[0] == "":
-                #     indicator_tabstop_positions = indicator_tabstop_positions[1:]
                 del splitted_text_at_tabs[0]
             column_indezes = list(range(4, 4 + len(indicator_tabstop_positions)))
 
@@ -153,12 +117,11 @@ def parse_middle_cell(
         if paragraph_contains_tabstops:
             tab_stops_in_current_paragraph = [tabstop.pos for tabstop in paragraph.paragraph_format.tab_stops._pPr.tabs]
 
-            # if tab_stops_in_current_paragraph is not None:
             for tabstop in tab_stops_in_current_paragraph:
                 for indicator_tabstop_position, column_index in zip(indicator_tabstop_positions, column_indezes):
                     if tabstop == indicator_tabstop_position:
                         dataframe.iat[row_index, column_index] += splitted_text_at_tabs.pop(0)
-        # elif tab_stops_in_current_paragraph is None and splitted_text_at_tabs:
+
         elif not paragraph_contains_tabstops and splitted_text_at_tabs:
             # in splitted_text_at_tabs list must be an entry
             dataframe.at[row_index, "Beschreibung"] += splitted_text_at_tabs.pop(0)
