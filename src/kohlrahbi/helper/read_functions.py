@@ -173,8 +173,6 @@ def read_table(
         # important is here to decrease the current_df_row_index by one to avoid an empty row in the output file
         # which only contains the Bedingung.
         else:
-            # elixir.current_df_row_index = elixir.current_df_row_index - 1
-            # elixir.soul.drop(elixir.soul.tail(1).index, inplace=True)
             is_appending = True
 
             parse_ahb_table_row(
