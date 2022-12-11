@@ -21,7 +21,7 @@ from kohlrahbi.helper.export_functions import (
     export_single_pruefidentifikator,
 )
 from kohlrahbi.helper.seed import Seed
-from kohlrahbi.helper.write_functions import write_new_row_in_dataframe
+from kohlrahbi.helper.write_functions import parse_ahb_table_row
 
 _ahb_file_name_pattern = re.compile(r"^(?P<name>.+Lesefassung)(?P<version>\d+\.\d+[a-z]?)(?P<suffix>.*\.docx)$")
 """
@@ -161,12 +161,12 @@ def read_table(
 
         # this case covers the "normal" docx table row
         if not (current_row_type is RowType.EMPTY and seed.last_two_row_types[0] is RowType.HEADER):
-            write_new_row_in_dataframe(
+            parse_ahb_table_row(
                 row_type=current_row_type,
                 ahb_table=table,
                 ahb_table_row=row,
                 index_for_middle_column=index_for_middle_column,
-                elixir=seed,
+                seed=seed,
             )
         # this case covers the page break situation
         # the current RowType is EMPTY and the row before is of RowTyp HEADER
@@ -175,15 +175,15 @@ def read_table(
         else:
             # elixir.current_df_row_index = elixir.current_df_row_index - 1
             # elixir.soul.drop(elixir.soul.tail(1).index, inplace=True)
-            append_mode = True
+            is_appending = True
 
-            write_new_row_in_dataframe(
+            parse_ahb_table_row(
                 row_type=seed.last_two_row_types[1],
                 ahb_table=table,
                 ahb_table_row=row,
                 index_for_middle_column=index_for_middle_column,
-                elixir=seed,
-                append_mode=append_mode,
+                seed=seed,
+                is_appending=is_appending,
             )
 
         # remember last row type for empty cells
@@ -297,7 +297,7 @@ def get_kohlrahbi(document: Document, output_directory_path: Path, ahb_file_name
 
             is_initial_run = False
 
-        elif isinstance(item, Table) and "elixir" in locals():
+        elif isinstance(item, Table) and "seed" in locals():
             read_table(
                 seed=seed,
                 table=item,

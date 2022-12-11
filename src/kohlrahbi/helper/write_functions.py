@@ -10,14 +10,34 @@ from kohlrahbi.helper.seed import Seed
 from kohlrahbi.parser import parse_bedingung_cell, parse_edifact_struktur_cell, parse_middle_cell
 
 
-def parse_ahb_row(
-    seed: Seed, edifact_struktur_cell: _Cell, middle_cell: _Cell, bedingung_cell: _Cell, append_mode: bool
+def parse_ahb_table_row(
+    seed: Seed,
+    row_type: RowType,
+    ahb_table: Table,
+    ahb_table_row: int,
+    index_for_middle_column: int,
+    is_appending: bool = False,
 ) -> None:
-    """
-    Writes all infos from a AHB table row into dataframe
+    """Writes the current row of the current table into the DataFrame depending on the type of the row
+
+    Args:
+        seed (Seed):
+        row_type (RowType): Type of the current row
+        ahb_table (Table): Current table
+        ahb_table_row (int): Row of the current ahb table
+        index_for_middle_column (int): Index of the actual middle column
+        is_appending (bool):
     """
 
-    if not append_mode:
+    if row_type is RowType.HEADER:
+        # we skip the header rows because there we did it already and there are no new information
+        return
+
+    edifact_struktur_cell = ahb_table.row_cells(ahb_table_row)[0]
+    middle_cell = ahb_table.row_cells(ahb_table_row)[index_for_middle_column]
+    bedingung_cell = ahb_table.row_cells(ahb_table_row)[-1]
+
+    if not is_appending:
         seed.soul.loc[seed.soul.index.max() + 1, :] = ""
 
     # EDIFACT STRUKTUR COLUMN
@@ -40,32 +60,3 @@ def parse_ahb_row(
         bedingung_cell=bedingung_cell,
         dataframe=seed.soul,
     )
-
-
-def write_new_row_in_dataframe(
-    elixir: Seed,
-    row_type: RowType,
-    ahb_table: Table,
-    ahb_table_row: int,
-    index_for_middle_column: int,
-    append_mode: bool = False,
-) -> None:
-    """Writes the current row of the current table into the DataFrame depending on the type of the row
-
-    Args:
-        elixir (Elixir):
-        row_type (RowType): Type of the current row
-        table (Table): Current table
-        index_for_middle_column (int): Index of the actual middle column
-    """
-
-    if row_type is RowType.HEADER:
-        pass
-    else:
-        parse_ahb_row(
-            seed=elixir,
-            edifact_struktur_cell=ahb_table.row_cells(ahb_table_row)[0],
-            middle_cell=ahb_table.row_cells(ahb_table_row)[index_for_middle_column],
-            bedingung_cell=ahb_table.row_cells(ahb_table_row)[-1],
-            append_mode=append_mode,
-        )
