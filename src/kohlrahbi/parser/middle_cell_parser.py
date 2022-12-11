@@ -95,6 +95,16 @@ def parse_middle_paragraph(paragraph, dataframe, row_index, left_indent_position
     #     raise NotImplementedError(f"Could not parse paragraph in middle cell with {paragraph.text}")
 
 
+def has_paragraph_tabstops(paragraph) -> bool:
+    """
+    Checks if the given paragraph contains tabstops
+    """
+    if paragraph.paragraph_format.tab_stops._pPr.tabs is not None:
+        return True
+    else:
+        return False
+
+
 def parse_middle_cell(
     table_cell: _Cell,
     # paragraph: Paragraph,
@@ -115,10 +125,13 @@ def parse_middle_cell(
 
     is_first_iteration = True
 
+    if table_cell.paragraphs[0].text == "":
+        return
+
     for paragraph in table_cell.paragraphs:
 
         row_index = dataframe.index.max()
-
+        paragraph.text = paragraph.text.replace("\xa0", "")
         splitted_text_at_tabs = paragraph.text.split("\t")
 
         if does_paragraph_contain_qualifier_or_code(paragraph=paragraph, left_indent_position=left_indent_position):
@@ -129,25 +142,29 @@ def parse_middle_cell(
                 row_index = row_index + 1
 
             dataframe.at[row_index, "Codes und Qualifier"] += splitted_text_at_tabs.pop(0)
-            column_indezes = list(range(4, 4 + len(tabstop_positions)))
+            column_indezes = list(range(4, 4 + len(indicator_tabstop_positions)))
 
         else:
             if splitted_text_at_tabs[0] == "":
-                tabstop_positions = tabstop_positions[1:]
+                #     indicator_tabstop_positions = indicator_tabstop_positions[1:]
                 del splitted_text_at_tabs[0]
-            column_indezes = list(range(5, 5 + len(tabstop_positions)))
+            column_indezes = list(range(4, 4 + len(indicator_tabstop_positions)))
 
-        tab_stops = paragraph.paragraph_format.tab_stops._pPr.tabs
+        paragraph_contains_tabstops: bool = has_paragraph_tabstops(paragraph=paragraph)
 
-        if tab_stops is not None:
-            for tabstop in tab_stops:
+        if paragraph_contains_tabstops:
+            tab_stops_in_current_paragraph = [tabstop.pos for tabstop in paragraph.paragraph_format.tab_stops._pPr.tabs]
+
+            # if tab_stops_in_current_paragraph is not None:
+            for tabstop in tab_stops_in_current_paragraph:
                 for indicator_tabstop_position, column_index in zip(indicator_tabstop_positions, column_indezes):
                     if tabstop == indicator_tabstop_position:
                         dataframe.iat[row_index, column_index] += splitted_text_at_tabs.pop(0)
-        elif tab_stops is None and splitted_text_at_tabs:
+        # elif tab_stops_in_current_paragraph is None and splitted_text_at_tabs:
+        elif not paragraph_contains_tabstops and splitted_text_at_tabs:
             # in splitted_text_at_tabs list must be an entry
             dataframe.at[row_index, "Beschreibung"] += splitted_text_at_tabs.pop(0)
-        elif tab_stops is None:
+        elif not paragraph_contains_tabstops:
             pass
         # Could not figure out a scenario where this error could be raised.
         # else:
