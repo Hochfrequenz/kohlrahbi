@@ -189,7 +189,7 @@ class TestParseFunctions:
             dataframe=df,
             row_index=row_index,
             left_indent_position=self.middle_cell_left_indent_position_of_indicator_paragraph,
-            tabstop_positions=self.middle_cell_tabstop_positions_of_indicator_paragraph,
+            indicator_tabstop_positions=self.middle_cell_tabstop_positions_of_indicator_paragraph,
         )
 
         expected_df.loc[row_index] = expected_df_row
@@ -591,7 +591,7 @@ class TestWriteFunctions:
         row_index, elixir, expected_df = self._prepare_docx_table_row(row_cells, expected_df_rows)
 
         write_segment_name_to_dataframe(
-            elixir=elixir,
+            seed=elixir,
             edifact_struktur_cell=self.edifact_struktur_cell,
             middle_cell=self.middle_cell,
             bedingung_cell=self.bedingung_cell,
