@@ -231,7 +231,7 @@ def get_kohlrahbi(document: Document, output_directory_path: Path, ahb_file_name
     """
 
     is_initial_run = True
-    elixir: Seed
+    seed: Seed
     edifact_format_version = _export_format_version_from_ahbfile_name(str(ahb_file_name))
     output_directory_path = output_directory_path / str(edifact_format_version)
     # Iterate through the whole word document
@@ -249,17 +249,17 @@ def get_kohlrahbi(document: Document, output_directory_path: Path, ahb_file_name
             if current_chapter_title == "Änderungshistorie":
                 # export last pruefidentifikatoren in AHB
                 # elixir should have been initialized here, because the document is at the end of the document
-                for pruefi in elixir.pruefidentifikatoren:  # pylint:disable=used-before-assignment
+                for pruefi in seed.pruefidentifikatoren:  # pylint:disable=used-before-assignment
 
                     export_single_pruefidentifikator(
                         pruefi=pruefi,
-                        df=elixir.soul,
+                        df=seed.soul,
                         output_directory_path=output_directory_path,
                     )
 
                     export_all_pruefidentifikatoren_in_one_file(
                         pruefi=pruefi,
-                        df=elixir.soul,
+                        df=seed.soul,
                         output_directory_path=output_directory_path,
                         file_name=ahb_file_name,
                     )
@@ -272,26 +272,26 @@ def get_kohlrahbi(document: Document, output_directory_path: Path, ahb_file_name
             # before we go to the next pruefidentifikatoren we save the current ones
             # but at the first loop we check if list of pruefidentifikatoren is empty
             if is_initial_run is False:
-                for pruefi in elixir.pruefidentifikatoren:
+                for pruefi in seed.pruefidentifikatoren:
 
                     export_single_pruefidentifikator(
                         pruefi=pruefi,
-                        df=elixir.soul,
+                        df=seed.soul,
                         output_directory_path=output_directory_path,
                     )
 
                     export_all_pruefidentifikatoren_in_one_file(
                         pruefi=pruefi,
-                        df=elixir.soul,
+                        df=seed.soul,
                         output_directory_path=output_directory_path,
                         file_name=ahb_file_name,
                     )
 
-            elixir = Seed.from_table(docx_table=item)
-            comma_separated_pruefis = ", ".join(elixir.pruefidentifikatoren)
+            seed = Seed.from_table(docx_table=item)
+            comma_separated_pruefis = ", ".join(seed.pruefidentifikatoren)
             logger.info("🔍 Extracting Pruefidentifikatoren: %s", comma_separated_pruefis)
             read_table(
-                seed=elixir,
+                seed=seed,
                 table=item,
             )
 
@@ -299,7 +299,7 @@ def get_kohlrahbi(document: Document, output_directory_path: Path, ahb_file_name
 
         elif isinstance(item, Table) and "elixir" in locals():
             read_table(
-                seed=elixir,
+                seed=seed,
                 table=item,
             )
     return 0  # you need to return something when the type hint states that you return something
