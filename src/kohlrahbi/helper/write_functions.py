@@ -12,7 +12,7 @@ from kohlrahbi.parser import parse_bedingung_cell, parse_edifact_struktur_cell, 
 
 # pylint: disable=too-many-arguments
 def write_segment_name_to_dataframe(
-    elixir: Seed,
+    seed: Seed,
     edifact_struktur_cell: _Cell,
     middle_cell: _Cell,
     bedingung_cell: _Cell,
@@ -20,20 +20,20 @@ def write_segment_name_to_dataframe(
     """Writes all infos from a segment name row into a DataFrame.
 
     Args:
-        elixir (Elixir):
+        seed (Seed):
         edifact_struktur_cell (_Cell): Cell from the edifact struktur column
         middle_cell (_Cell): Cell from the middle column
         bedingung_cell (_Cell): Cell from the Bedingung column
     """
 
-    elixir.soul.loc[elixir.soul.index.max() + 1, :] = ""
+    seed.soul.loc[seed.soul.index.max() + 1, :] = ""
 
     # EDIFACT STRUKTUR COLUMN
     parse_edifact_struktur_cell(
         table_cell=edifact_struktur_cell,
-        dataframe=elixir.soul,
-        row_index=elixir.current_df_row_index,
-        edifact_struktur_cell_left_indent_position=elixir.edifact_struktur_left_indent_position,
+        dataframe=seed.soul,
+        row_index=seed.current_df_row_index,
+        edifact_struktur_cell_left_indent_position=seed.edifact_struktur_left_indent_position,
     )
 
     # MIDDLE COLUMN
@@ -42,14 +42,14 @@ def write_segment_name_to_dataframe(
 
     parse_middle_cell(
         table_cell=middle_cell,
-        dataframe=elixir.soul,
-        row_index=elixir.current_df_row_index,
-        left_indent_position=elixir.middle_cell_left_indent_position,
-        tabstop_positions=elixir.tabstop_positions,
+        dataframe=seed.soul,
+        row_index=seed.current_df_row_index,
+        left_indent_position=seed.middle_cell_left_indent_position,
+        indicator_tabstop_positions=seed.tabstop_positions,
     )
 
     # BEDINGUNG COLUMN
-    parse_bedingung_cell(bedingung_cell=bedingung_cell, dataframe=elixir.soul, row_index=elixir.current_df_row_index)
+    parse_bedingung_cell(bedingung_cell=bedingung_cell, dataframe=seed.soul, row_index=seed.current_df_row_index)
 
 
 # pylint: disable=too-many-arguments
@@ -267,7 +267,7 @@ def write_new_row_in_dataframe(
 
     elif row_type is RowType.SEGMENTNAME:
         write_segment_name_to_dataframe(
-            elixir=elixir,
+            seed=elixir,
             edifact_struktur_cell=table.row_cells(row)[0],
             middle_cell=table.row_cells(row)[index_for_middle_column],
             bedingung_cell=table.row_cells(row)[-1],

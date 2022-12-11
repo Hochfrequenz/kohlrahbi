@@ -91,7 +91,7 @@ def get_all_paragraphs_and_tables(parent: Union[Document, _Cell]) -> Generator[U
 
 # pylint: disable=too-many-arguments
 def read_table(
-    elixir: Seed,
+    seed: Seed,
     table: Table,
 ) -> Tuple[List[RowType], int]:
     """
@@ -119,7 +119,7 @@ def read_table(
     for row in range(len(table.rows)):
 
         # initial empty list for the next row in the dataframe
-        elixir.soul.loc[elixir.current_df_row_index] = (len(elixir.soul.columns)) * [""]
+        seed.soul.loc[seed.current_df_row_index] = (len(seed.soul.columns)) * [""]
 
         row_cell_texts_as_list = [cell.text for cell in table.row_cells(row)]
 
@@ -155,19 +155,19 @@ def read_table(
         # check for row type
         current_row_type = get_row_type(
             edifact_struktur_cell=current_edifact_struktur_cell,
-            left_indent_position=elixir.edifact_struktur_left_indent_position,
+            left_indent_position=seed.edifact_struktur_left_indent_position,
         )
 
         # write actual row into dataframe
 
         # this case covers the "normal" docx table row
-        if not (current_row_type is RowType.EMPTY and elixir.last_two_row_types[0] is RowType.HEADER):
+        if not (current_row_type is RowType.EMPTY and seed.last_two_row_types[0] is RowType.HEADER):
             write_new_row_in_dataframe(
                 row_type=current_row_type,
                 table=table,
                 row=row,
                 index_for_middle_column=index_for_middle_column,
-                elixir=elixir,
+                elixir=seed,
             )
         # this case covers the page break situation
         # the current RowType is EMPTY and the row before is of RowTyp HEADER
@@ -176,18 +176,18 @@ def read_table(
         else:
             elixir.current_df_row_index = elixir.current_df_row_index - 1
             write_new_row_in_dataframe(
-                row_type=elixir.last_two_row_types[1],
+                row_type=seed.last_two_row_types[1],
                 table=table,
                 row=row,
                 index_for_middle_column=index_for_middle_column,
-                elixir=elixir,
+                elixir=seed,
             )
 
         # remember last row type for empty cells
-        elixir.last_two_row_types[1] = elixir.last_two_row_types[0]
-        elixir.last_two_row_types[0] = current_row_type
+        seed.last_two_row_types[1] = seed.last_two_row_types[0]
+        seed.last_two_row_types[0] = current_row_type
 
-    return elixir.last_two_row_types, elixir.current_df_row_index
+    return seed.last_two_row_types, seed.current_df_row_index
 
 
 _validity_start_date_from_ahbname_pattern = re.compile(r"^.*(?P<germanLocalTimeStartDate>\d{8})\.docx$")
@@ -288,7 +288,7 @@ def get_kohlrahbi(document: Document, output_directory_path: Path, ahb_file_name
             comma_separated_pruefis = ", ".join(elixir.pruefidentifikatoren)
             logger.info("🔍 Extracting Pruefidentifikatoren: %s", comma_separated_pruefis)
             read_table(
-                elixir=elixir,
+                seed=elixir,
                 table=item,
             )
 
@@ -296,7 +296,7 @@ def get_kohlrahbi(document: Document, output_directory_path: Path, ahb_file_name
 
         elif isinstance(item, Table) and "elixir" in locals():
             read_table(
-                elixir=elixir,
+                seed=elixir,
                 table=item,
             )
     return 0  # you need to return something when the type hint states that you return something
