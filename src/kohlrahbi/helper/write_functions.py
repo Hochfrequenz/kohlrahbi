@@ -246,11 +246,7 @@ def write_dataelement_to_dataframe(
 
 
 def write_new_row_in_dataframe(
-    elixir: Seed,
-    row_type: RowType,
-    table: Table,
-    row: int,
-    index_for_middle_column: int,
+    elixir: Seed, row_type: RowType, table: Table, row: int, index_for_middle_column: int, append_mode: bool = False
 ) -> None:
     """Writes the current row of the current table into the DataFrame depending on the type of the row
 

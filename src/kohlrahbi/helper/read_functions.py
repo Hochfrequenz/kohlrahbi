@@ -174,7 +174,10 @@ def read_table(
         # important is here to decrease the current_df_row_index by one to avoid an empty row in the output file
         # which only contains the Bedingung.
         else:
-            elixir.current_df_row_index = elixir.current_df_row_index - 1
+            # elixir.current_df_row_index = elixir.current_df_row_index - 1
+            # elixir.soul.drop(elixir.soul.tail(1).index, inplace=True)
+            append_mode = True
+
             write_new_row_in_dataframe(
                 row_type=seed.last_two_row_types[1],
                 table=table,
