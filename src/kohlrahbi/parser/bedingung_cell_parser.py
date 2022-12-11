@@ -13,6 +13,8 @@ def parse_bedingung_cell(bedingung_cell: _Cell, dataframe: pd.DataFrame, row_ind
         row_index (int): Current index of the DataFrame
     """
 
+    row_index = dataframe.index.max()
+
     bedingung = bedingung_cell.text.replace("\n", " ")
     matches = re.findall(r"\[\d*\]", bedingung)
     for match in matches[1:]:

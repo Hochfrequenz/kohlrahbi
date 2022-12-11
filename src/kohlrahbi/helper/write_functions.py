@@ -2,15 +2,12 @@
 Collection of functions to write the extracted infos from the AHB tables into a DataFrame.
 """
 
-from typing import Callable, Iterable, List, TypeVar
 
 from docx.table import Table, _Cell  # type:ignore[import]
-from docx.text.paragraph import Paragraph  # type:ignore[import]
 
 from kohlrahbi.helper.row_type_checker import RowType
 from kohlrahbi.helper.seed import Seed
-
-from kohlrahbi.parser import parse_edifact_struktur_cell, parse_middle_cell, parse_bedingung_cell
+from kohlrahbi.parser import parse_bedingung_cell, parse_edifact_struktur_cell, parse_middle_cell
 
 
 # pylint: disable=too-many-arguments
@@ -28,6 +25,8 @@ def write_segment_name_to_dataframe(
         middle_cell (_Cell): Cell from the middle column
         bedingung_cell (_Cell): Cell from the Bedingung column
     """
+
+    elixir.soul.loc[elixir.soul.index.max() + 1, :] = ""
 
     # EDIFACT STRUKTUR COLUMN
     parse_edifact_struktur_cell(
@@ -69,6 +68,8 @@ def write_segmentgruppe_to_dataframe(
         bedingung_cell (_Cell): Cell from the Bedingung column
     """
 
+    elixir.soul.loc[elixir.soul.index.max() + 1, :] = ""
+
     # EDIFACT STRUKTUR COLUMN
     parse_edifact_struktur_cell(
         # there might be 2 paragraphs in case of multi line headings, so we're handing over all the paragraphs
@@ -109,6 +110,8 @@ def write_segment_to_dataframe(
         bedingung_cell (_Cell): Cell from the Bedingung column
     """
 
+    elixir.soul.loc[elixir.soul.index.max() + 1, :] = ""
+
     # EDIFACT STRUKTUR COLUMN
     parse_edifact_struktur_cell(
         table_cell=edifact_struktur_cell,
@@ -145,6 +148,8 @@ def write_dataelement_to_dataframe(
         middle_cell (_Cell): Cell from the middle column
         bedingung_cell (_Cell): Cell from the Bedingung column
     """
+
+    elixir.soul.loc[elixir.soul.index.max() + 1, :] = ""
 
     # EDIFACT STRUKTUR COLUMN
     parse_edifact_struktur_cell(
@@ -267,7 +272,6 @@ def write_new_row_in_dataframe(
             middle_cell=table.row_cells(row)[index_for_middle_column],
             bedingung_cell=table.row_cells(row)[-1],
         )
-        elixir.current_df_row_index = elixir.current_df_row_index + 1
 
     elif row_type is RowType.SEGMENTGRUPPE:
         write_segmentgruppe_to_dataframe(
@@ -276,7 +280,6 @@ def write_new_row_in_dataframe(
             middle_cell=table.row_cells(row)[index_for_middle_column],
             bedingung_cell=table.row_cells(row)[-1],
         )
-        elixir.current_df_row_index = elixir.current_df_row_index + 1
 
     elif row_type is RowType.SEGMENT:
         write_segment_to_dataframe(
@@ -285,7 +288,6 @@ def write_new_row_in_dataframe(
             middle_cell=table.row_cells(row)[index_for_middle_column],
             bedingung_cell=table.row_cells(row)[-1],
         )
-        elixir.current_df_row_index = elixir.current_df_row_index + 1
 
     elif row_type is RowType.DATENELEMENT:
         write_dataelement_to_dataframe(

@@ -22,6 +22,8 @@ def parse_edifact_struktur_cell(
     splitted_text_at_tabs = joined_text.split("\t")
     tab_count = joined_text.count("\t")
 
+    row_index = dataframe.index.max()
+
     # Check if the line starts on the far left
     if table_cell.paragraphs[0].paragraph_format.left_indent != edifact_struktur_cell_left_indent_position:
 
