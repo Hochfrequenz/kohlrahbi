@@ -4,13 +4,12 @@ import pandas as pd  # type:ignore[import]
 from docx.table import _Cell  # type:ignore[import]
 
 
-def parse_bedingung_cell(bedingung_cell: _Cell, dataframe: pd.DataFrame, row_index: int) -> None:
+def parse_bedingung_cell(bedingung_cell: _Cell, dataframe: pd.DataFrame) -> None:
     """Parses a cell in the Bedingung column and puts the information into the in the appropriate column
 
     Args:
         bedingung_cell (_Cell): Cell from the Bedingung column
         dataframe (pd.DataFrame): Saves all infos
-        row_index (int): Current index of the DataFrame
     """
 
     row_index = dataframe.index.max()
