@@ -87,7 +87,7 @@ def write_segmentgruppe_to_dataframe(
         dataframe=elixir.soul,
         row_index=elixir.current_df_row_index,
         left_indent_position=elixir.middle_cell_left_indent_position,
-        tabstop_positions=elixir.tabstop_positions,
+        indicator_tabstop_positions=elixir.tabstop_positions,
     )
 
     # BEDINGUNG COLUMN
@@ -126,7 +126,7 @@ def write_segment_to_dataframe(
         dataframe=elixir.soul,
         row_index=elixir.current_df_row_index,
         left_indent_position=elixir.middle_cell_left_indent_position,
-        tabstop_positions=elixir.tabstop_positions,
+        indicator_tabstop_positions=elixir.tabstop_positions,
     )
 
     # BEDINGUNG COLUMN
@@ -171,7 +171,7 @@ def write_dataelement_to_dataframe(
         dataframe=elixir.soul,
         row_index=elixir.current_df_row_index,
         left_indent_position=elixir.middle_cell_left_indent_position,
-        tabstop_positions=elixir.tabstop_positions,
+        indicator_tabstop_positions=elixir.tabstop_positions,
     )
 
     # MIDDLE COLUMN

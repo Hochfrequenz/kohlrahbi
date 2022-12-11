@@ -101,7 +101,7 @@ def parse_middle_cell(
     dataframe: pd.DataFrame,
     row_index: int,
     left_indent_position: int,
-    tabstop_positions: List[int],
+    indicator_tabstop_positions: List[int],
 ) -> None:
     """Parses a paragraph in the middle column and puts the information into the appropriate columns
 
@@ -141,8 +141,8 @@ def parse_middle_cell(
 
         if tab_stops is not None:
             for tabstop in tab_stops:
-                for tabstop_position, column_index in zip(tabstop_positions, column_indezes):
-                    if tabstop.pos == tabstop_position:
+                for indicator_tabstop_position, column_index in zip(indicator_tabstop_positions, column_indezes):
+                    if tabstop == indicator_tabstop_position:
                         dataframe.iat[row_index, column_index] += splitted_text_at_tabs.pop(0)
         elif tab_stops is None and splitted_text_at_tabs:
             # in splitted_text_at_tabs list must be an entry
