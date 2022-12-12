@@ -21,7 +21,7 @@ from kohlrahbi.helper.export_functions import (
 )
 from kohlrahbi.helper.row_type_checker import RowType, get_row_type
 from kohlrahbi.helper.seed import Seed
-from kohlrahbi.helper.write_functions import parse_ahb_table_row
+from kohlrahbi.helper.ahb_table_row_parser import parse_ahb_table_row
 
 _ahb_file_name_pattern = re.compile(r"^(?P<name>.+Lesefassung)(?P<version>\d+\.\d+[a-z]?)(?P<suffix>.*\.docx)$")
 """
