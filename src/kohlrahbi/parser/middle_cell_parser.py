@@ -56,9 +56,7 @@ def has_middle_cell_multiple_codes(paragraphs: List[Paragraph], pruefi_tabstops:
         bool:
     """
 
-    if count_matching(condition=code_condition, condition_argument=pruefi_tabstops, seq=paragraphs) > 1:
-        return True
-    return False
+    return count_matching(condition=code_condition, condition_argument=pruefi_tabstops, seq=paragraphs) > 1
 
 
 def does_paragraph_contain_qualifier_or_code(paragraph, left_indent_position) -> bool:
