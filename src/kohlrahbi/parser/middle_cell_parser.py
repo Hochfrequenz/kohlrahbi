@@ -1,4 +1,3 @@
-from typing import List
 from typing import Callable, Iterable, List, TypeVar
 
 import pandas as pd  # type:ignore[import]

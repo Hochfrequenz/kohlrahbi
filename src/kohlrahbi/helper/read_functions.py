@@ -15,11 +15,11 @@ from docx.text.paragraph import Paragraph  # type:ignore[import]
 from maus.edifact import EdifactFormatVersion, get_edifact_format_version
 
 from kohlrahbi import logger
-from kohlrahbi.helper.row_type_checker import RowType, get_row_type
 from kohlrahbi.helper.export_functions import (
     export_all_pruefidentifikatoren_in_one_file,
     export_single_pruefidentifikator,
 )
+from kohlrahbi.helper.row_type_checker import RowType, get_row_type
 from kohlrahbi.helper.seed import Seed
 from kohlrahbi.helper.write_functions import parse_ahb_table_row
 
