@@ -33,9 +33,7 @@ def code_condition(paragraph: Paragraph, pruefi_tabstops: List[int]) -> bool:
     except TypeError:
         return False
 
-    if paragraph.runs[0].bold is True and any(x in tabstop_positions for x in pruefi_tabstops):
-        return True
-    return False
+    return paragraph.runs[0].bold is True and any(x in tabstop_positions for x in pruefi_tabstops)
 
 
 def has_middle_cell_multiple_codes(paragraphs: List[Paragraph], pruefi_tabstops: List[int]) -> bool:
