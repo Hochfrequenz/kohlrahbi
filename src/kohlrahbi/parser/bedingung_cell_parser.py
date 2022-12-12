@@ -5,7 +5,7 @@ from docx.table import _Cell  # type:ignore[import]
 
 
 def parse_bedingung_cell(bedingung_cell: _Cell, dataframe: pd.DataFrame) -> None:
-    """Parses a cell in the Bedingung column and puts the information into the in the appropriate column
+    """Parses a cell in the Bedingung column and puts the information into the in the appropriate column of the dataframe
 
     Args:
         bedingung_cell (_Cell): Cell from the Bedingung column
