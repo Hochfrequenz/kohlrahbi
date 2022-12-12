@@ -41,6 +41,15 @@ def code_condition(paragraph: Paragraph, pruefi_tabstops: List[int]) -> bool:
 def has_middle_cell_multiple_codes(paragraphs: List[Paragraph], pruefi_tabstops: List[int]) -> bool:
     """Checks if the paragraphs of a middle cell contains more than one Code.
 
+    Example:
+    9      GS1                      X    X    X
+    293    DE, BDEW                 X    X    X
+           (Bundesverband der
+           Energie- und
+           Wasserwirtschaft e.V.)
+    332	   DE, DVGW Service &       X    X    X
+           Consult GmbH
+
     Args:
         paragraphs (List[Paragraph]): All paragraphs in the current middle cell
         pruefi_tabstops (List[int]): All tabstop positions of the indicator middle cell
