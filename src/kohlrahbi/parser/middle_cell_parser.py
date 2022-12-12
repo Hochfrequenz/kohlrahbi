@@ -9,7 +9,7 @@ T = TypeVar("T")
 X = TypeVar("X")
 
 
-def count_matching(condition: Callable[[T, X], bool], condition_argument: X, seq: Iterable[T]):
+def count_matching(condition: Callable[[T, X], bool], condition_argument: X, seq: Iterable[T]) -> int:
     """Returns the amount of items in seq that return true from condition"""
     return sum(condition(item, condition_argument) for item in seq)
 
