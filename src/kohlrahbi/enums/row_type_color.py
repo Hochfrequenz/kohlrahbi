@@ -3,7 +3,7 @@ from enum import StrEnum
 
 class RowTypeColor(StrEnum):
     """
-    Colors for each RowType
+    Colors for each RowType in rgb hex notation
     """
 
     HEADER = "de324c"  #: e.g. "EDIFACT Struktur"
