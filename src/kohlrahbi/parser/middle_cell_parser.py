@@ -60,20 +60,14 @@ def has_middle_cell_multiple_codes(paragraphs: List[Paragraph], pruefi_tabstops:
 
 
 def does_paragraph_contain_qualifier_or_code(paragraph, left_indent_position) -> bool:
-    if paragraph.paragraph_format.left_indent == left_indent_position:
-        return True
-    else:
-        return False
+    return paragraph.paragraph_format.left_indent == left_indent_position
 
 
 def has_paragraph_tabstops(paragraph) -> bool:
     """
     Checks if the given paragraph contains tabstops
     """
-    if paragraph.paragraph_format.tab_stops._pPr.tabs is not None:
-        return True
-    else:
-        return False
+    return paragraph.paragraph_format.tab_stops._pPr.tabs is not None
 
 
 def parse_middle_cell(
