@@ -126,9 +126,8 @@ def parse_middle_cell(
             dataframe.at[row_index, "Beschreibung"] += splitted_text_at_tabs.pop(0)
         elif not paragraph_contains_tabstops:
             pass
-        # Could not figure out a scenario where this error could be raised.
-        # else:
-        #     raise NotImplementedError(f"Could not parse paragraph in middle cell with {paragraph.text}")
+        else:
+            raise NotImplementedError(f"Could not parse paragraph in middle cell with {paragraph.text}")
 
         # recognize that the first loop is over
         is_first_iteration = False
