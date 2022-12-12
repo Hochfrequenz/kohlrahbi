@@ -15,7 +15,7 @@ def parse_bedingung_cell(bedingung_cell: _Cell, dataframe: pd.DataFrame) -> None
     row_index = dataframe.index.max()
 
     bedingung = bedingung_cell.text.replace("\n", " ")
-    matches = re.findall(r"\[\d*\]", bedingung)
+    matches = re.findall(r"\[\d+\]", bedingung)
     for match in matches[1:]:
         index = bedingung.find(match)
         bedingung = bedingung[:index] + "\n" + bedingung[index:]
