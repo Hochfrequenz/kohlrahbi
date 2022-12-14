@@ -1,8 +1,8 @@
-import pytest
-from kohlrahbi.parser import middle_cell_parser
-
 import docx
+import pytest
 from docx.shared import Inches
+
+from kohlrahbi.parser import middle_cell_parser
 
 
 class TestMiddleCellParser:
