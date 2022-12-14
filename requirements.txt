@@ -10,7 +10,7 @@ attrs==22.1.0
     #   maus
 et-xmlfile==1.1.0
     # via openpyxl
-lxml==4.9.1
+lxml==4.9.2
     # via
     #   maus
     #   python-docx
