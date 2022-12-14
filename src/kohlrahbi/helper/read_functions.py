@@ -88,6 +88,14 @@ def get_all_paragraphs_and_tables(parent: Union[Document, _Cell]) -> Generator[U
             yield Table(child, parent)
 
 
+def define_index_for_body_column(table) -> int:
+    """ """
+    if table._column_count == 4:
+        return 2
+    else:
+        return 1
+
+
 # pylint: disable=too-many-arguments
 def read_table(
     seed: Seed,
@@ -110,10 +118,7 @@ def read_table(
         Tuple[List[RowType], int]: Last two RowTypes and the new row index for the DataFrame
     """
     # pylint: disable=protected-access
-    if table._column_count == 4:
-        index_for_middle_column = 2
-    else:
-        index_for_middle_column = 1
+    index_for_body_column = define_index_for_body_column(table=table)
 
     for row in range(len(table.rows)):
 
