@@ -3,7 +3,7 @@ Collection of functions to write the extracted infos from the AHB tables into a 
 """
 
 
-from docx.table import Table, _Cell  # type:ignore[import]
+from docx.table import Table  # type:ignore[import]
 
 from kohlrahbi.helper.row_type_checker import RowType
 from kohlrahbi.helper.seed import Seed

@@ -1,8 +1,7 @@
-from typing import Callable, Iterable, List, TypeVar
+from typing import List, TypeVar
 
 import pandas as pd  # type:ignore[import]
 from docx.table import _Cell  # type:ignore[import]
-from docx.text.paragraph import Paragraph  # type:ignore[import]
 
 T = TypeVar("T")
 X = TypeVar("X")
