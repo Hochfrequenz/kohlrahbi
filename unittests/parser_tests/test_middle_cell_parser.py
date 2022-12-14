@@ -41,3 +41,18 @@ class TestMiddleCellParser:
         test_paragraph.paragraph_format.tab_stops.add_tab_stop(Inches(0.5))
 
         assert middle_cell_parser.has_paragraph_tabstops(paragraph=test_paragraph)
+
+    def test_parse_middle_cell(self):
+        records = ((3, "101", "Spam"), (7, "422", "Eggs"), (4, "631", "Spam, spam, eggs, and spam"))
+
+        doc = docx.Document()
+        table = doc.add_table(rows=1, cols=3)
+        hdr_cells = table.rows[0].cells
+        hdr_cells[0].text = "Qty"
+        hdr_cells[1].text = "Id"
+        hdr_cells[2].text = "Desc"
+        for qty, id, desc in records:
+            row_cells = table.add_row().cells
+            row_cells[0].text = str(qty)
+            row_cells[1].text = id
+            row_cells[2].text = desc
