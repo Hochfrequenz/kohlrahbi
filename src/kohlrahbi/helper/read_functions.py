@@ -4,7 +4,7 @@ A collection of functions to get information from AHB tables.
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Generator, List, Tuple, Union
+from typing import Generator, List, Tuple, Union, Optional
 
 import pytz
 from docx.document import Document  # type:ignore[import]
@@ -13,6 +13,7 @@ from docx.oxml.text.paragraph import CT_P  # type:ignore[import]
 from docx.table import Table, _Cell  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
 from maus.edifact import EdifactFormatVersion, get_edifact_format_version
+import pandas as pd
 
 from kohlrahbi import logger
 from kohlrahbi.helper.export_functions import (
@@ -22,6 +23,7 @@ from kohlrahbi.helper.export_functions import (
 from kohlrahbi.helper.row_type_checker import RowType, get_row_type
 from kohlrahbi.helper.seed import Seed
 from kohlrahbi.helper.ahb_table_row_parser import parse_ahb_table_row
+from kohlrahbi.ahbtable import AhbTable
 
 _ahb_file_name_pattern = re.compile(r"^(?P<name>.+Lesefassung)(?P<version>\d+\.\d+[a-z]?)(?P<suffix>.*\.docx)$")
 """
@@ -88,112 +90,108 @@ def get_all_paragraphs_and_tables(parent: Union[Document, _Cell]) -> Generator[U
             yield Table(child, parent)
 
 
-def define_index_for_body_column(table) -> int:
-    """ """
-    if table._column_count == 4:
-        return 2
-    else:
-        return 1
-
-
 # pylint: disable=too-many-arguments
-def read_table(
-    seed: Seed,
-    table: Table,
-) -> List[RowType]:
-    """
-    Iterates through all rows in a given table and writes all extracted infos in a DataFrame.
+# def read_table(seed: Seed, table: Table, dataframe: pd.DataFrame) -> List[RowType]:
+#     """
+#     Iterates through all rows in a given table and writes all extracted infos in a DataFrame.
 
-    Args:
-        table (Table): Current table in the docx
-        dataframe (pd.DataFrame): Contains all infos of the Prüfidentifikators
-        current_df_row_index (int): Current row of the dataframe
-        last_two_row_types (List[RowType]): Contains the two last RowType. Is needed for the case of empty rows.
-        edifact_struktur_cell_left_indent_position (int): Position of the left indent in the
-            indicator edifact struktur cell
-        middle_cell_left_indent_position (int): Position of the left indent in the indicator middle cell
-        tabstop_positions (List[int]): All tabstop positions of the indicator middle cell
+#     Args:
+#         table (Table): Current table in the docx
+#         dataframe (pd.DataFrame): Contains all infos of the Prüfidentifikators
+#         current_df_row_index (int): Current row of the dataframe
+#         last_two_row_types (List[RowType]): Contains the two last RowType. Is needed for the case of empty rows.
+#         edifact_struktur_cell_left_indent_position (int): Position of the left indent in the
+#             indicator edifact struktur cell
+#         middle_cell_left_indent_position (int): Position of the left indent in the indicator middle cell
+#         tabstop_positions (List[int]): All tabstop positions of the indicator middle cell
 
-    Returns:
-        Tuple[List[RowType], int]: Last two RowTypes and the new row index for the DataFrame
-    """
-    # pylint: disable=protected-access
-    index_for_body_column = define_index_for_body_column(table=table)
+#     Returns:
+#         Tuple[List[RowType], int]: Last two RowTypes and the new row index for the DataFrame
+#     """
+#     # pylint: disable=protected-access
+#     index_for_body_column = define_index_for_body_column(table=table)
 
-    for row in range(len(table.rows)):
+#     for row in range(len(table.rows)):
 
-        # initial empty list for the next row in the dataframe
-        seed.soul.loc[0] = (len(seed.soul.columns)) * [""]
+#         # initial empty list for the next row in the dataframe
+#         seed.soul.loc[0] = (len(seed.soul.columns)) * [""]
 
-        row_cell_texts_as_list = [cell.text for cell in table.row_cells(row)]
+#         row_cell_texts_as_list = [cell.text for cell in table.row_cells(row)]
 
-        # pylint: disable=protected-access
-        if table._column_count == 4:
-            # remove redundant information for tables with 4 columns
-            if (
-                row_cell_texts_as_list[0] == row_cell_texts_as_list[1]
-                and row_cell_texts_as_list[2] == row_cell_texts_as_list[3]
-            ):
-                # pylint: disable=line-too-long
-                # HEADER looks like
-                # 0:'EDIFACT Struktur'
-                # 1:'EDIFACT Struktur'
-                # 2:'Beschreibung\tKündigung\tBestätigung\tAblehnung\tBedingung\n\tMSB \tKündigung\tKündigung\n\tMSB \tMSB \nKommunikation von\tMSBN an\tMSBA an\tMSBA an\n\tMSBA\tMSBN\tMSBN\nPrüfidentifikator\t11039\t11040\t11041'
-                # 3:'Beschreibung\tKündigung\tBestätigung\tAblehnung\tBedingung\n\tMSB \tKündigung\tKündigung\n\tMSB \tMSB \nKommunikation von\tMSBN an\tMSBA an\tMSBA an\n\tMSBA\tMSBN\tMSBN\nPrüfidentifikator\t11039\t11040\t11041'
-                # len():4
-                del row_cell_texts_as_list[1]
-                row_cell_texts_as_list[2] = ""
-            elif row_cell_texts_as_list[1] == row_cell_texts_as_list[2]:
-                # Dataelement row with header in the table
-                # 0:'SG2\tNAD\t3035'
-                # 1:'SG2\tNAD\t3035'
-                # 2:'MR\tNachrichtenempfänger\tX\tX\tX'
-                # 3:''
-                # len():4
-                del row_cell_texts_as_list[1]
-            elif row_cell_texts_as_list[0] == row_cell_texts_as_list[1]:
-                del row_cell_texts_as_list[1]
+#         # pylint: disable=protected-access
+#         if table._column_count == 4:
+#             # remove redundant information for tables with 4 columns
+#             if (
+#                 row_cell_texts_as_list[0] == row_cell_texts_as_list[1]
+#                 and row_cell_texts_as_list[2] == row_cell_texts_as_list[3]
+#             ):
+#                 # pylint: disable=line-too-long
+#                 # HEADER looks like
+#                 # 0:'EDIFACT Struktur'
+#                 # 1:'EDIFACT Struktur'
+#                 # 2:'Beschreibung\tKündigung\tBestätigung\tAblehnung\tBedingung\n\tMSB \tKündigung\tKündigung\n\tMSB \tMSB \nKommunikation von\tMSBN an\tMSBA an\tMSBA an\n\tMSBA\tMSBN\tMSBN\nPrüfidentifikator\t11039\t11040\t11041'
+#                 # 3:'Beschreibung\tKündigung\tBestätigung\tAblehnung\tBedingung\n\tMSB \tKündigung\tKündigung\n\tMSB \tMSB \nKommunikation von\tMSBN an\tMSBA an\tMSBA an\n\tMSBA\tMSBN\tMSBN\nPrüfidentifikator\t11039\t11040\t11041'
+#                 # len():4
+#                 del row_cell_texts_as_list[1]
+#                 row_cell_texts_as_list[2] = ""
+#             elif row_cell_texts_as_list[1] == row_cell_texts_as_list[2]:
+#                 # Dataelement row with header in the table
+#                 # 0:'SG2\tNAD\t3035'
+#                 # 1:'SG2\tNAD\t3035'
+#                 # 2:'MR\tNachrichtenempfänger\tX\tX\tX'
+#                 # 3:''
+#                 # len():4
+#                 del row_cell_texts_as_list[1]
+#             elif row_cell_texts_as_list[0] == row_cell_texts_as_list[1]:
+#                 del row_cell_texts_as_list[1]
 
-        current_edifact_struktur_cell = table.row_cells(row)[0]
+#         current_edifact_struktur_cell = table.row_cells(row)[0]
 
-        # check for row type
-        current_row_type = get_row_type(
-            edifact_struktur_cell=current_edifact_struktur_cell,
-            left_indent_position=seed.edifact_struktur_left_indent_position,
-        )
+#         # check for row type
+#         current_row_type = get_row_type(
+#             edifact_struktur_cell=current_edifact_struktur_cell,
+#             left_indent_position=seed.edifact_struktur_left_indent_position,
+#         )
 
-        # write actual row into dataframe
+#         # write actual row into dataframe
 
-        # this case covers the "normal" docx table row
-        if not (current_row_type is RowType.EMPTY and seed.last_two_row_types[0] is RowType.HEADER):
-            parse_ahb_table_row(
-                row_type=current_row_type,
-                ahb_table=table,
-                ahb_table_row=row,
-                index_for_middle_column=index_for_middle_column,
-                seed=seed,
-            )
-        # this case covers the page break situation
-        # the current RowType is EMPTY and the row before is of RowTyp HEADER
-        # important is here to decrease the current_df_row_index by one to avoid an empty row in the output file
-        # which only contains the Bedingung.
-        else:
-            is_appending = True
+#         # new_dataframe_row = pd.DataFrame(
+#         #     columns=list(dataframe.columns),
+#         #     dtype="str",
+#         # )
 
-            parse_ahb_table_row(
-                row_type=seed.last_two_row_types[1],
-                ahb_table=table,
-                ahb_table_row=row,
-                index_for_middle_column=index_for_middle_column,
-                seed=seed,
-                is_appending=is_appending,
-            )
+#         # this case covers the "normal" docx table row
+#         if not (current_row_type is RowType.EMPTY and seed.last_two_row_types[0] is RowType.HEADER):
+#             ahb_table_row = parse_ahb_table_row(
+#                 row_type=current_row_type,
+#                 ahb_table=table,
+#                 ahb_table_row=row,
+#                 index_for_middle_column=index_for_body_column,
+#                 seed=seed,
+#             )
 
-        # remember last row type for empty cells
-        seed.last_two_row_types[1] = seed.last_two_row_types[0]
-        seed.last_two_row_types[0] = current_row_type
+#             dataframe = pd.concat([dataframe, ahb_table_row], ignore_index=True)
+#         # this case covers the page break situation
+#         # the current RowType is EMPTY and the row before is of RowTyp HEADER
+#         # important is here to decrease the current_df_row_index by one to avoid an empty row in the output file
+#         # which only contains the Bedingung.
+#         else:
+#             is_appending = True
 
-    return seed.last_two_row_types
+#             parse_ahb_table_row(
+#                 row_type=seed.last_two_row_types[1],
+#                 ahb_table=table,
+#                 ahb_table_row=row,
+#                 index_for_middle_column=index_for_body_column,
+#                 seed=seed,
+#                 is_appending=is_appending,
+#             )
+
+#         # remember last row type for empty cells
+#         seed.last_two_row_types[1] = seed.last_two_row_types[0]
+#         seed.last_two_row_types[0] = current_row_type
+
+#     return seed.last_two_row_types
 
 
 _validity_start_date_from_ahbname_pattern = re.compile(r"^.*(?P<germanLocalTimeStartDate>\d{8})\.docx$")
@@ -220,8 +218,16 @@ def _export_format_version_from_ahbfile_name(ahb_docx_name: str) -> EdifactForma
     return edifact_format_version
 
 
+def does_the_table_contain_pruefidentifikatoren(table: Table) -> bool:
+    """
+    Checks if the given table is a AHB table with pruefidentifikatoren.
+    """
+
+    return table.cell(row_idx=0, col_idx=0).text == "EDIFACT Struktur"
+
+
 # pylint: disable=inconsistent-return-statements
-def get_kohlrahbi(document: Document, output_directory_path: Path, ahb_file_name: Path) -> int:
+def get_kohlrahbi(document: Document, output_directory_path: Path, ahb_file_name: Path, pruefi: str) -> int:
     """Reads a docx file and extracts all information for each Prüfidentifikator.
 
     Args:
@@ -235,8 +241,14 @@ def get_kohlrahbi(document: Document, output_directory_path: Path, ahb_file_name
 
     is_initial_run = True
     seed: Seed
+    seed_new: Optional[Seed] = None
     edifact_format_version = _export_format_version_from_ahbfile_name(str(ahb_file_name))
     output_directory_path = output_directory_path / str(edifact_format_version)
+
+    ahb_table_dataframe: Optional[pd.DataFrame] = None
+
+    is_dataframe_initialized: bool = False
+
     # Iterate through the whole word document
     for item in get_all_paragraphs_and_tables(parent=document):
 
@@ -244,65 +256,94 @@ def get_kohlrahbi(document: Document, output_directory_path: Path, ahb_file_name
         if isinstance(item, Paragraph) and not "Heading" in item.style.name:
             continue
 
-        # Check if the paragraph is a chapter or section title
-        if isinstance(item, Paragraph) and "Heading" in item.style.name:
-            current_chapter_title = item.text
+        if isinstance(item, Table) and does_the_table_contain_pruefidentifikatoren(table=item):
 
-            # Stop iterating at the section "Änderungshistorie"
-            if current_chapter_title == "Änderungshistorie":
-                # export last pruefidentifikatoren in AHB
-                # elixir should have been initialized here, because the document is at the end of the document
-                for pruefi in seed.pruefidentifikatoren:  # pylint:disable=used-before-assignment
+            # check which pruefis
+            seed_new = Seed.from_table(docx_table=item)
 
-                    export_single_pruefidentifikator(
-                        pruefi=pruefi,
-                        df=seed.soul,
-                        output_directory_path=output_directory_path,
-                    )
+            if pruefi in seed_new.pruefidentifikatoren and not is_dataframe_initialized:
+                ahb_table_dataframe = pd.DataFrame(
+                    columns=seed_new.column_headers,
+                    dtype="str",
+                )
+                is_dataframe_initialized = True
 
-                    export_all_pruefidentifikatoren_in_one_file(
-                        pruefi=pruefi,
-                        df=seed.soul,
-                        output_directory_path=output_directory_path,
-                        file_name=ahb_file_name,
-                    )
+                ahb_table = AhbTable(seed=seed_new, table=item)
 
-                # I don't know how to exit the program without a return
-                return 0
+                ahb_table_dataframe, _ = ahb_table.parse(ahb_table_dataframe=ahb_table_dataframe)
+                print()
+                continue
+        if isinstance(item, Table) and seed_new is not None and ahb_table_dataframe is not None:
 
-        # Check if a table comes with new Prüfidentifikatoren
-        elif isinstance(item, Table) and item.cell(row_idx=0, col_idx=0).text == "EDIFACT Struktur":
-            # before we go to the next pruefidentifikatoren we save the current ones
-            # but at the first loop we check if list of pruefidentifikatoren is empty
-            if is_initial_run is False:
-                for pruefi in seed.pruefidentifikatoren:
+            ahb_table = AhbTable(seed=seed_new, table=item)
+            ahb_table_dataframe, _ = ahb_table.parse(ahb_table_dataframe=ahb_table_dataframe)
 
-                    export_single_pruefidentifikator(
-                        pruefi=pruefi,
-                        df=seed.soul,
-                        output_directory_path=output_directory_path,
-                    )
+    export_single_pruefidentifikator(
+        pruefi=pruefi,
+        df=ahb_table_dataframe,
+        output_directory_path=output_directory_path,
+    )
+    # final_dataframe =
+    # go and read the table
 
-                    export_all_pruefidentifikatoren_in_one_file(
-                        pruefi=pruefi,
-                        df=seed.soul,
-                        output_directory_path=output_directory_path,
-                        file_name=ahb_file_name,
-                    )
+    # if final_dataframe is not None:
 
-            seed = Seed.from_table(docx_table=item)
-            comma_separated_pruefis = ", ".join(seed.pruefidentifikatoren)
-            logger.info("🔍 Extracting Pruefidentifikatoren: %s", comma_separated_pruefis)
-            read_table(
-                seed=seed,
-                table=item,
-            )
+    # # Check if the paragraph is a chapter or section title
+    # if isinstance(item, Paragraph) and "Heading" in item.style.name and item.text == "Änderungshistorie":
 
-            is_initial_run = False
+    #     # export last pruefidentifikatoren in AHB
+    #     # elixir should have been initialized here, because the document is at the end of the document
+    #     for pruefi in seed.pruefidentifikatoren:  # pylint:disable=used-before-assignment
 
-        elif isinstance(item, Table) and "seed" in locals():
-            read_table(
-                seed=seed,
-                table=item,
-            )
-    return 0  # you need to return something when the type hint states that you return something
+    #         export_single_pruefidentifikator(
+    #             pruefi=pruefi,
+    #             df=seed.soul,
+    #             output_directory_path=output_directory_path,
+    #         )
+
+    #         export_all_pruefidentifikatoren_in_one_file(
+    #             pruefi=pruefi,
+    #             df=seed.soul,
+    #             output_directory_path=output_directory_path,
+    #             file_name=ahb_file_name,
+    #         )
+
+    #     # I don't know how to exit the program without a return
+    #     return 0
+
+    # # Check if a table comes with new Prüfidentifikatoren
+    # elif isinstance(item, Table) and item.cell(row_idx=0, col_idx=0).text == "EDIFACT Struktur":
+    #     # before we go to the next pruefidentifikatoren we save the current ones
+    # but at the first loop we check if list of pruefidentifikatoren is empty
+    #         if is_initial_run is False:
+    #             for pruefi in seed.pruefidentifikatoren:
+
+    #                 export_single_pruefidentifikator(
+    #                     pruefi=pruefi,
+    #                     df=seed.soul,
+    #                     output_directory_path=output_directory_path,
+    #                 )
+
+    #                 export_all_pruefidentifikatoren_in_one_file(
+    #                     pruefi=pruefi,
+    #                     df=seed.soul,
+    #                     output_directory_path=output_directory_path,
+    #                     file_name=ahb_file_name,
+    #                 )
+
+    #         seed = Seed.from_table(docx_table=item)
+
+    #         # final_dataframe = pd.DataFrame(
+    #         #     columns=seed.column_headers,
+    #         #     dtype="str",
+    #         # )
+
+    #         comma_separated_pruefis = ", ".join(seed.pruefidentifikatoren)
+    #         logger.info("🔍 Extracting Pruefidentifikatoren: %s", comma_separated_pruefis)
+    #         read_table(seed=seed, table=item, dataframe=ahb_table_dataframe)
+
+    #         is_initial_run = False
+
+    #     elif isinstance(item, Table) and "seed" in locals():
+    #         read_table(seed=seed, table=item, dataframe=ahb_table_dataframe)
+    # return 0  # you need to return something when the type hint states that you return something

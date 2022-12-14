@@ -33,4 +33,6 @@ def main(file_paths: List[Path]) -> None:
         except IOError:
             logger.exception("There was an error opening the file '%s'", ahb_file_path, exc_info=True)
 
-        get_kohlrahbi(document=doc, output_directory_path=output_directory_path, ahb_file_name=ahb_file_path)
+        get_kohlrahbi(
+            document=doc, output_directory_path=output_directory_path, ahb_file_name=ahb_file_path, pruefi="11010"
+        )

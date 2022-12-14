@@ -39,6 +39,7 @@ class Seed:
 
     pruefidentifikatoren: List[str] = []
     soul: pd.DataFrame = pd.DataFrame()
+    column_headers: List[str] = []
     edifact_struktur_left_indent_position: int = 0
     middle_cell_left_indent_position: int = 0
     tabstop_positions: List[int] = []
@@ -87,6 +88,7 @@ class Seed:
                 columns=columns,
                 dtype="str",
             ),
+            column_headers=columns,
             edifact_struktur_left_indent_position=edifact_struktur_left_indent_position,
             middle_cell_left_indent_position=middle_cell_left_indent_position,
             tabstop_positions=tabstop_positions,

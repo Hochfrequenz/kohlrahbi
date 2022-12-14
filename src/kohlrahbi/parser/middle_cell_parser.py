@@ -3,9 +3,6 @@ from typing import List, TypeVar
 import pandas as pd  # type:ignore[import]
 from docx.table import _Cell  # type:ignore[import]
 
-T = TypeVar("T")
-X = TypeVar("X")
-
 
 def does_paragraph_contain_qualifier_or_code(paragraph, left_indent_position) -> bool:
     return paragraph.paragraph_format.left_indent == left_indent_position

@@ -1,13 +1,12 @@
 """
 Collection of functions to write the extracted infos from the AHB tables into a DataFrame.
 """
-
-
+import pandas as pd
 from docx.table import Table  # type:ignore[import]
-
+from typing import Optional
 from kohlrahbi.helper.row_type_checker import RowType
 from kohlrahbi.helper.seed import Seed
-from kohlrahbi.parser import parse_bedingung_cell, parse_edifact_struktur_cell, parse_middle_cell
+from kohlrahbi.cells import EdifactStrukturCell, BedingungCell, BodyCell
 
 
 def parse_ahb_table_row(
@@ -17,7 +16,7 @@ def parse_ahb_table_row(
     ahb_table_row: int,
     index_for_middle_column: int,
     is_appending: bool = False,
-) -> None:
+) -> Optional[pd.DataFrame]:
     """Writes the current row of the current table into the DataFrame depending on the type of the row
 
     Args:
@@ -33,6 +32,13 @@ def parse_ahb_table_row(
         # we skip the header rows because there we did it already and there are no new information
         return
 
+    ahb_row_dataframe = pd.DataFrame(
+        columns=seed.column_headers,
+        dtype="str",
+    )
+
+    ahb_row_dataframe.loc[0] = (len(ahb_row_dataframe.columns)) * [""]
+
     edifact_struktur_cell = ahb_table.row_cells(ahb_table_row)[0]
     middle_cell = ahb_table.row_cells(ahb_table_row)[index_for_middle_column]
     bedingung_cell = ahb_table.row_cells(ahb_table_row)[-1]
@@ -40,23 +46,23 @@ def parse_ahb_table_row(
     if not is_appending:
         seed.soul.loc[seed.soul.index.max() + 1, :] = ""
 
-    # EDIFACT STRUKTUR COLUMN
-    parse_edifact_struktur_cell(
+    # EDIFACT STRUKTUR
+    esc = EdifactStrukturCell(
         table_cell=edifact_struktur_cell,
-        dataframe=seed.soul,
         edifact_struktur_cell_left_indent_position=seed.edifact_struktur_left_indent_position,
     )
+    ahb_row_dataframe = esc.parse(ahb_row_dataframe=ahb_row_dataframe)
 
-    # MIDDLE COLUMN
-    parse_middle_cell(
+    # BODY
+    boc = BodyCell(
         table_cell=middle_cell,
-        dataframe=seed.soul,
         left_indent_position=seed.middle_cell_left_indent_position,
         indicator_tabstop_positions=seed.tabstop_positions,
     )
+    ahb_row_dataframe = boc.parse(ahb_row_dataframe=ahb_row_dataframe)
 
-    # BEDINGUNG COLUMN
-    parse_bedingung_cell(
-        bedingung_cell=bedingung_cell,
-        dataframe=seed.soul,
-    )
+    # BEDINGUNG
+    bec = BedingungCell(table_cell=bedingung_cell)
+    ahb_row_dataframe = bec.parse(ahb_row_dataframe)
+
+    return ahb_row_dataframe
