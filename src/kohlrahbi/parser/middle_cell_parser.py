@@ -8,56 +8,6 @@ T = TypeVar("T")
 X = TypeVar("X")
 
 
-def count_matching(condition: Callable[[T, X], bool], condition_argument: X, seq: Iterable[T]) -> int:
-    """Returns the amount of items in seq that return true from condition"""
-    return sum(condition(item, condition_argument) for item in seq)
-
-
-def code_condition(paragraph: Paragraph, pruefi_tabstops: List[int]) -> bool:
-    """Checks if the paragraph contains a Code by checking for bold style.
-
-    Example for Codes: UTILMD, 11A, UN,
-
-
-    Args:
-        paragraph (Paragraph): Current paragraph
-        pruefi_tabstops (List[int]): All tabstop positions of the indicator middle cell
-
-    Returns:
-        [bool]:
-    """
-    try:
-        # pylint: disable=protected-access
-        tabstop_positions = [tab_position.pos for tab_position in paragraph.paragraph_format.tab_stops._pPr.tabs]
-    except TypeError:
-        return False
-
-    return paragraph.runs[0].bold is True and any(x in tabstop_positions for x in pruefi_tabstops)
-
-
-def has_middle_cell_multiple_codes(paragraphs: List[Paragraph], pruefi_tabstops: List[int]) -> bool:
-    """Checks if the paragraphs of a middle cell contains more than one Code.
-
-    Example:
-    9      GS1                      X    X    X
-    293    DE, BDEW                 X    X    X
-           (Bundesverband der
-           Energie- und
-           Wasserwirtschaft e.V.)
-    332	   DE, DVGW Service &       X    X    X
-           Consult GmbH
-
-    Args:
-        paragraphs (List[Paragraph]): All paragraphs in the current middle cell
-        pruefi_tabstops (List[int]): All tabstop positions of the indicator middle cell
-
-    Returns:
-        bool:
-    """
-
-    return count_matching(condition=code_condition, condition_argument=pruefi_tabstops, seq=paragraphs) > 1
-
-
 def does_paragraph_contain_qualifier_or_code(paragraph, left_indent_position) -> bool:
     return paragraph.paragraph_format.left_indent == left_indent_position
 
