@@ -240,8 +240,7 @@ def get_kohlrahbi(document: Document, output_directory_path: Path, ahb_file_name
     """
 
     is_initial_run = True
-    seed: Seed
-    seed_new: Optional[Seed] = None
+    seed: Optional[Seed] = None
     edifact_format_version = _export_format_version_from_ahbfile_name(str(ahb_file_name))
     output_directory_path = output_directory_path / str(edifact_format_version)
 
@@ -259,23 +258,23 @@ def get_kohlrahbi(document: Document, output_directory_path: Path, ahb_file_name
         if isinstance(item, Table) and does_the_table_contain_pruefidentifikatoren(table=item):
 
             # check which pruefis
-            seed_new = Seed.from_table(docx_table=item)
+            seed = Seed.from_table(docx_table=item)
 
-            if pruefi in seed_new.pruefidentifikatoren and not is_dataframe_initialized:
+            if pruefi in seed.pruefidentifikatoren and not is_dataframe_initialized:
                 ahb_table_dataframe = pd.DataFrame(
-                    columns=seed_new.column_headers,
+                    columns=seed.column_headers,
                     dtype="str",
                 )
                 is_dataframe_initialized = True
 
-                ahb_table = AhbTable(seed=seed_new, table=item)
+                ahb_table = AhbTable(seed=seed, table=item)
 
                 ahb_table_dataframe, _ = ahb_table.parse(ahb_table_dataframe=ahb_table_dataframe)
                 print()
                 continue
-        if isinstance(item, Table) and seed_new is not None and ahb_table_dataframe is not None:
+        if isinstance(item, Table) and seed is not None and ahb_table_dataframe is not None:
 
-            ahb_table = AhbTable(seed=seed_new, table=item)
+            ahb_table = AhbTable(seed=seed, table=item)
             ahb_table_dataframe, _ = ahb_table.parse(ahb_table_dataframe=ahb_table_dataframe)
 
     export_single_pruefidentifikator(
