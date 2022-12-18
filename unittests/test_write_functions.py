@@ -343,73 +343,74 @@ class TestParseFunctions:
 
     #     assert expected_df.equals(df)
 
-    @pytest.mark.parametrize(
-        "text_content, expected_df_row",
-        [
-            pytest.param(
-                "",
-                {
-                    "Segment Gruppe": "",
-                    "Segment": "",
-                    "Datenelement": "",
-                    "Codes und Qualifier": "",
-                    "Beschreibung": "",
-                    "77777": "",
-                    "88888": "",
-                    "99999": "",
-                    "Bedingung": "",
-                },
-                id="Empty Bedingung",
-            ),
-            pytest.param(
-                """[12] Wenn SG4
-DTM+471 (Ende zum
-nächstmöglichem
-Termin) nicht vorhanden
 
-[13] Wenn SG4
-STS+E01++Z01 (Status
-der Antwort: Zustimmung
-mit Terminänderung)
-nicht vorhanden
-""",
-                {
-                    "Segment Gruppe": "",
-                    "Segment": "",
-                    "Datenelement": "",
-                    "Codes und Qualifier": "",
-                    "Beschreibung": "",
-                    "77777": "",
-                    "88888": "",
-                    "99999": "",
-                    "Bedingung": """[12] Wenn SG4 DTM+471 (Ende zum nächstmöglichem Termin) nicht vorhanden  \n[13] Wenn SG4 STS+E01++Z01 (Status der Antwort: Zustimmung mit Terminänderung) nicht vorhanden """,
-                },
-                id="First Bedingung in UTILMD AHB WiM",
-            ),
-        ],
-    )
-    def test_parse_bedingung_cell(self, text_content, expected_df_row):
+#     @pytest.mark.parametrize(
+#         "text_content, expected_df_row",
+#         [
+#             pytest.param(
+#                 "",
+#                 {
+#                     "Segment Gruppe": "",
+#                     "Segment": "",
+#                     "Datenelement": "",
+#                     "Codes und Qualifier": "",
+#                     "Beschreibung": "",
+#                     "77777": "",
+#                     "88888": "",
+#                     "99999": "",
+#                     "Bedingung": "",
+#                 },
+#                 id="Empty Bedingung",
+#             ),
+#             pytest.param(
+#                 """[12] Wenn SG4
+# DTM+471 (Ende zum
+# nächstmöglichem
+# Termin) nicht vorhanden
 
-        # insert text
-        self.test_cell.text = text_content
+# [13] Wenn SG4
+# STS+E01++Z01 (Status
+# der Antwort: Zustimmung
+# mit Terminänderung)
+# nicht vorhanden
+# """,
+#                 {
+#                     "Segment Gruppe": "",
+#                     "Segment": "",
+#                     "Datenelement": "",
+#                     "Codes und Qualifier": "",
+#                     "Beschreibung": "",
+#                     "77777": "",
+#                     "88888": "",
+#                     "99999": "",
+#                     "Bedingung": """[12] Wenn SG4 DTM+471 (Ende zum nächstmöglichem Termin) nicht vorhanden  \n[13] Wenn SG4 STS+E01++Z01 (Status der Antwort: Zustimmung mit Terminänderung) nicht vorhanden """,
+#                 },
+#                 id="First Bedingung in UTILMD AHB WiM",
+#             ),
+#         ],
+#     )
+#     def test_parse_bedingung_cell(self, text_content, expected_df_row):
 
-        # Initial two dataframes ...
-        df = pd.DataFrame(columns=expected_df_row.keys(), dtype="str")
-        expected_df = pd.DataFrame(columns=expected_df_row.keys(), dtype="str")
-        row_index = 0
-        # ... with a row full of emtpy strings
-        initial_dataframe_row = (len(df.columns)) * [""]
-        df.loc[row_index] = initial_dataframe_row
-        expected_df.loc[row_index] = initial_dataframe_row
+#         # insert text
+#         self.test_cell.text = text_content
 
-        parse_bedingung_cell(
-            bedingung_cell=self.test_cell,
-            dataframe=df,
-        )
+#         # Initial two dataframes ...
+#         df = pd.DataFrame(columns=expected_df_row.keys(), dtype="str")
+#         expected_df = pd.DataFrame(columns=expected_df_row.keys(), dtype="str")
+#         row_index = 0
+#         # ... with a row full of emtpy strings
+#         initial_dataframe_row = (len(df.columns)) * [""]
+#         df.loc[row_index] = initial_dataframe_row
+#         expected_df.loc[row_index] = initial_dataframe_row
 
-        expected_df.loc[row_index] = expected_df_row
+#         parse_bedingung_cell(
+#             bedingung_cell=self.test_cell,
+#             dataframe=df,
+#         )
 
-        assert expected_df.equals(df)
+#         expected_df.loc[row_index] = expected_df_row
+
+#         assert expected_df.equals(df)
 
 
 @dataclass
