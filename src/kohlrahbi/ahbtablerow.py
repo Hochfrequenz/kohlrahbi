@@ -49,14 +49,14 @@ class AhbTableRow:
             self.seed.soul.loc[self.seed.soul.index.max() + 1, :] = ""
 
         # EDIFACT STRUKTUR
-        esc = EdifactStrukturCell(
+        esc: EdifactStrukturCell = EdifactStrukturCell(
             table_cell=self.edifact_struktur_cell,
             edifact_struktur_cell_left_indent_position=self.seed.edifact_struktur_left_indent_position,
         )
         ahb_row_dataframe = esc.parse(ahb_row_dataframe=ahb_row_dataframe)
 
         # BODY
-        boc = BodyCell(
+        boc: BodyCell = BodyCell(
             table_cell=self.middle_cell,
             left_indent_position=self.seed.middle_cell_left_indent_position,
             indicator_tabstop_positions=self.seed.tabstop_positions,
@@ -64,7 +64,7 @@ class AhbTableRow:
         ahb_row_dataframe = boc.parse(ahb_row_dataframe=ahb_row_dataframe)
 
         # BEDINGUNG
-        bec = BedingungCell(table_cell=self.bedingung_cell)
-        ahb_row_dataframe = bec.parse(ahb_row_dataframe)
+        bec: BedingungCell = BedingungCell(table_cell=self.bedingung_cell)
+        ahb_row_dataframe: pd.DataFrame = bec.parse(ahb_row_dataframe)
 
         return ahb_row_dataframe

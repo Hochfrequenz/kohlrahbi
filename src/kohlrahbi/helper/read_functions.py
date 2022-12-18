@@ -236,8 +236,8 @@ def get_kohlrahbi(document: Document, output_directory_path: Path, ahb_file_name
     """
 
     seed: Optional[Seed] = None
-    edifact_format_version = _export_format_version_from_ahbfile_name(str(ahb_file_name))
-    output_directory_path = output_directory_path / str(edifact_format_version)
+    edifact_format_version: EdifactFormatVersion = _export_format_version_from_ahbfile_name(str(ahb_file_name))
+    output_directory_path: Path = output_directory_path / str(edifact_format_version)
 
     ahb_table_dataframe: Optional[pd.DataFrame] = None
 
@@ -262,7 +262,7 @@ def get_kohlrahbi(document: Document, output_directory_path: Path, ahb_file_name
                 )
                 is_dataframe_initialized = True
 
-                ahb_table = AhbTable(seed=seed, table=item)
+                ahb_table: AhbTable = AhbTable(seed=seed, table=item)
 
                 ahb_table_dataframe, _ = ahb_table.parse(ahb_table_dataframe=ahb_table_dataframe)
                 print()
