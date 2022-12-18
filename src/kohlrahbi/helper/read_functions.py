@@ -4,7 +4,7 @@ A collection of functions to get information from AHB tables.
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Generator, List, Tuple, Union, Optional
+from typing import Generator, List, Union, Optional
 
 import pytz
 from docx.document import Document  # type:ignore[import]
@@ -15,14 +15,10 @@ from docx.text.paragraph import Paragraph  # type:ignore[import]
 from maus.edifact import EdifactFormatVersion, get_edifact_format_version
 import pandas as pd
 
-from kohlrahbi import logger
 from kohlrahbi.helper.export_functions import (
-    export_all_pruefidentifikatoren_in_one_file,
     export_single_pruefidentifikator,
 )
-from kohlrahbi.helper.row_type_checker import RowType, get_row_type
 from kohlrahbi.helper.seed import Seed
-from kohlrahbi.helper.ahb_table_row_parser import parse_ahb_table_row
 from kohlrahbi.ahbtable import AhbTable
 
 _ahb_file_name_pattern = re.compile(r"^(?P<name>.+Lesefassung)(?P<version>\d+\.\d+[a-z]?)(?P<suffix>.*\.docx)$")
@@ -239,7 +235,6 @@ def get_kohlrahbi(document: Document, output_directory_path: Path, ahb_file_name
         int: Error code, 0 means success
     """
 
-    is_initial_run = True
     seed: Optional[Seed] = None
     edifact_format_version = _export_format_version_from_ahbfile_name(str(ahb_file_name))
     output_directory_path = output_directory_path / str(edifact_format_version)
@@ -282,67 +277,3 @@ def get_kohlrahbi(document: Document, output_directory_path: Path, ahb_file_name
         df=ahb_table_dataframe,
         output_directory_path=output_directory_path,
     )
-    # final_dataframe =
-    # go and read the table
-
-    # if final_dataframe is not None:
-
-    # # Check if the paragraph is a chapter or section title
-    # if isinstance(item, Paragraph) and "Heading" in item.style.name and item.text == "Änderungshistorie":
-
-    #     # export last pruefidentifikatoren in AHB
-    #     # elixir should have been initialized here, because the document is at the end of the document
-    #     for pruefi in seed.pruefidentifikatoren:  # pylint:disable=used-before-assignment
-
-    #         export_single_pruefidentifikator(
-    #             pruefi=pruefi,
-    #             df=seed.soul,
-    #             output_directory_path=output_directory_path,
-    #         )
-
-    #         export_all_pruefidentifikatoren_in_one_file(
-    #             pruefi=pruefi,
-    #             df=seed.soul,
-    #             output_directory_path=output_directory_path,
-    #             file_name=ahb_file_name,
-    #         )
-
-    #     # I don't know how to exit the program without a return
-    #     return 0
-
-    # # Check if a table comes with new Prüfidentifikatoren
-    # elif isinstance(item, Table) and item.cell(row_idx=0, col_idx=0).text == "EDIFACT Struktur":
-    #     # before we go to the next pruefidentifikatoren we save the current ones
-    # but at the first loop we check if list of pruefidentifikatoren is empty
-    #         if is_initial_run is False:
-    #             for pruefi in seed.pruefidentifikatoren:
-
-    #                 export_single_pruefidentifikator(
-    #                     pruefi=pruefi,
-    #                     df=seed.soul,
-    #                     output_directory_path=output_directory_path,
-    #                 )
-
-    #                 export_all_pruefidentifikatoren_in_one_file(
-    #                     pruefi=pruefi,
-    #                     df=seed.soul,
-    #                     output_directory_path=output_directory_path,
-    #                     file_name=ahb_file_name,
-    #                 )
-
-    #         seed = Seed.from_table(docx_table=item)
-
-    #         # final_dataframe = pd.DataFrame(
-    #         #     columns=seed.column_headers,
-    #         #     dtype="str",
-    #         # )
-
-    #         comma_separated_pruefis = ", ".join(seed.pruefidentifikatoren)
-    #         logger.info("🔍 Extracting Pruefidentifikatoren: %s", comma_separated_pruefis)
-    #         read_table(seed=seed, table=item, dataframe=ahb_table_dataframe)
-
-    #         is_initial_run = False
-
-    #     elif isinstance(item, Table) and "seed" in locals():
-    #         read_table(seed=seed, table=item, dataframe=ahb_table_dataframe)
-    # return 0  # you need to return something when the type hint states that you return something

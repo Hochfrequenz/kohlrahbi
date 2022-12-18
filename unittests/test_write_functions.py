@@ -6,7 +6,8 @@ import pandas as pd  # type:ignore[import]
 import pytest  # type:ignore[import]
 
 from kohlrahbi.helper.seed import Seed
-from kohlrahbi.helper.ahb_table_row_parser import parse_bedingung_cell, parse_edifact_struktur_cell, parse_middle_cell
+
+# from kohlrahbi.helper.ahb_table_row_parser import parse_bedingung_cell, parse_edifact_struktur_cell, parse_middle_cell
 
 
 class TestParseFunctions:
