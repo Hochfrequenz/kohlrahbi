@@ -1,9 +1,11 @@
 import docx
 import pytest
-from docx.shared import Inches, Twips
+from docx.shared import Twips
 import pandas as pd
 
 from kohlrahbi.cells import BodyCell
+from unittests.conftest import left_indent_length
+from unittests.conftest import empty_ahb_row
 
 
 class TestBodyCell:
@@ -12,10 +14,11 @@ class TestBodyCell:
     """
 
     @pytest.mark.parametrize(
-        ["cell_text", "expected_dataframe"],
+        ["cell_text", "tabstop_positions", "expected_dataframe"],
         [
             pytest.param(
                 "Nachrichten-Referenznummer\tX\tX\tX",
+                [Twips(3088), Twips(4064), Twips(5026)],
                 pd.DataFrame(
                     {
                         "Segment Gruppe": [""],
@@ -28,29 +31,85 @@ class TestBodyCell:
                         "11018": ["X"],
                     }
                 ),
-                id="Nachrichten-Referenznummer",
+                id="11016 | 11017 | 11018: Qualifier - Nachrichten-Referenznummer",
+            ),
+            pytest.param(
+                "UN\tUN/CEFACT\tX\tX\tX",
+                [Twips(693), Twips(3088), Twips(4064), Twips(5026)],
+                pd.DataFrame(
+                    {
+                        "Segment Gruppe": [""],
+                        "Segment": [""],
+                        "Datenelement": [""],
+                        "Codes und Qualifier": ["UN"],
+                        "Beschreibung": ["UN/CEFACT"],
+                        "11016": ["X"],
+                        "11017": ["X"],
+                        "11018": ["X"],
+                    }
+                ),
+                id="11016 | 11017 | 11018: Code - UN",
+            ),
+            pytest.param(
+                "93\tDatum Vertragsende\tX\tX",
+                [Twips(693), Twips(3088), Twips(4064)],
+                pd.DataFrame(
+                    {
+                        "Segment Gruppe": [""],
+                        "Segment": [""],
+                        "Datenelement": [""],
+                        "Codes und Qualifier": ["93"],
+                        "Beschreibung": ["Datum Vertragsende"],
+                        "11016": ["X"],
+                        "11017": ["X"],
+                        "11018": [""],
+                    }
+                ),
+                id="11016 | 11017: Code - 93 - only two X",
+            ),
+            pytest.param(
+                "157\tGültigkeit, Beginndatum\tX",
+                [Twips(693), Twips(5026)],
+                pd.DataFrame(
+                    {
+                        "Segment Gruppe": [""],
+                        "Segment": [""],
+                        "Datenelement": [""],
+                        "Codes und Qualifier": ["157"],
+                        "Beschreibung": ["Gültigkeit, Beginndatum"],
+                        "11016": [""],
+                        "11017": [""],
+                        "11018": ["X"],
+                    }
+                ),
+                id="11018: Code - 157 - only one X",
+            ),
+            pytest.param(
+                "E_0400\tEBD Nr. E_0400\tX [492]\tX [492]",
+                [Twips(693), Twips(4064), Twips(5026)],
+                pd.DataFrame(
+                    {
+                        "Segment Gruppe": [""],
+                        "Segment": [""],
+                        "Datenelement": [""],
+                        "Codes und Qualifier": ["E_0400"],
+                        "Beschreibung": ["EBD Nr. E_0400"],
+                        "11016": [""],
+                        "11017": ["X [492]"],
+                        "11018": ["X [492]"],
+                    }
+                ),
+                id="11017 | 11018: Code - E_0400 - X with condition",
             ),
         ],
     )
-    def test_body_cell_parse(self, cell_text: str, expected_dataframe: pd.DataFrame):
+    def test_body_cell_parse(
+        self, create_ahb_table, cell_text: str, tabstop_positions: list[Twips], expected_dataframe: pd.DataFrame
+    ):
 
-        indicator_tabstop_positions: list[int] = [440055, 1960880, 2580640, 3191510]
+        table = create_ahb_table(cell_text, tabstop_positions)
 
-        indicator_tabstop_positions_in_twips = []
-
-        for position in indicator_tabstop_positions:
-            indicator_tabstop_positions_in_twips.append(Twips(position / 635))
-
-        doc = docx.Document()
-        table = doc.add_table(rows=1, cols=1)
-        body_cell = table.rows[0].cells
-        body_cell[0].text = "Nachrichten-Referenznummer\tX\tX\tX"
-
-        for tabstop_position in indicator_tabstop_positions_in_twips[1:]:
-            body_cell[0].paragraphs[0].paragraph_format.tab_stops.add_tab_stop(tabstop_position)
-
-        left_indent_length = Twips(693)
-        body_cell[0].paragraphs[0].paragraph_format.left_indent = left_indent_length
+        indicator_tabstop_positions: list[int] = [Twips(693), Twips(3088), Twips(4064), Twips(5026)]
 
         bc: BodyCell = BodyCell(
             table_cell=table.row_cells(0)[0],
@@ -58,18 +117,6 @@ class TestBodyCell:
             indicator_tabstop_positions=indicator_tabstop_positions,
         )
 
-        df: pd.DataFrame = pd.DataFrame(
-            {
-                "Segment Gruppe": [""],
-                "Segment": [""],
-                "Datenelement": [""],
-                "Codes und Qualifier": [""],
-                "Beschreibung": [""],
-                "11016": [""],
-                "11017": [""],
-                "11018": [""],
-            }
-        )
-        df = bc.parse(ahb_row_dataframe=df)
+        df = bc.parse(ahb_row_dataframe=empty_ahb_row)
 
         assert df.equals(expected_dataframe)
