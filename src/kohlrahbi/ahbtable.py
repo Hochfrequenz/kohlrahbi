@@ -40,8 +40,7 @@ class AhbTable:
 
             row_cell_texts_as_list = [cell.text for cell in self.table.row_cells(row)]
 
-            # pylint: disable=protected-access
-            if self.table._column_count == 4:
+            if len(self.table.columns) == 4:
                 # remove redundant information for tables with 4 columns
                 if (
                     row_cell_texts_as_list[0] == row_cell_texts_as_list[1]
