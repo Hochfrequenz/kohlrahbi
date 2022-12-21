@@ -139,6 +139,7 @@ def get_kohlrahbi(document: Document, root_output_directory_path: Path, ahb_file
     ahb_table_dataframe: Optional[pd.DataFrame] = None
 
     is_dataframe_initialized: bool = False
+    searched_pruefi_is_found: bool = False
 
     # Iterate through the whole word document
     logger.info("Start iterating through paragraphs and tables")
@@ -156,6 +157,7 @@ def get_kohlrahbi(document: Document, root_output_directory_path: Path, ahb_file
 
             if pruefi in seed.pruefidentifikatoren and not is_dataframe_initialized:
                 logger.info("👀 Found the AHB table with the Prüfidentifkator you are looking for %s", pruefi)
+                searched_pruefi_is_found = True
                 logger.info("✨ Initializing new ahb table dataframe")
                 ahb_table_dataframe = pd.DataFrame(
                     columns=seed.column_headers,
@@ -165,12 +167,17 @@ def get_kohlrahbi(document: Document, root_output_directory_path: Path, ahb_file
 
                 ahb_table: AhbTable = AhbTable(seed=seed, table=item)
 
-                ahb_table_dataframe, _ = ahb_table.parse(ahb_table_dataframe=ahb_table_dataframe)
+                ahb_table_dataframe = ahb_table.parse(ahb_table_dataframe=ahb_table_dataframe)
                 continue
         if isinstance(item, Table) and seed is not None and ahb_table_dataframe is not None:
 
             ahb_table = AhbTable(seed=seed, table=item)
-            ahb_table_dataframe, _ = ahb_table.parse(ahb_table_dataframe=ahb_table_dataframe)
+            ahb_table_dataframe = ahb_table.parse(ahb_table_dataframe=ahb_table_dataframe)
+
+        # @konstantin: Wie war nochmal die Reihenfolge in Python in der die Bedingungen geprüft werden?
+        if seed is not None and pruefi not in seed.pruefidentifikatoren and searched_pruefi_is_found:
+            logger.info("🏁 We reached the end of the AHB table of the Prüfidentifikator '%s'", pruefi)
+            break
 
     logger.info("💾 Saving kohlrahbi %s", pruefi)
     export_single_pruefidentifikator(
