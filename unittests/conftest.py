@@ -1,5 +1,5 @@
-import pytest
 import docx
+import pytest
 
 from unittests.cellparagraph import CellParagraph
 

@@ -4,8 +4,9 @@ A collection of functions to get information from AHB tables.
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Generator, List, Union, Optional
+from typing import Generator, List, Optional, Union
 
+import pandas as pd
 import pytz
 from docx.document import Document  # type:ignore[import]
 from docx.oxml.table import CT_Tbl  # type:ignore[import]
@@ -13,13 +14,10 @@ from docx.oxml.text.paragraph import CT_P  # type:ignore[import]
 from docx.table import Table, _Cell  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
 from maus.edifact import EdifactFormatVersion, get_edifact_format_version
-import pandas as pd
 
-from kohlrahbi.helper.export_functions import (
-    export_single_pruefidentifikator,
-)
-from kohlrahbi.helper.seed import Seed
 from kohlrahbi.ahbtable import AhbTable
+from kohlrahbi.helper.export_functions import export_single_pruefidentifikator
+from kohlrahbi.helper.seed import Seed
 
 _ahb_file_name_pattern = re.compile(r"^(?P<name>.+Lesefassung)(?P<version>\d+\.\d+[a-z]?)(?P<suffix>.*\.docx)$")
 """

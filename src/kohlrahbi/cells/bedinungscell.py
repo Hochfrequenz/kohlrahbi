@@ -1,7 +1,8 @@
+import re
+
 import attrs
 import pandas as pd
 from docx.table import _Cell  # type:ignore[import]
-import re
 
 
 @attrs.define(auto_attribs=True, kw_only=True)

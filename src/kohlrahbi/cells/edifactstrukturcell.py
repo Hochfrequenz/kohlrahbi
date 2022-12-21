@@ -1,7 +1,8 @@
+from typing import Dict
+
 import attrs
 import pandas as pd
 from docx.table import _Cell  # type:ignore[import]
-from typing import Dict
 
 
 @attrs.define(auto_attribs=True, kw_only=True)

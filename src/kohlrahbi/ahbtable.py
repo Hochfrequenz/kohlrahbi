@@ -1,10 +1,12 @@
+from typing import List, Tuple
+
 import attrs
 import pandas as pd
 from docx.table import Table  # type:ignore[import]
-from typing import List, Tuple
-from kohlrahbi.helper.seed import Seed
-from kohlrahbi.helper.row_type_checker import RowType, get_row_type
+
 from kohlrahbi.ahbtablerow import AhbTableRow
+from kohlrahbi.helper.row_type_checker import RowType, get_row_type
+from kohlrahbi.helper.seed import Seed
 
 
 @attrs.define(auto_attribs=True, kw_only=True)

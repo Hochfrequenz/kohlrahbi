@@ -1,8 +1,8 @@
+from typing import List
+
 import attrs
 import pandas as pd
 from docx.table import _Cell  # type:ignore[import]
-from typing import List
-
 from maus.reader.flat_ahb_reader import FlatAhbCsvReader
 
 index_of_codes_and_qualifier_column = 3

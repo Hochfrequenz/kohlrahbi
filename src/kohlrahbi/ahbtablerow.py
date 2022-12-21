@@ -1,10 +1,12 @@
+from typing import Optional
+
 import attrs
 import pandas as pd
 from docx.table import _Cell  # type:ignore[import]
-from typing import Optional
-from kohlrahbi.helper.seed import Seed
+
+from kohlrahbi.cells import BedingungCell, BodyCell, EdifactStrukturCell
 from kohlrahbi.helper.row_type_checker import RowType
-from kohlrahbi.cells import EdifactStrukturCell, BodyCell, BedingungCell
+from kohlrahbi.helper.seed import Seed
 
 
 @attrs.define(auto_attribs=True, kw_only=True)
