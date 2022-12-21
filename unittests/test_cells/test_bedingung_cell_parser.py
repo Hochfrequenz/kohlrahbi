@@ -3,18 +3,18 @@ from docx.shared import Twips
 import pandas as pd
 
 from kohlrahbi.cells import BedingungCell
-from unittests.bodycellparagraph import BodyCellParagraph
+from unittests.bodycellparagraph import CellParagraph
 
 
-class TestEdifactStrukturCell:
+class TestBedingungCell:
     @pytest.mark.parametrize(
         ["bedingung_cell_paragraph", "expected_dataframe"],
         [
             pytest.param(
                 [
-                    BodyCellParagraph(
+                    CellParagraph(
                         text="[494] Das hier genannte\nDatum muss der\nZeitpunkt sein, zu dem\ndas Dokument erstellt\nwurde, oder ein\nZeitpunkt, der davor liegt\n\n[931] Format: ZZZ = +00",
-                        tabstop_positions=[],
+                        tabstop_positions=None,
                         left_indent_length=Twips(48),
                     ),
                 ],

@@ -3,7 +3,7 @@ from docx.shared import Twips
 import pandas as pd
 
 from kohlrahbi.cells import EdifactStrukturCell
-from unittests.bodycellparagraph import BodyCellParagraph
+from unittests.bodycellparagraph import CellParagraph
 
 
 class TestEdifactStrukturCell:
@@ -12,9 +12,9 @@ class TestEdifactStrukturCell:
         [
             pytest.param(
                 [
-                    BodyCellParagraph(
+                    CellParagraph(
                         text="Nachrichten-Kopfsegment",
-                        tabstop_positions=[],
+                        tabstop_positions=None,
                         left_indent_length=Twips(581),
                     ),
                 ],
@@ -35,9 +35,9 @@ class TestEdifactStrukturCell:
             ),
             pytest.param(
                 [
-                    BodyCellParagraph(
+                    CellParagraph(
                         text="UNH",
-                        tabstop_positions=[],
+                        tabstop_positions=None,
                         left_indent_length=Twips(64),
                     ),
                 ],
@@ -58,7 +58,7 @@ class TestEdifactStrukturCell:
             ),
             pytest.param(
                 [
-                    BodyCellParagraph(
+                    CellParagraph(
                         text="UNH\t0062",
                         tabstop_positions=[Twips(128)],  # these tabstops are made up!
                         left_indent_length=Twips(64),
@@ -81,7 +81,7 @@ class TestEdifactStrukturCell:
             ),
             pytest.param(
                 [
-                    BodyCellParagraph(
+                    CellParagraph(
                         text="SG2\tNAD\t3035",
                         tabstop_positions=[Twips(128), Twips(256)],  # these tabstops are made up!
                         left_indent_length=Twips(581),

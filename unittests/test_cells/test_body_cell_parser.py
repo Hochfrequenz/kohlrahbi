@@ -5,7 +5,7 @@ import pandas as pd
 
 from kohlrahbi.cells import BodyCell
 
-from unittests.bodycellparagraph import BodyCellParagraph
+from unittests.bodycellparagraph import CellParagraph
 
 left_indent_length: Length = Twips(64)
 
@@ -20,7 +20,7 @@ class TestBodyCell:
         [
             pytest.param(
                 [
-                    BodyCellParagraph(
+                    CellParagraph(
                         text="Nachrichten-Referenznummer\tX\tX\tX",
                         tabstop_positions=[Twips(3088), Twips(4064), Twips(5026)],
                         left_indent_length=Twips(64),
@@ -43,7 +43,7 @@ class TestBodyCell:
             ),
             pytest.param(
                 [
-                    BodyCellParagraph(
+                    CellParagraph(
                         text="UN\tUN/CEFACT\tX\tX\tX",
                         tabstop_positions=[Twips(693), Twips(3088), Twips(4064), Twips(5026)],
                         left_indent_length=Twips(64),
@@ -66,7 +66,7 @@ class TestBodyCell:
             ),
             pytest.param(
                 [
-                    BodyCellParagraph(
+                    CellParagraph(
                         text="93\tDatum Vertragsende\tX\tX",
                         tabstop_positions=[Twips(693), Twips(3088), Twips(4064)],
                         left_indent_length=Twips(64),
@@ -89,7 +89,7 @@ class TestBodyCell:
             ),
             pytest.param(
                 [
-                    BodyCellParagraph(
+                    CellParagraph(
                         text="157\tGültigkeit, Beginndatum\tX",
                         tabstop_positions=[Twips(693), Twips(5026)],
                         left_indent_length=Twips(64),
@@ -112,7 +112,7 @@ class TestBodyCell:
             ),
             pytest.param(
                 [
-                    BodyCellParagraph(
+                    CellParagraph(
                         text="E_0400\tEBD Nr. E_0400\tX [492]\tX [492]",
                         tabstop_positions=[Twips(693), Twips(4064), Twips(5026)],
                         left_indent_length=Twips(64),
@@ -172,17 +172,17 @@ class TestBodyCell:
         [
             pytest.param(
                 [
-                    BodyCellParagraph(
+                    CellParagraph(
                         text="EM\tElektronische Post\tX [1P0..1]\tX [1P0..1]\tX [1P0..1]",
                         tabstop_positions=[Twips(693), Twips(3088), Twips(4064), Twips(5026)],
                         left_indent_length=Twips(64),
                     ),
-                    BodyCellParagraph(
+                    CellParagraph(
                         text="FX\tTelefax\tX [1P0..1]\tX [1P0..1]\tX [1P0..1]",
                         tabstop_positions=[Twips(693), Twips(3088), Twips(4064), Twips(5026)],
                         left_indent_length=Twips(64),
                     ),
-                    BodyCellParagraph(
+                    CellParagraph(
                         text="TE\tTelefon\tX [1P0..1]\tX [1P0..1]\tX [1P0..1]",
                         tabstop_positions=[Twips(693), Twips(3088), Twips(4064), Twips(5026)],
                         left_indent_length=Twips(64),
@@ -205,37 +205,37 @@ class TestBodyCell:
             ),
             pytest.param(
                 [
-                    BodyCellParagraph(
+                    CellParagraph(
                         text="9\tGS1\tX\tX\tX",
                         tabstop_positions=[Twips(693), Twips(3088), Twips(4064), Twips(5026)],
                         left_indent_length=Twips(64),
                     ),
-                    BodyCellParagraph(
+                    CellParagraph(
                         text="293\tDE, BDEW\tX\tX\tX",
                         tabstop_positions=[Twips(693), Twips(3088), Twips(4064), Twips(5026)],
                         left_indent_length=Twips(64),
                     ),
-                    BodyCellParagraph(
+                    CellParagraph(
                         text="(Bundesverband der",
                         tabstop_positions=[],
                         left_indent_length=Twips(693),
                     ),
-                    BodyCellParagraph(
+                    CellParagraph(
                         text="Energie- und",
                         tabstop_positions=[],
                         left_indent_length=Twips(693),
                     ),
-                    BodyCellParagraph(
+                    CellParagraph(
                         text="Wasserwirtschaft e.V.)",
                         tabstop_positions=[],
                         left_indent_length=Twips(693),
                     ),
-                    BodyCellParagraph(
+                    CellParagraph(
                         text="332\tDE, DVGW Service &\tX\tX\tX",
                         tabstop_positions=[Twips(693), Twips(3088), Twips(4064), Twips(5026)],
                         left_indent_length=Twips(64),
                     ),
-                    BodyCellParagraph(
+                    CellParagraph(
                         text="Consult GmbH",
                         tabstop_positions=[],
                         left_indent_length=Twips(693),
