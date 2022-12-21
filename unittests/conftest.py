@@ -1,7 +1,7 @@
 import pytest
 import docx
 
-from unittests.bodycellparagraph import CellParagraph
+from unittests.cellparagraph import CellParagraph
 
 
 @pytest.fixture

@@ -3,7 +3,7 @@ from docx.shared import Twips
 import pandas as pd
 
 from kohlrahbi.cells import BedingungCell
-from unittests.bodycellparagraph import CellParagraph
+from unittests.cellparagraph import CellParagraph
 
 
 class TestBedingungCell:

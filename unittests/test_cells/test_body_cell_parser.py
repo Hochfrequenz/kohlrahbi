@@ -5,7 +5,7 @@ import pandas as pd
 
 from kohlrahbi.cells import BodyCell
 
-from unittests.bodycellparagraph import CellParagraph
+from unittests.cellparagraph import CellParagraph
 
 left_indent_length: Length = Twips(64)
 
