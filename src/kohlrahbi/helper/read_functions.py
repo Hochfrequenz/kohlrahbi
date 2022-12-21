@@ -18,6 +18,7 @@ from maus.edifact import EdifactFormatVersion, get_edifact_format_version
 from kohlrahbi.ahbtable import AhbTable
 from kohlrahbi.helper.export_functions import export_single_pruefidentifikator
 from kohlrahbi.helper.seed import Seed
+from kohlrahbi.logger import logger
 
 _ahb_file_name_pattern = re.compile(r"^(?P<name>.+Lesefassung)(?P<version>\d+\.\d+[a-z]?)(?P<suffix>.*\.docx)$")
 """
@@ -117,7 +118,7 @@ def does_the_table_contain_pruefidentifikatoren(table: Table) -> bool:
 
 
 # pylint: disable=inconsistent-return-statements
-def get_kohlrahbi(document: Document, output_directory_path: Path, ahb_file_name: Path, pruefi: str) -> int:
+def get_kohlrahbi(document: Document, root_output_directory_path: Path, ahb_file_name: Path, pruefi: str) -> int:
     """Reads a docx file and extracts all information for each Prüfidentifikator.
 
     Args:
@@ -131,13 +132,16 @@ def get_kohlrahbi(document: Document, output_directory_path: Path, ahb_file_name
 
     seed: Optional[Seed] = None
     edifact_format_version: EdifactFormatVersion = _get_format_version_from_ahbfile_name(str(ahb_file_name))
-    output_directory_path: Path = output_directory_path / str(edifact_format_version)
+    logger.info("Extracted format version: %s", edifact_format_version)
+    output_directory_path: Path = root_output_directory_path / str(edifact_format_version)
+    logger.info("The output directory is: %s", output_directory_path)
 
     ahb_table_dataframe: Optional[pd.DataFrame] = None
 
     is_dataframe_initialized: bool = False
 
     # Iterate through the whole word document
+    logger.info("Start iterating through paragraphs and tables")
     for item in get_all_paragraphs_and_tables(parent=document):
 
         # Check if there is just a text paragraph,
@@ -148,8 +152,11 @@ def get_kohlrahbi(document: Document, output_directory_path: Path, ahb_file_name
 
             # check which pruefis
             seed = Seed.from_table(docx_table=item)
+            logger.info("Found a table with the following pruefis: %s", seed.pruefidentifikatoren)
 
             if pruefi in seed.pruefidentifikatoren and not is_dataframe_initialized:
+                logger.info("👀 Found the AHB table with the Prüfidentifkator you are looking for %s", pruefi)
+                logger.info("✨ Initializing new ahb table dataframe")
                 ahb_table_dataframe = pd.DataFrame(
                     columns=seed.column_headers,
                     dtype="str",
@@ -159,13 +166,13 @@ def get_kohlrahbi(document: Document, output_directory_path: Path, ahb_file_name
                 ahb_table: AhbTable = AhbTable(seed=seed, table=item)
 
                 ahb_table_dataframe, _ = ahb_table.parse(ahb_table_dataframe=ahb_table_dataframe)
-                print()
                 continue
         if isinstance(item, Table) and seed is not None and ahb_table_dataframe is not None:
 
             ahb_table = AhbTable(seed=seed, table=item)
             ahb_table_dataframe, _ = ahb_table.parse(ahb_table_dataframe=ahb_table_dataframe)
 
+    logger.info("💾 Saving kohlrahbi %s", pruefi)
     export_single_pruefidentifikator(
         pruefi=pruefi,
         df=ahb_table_dataframe,

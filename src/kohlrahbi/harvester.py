@@ -6,7 +6,7 @@ from typing import List
 
 import docx  # type:ignore[import]
 
-from kohlrahbi import logger
+from kohlrahbi.logger import logger
 from kohlrahbi.helper.read_functions import get_kohlrahbi
 
 
@@ -33,6 +33,7 @@ def main(file_paths: List[Path]) -> None:
         except IOError:
             logger.exception("There was an error opening the file '%s'", ahb_file_path, exc_info=True)
 
+        logger.info("start reading docx file(s)")
         get_kohlrahbi(
-            document=doc, output_directory_path=output_directory_path, ahb_file_name=ahb_file_path, pruefi="11016"
+            document=doc, root_output_directory_path=output_directory_path, ahb_file_name=ahb_file_path, pruefi="11016"
         )
