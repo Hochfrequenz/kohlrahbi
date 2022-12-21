@@ -27,8 +27,6 @@ class EdifactStrukturCell:
         row_index = ahb_row_dataframe.index.max()
         ahb_row_dataframe.at[row_index, "Bedingung"]
 
-        # edifact_struktur_information = {}
-
         # Check if the line starts on the far left
         if (
             self.table_cell.paragraphs[0].paragraph_format.left_indent
