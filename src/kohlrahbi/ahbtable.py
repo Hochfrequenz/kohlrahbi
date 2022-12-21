@@ -14,20 +14,13 @@ class AhbTable:
 
     def parse(self, ahb_table_dataframe: pd.DataFrame) -> pd.DataFrame:
         """
-        Iterates through all rows in a given table and writes all extracted infos in a DataFrame.
+        Iterates through all rows of the AhbTable.table and writes all extracted infos in a DataFrame.
 
         Args:
-            table (Table): Current table in the docx
-            dataframe (pd.DataFrame): Contains all infos of the Prüfidentifikators
-            current_df_row_index (int): Current row of the dataframe
-            last_two_row_types (List[RowType]): Contains the two last RowType. Is needed for the case of empty rows.
-            edifact_struktur_cell_left_indent_position (int): Position of the left indent in the
-                indicator edifact struktur cell
-            middle_cell_left_indent_position (int): Position of the left indent in the indicator middle cell
-            tabstop_positions (List[int]): All tabstop positions of the indicator middle cell
+            ahb_table_dataframe (pd.DataFrame): The dataframe which gets exported at the end.
 
         Returns:
-            Tuple[List[RowType], int]: Last two RowTypes and the new row index for the DataFrame
+            pd.DataFrame: Returns the ahb_table_dataframe with the added information.
         """
 
         # pylint: disable=protected-access
