@@ -1,11 +1,13 @@
 import docx
 import pytest
-from docx.shared import Twips
+from docx.shared import Twips, Length
 import pandas as pd
 
 from kohlrahbi.cells import BodyCell
-from unittests.conftest import left_indent_length
+
 from unittests.bodycellparagraph import BodyCellParagraph
+
+left_indent_length: Length = Twips(64)
 
 
 class TestBodyCell:
@@ -21,7 +23,7 @@ class TestBodyCell:
                     BodyCellParagraph(
                         text="Nachrichten-Referenznummer\tX\tX\tX",
                         tabstop_positions=[Twips(3088), Twips(4064), Twips(5026)],
-                        left_indent_length=Twips(693),
+                        left_indent_length=Twips(64),
                     ),
                 ],
                 pd.DataFrame(
@@ -43,7 +45,7 @@ class TestBodyCell:
                     BodyCellParagraph(
                         text="UN\tUN/CEFACT\tX\tX\tX",
                         tabstop_positions=[Twips(693), Twips(3088), Twips(4064), Twips(5026)],
-                        left_indent_length=Twips(693),
+                        left_indent_length=Twips(64),
                     ),
                 ],
                 pd.DataFrame(
@@ -65,7 +67,7 @@ class TestBodyCell:
                     BodyCellParagraph(
                         text="93\tDatum Vertragsende\tX\tX",
                         tabstop_positions=[Twips(693), Twips(3088), Twips(4064)],
-                        left_indent_length=Twips(693),
+                        left_indent_length=Twips(64),
                     )
                 ],
                 pd.DataFrame(
@@ -87,7 +89,7 @@ class TestBodyCell:
                     BodyCellParagraph(
                         text="157\tGültigkeit, Beginndatum\tX",
                         tabstop_positions=[Twips(693), Twips(5026)],
-                        left_indent_length=Twips(693),
+                        left_indent_length=Twips(64),
                     )
                 ],
                 pd.DataFrame(
@@ -109,7 +111,7 @@ class TestBodyCell:
                     BodyCellParagraph(
                         text="E_0400\tEBD Nr. E_0400\tX [492]\tX [492]",
                         tabstop_positions=[Twips(693), Twips(4064), Twips(5026)],
-                        left_indent_length=Twips(693),
+                        left_indent_length=Twips(64),
                     )
                 ],
                 pd.DataFrame(
@@ -138,7 +140,7 @@ class TestBodyCell:
 
         bc: BodyCell = BodyCell(
             table_cell=table.row_cells(0)[0],
-            left_indent_position=left_indent_length,
+            left_indent_position=Twips(64),
             indicator_tabstop_positions=indicator_tabstop_positions,
         )
 
@@ -167,17 +169,17 @@ class TestBodyCell:
                     BodyCellParagraph(
                         text="EM\tElektronische Post\tX [1P0..1]\tX [1P0..1]\tX [1P0..1]",
                         tabstop_positions=[Twips(693), Twips(3088), Twips(4064), Twips(5026)],
-                        left_indent_length=Twips(693),
+                        left_indent_length=Twips(64),
                     ),
                     BodyCellParagraph(
                         text="FX\tTelefax\tX [1P0..1]\tX [1P0..1]\tX [1P0..1]",
                         tabstop_positions=[Twips(693), Twips(3088), Twips(4064), Twips(5026)],
-                        left_indent_length=Twips(693),
+                        left_indent_length=Twips(64),
                     ),
                     BodyCellParagraph(
                         text="TE\tTelefon\tX [1P0..1]\tX [1P0..1]\tX [1P0..1]",
                         tabstop_positions=[Twips(693), Twips(3088), Twips(4064), Twips(5026)],
-                        left_indent_length=Twips(693),
+                        left_indent_length=Twips(64),
                     ),
                 ],
                 pd.DataFrame(
@@ -194,6 +196,62 @@ class TestBodyCell:
                 ),
                 id="11016 | 11017 | 11018: SG3 COM 3155",
             ),
+            pytest.param(
+                [
+                    BodyCellParagraph(
+                        text="9\tGS1\tX\tX\tX",
+                        tabstop_positions=[Twips(693), Twips(3088), Twips(4064), Twips(5026)],
+                        left_indent_length=Twips(64),
+                    ),
+                    BodyCellParagraph(
+                        text="293\tDE, BDEW\tX\tX\tX",
+                        tabstop_positions=[Twips(693), Twips(3088), Twips(4064), Twips(5026)],
+                        left_indent_length=Twips(64),
+                    ),
+                    BodyCellParagraph(
+                        text="(Bundesverband der",
+                        tabstop_positions=[],
+                        left_indent_length=Twips(693),
+                    ),
+                    BodyCellParagraph(
+                        text="Energie- und",
+                        tabstop_positions=[],
+                        left_indent_length=Twips(693),
+                    ),
+                    BodyCellParagraph(
+                        text="Wasserwirtschaft e.V.)",
+                        tabstop_positions=[],
+                        left_indent_length=Twips(693),
+                    ),
+                    BodyCellParagraph(
+                        text="332\tDE, DVGW Service &\tX\tX\tX",
+                        tabstop_positions=[Twips(693), Twips(3088), Twips(4064), Twips(5026)],
+                        left_indent_length=Twips(64),
+                    ),
+                    BodyCellParagraph(
+                        text="Consult GmbH",
+                        tabstop_positions=[],
+                        left_indent_length=Twips(693),
+                    ),
+                ],
+                pd.DataFrame(
+                    {
+                        "Segment Gruppe": ["", "", ""],
+                        "Segment": ["", "", ""],
+                        "Datenelement": ["", "", ""],
+                        "Codes und Qualifier": ["9", "293", "332"],
+                        "Beschreibung": [
+                            "GS1",
+                            "DE, BDEW(Bundesverband derEnergie- undWasserwirtschaft e.V.)",
+                            "DE, DVGW Service &Consult GmbH",
+                        ],
+                        "11016": ["X", "X", "X"],
+                        "11017": ["X", "X", "X"],
+                        "11018": ["X", "X", "X"],
+                    }
+                ),
+                id="11016 | 11017 | 11018: SG2 NAD 3055",
+            ),
         ],
     )
     def test_body_cell_parse_with_multiple_lines(
@@ -206,7 +264,7 @@ class TestBodyCell:
 
         bc: BodyCell = BodyCell(
             table_cell=table.row_cells(0)[0],
-            left_indent_position=left_indent_length,
+            left_indent_position=Twips(64),
             indicator_tabstop_positions=indicator_tabstop_positions,
         )
 
