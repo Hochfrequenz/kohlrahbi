@@ -1,5 +1,3 @@
-from typing import List, Tuple
-
 import attrs
 import pandas as pd
 from docx.table import Table  # type:ignore[import]
@@ -14,7 +12,7 @@ class AhbTable:
     seed: Seed
     table: Table
 
-    def parse(self, ahb_table_dataframe: pd.DataFrame) -> Tuple[pd.DataFrame, List[RowType]]:
+    def parse(self, ahb_table_dataframe: pd.DataFrame) -> pd.DataFrame:
         """
         Iterates through all rows in a given table and writes all extracted infos in a DataFrame.
 
@@ -36,9 +34,6 @@ class AhbTable:
         index_for_body_column = self.define_index_for_body_column()
 
         for row in range(len(self.table.rows)):
-
-            # initial empty list for the next row in the dataframe
-            self.seed.soul.loc[0] = (len(self.seed.soul.columns)) * [""]
 
             row_cell_texts_as_list = [cell.text for cell in self.table.row_cells(row)]
 
@@ -114,7 +109,7 @@ class AhbTable:
             self.seed.last_two_row_types[1] = self.seed.last_two_row_types[0]
             self.seed.last_two_row_types[0] = current_row_type
 
-        return ahb_table_dataframe, self.seed.last_two_row_types
+        return ahb_table_dataframe
 
     def define_index_for_body_column(self) -> int:
         """ """

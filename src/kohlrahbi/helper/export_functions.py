@@ -111,7 +111,6 @@ def export_single_pruefidentifikator(pruefi: str, df: pd.DataFrame, output_direc
     # write for each pruefi an extra file
     columns_to_export = list(df.columns)[:5] + [pruefi]
     columns_to_export.append("Bedingung")
-    # df["Bedingung"] = df["Bedingung"].apply(beautify_bedingungen)
     df_to_export = df[columns_to_export]
 
     df_to_export.to_csv(csv_output_directory_path / f"{pruefi}.csv")
