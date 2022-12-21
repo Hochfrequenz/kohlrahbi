@@ -91,7 +91,7 @@ This pattern is strictly coupled to the edi_energy_scraper.
 """
 
 
-def _export_format_version_from_ahbfile_name(ahb_docx_name: str) -> EdifactFormatVersion:
+def _get_format_version_from_ahbfile_name(ahb_docx_name: str) -> EdifactFormatVersion:
     """
     We try to extract the validity period of the AHB from its filename.
     The matching logic here is strictly coupled to the edi_energy_scraper.
@@ -130,7 +130,7 @@ def get_kohlrahbi(document: Document, output_directory_path: Path, ahb_file_name
     """
 
     seed: Optional[Seed] = None
-    edifact_format_version: EdifactFormatVersion = _export_format_version_from_ahbfile_name(str(ahb_file_name))
+    edifact_format_version: EdifactFormatVersion = _get_format_version_from_ahbfile_name(str(ahb_file_name))
     output_directory_path: Path = output_directory_path / str(edifact_format_version)
 
     ahb_table_dataframe: Optional[pd.DataFrame] = None

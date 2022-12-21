@@ -6,7 +6,7 @@ import pytest  # type:ignore[import]
 import pytz
 from maus.edifact import EdifactFormatVersion, get_edifact_format_version
 
-from kohlrahbi.helper.read_functions import _export_format_version_from_ahbfile_name, remove_duplicates_from_ahb_list
+from kohlrahbi.helper.read_functions import _get_format_version_from_ahbfile_name, remove_duplicates_from_ahb_list
 
 
 class TestReadFunctions:
@@ -60,5 +60,5 @@ class TestReadFunctions:
         ],
     )
     def test_get_format_version_from_filename(self, filename: str, expected_result: Optional[EdifactFormatVersion]):
-        actual = _export_format_version_from_ahbfile_name(filename)
+        actual = _get_format_version_from_ahbfile_name(filename)
         assert actual == expected_result
