@@ -90,13 +90,6 @@ class AhbTable:
 
                 ahb_table_row_dataframe = ahb_table_row.parse(row_type=current_row_type)
 
-                # ahb_table_row = parse_ahb_table_row(
-                #     row_type=current_row_type,
-                #     ahb_table=self.table,
-                #     ahb_table_row=row,
-                #     index_for_middle_column=index_for_body_column,
-                #     seed=self.seed,
-                # )
                 if ahb_table_dataframe is not None:
                     ahb_table_dataframe = pd.concat([ahb_table_dataframe, ahb_table_row_dataframe], ignore_index=True)
             # this case covers the page break situation
@@ -114,15 +107,6 @@ class AhbTable:
                 )
 
                 ahb_table_row.parse(row_type=self.seed.last_two_row_types[1], is_appending=is_appending)
-
-                # parse_ahb_table_row(
-                #     row_type=self.seed.last_two_row_types[1],
-                #     ahb_table=self.table,
-                #     ahb_table_row=row,
-                #     index_for_middle_column=index_for_body_column,
-                #     seed=self.seed,
-                #     is_appending=is_appending,
-                # )
 
             # remember last row type for empty cells
             self.seed.last_two_row_types[1] = self.seed.last_two_row_types[0]

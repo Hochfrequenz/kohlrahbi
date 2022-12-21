@@ -41,10 +41,6 @@ class AhbTableRow:
 
         ahb_row_dataframe.loc[0] = (len(ahb_row_dataframe.columns)) * [""]
 
-        # edifact_struktur_cell = self.table.row_cells(self.table_row)[0]
-        # middle_cell = self.table.row_cells(self.table_row)[index_for_middle_column]
-        # bedingung_cell = self.table.row_cells(self.table_row)[-1]
-
         if not is_appending:
             self.seed.soul.loc[self.seed.soul.index.max() + 1, :] = ""
 
