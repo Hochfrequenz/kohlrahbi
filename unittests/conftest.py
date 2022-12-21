@@ -57,7 +57,7 @@ def get_ahb_table_with_multiple_paragraphs():
                 body_cell.paragraphs[paragraph_index].paragraph_format.tab_stops.add_tab_stop(tabstop_position)
 
             # set left indent lenght
-            body_cell.paragraphs[paragraph_index].paragraph_format.left_indent = left_indent_length
+            body_cell.paragraphs[paragraph_index].paragraph_format.left_indent = bcp.left_indent_length
 
         return table
 
