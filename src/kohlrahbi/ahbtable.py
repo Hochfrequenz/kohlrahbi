@@ -90,11 +90,7 @@ class AhbTable:
                 if ahb_table_dataframe is not None:
                     ahb_table_dataframe = pd.concat([ahb_table_dataframe, ahb_table_row_dataframe], ignore_index=True)
             # this case covers the page break situation
-            # the current RowType is EMPTY and the row before is of RowTyp HEADER
-            # important is here to decrease the current_df_row_index by one to avoid an empty row in the output file
-            # which only contains the Bedingung.
             else:
-                is_appending = True
 
                 ahb_table_row = AhbTableRow(
                     seed=self.seed,
@@ -103,11 +99,7 @@ class AhbTable:
                     bedingung_cell=bedingung_cell,
                 )
 
-                ahb_table_row.parse(row_type=self.seed.last_two_row_types[1], is_appending=is_appending)
-
-            # remember last row type for empty cells
-            self.seed.last_two_row_types[1] = self.seed.last_two_row_types[0]
-            self.seed.last_two_row_types[0] = current_row_type
+                ahb_table_row.parse(row_type=self.seed.last_two_row_types[1], is_appending=True)
 
         return ahb_table_dataframe
 
