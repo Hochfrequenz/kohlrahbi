@@ -94,6 +94,9 @@ class AhbTable:
 
                 ahb_table_row.parse(row_type=self.seed.last_two_row_types[1], is_appending=True)
 
+            self.seed.last_two_row_types[1] = self.seed.last_two_row_types[0]
+            self.seed.last_two_row_types[0] = current_row_type
+
         return ahb_table_dataframe
 
     def define_index_for_body_column(self) -> int:
