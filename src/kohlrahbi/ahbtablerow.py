@@ -41,7 +41,9 @@ class AhbTableRow:
             dtype="str",
         )
 
-        ahb_row_dataframe.loc[0] = (len(ahb_row_dataframe.columns)) * [""]
+        empty_row: pd.Series[str] = pd.Series(len(ahb_row_dataframe.columns) * [""], index=self.seed.column_headers)
+
+        ahb_row_dataframe = pd.concat([ahb_row_dataframe, empty_row.to_frame().T], ignore_index=True)
 
         if not is_appending:
             self.seed.soul.loc[self.seed.soul.index.max() + 1, :] = ""
