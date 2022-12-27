@@ -179,9 +179,12 @@ def get_kohlrahbi(document: Document, root_output_directory_path: Path, ahb_file
             logger.info("🏁 We reached the end of the AHB table of the Prüfidentifikator '%s'", pruefi)
             break
 
-    logger.info("💾 Saving kohlrahbi %s", pruefi)
-    export_single_pruefidentifikator(
-        pruefi=pruefi,
-        df=ahb_table_dataframe,
-        output_directory_path=output_directory_path,
-    )
+    if ahb_table_dataframe is None:
+        logger.error("⛔️ Your searched pruefi '%s' was not found in the provided files.\n", pruefi)
+    else:
+        logger.info("💾 Saving kohlrahbi %s \n", pruefi)
+        export_single_pruefidentifikator(
+            pruefi=pruefi,
+            df=ahb_table_dataframe,
+            output_directory_path=output_directory_path,
+        )
