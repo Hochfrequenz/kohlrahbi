@@ -93,7 +93,7 @@ def harvest(
         if click.confirm(f"Should I try to create the directory at '{output}'?", default=True):
             try:
                 output.mkdir(exist_ok=True)
-                click.secho("📂 The output directory is created.", fg="red")
+                click.secho("📂 The output directory is created.", fg="yellow")
             except FileNotFoundError as e:
 
                 click.secho(
@@ -128,42 +128,57 @@ def harvest(
 
     for pruefi in valid_pruefis:
 
-        # find
-        logger.info("start reading docx file(s)")
-        # get_kohlrahbi(
-        #     document=doc, root_output_directory_path=output_directory_path, ahb_file_name=ahb_file_path, pruefi="11016"
-        # )
-        print(pruefi)
-        # continue
-
-
-def main(file_paths: list[Path]) -> None:
-    """
-    Main function of the module kohlrahbi.
-    It reads the docx files and calls the function to extract all Prüfindentifikatoren tables.
-    """
-    for ahb_file_path in file_paths:
-        logger.info("Processing file '%s'", ahb_file_path)
-        output_directory_path = Path.cwd() / Path("output")
-        output_directory_path.mkdir(exist_ok=True)
-        xlsx_out_path = output_directory_path / Path("xlsx")
-        xlsx_out_path.mkdir(exist_ok=True)
-        path_to_all_in_one_excel = xlsx_out_path / Path(str(ahb_file_path.parts[-1])[:-5] + ".xls")
-
-        # Remove old "all in one Excel file" if it already exists
-        if path_to_all_in_one_excel.exists():
-            path_to_all_in_one_excel.unlink(missing_ok=False)
-
-        try:
-            doc = docx.Document(ahb_file_path)  # Creating word reader object.
-
-        except IOError:
-            logger.exception("There was an error opening the file '%s'", ahb_file_path, exc_info=True)
-
-        logger.info("start reading docx file(s)")
-        get_kohlrahbi(
-            document=doc, root_output_directory_path=output_directory_path, ahb_file_name=ahb_file_path, pruefi="11016"
+        logger.info("start looking for pruefi '%s'", pruefi)
+        ahb_file_paths: list[Path] = get_docx_files_which_may_contain_searched_pruefi(
+            searched_pruefi=pruefi, path_to_ahb_documents=input
         )
+
+        for ahb_file_path in ahb_file_paths:
+
+            try:
+                doc = docx.Document(ahb_file_path)  # Creating word reader object.
+
+            except IOError:
+                logger.exception("There was an error opening the file '%s'", ahb_file_path, exc_info=True)
+                click.Abort()
+
+            logger.info("start reading docx file(s)")
+
+            get_kohlrahbi(
+                document=doc,
+                root_output_directory_path=output_directory_path,
+                ahb_file_name=ahb_file_path,
+                pruefi=pruefi,
+            )
+
+
+# def main(file_paths: list[Path]) -> None:
+#     """
+#     Main function of the module kohlrahbi.
+#     It reads the docx files and calls the function to extract all Prüfindentifikatoren tables.
+#     """
+#     for ahb_file_path in file_paths:
+#         logger.info("Processing file '%s'", ahb_file_path)
+#         output_directory_path = Path.cwd() / Path("output")
+#         output_directory_path.mkdir(exist_ok=True)
+#         xlsx_out_path = output_directory_path / Path("xlsx")
+#         xlsx_out_path.mkdir(exist_ok=True)
+#         path_to_all_in_one_excel = xlsx_out_path / Path(str(ahb_file_path.parts[-1])[:-5] + ".xls")
+
+#         # Remove old "all in one Excel file" if it already exists
+#         if path_to_all_in_one_excel.exists():
+#             path_to_all_in_one_excel.unlink(missing_ok=False)
+
+#         try:
+#             doc = docx.Document(ahb_file_path)  # Creating word reader object.
+
+#         except IOError:
+#             logger.exception("There was an error opening the file '%s'", ahb_file_path, exc_info=True)
+
+#         logger.info("start reading docx file(s)")
+#         get_kohlrahbi(
+#             document=doc, root_output_directory_path=output_directory_path, ahb_file_name=ahb_file_path, pruefi="11016"
+#         )
 
 
 if __name__ == "__main__":
