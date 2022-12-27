@@ -23,6 +23,31 @@ def get_valid_pruefis(list_of_pruefis: list[str]) -> list[str]:
     return valid_pruefis
 
 
+def get_docx_files_which_may_contain_searched_pruefi(searched_pruefi: str, path_to_ahb_documents: Path) -> list[Path]:
+    """
+    This functions takes a pruefidentifikator and returns a list of docx files which can contain the searched pruefi.
+    Unfortunately, it is not clear in which docx the pruefidentifikator you are looking for is located.
+    A 11042 belongs to the UTILMD format. However, there are seven docx files that describe the UTILMD format.
+    A further reduction of the number of files is not possible with the pruefidentifikator only.
+    """
+
+    pruefi_prefix: int = int(searched_pruefi[0:2])
+
+    format: FormatPrefix = FormatPrefix(pruefi_prefix)
+
+    docx_files_in_ahb_documents: list[Path] = [
+        path
+        for path in path_to_ahb_documents.iterdir()
+        if path.is_file()
+        if path.suffix == ".docx"
+        if "AHB" in path.name
+        if "LesefassungmitFehlerkorrekturen" in path.name
+        if format.name in path.name
+    ]
+
+    return docx_files_in_ahb_documents
+
+
 @click.command()
 @click.option(
     "-p",
