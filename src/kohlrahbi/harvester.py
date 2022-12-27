@@ -33,7 +33,11 @@ def get_docx_files_which_may_contain_searched_pruefi(searched_pruefi: str, path_
 
     pruefi_prefix: int = int(searched_pruefi[0:2])
 
-    format: FormatPrefix = FormatPrefix(pruefi_prefix)
+    try:
+        format: FormatPrefix = FormatPrefix(pruefi_prefix)
+    except ValueError:
+        logger.exception("❌ There is no known format known for the prefix '%s'.", pruefi_prefix)
+        return []
 
     docx_files_in_ahb_documents: list[Path] = [
         path
@@ -150,35 +154,6 @@ def harvest(
                 ahb_file_name=ahb_file_path,
                 pruefi=pruefi,
             )
-
-
-# def main(file_paths: list[Path]) -> None:
-#     """
-#     Main function of the module kohlrahbi.
-#     It reads the docx files and calls the function to extract all Prüfindentifikatoren tables.
-#     """
-#     for ahb_file_path in file_paths:
-#         logger.info("Processing file '%s'", ahb_file_path)
-#         output_directory_path = Path.cwd() / Path("output")
-#         output_directory_path.mkdir(exist_ok=True)
-#         xlsx_out_path = output_directory_path / Path("xlsx")
-#         xlsx_out_path.mkdir(exist_ok=True)
-#         path_to_all_in_one_excel = xlsx_out_path / Path(str(ahb_file_path.parts[-1])[:-5] + ".xls")
-
-#         # Remove old "all in one Excel file" if it already exists
-#         if path_to_all_in_one_excel.exists():
-#             path_to_all_in_one_excel.unlink(missing_ok=False)
-
-#         try:
-#             doc = docx.Document(ahb_file_path)  # Creating word reader object.
-
-#         except IOError:
-#             logger.exception("There was an error opening the file '%s'", ahb_file_path, exc_info=True)
-
-#         logger.info("start reading docx file(s)")
-#         get_kohlrahbi(
-#             document=doc, root_output_directory_path=output_directory_path, ahb_file_name=ahb_file_path, pruefi="11016"
-#         )
 
 
 if __name__ == "__main__":
