@@ -3,10 +3,11 @@ Main script of the AHB Extractor
 """
 import re
 from pathlib import Path
-from typing import Optional
+from typing import Any
 
 import click
 import docx  # type:ignore[import]
+import toml
 
 from kohlrahbi.enums import FormatPrefix
 from kohlrahbi.helper.read_functions import get_kohlrahbi
@@ -56,9 +57,8 @@ def get_docx_files_which_may_contain_searched_pruefi(searched_pruefi: str, path_
 @click.option(
     "-p",
     "--pruefis",
-    type=str,
+    default=[],
     required=False,
-    prompt="Pruefidentifikatoren you would like to get.",
     help="Five digit number like 11042.",
     multiple=True,
 )
@@ -78,7 +78,7 @@ def get_docx_files_which_may_contain_searched_pruefi(searched_pruefi: str, path_
     help="Define the path where you want to save the generated files.",
 )
 def harvest(
-    pruefis: Optional[list[str]],
+    pruefis: list[str],
     input: Path,
     output: Path,
 ):
@@ -116,9 +116,28 @@ def harvest(
     output_directory_path.mkdir(exist_ok=True)
 
     # check if one or more pruefidentifikatoren are given
-    if pruefis is None:
-        click.secho("☝️ No pruefis were given.", fg="yellow")
-        raise click.Abort()
+    if len(pruefis) == 0:
+        click.secho("☝️ No pruefis were given. I will parse all known pruefis.", fg="yellow")
+
+        # would be happy for name suggestions for "loaded_toml"
+        # it contains only two sections meta_data and content
+        # meta_data holds the updated_on date and content a list of all known pruefis
+        path_to_all_known_pruefis: Path = Path(__file__).parent / Path("all_known_pruefis.toml")
+        loaded_toml: dict[str, Any] = toml.load(path_to_all_known_pruefis)
+
+        meta_data_section = loaded_toml.get("meta_data")
+        content_section = loaded_toml.get("content")
+
+        if meta_data_section is None:
+            click.secho(
+                f"There is no 'meta_data' section in the provided toml file: {path_to_all_known_pruefis}", fg="red"
+            )
+            click.Abort()
+        if content_section is None:
+            click.secho(f"There is no 'content' section in the toml file: {path_to_all_known_pruefis}", fg="red")
+            click.Abort()
+
+        pruefis = content_section.get("pruefidentifikatoren")
 
     valid_pruefis: list[str] = get_valid_pruefis(list_of_pruefis=pruefis)
 
