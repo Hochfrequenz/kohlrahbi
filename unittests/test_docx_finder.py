@@ -16,12 +16,7 @@ from kohlrahbi.harvester import get_docx_files_which_may_contain_searched_pruefi
         pytest.param(
             "13002",
             1,
-            id="13002 - Zählerstand (Gas)",
-        ),
-        pytest.param(
-            "00007",
-            0,
-            id="invalid pruefi",
+            id="13002 - Zaehlerstand (Gas)",
         ),
     ],
 )
