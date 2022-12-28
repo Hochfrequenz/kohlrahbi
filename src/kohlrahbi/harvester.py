@@ -182,7 +182,7 @@ def harvest(
                 continue
             else:
                 # save kohlrahbi
-
+                logger.info("💾 Saving kohlrahbi %s \n", pruefi)
                 if "xlsx" in file_type:
                     dump_kohlrahbi_to_excel(
                         kohlrahbi=kohlrahbi,

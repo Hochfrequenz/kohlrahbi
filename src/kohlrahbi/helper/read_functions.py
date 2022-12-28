@@ -118,7 +118,9 @@ def does_the_table_contain_pruefidentifikatoren(table: Table) -> bool:
 
 
 # pylint: disable=inconsistent-return-statements
-def get_kohlrahbi(document: Document, root_output_directory_path: Path, ahb_file_name: Path, pruefi: str) -> int:
+def get_kohlrahbi(
+    document: Document, root_output_directory_path: Path, ahb_file_name: Path, pruefi: str
+) -> Optional[pd.DataFrame]:
     """Reads a docx file and extracts all information for each Prüfidentifikator.
 
     Args:
@@ -181,10 +183,6 @@ def get_kohlrahbi(document: Document, root_output_directory_path: Path, ahb_file
 
     if ahb_table_dataframe is None:
         logger.warning("⛔️ Your searched pruefi '%s' was not found in the provided files.\n", pruefi)
+        return None
     else:
-        logger.info("💾 Saving kohlrahbi %s \n", pruefi)
-        export_single_pruefidentifikator(
-            pruefi=pruefi,
-            df=ahb_table_dataframe,
-            output_directory_path=output_directory_path,
-        )
+        return ahb_table_dataframe
