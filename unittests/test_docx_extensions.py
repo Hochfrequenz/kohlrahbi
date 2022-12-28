@@ -22,11 +22,17 @@ class TestDocxExtensions:
 
     @pytest.mark.parametrize(
         "create_docx_from_filename",
-        [pytest.param("UTILMD_AHB_WiM-informatorischeLesefassung_3.1e_99991231_20221001.docx")],
+        [
+            pytest.param(
+                "UTILMDAHBWiM-informatorischeLesefassung3.1eKonsolidierteLesefassungmitFehlerkorrekturenStand25.10.2022_20230930_20221025.docx",
+            )
+        ],
         indirect=True,
     )
-    @pytest.mark.parametrize("expected_length", [pytest.param(1218)])
-    @pytest.mark.datafiles("unittests/docx_files/UTILMD_AHB_WiM-informatorischeLesefassung_3.1e_99991231_20221001.docx")
+    @pytest.mark.parametrize("expected_length", [pytest.param(1210)])
+    @pytest.mark.datafiles(
+        "unittests/docx_files/UTILMDAHBWiM-informatorischeLesefassung3.1eKonsolidierteLesefassungmitFehlerkorrekturenStand25.10.2022_20230930_20221025.docx"
+    )
     def test_get_all_paragraphs_and_tables(self, create_docx_from_filename: DocumentClass, expected_length: int):
         actual = list(get_all_paragraphs_and_tables(create_docx_from_filename))
         assert len(actual) == expected_length
