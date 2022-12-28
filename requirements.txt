@@ -20,13 +20,13 @@ maus==0.2.3
     # via -r requirements.in
 more-itertools==9.0.0
     # via maus
-numpy==1.22.0
+numpy==1.24.0
     # via pandas
 openpyxl==3.0.10
     # via -r requirements.in
 packaging==21.3
     # via marshmallow
-pandas==1.5.1
+pandas==1.5.2
     # via -r requirements.in
 pyparsing==3.0.9
     # via packaging
