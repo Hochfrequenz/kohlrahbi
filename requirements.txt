@@ -4,7 +4,7 @@
 #
 #    pip-compile requirements.in
 #
-attrs==22.1.0
+attrs==22.2.0
     # via
     #   -r requirements.in
     #   maus
@@ -14,14 +14,16 @@ colorlog==6.7.0
     # via -r requirements.in
 et-xmlfile==1.1.0
     # via openpyxl
-lxml==4.9.1
+lxml==4.9.2
     # via
     #   maus
     #   python-docx
 marshmallow==3.18.0
     # via maus
-maus==0.1.24
+maus==0.2.3
     # via -r requirements.in
+more-itertools==9.0.0
+    # via maus
 numpy==1.24.0
     # via pandas
 openpyxl==3.0.10
@@ -40,5 +42,5 @@ pytz==2021.1
     # via pandas
 six==1.16.0
     # via python-dateutil
-xlsxwriter==3.0.3
+xlsxwriter==3.0.4
     # via -r requirements.in
