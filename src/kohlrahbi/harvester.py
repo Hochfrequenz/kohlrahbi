@@ -10,6 +10,7 @@ import docx  # type:ignore[import]
 import toml
 from maus.edifact import pruefidentifikator_to_format
 
+from kohlrahbi.dump import dump_kohlrahbi_to_csv, dump_kohlrahbi_to_excel
 from kohlrahbi.helper.read_functions import get_kohlrahbi
 from kohlrahbi.logger import logger
 
@@ -74,10 +75,16 @@ def get_docx_files_which_may_contain_searched_pruefi(searched_pruefi: str, path_
     prompt="Output directory",
     help="Define the path where you want to save the generated files.",
 )
+@click.option(
+    "--file-type",
+    type=click.Choice(["json", "csv", "xlsx"], case_sensitive=False),
+    multiple=True,
+)
 def harvest(
     pruefis: list[str],
     input: Path,
     output: Path,
+    file_type: list[str],
 ):
     """
     A program to get a machine readable version of the AHBs docx files published by edi@energy.
@@ -164,12 +171,32 @@ def harvest(
 
             logger.info("start reading docx file(s)")
 
-            get_kohlrahbi(
+            kohlrahbi = get_kohlrahbi(
                 document=doc,
                 root_output_directory_path=output_directory_path,
                 ahb_file_name=ahb_file_path,
                 pruefi=pruefi,
             )
+
+            if kohlrahbi is None:
+                continue
+            else:
+                # save kohlrahbi
+
+                if "xlsx" in file_type:
+                    dump_kohlrahbi_to_excel(
+                        kohlrahbi=kohlrahbi,
+                        pruefi=pruefi,
+                        output_directory_path=output_directory_path,
+                    )
+                if "json" in file_type:
+                    pass
+                if "csv" in file_type:
+                    dump_kohlrahbi_to_csv(
+                        kohlrahbi=kohlrahbi,
+                        pruefi=pruefi,
+                        output_directory_path=output_directory_path,
+                    )
 
 
 if __name__ == "__main__":
