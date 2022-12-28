@@ -10,7 +10,7 @@ import docx  # type:ignore[import]
 import toml
 from maus.edifact import pruefidentifikator_to_format
 
-from kohlrahbi.dump import dump_kohlrahbi_to_csv, dump_kohlrahbi_to_excel
+from kohlrahbi.dump import dump_kohlrahbi_to_csv, dump_kohlrahbi_to_excel, dump_kohlrahbi_to_flatahb
 from kohlrahbi.helper.read_functions import get_kohlrahbi
 from kohlrahbi.logger import logger
 
@@ -77,7 +77,7 @@ def get_docx_files_which_may_contain_searched_pruefi(searched_pruefi: str, path_
 )
 @click.option(
     "--file-type",
-    type=click.Choice(["json", "csv", "xlsx"], case_sensitive=False),
+    type=click.Choice(["flatahb", "csv", "xlsx"], case_sensitive=False),
     multiple=True,
 )
 def harvest(
@@ -189,8 +189,12 @@ def harvest(
                         pruefi=pruefi,
                         output_directory_path=output_directory_path,
                     )
-                if "json" in file_type:
-                    pass
+                if "flatahb" in file_type:
+                    dump_kohlrahbi_to_flatahb(
+                        kohlrahbi=kohlrahbi,
+                        pruefi=pruefi,
+                        output_directory_path=output_directory_path,
+                    )
                 if "csv" in file_type:
                     dump_kohlrahbi_to_csv(
                         kohlrahbi=kohlrahbi,
