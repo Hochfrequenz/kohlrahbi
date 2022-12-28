@@ -180,7 +180,7 @@ def get_kohlrahbi(document: Document, root_output_directory_path: Path, ahb_file
             break
 
     if ahb_table_dataframe is None:
-        logger.error("⛔️ Your searched pruefi '%s' was not found in the provided files.\n", pruefi)
+        logger.warning("⛔️ Your searched pruefi '%s' was not found in the provided files.\n", pruefi)
     else:
         logger.info("💾 Saving kohlrahbi %s \n", pruefi)
         export_single_pruefidentifikator(
