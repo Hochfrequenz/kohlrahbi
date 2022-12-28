@@ -38,7 +38,11 @@ class BodyCell:
             if paragraph.paragraph_format.left_indent == self.left_indent_position:
                 # code or qualifier
 
-                if FlatAhbCsvReader._is_value_pool_entry(candidate=splitted_text_at_tabs[0]):
+                if (
+                    FlatAhbCsvReader._is_value_pool_entry(candidate=splitted_text_at_tabs[0])
+                    and len(splitted_text_at_tabs) >= 2
+                    # the second check makes sure, that we parse ORDER\nS correct e.g. in 17001
+                ):
                     # code entry
                     if not is_first_iteration:
                         # a new code and it is not the first. So we add a new row in dataframe and increase the row_index
