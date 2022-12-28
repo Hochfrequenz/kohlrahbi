@@ -166,7 +166,7 @@ class TestBodyCell:
         assert df.equals(expected_dataframe)
 
     @pytest.mark.parametrize(
-        ["body_cell_paragraphs", "expected_dataframe"],
+        ["body_cell_paragraphs", "empty_ahb_row", "expected_dataframe"],
         [
             pytest.param(
                 [
@@ -186,6 +186,19 @@ class TestBodyCell:
                         left_indent_length=Twips(64),
                     ),
                 ],
+                pd.DataFrame(
+                    {
+                        "Segment Gruppe": [""],
+                        "Segment": [""],
+                        "Datenelement": [""],
+                        "Codes und Qualifier": [""],
+                        "Beschreibung": [""],
+                        "11016": [""],
+                        "11017": [""],
+                        "11018": [""],
+                        "Bedingung": [""],
+                    }
+                ),
                 pd.DataFrame(
                     {
                         "Segment Gruppe": ["", "", ""],
@@ -241,6 +254,19 @@ class TestBodyCell:
                 ],
                 pd.DataFrame(
                     {
+                        "Segment Gruppe": [""],
+                        "Segment": [""],
+                        "Datenelement": [""],
+                        "Codes und Qualifier": [""],
+                        "Beschreibung": [""],
+                        "11016": [""],
+                        "11017": [""],
+                        "11018": [""],
+                        "Bedingung": [""],
+                    }
+                ),
+                pd.DataFrame(
+                    {
                         "Segment Gruppe": ["", "", ""],
                         "Segment": ["", "", ""],
                         "Datenelement": ["", "", ""],
@@ -258,10 +284,47 @@ class TestBodyCell:
                 ),
                 id="11016 | 11017 | 11018: SG2 NAD 3055",
             ),
+            pytest.param(
+                [
+                    CellParagraph(
+                        text="ORDER\tBestellung\tX",
+                        tabstop_positions=[Twips(693), Twips(3088)],
+                        left_indent_length=Twips(64),
+                    ),
+                    CellParagraph(
+                        text="S",
+                        tabstop_positions=[],
+                        left_indent_length=Twips(64),
+                    ),
+                ],
+                pd.DataFrame(
+                    {
+                        "Segment Gruppe": [""],
+                        "Segment": [""],
+                        "Datenelement": [""],
+                        "Codes und Qualifier": [""],
+                        "Beschreibung": [""],
+                        "17001": [""],
+                        "Bedingung": [""],
+                    }
+                ),
+                pd.DataFrame(
+                    {
+                        "Segment Gruppe": [""],
+                        "Segment": [""],
+                        "Datenelement": [""],
+                        "Codes und Qualifier": ["ORDERS"],
+                        "Beschreibung": ["Bestellung"],
+                        "17001": ["X"],
+                        "Bedingung": [""],
+                    }
+                ),
+                id="17001: - UNH 0065 ORDERS",
+            ),
         ],
     )
     def test_body_cell_parse_with_multiple_lines(
-        self, get_ahb_table_with_multiple_paragraphs, body_cell_paragraphs, expected_dataframe
+        self, get_ahb_table_with_multiple_paragraphs, body_cell_paragraphs, empty_ahb_row, expected_dataframe
     ):
 
         table = get_ahb_table_with_multiple_paragraphs(body_cell_paragraphs=body_cell_paragraphs)
@@ -272,20 +335,6 @@ class TestBodyCell:
             table_cell=table.row_cells(0)[0],
             left_indent_position=Twips(64),
             indicator_tabstop_positions=indicator_tabstop_positions,
-        )
-
-        empty_ahb_row: pd.DataFrame = pd.DataFrame(
-            {
-                "Segment Gruppe": [""],
-                "Segment": [""],
-                "Datenelement": [""],
-                "Codes und Qualifier": [""],
-                "Beschreibung": [""],
-                "11016": [""],
-                "11017": [""],
-                "11018": [""],
-                "Bedingung": [""],
-            }
         )
 
         df = bc.parse(ahb_row_dataframe=empty_ahb_row)
