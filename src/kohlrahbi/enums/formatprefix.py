@@ -58,3 +58,5 @@ class FormatPrefix(Enum):
     # purchase ORDer CHanGe message
     # Änderungsmittelung einer Bestellung
     ORDCHG = 39
+
+    SSQNOT = 70
