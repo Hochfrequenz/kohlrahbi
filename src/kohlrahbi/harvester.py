@@ -8,8 +8,8 @@ from typing import Any
 import click
 import docx  # type:ignore[import]
 import toml
+from maus.edifact import pruefidentifikator_to_format
 
-from kohlrahbi.enums import FormatPrefix
 from kohlrahbi.helper.read_functions import get_kohlrahbi
 from kohlrahbi.logger import logger
 
@@ -32,12 +32,9 @@ def get_docx_files_which_may_contain_searched_pruefi(searched_pruefi: str, path_
     A further reduction of the number of files is not possible with the pruefidentifikator only.
     """
 
-    pruefi_prefix: int = int(searched_pruefi[0:2])
-
-    try:
-        format: FormatPrefix = FormatPrefix(pruefi_prefix)
-    except ValueError:
-        logger.exception("❌ There is no known format known for the prefix '%s'.", pruefi_prefix)
+    edifact_format = pruefidentifikator_to_format(searched_pruefi)
+    if edifact_format is None:
+        logger.exception("❌ There is no known format known for the prüfi '%s'.", searched_pruefi)
         return []
 
     docx_files_in_ahb_documents: list[Path] = [
@@ -47,7 +44,7 @@ def get_docx_files_which_may_contain_searched_pruefi(searched_pruefi: str, path_
         if path.suffix == ".docx"
         if "AHB" in path.name
         if "LesefassungmitFehlerkorrekturen" in path.name
-        if format.name in path.name
+        if str(edifact_format) in path.name
     ]
 
     return docx_files_in_ahb_documents
