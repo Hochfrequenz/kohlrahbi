@@ -4,15 +4,15 @@ from pathlib import Path
 import docx
 import tomlkit
 from docx.table import Table
+from maus.edifact import EdifactFormat
 
-from kohlrahbi.enums import FormatPrefix
 from kohlrahbi.helper.read_functions import does_the_table_contain_pruefidentifikatoren, get_all_paragraphs_and_tables
 from kohlrahbi.helper.seed import Seed
 from kohlrahbi.logger import logger
 
 all_pruefis = []
 
-for format in FormatPrefix:
+for format in EdifactFormat:
     print(format)
 
     path_to_ahb_documents: Path = Path("/Users/kevin/workspaces/hochfrequenz/edi_energy_mirror/edi_energy_de/current")
