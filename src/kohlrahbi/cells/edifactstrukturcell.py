@@ -26,7 +26,7 @@ class EdifactStrukturCell:
         tab_count = joined_text.count("\t")
 
         row_index = ahb_row_dataframe.index.max()
-        ahb_row_dataframe.at[row_index, "Bedingung"]
+        # ahb_row_dataframe.at[row_index, "Bedingung"]
 
         # Check if the line starts on the far left
         if (
