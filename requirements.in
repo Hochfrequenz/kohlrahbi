@@ -6,3 +6,4 @@ pandas
 python-docx
 XlsxWriter
 maus>=0.1.23
+tomlkit
