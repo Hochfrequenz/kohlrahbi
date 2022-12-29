@@ -18,29 +18,29 @@ lxml==4.9.2
     # via
     #   maus
     #   python-docx
-marshmallow==3.18.0
+marshmallow==3.19.0
     # via maus
-maus==0.2.3
+maus==0.2.4
     # via -r requirements.in
 more-itertools==9.0.0
     # via maus
-numpy==1.24.0
+numpy==1.24.1
     # via pandas
 openpyxl==3.0.10
     # via -r requirements.in
-packaging==21.3
+packaging==22.0
     # via marshmallow
 pandas==1.5.2
     # via -r requirements.in
-pyparsing==3.0.9
-    # via packaging
-python-dateutil==2.8.1
+python-dateutil==2.8.2
     # via pandas
 python-docx==0.8.11
     # via -r requirements.in
-pytz==2021.1
+pytz==2022.7
     # via pandas
 six==1.16.0
     # via python-dateutil
+tomlkit==0.11.6
+    # via -r requirements.in
 xlsxwriter==3.0.4
     # via -r requirements.in
