@@ -7,7 +7,7 @@ from typing import Any
 
 import click
 import docx  # type:ignore[import]
-import toml
+import tomlkit
 from maus.edifact import pruefidentifikator_to_format
 
 from kohlrahbi.dump import dump_kohlrahbi_to_csv, dump_kohlrahbi_to_excel, dump_kohlrahbi_to_flatahb
@@ -127,7 +127,9 @@ def harvest(
         # it contains only two sections meta_data and content
         # meta_data holds the updated_on date and content a list of all known pruefis
         path_to_all_known_pruefis: Path = Path(__file__).parent / Path("all_known_pruefis.toml")
-        loaded_toml: dict[str, Any] = toml.load(path_to_all_known_pruefis)
+
+        with open(path_to_all_known_pruefis, "rb") as f:
+            loaded_toml: dict[str, Any] = tomlkit.load(f)
 
         meta_data_section = loaded_toml.get("meta_data")
         content_section = loaded_toml.get("content")

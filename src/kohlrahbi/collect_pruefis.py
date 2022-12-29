@@ -2,7 +2,7 @@ from datetime import date
 from pathlib import Path
 
 import docx
-import toml
+import tomlkit
 from docx.table import Table
 
 from kohlrahbi.enums import FormatPrefix
@@ -47,4 +47,6 @@ toml_data = {
 }
 
 with open(Path(__file__).parent / Path("all_known_pruefis.toml"), "w") as f:
-    toml.dump(toml_data, f)
+    # tomllib does not provide a dump method at the moment
+    # https://docs.python.org/uk/dev/library/tomllib.html
+    tomlkit.dump(toml_data, f)
