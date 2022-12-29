@@ -4,16 +4,16 @@ from pathlib import Path
 import docx
 import toml
 from docx.table import Table
+from maus.edifact import EdifactFormat
 
-from kohlrahbi.enums import FormatPrefix
 from kohlrahbi.helper.read_functions import does_the_table_contain_pruefidentifikatoren, get_all_paragraphs_and_tables
 from kohlrahbi.helper.seed import Seed
 from kohlrahbi.logger import logger
 
 all_pruefis = []
 
-for format in FormatPrefix:
-    print(format)
+for edifact_format in EdifactFormat:
+    print(edifact_format)
 
     path_to_ahb_documents: Path = Path("/Users/kevin/workspaces/hochfrequenz/edi_energy_mirror/edi_energy_de/current")
 
@@ -24,7 +24,7 @@ for format in FormatPrefix:
         if path.suffix == ".docx"
         if "AHB" in path.name
         if "LesefassungmitFehlerkorrekturen" in path.name
-        if format.name in path.name
+        if str(edifact_format) in path.name
     ]
 
     for ahb_file_path in docx_files_in_ahb_documents:
