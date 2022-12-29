@@ -28,21 +28,16 @@ def convert_ahb_table_to_flatahb(ahb_table: pd.DataFrame, pruefi: str) -> FlatAn
 
         if row["Segment Gruppe"].startswith("SG"):
 
-            if row[pruefi] == "":
-                ahb_expression = None
-            else:
-                ahb_expression = row[pruefi]
-
             ahb_lines.append(
                 AhbLine(
                     guid=uuid4(),
-                    segment_group_key=row["Segment Gruppe"],
-                    segment_code=row["Segment"],
-                    data_element=row["Datenelement"],
-                    value_pool_entry=row["Codes und Qualifier"],
-                    name=row["Beschreibung"],
-                    ahb_expression=ahb_expression,
-                    section_name="",
+                    segment_group_key=row["Segment Gruppe"] or None,
+                    segment_code=row["Segment"] or None,
+                    data_element=row["Datenelement"] or None,
+                    value_pool_entry=row["Codes und Qualifier"] or None,
+                    name=row["Beschreibung"] or None,
+                    ahb_expression=row[pruefi] or None,
+                    section_name=None,
                     index=index,
                 )
             )
@@ -51,13 +46,13 @@ def convert_ahb_table_to_flatahb(ahb_table: pd.DataFrame, pruefi: str) -> FlatAn
             ahb_lines.append(
                 AhbLine(
                     guid=uuid4(),
-                    segment_group_key="",
-                    segment_code=row["Segment"],
-                    data_element=row["Datenelement"],
-                    value_pool_entry=row["Codes und Qualifier"],
-                    name=row["Beschreibung"],
+                    segment_group_key=None,
+                    segment_code=row["Segment"] or None,
+                    data_element=row["Datenelement"] or None,
+                    value_pool_entry=row["Codes und Qualifier"] or None,
+                    name=row["Beschreibung"] or None,
                     ahb_expression=None,
-                    section_name=row["Segment Gruppe"],
+                    section_name=row["Segment Gruppe"] or None,
                     index=index,
                 )
             )
