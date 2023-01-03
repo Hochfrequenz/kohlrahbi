@@ -1,5 +1,3 @@
-from typing import Dict
-
 import attrs
 import pandas as pd
 from docx.table import _Cell  # type:ignore[import]
@@ -26,7 +24,6 @@ class EdifactStrukturCell:
         tab_count = joined_text.count("\t")
 
         row_index = ahb_row_dataframe.index.max()
-        # ahb_row_dataframe.at[row_index, "Bedingung"]
 
         # Check if the line starts on the far left
         if (
