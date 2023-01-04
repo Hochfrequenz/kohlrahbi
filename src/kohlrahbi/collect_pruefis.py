@@ -12,8 +12,7 @@ from kohlrahbi.logger import logger
 
 all_pruefis = []
 
-for format in EdifactFormat:
-    print(format)
+for edifact_format in EdifactFormat:
 
     path_to_ahb_documents: Path = Path("/Users/kevin/workspaces/hochfrequenz/edi_energy_mirror/edi_energy_de/current")
 
@@ -24,7 +23,7 @@ for format in EdifactFormat:
         if path.suffix == ".docx"
         if "AHB" in path.name
         if "LesefassungmitFehlerkorrekturen" in path.name
-        if format.name in path.name
+        if edifact_format.name in path.name
     ]
 
     for ahb_file_path in docx_files_in_ahb_documents:
