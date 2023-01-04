@@ -1,3 +1,5 @@
+from typing import Optional
+
 import attrs
 import pandas as pd
 from docx.table import Table  # type:ignore[import]
@@ -80,15 +82,22 @@ class AhbTable:
     @staticmethod
     def fill_segement_gruppe_segement_dataelement(df: pd.DataFrame):
 
-        latest_segement_gruppe: str = ""
-        latest_segement: str = ""
-        latest_datenelement: str = ""
+        latest_segement_gruppe: Optional[str] = None
+        latest_segement: Optional[str] = None
+        latest_datenelement: Optional[str] = None
 
         for _, row in df.iterrows():
+
+            if row["Segment Gruppe"] != "":
+                latest_segement_gruppe: str = row["Segment Gruppe"]
+
+            if row["Segment"] != "":
+                latest_segement: str = row["Segment"]
+
+            if row["Datenelement"] != "":
+                latest_datenelement: str = row["Datenelement"]
+
             if row["Segment Gruppe"] == "" and row["Codes und Qualifier"] != "":
                 row["Segment Gruppe"] = latest_segement_gruppe
                 row["Segment"] = latest_segement
                 row["Datenelement"] = latest_datenelement
-            latest_segement_gruppe: str = row["Segment Gruppe"]
-            latest_segement: str = row["Segment"]
-            latest_datenelement: str = row["Datenelement"]
