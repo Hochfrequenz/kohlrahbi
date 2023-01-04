@@ -1,3 +1,7 @@
+"""
+This module provides the AhbTable class
+"""
+
 from typing import Optional
 
 import attrs
@@ -10,16 +14,19 @@ from kohlrahbi.helper.row_type_checker import RowType, get_row_type
 from kohlrahbi.helper.seed import Seed
 
 
-def iter_visible_cells(row):
-    tr = row._tr
-    for tc in tr.tc_lst:
-        yield _Cell(tc, row.table)
-
-
 @attrs.define(auto_attribs=True, kw_only=True)
 class AhbTable:
     seed: Seed
     table: Table
+
+    def _iter_visible_cells(self, row):
+        """
+        This function makes sure that you will iterate over the cells you see in the word document.
+        For more information go to https://github.com/python-openxml/python-docx/issues/970#issuecomment-877386927
+        """
+        table_row = row._tr  # pylint:disable=protected-access
+        for table_column in table_row.tc_lst:
+            yield _Cell(table_column, row.table)
 
     def parse(self, ahb_table_dataframe: pd.DataFrame) -> pd.DataFrame:
         """
@@ -34,7 +41,7 @@ class AhbTable:
 
         for row in self.table.rows:
 
-            sanitized_row = list(iter_visible_cells(row=row))
+            sanitized_row = list(self._iter_visible_cells(row=row))
 
             current_edifact_struktur_cell = sanitized_row[0]
 
