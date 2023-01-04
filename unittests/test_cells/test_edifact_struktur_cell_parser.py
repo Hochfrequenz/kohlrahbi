@@ -102,6 +102,29 @@ class TestEdifactStrukturCell:
                 ),
                 id="11016 | 11017 | 11018: SG2 - NAD - 3035",
             ),
+            pytest.param(
+                [
+                    CellParagraph(
+                        text="SG2\tNAD\t3035",
+                        tabstop_positions=[Twips(128), Twips(256)],  # these tabstops are made up!
+                        left_indent_length=Twips(581),
+                    ),
+                ],
+                pd.DataFrame(
+                    {
+                        "Segment Gruppe": ["SG2"],
+                        "Segment": ["NAD"],
+                        "Datenelement": ["3035"],
+                        "Codes und Qualifier": [""],
+                        "Beschreibung": [""],
+                        "11016": [""],
+                        "11017": [""],
+                        "11018": [""],
+                        "Bedingung": [""],
+                    }
+                ),
+                id="11016 | 11017 | 11018: SG2 - NAD - 3035",
+            ),
         ],
     )
     def test_edifact_struktur_cell_parser(
