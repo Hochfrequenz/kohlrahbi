@@ -14,6 +14,7 @@ from docx.oxml.text.paragraph import CT_P  # type:ignore[import]
 from docx.table import Table, _Cell  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
 from maus.edifact import EdifactFormatVersion, get_edifact_format_version
+from more_itertools import peekable
 
 from kohlrahbi.ahbtable import AhbTable
 from kohlrahbi.helper.export_functions import export_single_pruefidentifikator
@@ -117,6 +118,53 @@ def does_the_table_contain_pruefidentifikatoren(table: Table) -> bool:
     return table.cell(row_idx=0, col_idx=0).text == "EDIFACT Struktur"
 
 
+def sanitize_ahb_table_dataframe(ahb_table_dataframe: pd.DataFrame) -> pd.DataFrame:
+
+    indizes_of_to_delete_rows: list[int] = []
+    keys_that_must_no_hold_any_values: set[str] = {
+        "Segment",
+        "Datenelement",
+        "Codes und Qualifier",
+        "Beschreibung",
+        "Bedingung",
+    }
+
+    def line_only_contains_segment_gruppe(raw_line: pd.Series) -> bool:
+        """
+        returns true if the given raw line only contains some meaningful data in the "Segment Gruppe" key
+        """
+        for row_key in keys_that_must_no_hold_any_values:
+            if row_key in raw_line and raw_line[row_key] is not None and len(raw_line[row_key].strip()) > 0:
+                return False
+        return True
+
+    iterable_ahb_table = peekable(ahb_table_dataframe.iterrows())
+
+    for _, row in iterable_ahb_table:
+
+        index_of_next_row, next_row = iterable_ahb_table.peek((0, pd.Series({"Segment Gruppe": ""})))
+
+        if (
+            "Segment Gruppe" in row
+            and row["Segment Gruppe"]
+            and line_only_contains_segment_gruppe(row)
+            and not next_row["Segment Gruppe"].startswith("SG")
+        ):
+            merged_segment_gruppe_content = " ".join([row["Segment Gruppe"], next_row["Segment Gruppe"]])
+            row["Segment Gruppe"] = merged_segment_gruppe_content.strip()
+            indizes_of_to_delete_rows.append(index_of_next_row)
+
+    def drop_unnecessary_lines(df: pd.DataFrame, lines_to_drop: list[int]) -> pd.DataFrame:
+        """ """
+
+        cleaned_df = df.drop(lines_to_drop[:-1])
+        cleaned_df = cleaned_df.reset_index(drop=True)
+
+        return cleaned_df
+
+    return drop_unnecessary_lines(df=ahb_table_dataframe, lines_to_drop=indizes_of_to_delete_rows)
+
+
 # pylint: disable=inconsistent-return-statements
 def get_kohlrahbi(
     document: Document, root_output_directory_path: Path, ahb_file_name: Path, pruefi: str
@@ -185,4 +233,8 @@ def get_kohlrahbi(
         logger.warning("⛔️ Your searched pruefi '%s' was not found in the provided files.\n", pruefi)
         return None
     else:
-        return ahb_table_dataframe
+
+        # sanitize dataframe here
+        final_ahb_dataframe = sanitize_ahb_table_dataframe(ahb_table_dataframe=ahb_table_dataframe)
+
+        return final_ahb_dataframe
