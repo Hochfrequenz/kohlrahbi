@@ -28,7 +28,7 @@ def test_convert_ahb_table_to_flatahb():
     )
 
     expected_flat_ahb: FlatAnwendungshandbuch = FlatAnwendungshandbuch(
-        meta=AhbMetaInformation(pruefidentifikator="11016", maus_version=maus._VERSION),
+        meta=AhbMetaInformation(pruefidentifikator="11016"),
         lines=[
             AhbLine(
                 guid=None,
