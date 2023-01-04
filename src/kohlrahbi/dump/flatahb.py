@@ -74,7 +74,7 @@ def convert_ahb_table_to_flatahb(ahb_table: pd.DataFrame, pruefi: str) -> FlatAn
                 else:
                     current_segment_group_key = None
             except StopIteration:
-                current_segment_group_key = row["Segment Gruppe"]
+                current_segment_group_key = None
 
             ahb_lines.append(
                 AhbLine(
