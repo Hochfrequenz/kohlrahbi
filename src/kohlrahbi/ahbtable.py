@@ -70,7 +70,7 @@ class AhbTable:
                     bedingung_cell=bedingung_cell,
                 )
 
-                ahb_table_row.parse(row_type=self.seed.last_two_row_types[1], is_appending=True)
+                ahb_table_row.parse(row_type=self.seed.last_two_row_types[1])
 
             self.seed.last_two_row_types[1] = self.seed.last_two_row_types[0]
             self.seed.last_two_row_types[0] = current_row_type

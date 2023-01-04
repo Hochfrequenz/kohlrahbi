@@ -19,7 +19,6 @@ class AhbTableRow:
     def parse(
         self,
         row_type: RowType,
-        is_appending: bool = False,
     ) -> Optional[pd.DataFrame]:
         """Writes the current row of the current table into the DataFrame depending on the type of the row
 
@@ -29,7 +28,6 @@ class AhbTableRow:
             ahb_table (Table): Current table
             ahb_table_row (int): Row of the current ahb table
             index_for_middle_column (int): Index of the actual middle column
-            is_appending (bool):
         """
 
         if row_type is RowType.HEADER:
@@ -44,9 +42,6 @@ class AhbTableRow:
         empty_row: pd.Series[str] = pd.Series(len(ahb_row_dataframe.columns) * [""], index=self.seed.column_headers)
 
         ahb_row_dataframe = pd.concat([ahb_row_dataframe, empty_row.to_frame().T], ignore_index=True)
-
-        if not is_appending:
-            self.seed.soul.loc[self.seed.soul.index.max() + 1, :] = ""
 
         # EDIFACT STRUKTUR
         esc: EdifactStrukturCell = EdifactStrukturCell(
