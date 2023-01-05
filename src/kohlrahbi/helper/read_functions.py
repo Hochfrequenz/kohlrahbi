@@ -149,6 +149,7 @@ def sanitize_ahb_table_dataframe(ahb_table_dataframe: pd.DataFrame) -> pd.DataFr
             and row["Segment Gruppe"]
             and line_only_contains_segment_gruppe(row)
             and not next_row["Segment Gruppe"].startswith("SG")
+            and not next_row["Segment"]
         ):
             merged_segment_gruppe_content = " ".join([row["Segment Gruppe"], next_row["Segment Gruppe"]])
             row["Segment Gruppe"] = merged_segment_gruppe_content.strip()
@@ -157,7 +158,7 @@ def sanitize_ahb_table_dataframe(ahb_table_dataframe: pd.DataFrame) -> pd.DataFr
     def drop_unnecessary_lines(df: pd.DataFrame, lines_to_drop: list[int]) -> pd.DataFrame:
         """ """
 
-        cleaned_df = df.drop(lines_to_drop[:-1])
+        cleaned_df = df.drop(lines_to_drop)
         cleaned_df = cleaned_df.reset_index(drop=True)
 
         return cleaned_df
@@ -195,6 +196,21 @@ def get_kohlrahbi(
     logger.info("Start iterating through paragraphs and tables")
     for item in get_all_paragraphs_and_tables(parent=document):
 
+        # Check if we reached the end of the current AHB document and stop if it's true.
+        if isinstance(item, Paragraph) and "Heading" in item.style.name and "Änderungshistorie" in item.text:
+            return None
+
+        if isinstance(item, Table) and does_the_table_contain_pruefidentifikatoren(table=item):
+
+            # check which pruefis
+            seed = Seed.from_table(docx_table=item)
+
+        # @konstantin: Wie war nochmal die Reihenfolge in Python in der die Bedingungen geprüft werden?
+        if seed is not None and pruefi not in seed.pruefidentifikatoren and searched_pruefi_is_found:
+            seed = None
+            logger.info("🏁 We reached the end of the AHB table of the Prüfidentifikator '%s'", pruefi)
+            break
+
         # Check if there is just a text paragraph,
         if isinstance(item, Paragraph) and not "Heading" in item.style.name:
             continue
@@ -223,11 +239,6 @@ def get_kohlrahbi(
 
             ahb_table = AhbTable(seed=seed, table=item)
             ahb_table_dataframe = ahb_table.parse(ahb_table_dataframe=ahb_table_dataframe)
-
-        # @konstantin: Wie war nochmal die Reihenfolge in Python in der die Bedingungen geprüft werden?
-        if seed is not None and pruefi not in seed.pruefidentifikatoren and searched_pruefi_is_found:
-            logger.info("🏁 We reached the end of the AHB table of the Prüfidentifikator '%s'", pruefi)
-            break
 
     if ahb_table_dataframe is None:
         logger.warning("⛔️ Your searched pruefi '%s' was not found in the provided files.\n", pruefi)
