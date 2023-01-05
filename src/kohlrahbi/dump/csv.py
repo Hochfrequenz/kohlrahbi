@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Union
 
 import pandas as pd
 from maus.edifact import pruefidentifikator_to_format
