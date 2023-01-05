@@ -14,7 +14,7 @@ lxml==4.9.2
     # via python-docx
 marshmallow==3.18.0
     # via maus
-maus==0.2.6
+maus==0.2.8
     # via -r requirements.in
 more-itertools==9.0.0
     # via maus
