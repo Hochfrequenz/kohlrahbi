@@ -62,14 +62,14 @@ def get_docx_files_which_may_contain_searched_pruefi(searched_pruefi: str, path_
 )
 @click.option(
     "-i",
-    "--input",
+    "--input_path",
     type=click.Path(exists=True, dir_okay=True, file_okay=False, path_type=Path),
     prompt="Input directory",
     help="Define the path to the folder with the docx AHBs.",
 )
 @click.option(
     "-o",
-    "--output",
+    "--output_path",
     type=click.Path(exists=False, dir_okay=True, file_okay=False, path_type=Path),
     default="output",
     prompt="Output directory",
@@ -82,8 +82,8 @@ def get_docx_files_which_may_contain_searched_pruefi(searched_pruefi: str, path_
 )
 def harvest(
     pruefis: list[str],
-    input: Path,
-    output: Path,
+    input_path: Path,
+    output_path: Path,
     file_type: list[str],
 ):
     """
@@ -91,16 +91,16 @@ def harvest(
     """
 
     # check if in- and output paths exist
-    if not input.exists():
+    if not input_path.exists():
         click.secho("⚠️ The input directory does not exist.", fg="red")
         raise click.Abort()
 
-    if not output.exists():
+    if not output_path.exists():
         click.secho("⚠️ The output directory does not exist.", fg="red")
 
-        if click.confirm(f"Should I try to create the directory at '{output}'?", default=True):
+        if click.confirm(f"Should I try to create the directory at '{output_path}'?", default=True):
             try:
-                output.mkdir(exist_ok=True)
+                output_path.mkdir(exist_ok=True)
                 click.secho("📂 The output directory is created.", fg="yellow")
             except FileNotFoundError as e:
 
@@ -108,7 +108,7 @@ def harvest(
                     f"😱 There was an path error. I can only create a new directory in an already existing directory.",
                     fg="red",
                 )
-                click.secho(f"Your given path is '{output}'", fg="red")
+                click.secho(f"Your given path is '{output_path}'", fg="red")
                 click.secho(str(e), fg="red")
                 raise click.Abort()
 
@@ -159,7 +159,7 @@ def harvest(
 
         logger.info("start looking for pruefi '%s'", pruefi)
         ahb_file_paths: list[Path] = get_docx_files_which_may_contain_searched_pruefi(
-            searched_pruefi=pruefi, path_to_ahb_documents=input
+            searched_pruefi=pruefi, path_to_ahb_documents=input_path
         )
 
         for ahb_file_path in ahb_file_paths:
