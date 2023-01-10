@@ -1,3 +1,7 @@
+"""
+This module collects all Prüfidentifikatoren from the AHB documents.
+You have to define a path where all AHB docx files are.
+"""
 from datetime import date
 from pathlib import Path
 
@@ -45,7 +49,7 @@ toml_data = {
     "content": {"pruefidentifikatoren": all_pruefis},
 }
 
-with open(Path(__file__).parent / Path("all_known_pruefis.toml"), "w") as f:
+with open(Path(__file__).parent / Path("all_known_pruefis.toml"), "w", encoding="utf-8") as f:
     # tomllib does not provide a dump method at the moment
     # https://docs.python.org/uk/dev/library/tomllib.html
     tomlkit.dump(toml_data, f)

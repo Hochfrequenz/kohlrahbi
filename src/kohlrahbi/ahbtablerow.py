@@ -1,3 +1,6 @@
+"""
+This module contains the class AhbTableRow
+"""
 from typing import Optional
 
 import attrs
@@ -9,8 +12,14 @@ from kohlrahbi.helper.row_type_checker import RowType
 from kohlrahbi.helper.seed import Seed
 
 
+# pylint:disable=too-few-public-methods
 @attrs.define(auto_attribs=True, kw_only=True)
 class AhbTableRow:
+    """
+    A AhbTableRow is a single row from an AHB table.
+    It contains a seed and the three cells (columns).
+    """
+
     seed: Seed
     edifact_struktur_cell: _Cell
     middle_cell: _Cell
@@ -31,7 +40,7 @@ class AhbTableRow:
         """
 
         if row_type is RowType.HEADER:
-            # we skip the header rows because there we did it already and there are no new information
+            # we skip the header rows because we scraped it already and there are no new information
             return
 
         ahb_row_dataframe = pd.DataFrame(

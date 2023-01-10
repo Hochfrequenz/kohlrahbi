@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Union
 from uuid import uuid4
 
-import maus
 import pandas as pd
 from maus.edifact import pruefidentifikator_to_format
 from maus.models.anwendungshandbuch import (

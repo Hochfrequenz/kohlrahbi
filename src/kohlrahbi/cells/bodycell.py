@@ -1,3 +1,6 @@
+"""
+This module contains the class BodyCell
+"""
 from typing import List
 
 import attrs
@@ -5,11 +8,17 @@ import pandas as pd
 from docx.table import _Cell  # type:ignore[import]
 from maus.reader.flat_ahb_reader import FlatAhbCsvReader
 
-index_of_codes_and_qualifier_column = 3
+INDEX_OF_CODES_AND_QUALIFIER_COLUMN = 3
 
 
 @attrs.define(auto_attribs=True, kw_only=True)
 class BodyCell:
+    """
+    BodyCell contains all information and a method
+    to extract dataelement/qualifier, the name of the dataelement
+    as well as the conditions for each Prüfidentifikator.
+    """
+
     table_cell: _Cell
     left_indent_position: int
     indicator_tabstop_positions: List[int]
@@ -45,7 +54,8 @@ class BodyCell:
                 ):
                     # code entry
                     if not is_first_iteration:
-                        # a new code and it is not the first. So we add a new row in dataframe and increase the row_index
+                        # a new code and it is not the first.
+                        # So we add a new row in dataframe and increase the row_index
                         ahb_row_dataframe.loc[ahb_row_dataframe.index.max() + 1, :] = ""
                         row_index = row_index + 1
 
@@ -53,7 +63,7 @@ class BodyCell:
                     # qualifier entry
                     pass
 
-                ahb_row_dataframe.iat[row_index, index_of_codes_and_qualifier_column] += splitted_text_at_tabs.pop(0)
+                ahb_row_dataframe.iat[row_index, INDEX_OF_CODES_AND_QUALIFIER_COLUMN] += splitted_text_at_tabs.pop(0)
                 column_indezes = list(range(4, 4 + len(self.indicator_tabstop_positions)))
 
             else:

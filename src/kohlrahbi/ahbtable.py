@@ -16,6 +16,12 @@ from kohlrahbi.helper.seed import Seed
 
 @attrs.define(auto_attribs=True, kw_only=True)
 class AhbTable:
+    """
+    This class contains the two attributes seed and table.
+    Seed contains meta data about the ahb table like the left indent or which prüfis are in the current ahb table.
+    The table is the read table from the docx file.
+    """
+
     seed: Seed
     table: Table
 

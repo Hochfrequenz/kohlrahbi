@@ -1,3 +1,6 @@
+"""
+This module contains the class EdifactStrukturCell
+"""
 import attrs
 import pandas as pd
 from docx.table import _Cell  # type:ignore[import]
@@ -5,6 +8,11 @@ from docx.table import _Cell  # type:ignore[import]
 
 @attrs.define(auto_attribs=True, kw_only=True)
 class EdifactStrukturCell:
+    """
+    EdifactStrukturCell contains all information and a method
+    to extract the segment name, segment group, segment and data element.
+    """
+
     table_cell: _Cell
     edifact_struktur_cell_left_indent_position: int
 
