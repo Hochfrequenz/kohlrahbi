@@ -142,7 +142,20 @@ def sanitize_ahb_table_dataframe(ahb_table_dataframe: pd.DataFrame) -> pd.DataFr
 
     for _, row in iterable_ahb_table:
 
-        index_of_next_row, next_row = iterable_ahb_table.peek((0, pd.Series({"Segment Gruppe": ""})))
+        index_of_next_row, next_row = iterable_ahb_table.peek(
+            (
+                0,
+                pd.Series(
+                    {
+                        "Segment Gruppe": "",
+                        "Segment": "",
+                        "Codes und Qualifier": "",
+                        "Beschreibung": "",
+                        "Bedingung": "",
+                    }
+                ),
+            )
+        )
 
         if (
             "Segment Gruppe" in row

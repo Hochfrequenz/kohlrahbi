@@ -38,7 +38,7 @@ def test_convert_ahb_table_to_flatahb():
                 data_element=None,
                 value_pool_entry=None,
                 name=None,
-                ahb_expression=None,
+                ahb_expression="Kann",
                 index=0,
             ),
             AhbLine(
@@ -49,7 +49,7 @@ def test_convert_ahb_table_to_flatahb():
                 data_element=None,
                 value_pool_entry=None,
                 name=None,
-                ahb_expression="Kann",
+                ahb_expression="Muss",
                 index=1,
             ),
             AhbLine(
@@ -80,8 +80,8 @@ def test_convert_ahb_table_to_flatahb():
                 segment_group_key="SG3",
                 segment_code="CTA",
                 data_element="3412",
-                value_pool_entry="Name vom Ansprechpartner",
-                name=None,
+                value_pool_entry=None,
+                name="Name vom Ansprechpartner",
                 ahb_expression="X",
                 index=4,
             ),

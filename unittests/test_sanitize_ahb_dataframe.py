@@ -24,15 +24,15 @@ from kohlrahbi.helper.read_functions import sanitize_ahb_table_dataframe
             ),
             pd.DataFrame(
                 {
-                    "Segment Gruppe": ["SG8", "Referenz auf die ID einer Messlokation", "SG8"],
-                    "Segment": ["SEQ", "", ""],
-                    "Datenelement": ["1229", "", ""],
-                    "Codes und Qualifier": ["Z50", "", ""],
-                    "Beschreibung": ["Messdatenregistriergerätedaten", "", ""],
-                    "11042": ["", "", ""],
-                    "11043": ["X", "", ""],
-                    "11044": ["", "", ""],
-                    "Bedingung": ["", "", ""],
+                    "Segment Gruppe": ["SG8", "Referenz auf die ID einer Messlokation"],
+                    "Segment": ["SEQ", ""],
+                    "Datenelement": ["1229", ""],
+                    "Codes und Qualifier": ["Z50", ""],
+                    "Beschreibung": ["Messdatenregistriergerätedaten", ""],
+                    "11042": ["", ""],
+                    "11043": ["X", ""],
+                    "11044": ["", ""],
+                    "Bedingung": ["", ""],
                 }
             ),
         )
@@ -309,7 +309,7 @@ def test_fill_segement_gruppe_segement_dataelement():
         {
             "Segment Gruppe": {
                 "0": "Nachrichten-Kopfsegment",
-                "1": "",
+                "1": "Nachrichten-Kopfsegment",
                 "2": "Nachrichten-Kopfsegment",
                 "3": "Nachrichten-Kopfsegment",
                 "4": "Nachrichten-Kopfsegment",
@@ -317,11 +317,11 @@ def test_fill_segement_gruppe_segement_dataelement():
                 "6": "Nachrichten-Kopfsegment",
                 "7": "Nachrichten-Kopfsegment",
                 "8": "Beginn der Nachricht",
-                "9": "",
+                "9": "Beginn der Nachricht",
                 "10": "Beginn der Nachricht",
                 "11": "Beginn der Nachricht",
                 "12": "Nachrichtendatum",
-                "13": "",
+                "13": "Nachrichtendatum",
                 "14": "Nachrichtendatum",
                 "15": "Nachrichtendatum",
                 "16": "Nachrichtendatum",
@@ -373,17 +373,17 @@ def test_fill_segement_gruppe_segement_dataelement():
                 "6": "0051",
                 "7": "0057",
                 "8": "",
-                "9": "",
+                "9": "0057",
                 "10": "1001",
                 "11": "1004",
                 "12": "",
-                "13": "",
+                "13": "1004",
                 "14": "2005",
                 "15": "2380",
                 "16": "2379",
                 "17": "",
                 "18": "",
-                "19": "",
+                "19": "2379",
                 "20": "3035",
                 "21": "3039",
                 "22": "3055",
@@ -564,4 +564,10 @@ def test_fill_segement_gruppe_segement_dataelement():
 
     AhbTable.fill_segement_gruppe_segement_dataelement(df=example_dataframe)
 
+    # in case of debugging this test I can recommend the following command
+    # diff = example_dataframe.eq(expected_dataframe)
+    # open the 'diff' dataframe in the data viewer of your IDE.
+    # it shows a table with true and false values.
+    # true if the field of the two dataframes at the same position are equal
+    # and false if not.
     assert example_dataframe.equals(expected_dataframe)
