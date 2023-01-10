@@ -7,6 +7,7 @@ from typing import Any
 
 import click
 import docx  # type:ignore[import]
+import pandas as pd
 import tomlkit
 from maus.edifact import pruefidentifikator_to_format
 
@@ -51,6 +52,89 @@ def get_docx_files_which_may_contain_searched_pruefi(searched_pruefi: str, path_
     return docx_files_in_ahb_documents
 
 
+def check_input_path(path: Path) -> None:
+    """
+    Checks if the given path exists.
+    Iff it does NOT exist a error message gets printed to inform the user.
+    """
+    if not path.exists():
+        click.secho("⚠️ The input directory does not exist.", fg="red")
+        raise click.Abort()
+
+
+def check_output_path(path: Path) -> None:
+    """
+    Checks if the given path exists and if not it asks the user if they want to create the given directory.
+    """
+    if not path.exists():
+        click.secho("⚠️ The output directory does not exist.", fg="red")
+
+        if click.confirm(f"Should I try to create the directory at '{path}'?", default=True):
+            try:
+                path.mkdir(exist_ok=True)
+                click.secho("📂 The output directory is created.", fg="yellow")
+            except FileNotFoundError as fnfe:
+
+                click.secho(
+                    "😱 There was an path error. I can only create a new directory in an already existing directory.",
+                    fg="red",
+                )
+                click.secho(f"Your given path is '{path}'", fg="red")
+                click.secho(str(fnfe), fg="red")
+                raise click.Abort()
+
+        else:
+            click.secho("👋 Alright I will end this program now. Have a nice day.", fg="green")
+            raise click.Abort()
+
+
+def load_all_known_pruefis_from_file(
+    path_to_all_known_pruefis: Path = Path(__file__).parent / Path("all_known_pruefis.toml"),
+) -> list[str]:
+    """
+    Loads the file which contains all known Prüfidentifikatoren.
+    """
+
+    # would be happy for name suggestions for "loaded_toml"
+    # it contains only two sections: meta_data and content
+    # meta_data holds the updated_on date
+    # content a list of all known pruefis
+    with open(path_to_all_known_pruefis, "rb") as file:
+        loaded_toml: dict[str, Any] = tomlkit.load(file)
+
+    meta_data_section = loaded_toml.get("meta_data")
+    content_section = loaded_toml.get("content")
+
+    if meta_data_section is None:
+        click.secho(f"There is no 'meta_data' section in the provided toml file: {path_to_all_known_pruefis}", fg="red")
+        click.Abort()
+        return []  # this is just to please the linter
+    if content_section is None:
+        click.secho(f"There is no 'content' section in the toml file: {path_to_all_known_pruefis}", fg="red")
+        click.Abort()
+        return []  # this is just to please the linter
+
+    pruefis: list[str] = content_section.get("pruefidentifikatoren")
+    return pruefis
+
+
+# def foo(pruefis: list[str]) -> list[str]:
+#     """
+#     Checks if the user has provided some Prüfidentifikatoren and validates them.
+#     If no Prüfidentifikatoren are given it will load all known Prüfidentifikatoren from a file.
+#     """
+
+#     # check if one or more pruefidentifikatoren are given
+#     if len(pruefis) == 0:
+#         click.secho("☝️ No pruefis were given. I will parse all known pruefis.", fg="yellow")
+
+#         pruefis = load_all_known_pruefis_from_file()
+
+#     valid_pruefis: list[str] = get_valid_pruefis(list_of_pruefis=pruefis)
+
+#     return valid_pruefis
+
+
 @click.command()
 @click.option(
     "-p",
@@ -90,60 +174,18 @@ def harvest(
     A program to get a machine readable version of the AHBs docx files published by edi@energy.
     """
 
-    # check if in- and output paths exist
-    if not input_path.exists():
-        click.secho("⚠️ The input directory does not exist.", fg="red")
-        raise click.Abort()
+    # check if input path exists
+    check_input_path(path=input_path)
 
-    if not output_path.exists():
-        click.secho("⚠️ The output directory does not exist.", fg="red")
-
-        if click.confirm(f"Should I try to create the directory at '{output_path}'?", default=True):
-            try:
-                output_path.mkdir(exist_ok=True)
-                click.secho("📂 The output directory is created.", fg="yellow")
-            except FileNotFoundError as e:
-
-                click.secho(
-                    f"😱 There was an path error. I can only create a new directory in an already existing directory.",
-                    fg="red",
-                )
-                click.secho(f"Your given path is '{output_path}'", fg="red")
-                click.secho(str(e), fg="red")
-                raise click.Abort()
-
-        else:
-            click.secho("👋 Alright I will end this program now. Have a nice day.", fg="green")
-            raise click.Abort()
+    # check if output path exists
+    check_output_path(path=output_path)
 
     output_directory_path: Path = Path.cwd() / Path("output")
     output_directory_path.mkdir(exist_ok=True)
 
-    # check if one or more pruefidentifikatoren are given
     if len(pruefis) == 0:
         click.secho("☝️ No pruefis were given. I will parse all known pruefis.", fg="yellow")
-
-        # would be happy for name suggestions for "loaded_toml"
-        # it contains only two sections meta_data and content
-        # meta_data holds the updated_on date and content a list of all known pruefis
-        path_to_all_known_pruefis: Path = Path(__file__).parent / Path("all_known_pruefis.toml")
-
-        with open(path_to_all_known_pruefis, "rb") as f:
-            loaded_toml: dict[str, Any] = tomlkit.load(f)
-
-        meta_data_section = loaded_toml.get("meta_data")
-        content_section = loaded_toml.get("content")
-
-        if meta_data_section is None:
-            click.secho(
-                f"There is no 'meta_data' section in the provided toml file: {path_to_all_known_pruefis}", fg="red"
-            )
-            click.Abort()
-        if content_section is None:
-            click.secho(f"There is no 'content' section in the toml file: {path_to_all_known_pruefis}", fg="red")
-            click.Abort()
-
-        pruefis = content_section.get("pruefidentifikatoren")
+        pruefis: list[str] = load_all_known_pruefis_from_file()
 
     valid_pruefis: list[str] = get_valid_pruefis(list_of_pruefis=pruefis)
 
@@ -173,7 +215,7 @@ def harvest(
 
             logger.info("start reading docx file(s)")
 
-            kohlrahbi = get_kohlrahbi(
+            kohlrahbi: pd.DataFrame | None = get_kohlrahbi(
                 document=doc,
                 root_output_directory_path=output_directory_path,
                 ahb_file_name=ahb_file_path,
@@ -182,28 +224,29 @@ def harvest(
 
             if kohlrahbi is None:
                 continue
-            else:
-                # save kohlrahbi
-                logger.info("💾 Saving kohlrahbi %s \n", pruefi)
-                if "xlsx" in file_type:
-                    dump_kohlrahbi_to_excel(
-                        kohlrahbi=kohlrahbi,
-                        pruefi=pruefi,
-                        output_directory_path=output_directory_path,
-                    )
-                if "flatahb" in file_type:
-                    dump_kohlrahbi_to_flatahb(
-                        kohlrahbi=kohlrahbi,
-                        pruefi=pruefi,
-                        output_directory_path=output_directory_path,
-                    )
-                if "csv" in file_type:
-                    dump_kohlrahbi_to_csv(
-                        kohlrahbi=kohlrahbi,
-                        pruefi=pruefi,
-                        output_directory_path=output_directory_path,
-                    )
+
+            # save kohlrahbi
+            logger.info("💾 Saving kohlrahbi %s \n", pruefi)
+            if "xlsx" in file_type:
+                dump_kohlrahbi_to_excel(
+                    kohlrahbi=kohlrahbi,
+                    pruefi=pruefi,
+                    output_directory_path=output_directory_path,
+                )
+            if "flatahb" in file_type:
+                dump_kohlrahbi_to_flatahb(
+                    kohlrahbi=kohlrahbi,
+                    pruefi=pruefi,
+                    output_directory_path=output_directory_path,
+                )
+            if "csv" in file_type:
+                dump_kohlrahbi_to_csv(
+                    kohlrahbi=kohlrahbi,
+                    pruefi=pruefi,
+                    output_directory_path=output_directory_path,
+                )
 
 
 if __name__ == "__main__":
-    harvest()
+    # the parameter arguments gets provided over the CLI
+    harvest()  # pylint:disable=no-value-for-parameter
