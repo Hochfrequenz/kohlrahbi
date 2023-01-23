@@ -94,12 +94,11 @@ def export_single_pruefidentifikator(pruefi: str, df: pd.DataFrame, output_direc
         df (pd.DataFrame): DataFrame which contains all information
         output_directory_path (Path): Path to the output directory
     """
-
-    edifact_format = get_format_of_pruefidentifikator(pruefi)
-    if edifact_format is None:
+    try:
+        edifact_format = get_format_of_pruefidentifikator(pruefi)
+    except ValueError:
         logger.warning("'%s' is not a pruefidentifikator", pruefi)
         return
-
     json_output_directory_path = output_directory_path / "json" / str(edifact_format)
     csv_output_directory_path = output_directory_path / "csv" / str(edifact_format)
     xlsx_output_directory_path = output_directory_path / "xlsx" / str(edifact_format)
