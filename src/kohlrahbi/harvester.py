@@ -185,7 +185,7 @@ def harvest(
 
     if len(pruefis) == 0:
         click.secho("☝️ No pruefis were given. I will parse all known pruefis.", fg="yellow")
-        pruefis: list[str] = load_all_known_pruefis_from_file()
+        pruefis = load_all_known_pruefis_from_file()
 
     valid_pruefis: list[str] = get_valid_pruefis(list_of_pruefis=pruefis)
 

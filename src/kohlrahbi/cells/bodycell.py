@@ -69,7 +69,7 @@ class BodyCell:
             else:
                 if splitted_text_at_tabs[0] == "":
                     del splitted_text_at_tabs[0]
-                column_indezes: list[int] = list(range(4, 4 + len(self.indicator_tabstop_positions)))
+                column_indezes = list(range(4, 4 + len(self.indicator_tabstop_positions)))
 
             paragraph_contains_tabstops: bool = self.has_paragraph_tabstops(paragraph=paragraph)
 

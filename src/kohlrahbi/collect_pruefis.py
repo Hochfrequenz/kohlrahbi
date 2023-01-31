@@ -5,16 +5,16 @@ You have to define a path where all AHB docx files are.
 from datetime import date
 from pathlib import Path
 
-import docx
+import docx  # type:ignore[import]
 import tomlkit
-from docx.table import Table
+from docx.table import Table  # type:ignore[import]
 from maus.edifact import EdifactFormat
 
 from kohlrahbi.helper.read_functions import does_the_table_contain_pruefidentifikatoren, get_all_paragraphs_and_tables
 from kohlrahbi.helper.seed import Seed
 from kohlrahbi.logger import logger
 
-all_pruefis = []
+all_pruefis: list[str] = []
 
 for edifact_format in EdifactFormat:
 

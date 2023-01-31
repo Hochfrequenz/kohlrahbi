@@ -73,7 +73,7 @@ class AhbTable:
 
                 ahb_table_row_dataframe = ahb_table_row.parse(row_type=current_row_type)
 
-                if ahb_table_dataframe is not None:
+                if ahb_table_dataframe is not None and ahb_table_row_dataframe is not None:
                     ahb_table_dataframe = pd.concat([ahb_table_dataframe, ahb_table_row_dataframe], ignore_index=True)
             # this case covers the page break situation
             else:
@@ -117,13 +117,13 @@ class AhbTable:
         for _, row in df.iterrows():
 
             if row["Segment Gruppe"] != "":
-                latest_segement_gruppe: str = row["Segment Gruppe"]
+                latest_segement_gruppe = row["Segment Gruppe"]
 
             if row["Segment"] != "":
-                latest_segement: str = row["Segment"]
+                latest_segement = row["Segment"]
 
             if row["Datenelement"] != "":
-                latest_datenelement: str = row["Datenelement"]
+                latest_datenelement = row["Datenelement"]
 
             if row["Segment Gruppe"] == "" and row["Codes und Qualifier"] != "" or row["Segment"] != "":
                 row["Segment Gruppe"] = latest_segement_gruppe

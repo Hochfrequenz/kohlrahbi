@@ -41,7 +41,7 @@ class AhbTableRow:
 
         if row_type is RowType.HEADER:
             # we skip the header rows because we scraped it already and there are no new information
-            return
+            return None
 
         ahb_row_dataframe = pd.DataFrame(
             columns=self.seed.column_headers,
@@ -69,6 +69,6 @@ class AhbTableRow:
 
         # BEDINGUNG
         bec: BedingungCell = BedingungCell(table_cell=self.bedingung_cell)
-        ahb_row_dataframe: pd.DataFrame = bec.parse(ahb_row_dataframe)
+        ahb_row_dataframe = bec.parse(ahb_row_dataframe)
 
         return ahb_row_dataframe
