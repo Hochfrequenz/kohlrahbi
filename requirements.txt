@@ -20,7 +20,7 @@ lxml==4.9.2
     #   python-docx
 marshmallow==3.19.0
     # via maus
-maus==0.2.5
+maus==0.3.1
     # via -r requirements.in
 more-itertools==9.0.0
     # via maus
