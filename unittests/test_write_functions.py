@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 import docx  # type:ignore[import]
-import pandas as pd  # type:ignore[import]
+import pandas as pd
 import pytest  # type:ignore[import]
 
 from kohlrahbi.helper.seed import Seed

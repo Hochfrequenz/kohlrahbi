@@ -13,7 +13,7 @@ import re
 from pathlib import Path
 from typing import Any, Dict, TypeVar, Union, overload
 
-import pandas as pd  # type:ignore[import]
+import pandas as pd
 from maus.edifact import get_format_of_pruefidentifikator
 
 from kohlrahbi.logger import logger
