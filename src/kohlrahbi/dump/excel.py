@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Union
 
 import pandas as pd
-from maus.edifact import pruefidentifikator_to_format
+from maus.edifact import get_format_of_pruefidentifikator
 
 from kohlrahbi.ahbtable import AhbTable
 from kohlrahbi.logger import logger
@@ -21,7 +21,7 @@ _column_letter_width_mapping: dict[str, Union[float, int]] = {
 
 def dump_kohlrahbi_to_excel(kohlrahbi: pd.DataFrame, pruefi: str, output_directory_path: Path):
 
-    edifact_format = pruefidentifikator_to_format(pruefi)
+    edifact_format = get_format_of_pruefidentifikator(pruefi)
     if edifact_format is None:
         logger.warning("'%s' is not a pruefidentifikator", pruefi)
         return

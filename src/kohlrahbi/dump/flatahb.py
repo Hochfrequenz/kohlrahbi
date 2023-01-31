@@ -7,7 +7,7 @@ from pathlib import Path
 from uuid import uuid4
 
 import pandas as pd
-from maus.edifact import pruefidentifikator_to_format
+from maus.edifact import get_format_of_pruefidentifikator
 from maus.models.anwendungshandbuch import (
     AhbLine,
     AhbMetaInformation,
@@ -209,7 +209,7 @@ def convert_ahb_table_to_flatahb(ahb_table: pd.DataFrame, pruefi: str) -> FlatAn
 
 def dump_kohlrahbi_to_flatahb(kohlrahbi: pd.DataFrame, pruefi: str, output_directory_path: Path):
 
-    edifact_format = pruefidentifikator_to_format(pruefi)
+    edifact_format = get_format_of_pruefidentifikator(pruefi)
     if edifact_format is None:
         logger.warning("'%s' is not a pruefidentifikator", pruefi)
         return

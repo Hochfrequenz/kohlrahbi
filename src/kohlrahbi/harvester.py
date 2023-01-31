@@ -9,7 +9,7 @@ import click
 import docx  # type:ignore[import]
 import pandas as pd
 import tomlkit
-from maus.edifact import pruefidentifikator_to_format
+from maus.edifact import get_format_of_pruefidentifikator
 
 from kohlrahbi.dump import dump_kohlrahbi_to_csv, dump_kohlrahbi_to_excel, dump_kohlrahbi_to_flatahb
 from kohlrahbi.helper.read_functions import get_kohlrahbi
@@ -34,7 +34,7 @@ def get_docx_files_which_may_contain_searched_pruefi(searched_pruefi: str, path_
     A further reduction of the number of files is not possible with the pruefidentifikator only.
     """
 
-    edifact_format = pruefidentifikator_to_format(searched_pruefi)
+    edifact_format = get_format_of_pruefidentifikator(searched_pruefi)
     if edifact_format is None:
         logger.exception("❌ There is no known format known for the prüfi '%s'.", searched_pruefi)
         return []

@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any, Dict, TypeVar, Union, overload
 
 import pandas as pd  # type:ignore[import]
-from maus.edifact import pruefidentifikator_to_format
+from maus.edifact import get_format_of_pruefidentifikator
 
 from kohlrahbi.logger import logger
 
@@ -95,7 +95,7 @@ def export_single_pruefidentifikator(pruefi: str, df: pd.DataFrame, output_direc
         output_directory_path (Path): Path to the output directory
     """
 
-    edifact_format = pruefidentifikator_to_format(pruefi)
+    edifact_format = get_format_of_pruefidentifikator(pruefi)
     if edifact_format is None:
         logger.warning("'%s' is not a pruefidentifikator", pruefi)
         return
