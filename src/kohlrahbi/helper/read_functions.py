@@ -17,7 +17,6 @@ from maus.edifact import EdifactFormatVersion, get_edifact_format_version
 from more_itertools import peekable
 
 from kohlrahbi.ahbtable import AhbTable
-from kohlrahbi.helper.export_functions import export_single_pruefidentifikator
 from kohlrahbi.helper.seed import Seed
 from kohlrahbi.logger import logger
 
@@ -119,7 +118,7 @@ def does_the_table_contain_pruefidentifikatoren(table: Table) -> bool:
 
 
 def sanitize_ahb_table_dataframe(ahb_table_dataframe: pd.DataFrame) -> pd.DataFrame:
-
+    """ """
     indizes_of_to_delete_rows: list[int] = []
     keys_that_must_no_hold_any_values: set[str] = {
         "Segment",
@@ -256,9 +255,8 @@ def get_kohlrahbi(
     if ahb_table_dataframe is None:
         logger.warning("⛔️ Your searched pruefi '%s' was not found in the provided files.\n", pruefi)
         return None
-    else:
 
-        # sanitize dataframe here
-        final_ahb_dataframe = sanitize_ahb_table_dataframe(ahb_table_dataframe=ahb_table_dataframe)
+    # sanitize dataframe here
+    final_ahb_dataframe = sanitize_ahb_table_dataframe(ahb_table_dataframe=ahb_table_dataframe)
 
-        return final_ahb_dataframe
+    return final_ahb_dataframe

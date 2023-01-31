@@ -1,7 +1,9 @@
+"""
+This module contains functions to create a FlatAhb instance and to dump it into a json file.
+"""
 import json
 import re
 from pathlib import Path
-from typing import Union
 from uuid import uuid4
 
 import pandas as pd
@@ -22,12 +24,18 @@ _segment_group_pattern = re.compile(r"^SG\d+$")
 
 
 def get_section_name(segment_gruppe_or_section_name: str, last_section_name: str) -> str:
+    """
+    This function reads the section name if there is one.
+    If the given string 'segment_gruppe_or_section_name' does not contain a section name,
+    the 'last_section_name' will be returned.
+    """
     if not (segment_gruppe_or_section_name.startswith("SG") or segment_gruppe_or_section_name == ""):
         return segment_gruppe_or_section_name
     return last_section_name
 
 
 def is_section_name(ahb_row: pd.Series) -> bool:
+    """Checks if the current AHB row is a section name."""
     keys_that_must_no_hold_any_values: set[str] = {
         "Segment",
         "Datenelement",
@@ -43,6 +51,7 @@ def is_section_name(ahb_row: pd.Series) -> bool:
 
 
 def is_segment_group(ahb_row: pd.Series) -> bool:
+    """Checks if the current AHB row is a segment group."""
 
     if _segment_group_pattern.match(ahb_row["Segment Gruppe"]) and not ahb_row["Segment"]:
         return True
@@ -50,6 +59,7 @@ def is_segment_group(ahb_row: pd.Series) -> bool:
 
 
 def is_segment_opening_line(ahb_row: pd.Series) -> bool:
+    """Checks if the current AHB row is a segment opening line."""
 
     if ahb_row["Segment"] and not ahb_row["Datenelement"]:
         return True
@@ -219,5 +229,5 @@ def dump_kohlrahbi_to_flatahb(kohlrahbi: pd.DataFrame, pruefi: str, output_direc
 
     dump_data = FlatAnwendungshandbuchSchema().dump(flat_ahb)
 
-    with open(flatahb_output_directory_path / f"{pruefi}.json", "w", encoding="utf-8") as f:
-        json.dump(dump_data, f)
+    with open(flatahb_output_directory_path / f"{pruefi}.json", "w", encoding="utf-8") as file:
+        json.dump(dump_data, file)

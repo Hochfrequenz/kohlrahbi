@@ -94,10 +94,25 @@ class AhbTable:
 
     @staticmethod
     def fill_segement_gruppe_segement_dataelement(df: pd.DataFrame):
+        """
+        For easier readability this functions adds the segment
 
-        latest_segement_gruppe: Optional[str] = None
-        latest_segement: Optional[str] = None
-        latest_datenelement: Optional[str] = None
+        before:
+
+        Nachrichten-Kopfsegment
+                                    UNH
+                                    UNH    0062
+
+        after:
+
+        Nachrichten-Kopfsegment
+        Nachrichten-Kopfsegment     UNH
+        Nachrichten-Kopfsegment     UNH    0062
+        """
+
+        latest_segement_gruppe: Optional[str] = ""
+        latest_segement: Optional[str] = ""
+        latest_datenelement: Optional[str] = ""
 
         for _, row in df.iterrows():
 
@@ -110,7 +125,7 @@ class AhbTable:
             if row["Datenelement"] != "":
                 latest_datenelement: str = row["Datenelement"]
 
-            if row["Segment Gruppe"] == "" and row["Codes und Qualifier"] != "":
+            if row["Segment Gruppe"] == "" and row["Codes und Qualifier"] != "" or row["Segment"] != "":
                 row["Segment Gruppe"] = latest_segement_gruppe
                 row["Segment"] = latest_segement
                 row["Datenelement"] = latest_datenelement

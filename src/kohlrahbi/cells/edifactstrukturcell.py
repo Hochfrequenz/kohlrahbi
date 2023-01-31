@@ -6,6 +6,7 @@ import pandas as pd
 from docx.table import _Cell  # type:ignore[import]
 
 
+# pylint: disable=too-few-public-methods
 @attrs.define(auto_attribs=True, kw_only=True)
 class EdifactStrukturCell:
     """

@@ -13,7 +13,7 @@ def set_table_header_bg_color(cell, hex_color: str):
     """
     set background shading for Header Rows
     """
-    tblCell = cell._tc
+    tblCell = cell._tc  # pylint:disable=protected-access
     tblCellProperties = tblCell.get_or_add_tcPr()
     clShading = OxmlElement("w:shd")
     clShading.set(qn("w:fill"), hex_color)  # Hex of Dark Blue Shade {R:0x00, G:0x51, B:0x9E}

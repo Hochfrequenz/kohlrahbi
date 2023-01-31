@@ -4,7 +4,6 @@ This module provides a class to collect information which of need for all parsin
 
 from typing import List
 
-import pandas as pd  # type:ignore[import]
 from attrs import define
 from docx.table import Table  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
