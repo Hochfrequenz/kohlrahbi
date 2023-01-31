@@ -143,7 +143,7 @@ def convert_ahb_table_to_flatahb(ahb_table: pd.DataFrame, pruefi: str) -> FlatAn
             ahb_lines.append(
                 AhbLine(
                     guid=uuid4(),
-                    segment_group_key=row["Segment Gruppe"] or None,
+                    segment_group_key=None,
                     segment_code=row["Segment"] or None,
                     data_element=None,
                     value_pool_entry=None,
