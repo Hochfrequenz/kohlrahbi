@@ -59,7 +59,14 @@ def is_segment_group(ahb_row: pd.Series) -> bool:
 
 
 def is_segment_opening_line(ahb_row: pd.Series) -> bool:
-    """Checks if the current AHB row is a segment opening line."""
+    """Checks if the current AHB row is a segment opening line.
+    Example:
+
+    SG3    CTA                                         Muss    Muss    Muss
+    SG3    CTA    3139    IC    Informationskontakt    X       X       X
+
+    The first line in the example is a segment opening line
+    """
 
     if ahb_row["Segment"] and not ahb_row["Datenelement"]:
         return True
@@ -67,6 +74,9 @@ def is_segment_opening_line(ahb_row: pd.Series) -> bool:
 
 
 def is_just_segment(ahb_row: pd.Series) -> bool:
+    """
+    Checks if the given AHB row is a segment
+    """
 
     if _segment_group_pattern.match(ahb_row["Segment Gruppe"]) and ahb_row["Segment"] and not ahb_row["Datenelement"]:
         return True
@@ -74,6 +84,9 @@ def is_just_segment(ahb_row: pd.Series) -> bool:
 
 
 def is_dataelement(ahb_row: pd.Series) -> bool:
+    """
+    Checks if the given AHB row is a dataelement
+    """
     if ahb_row["Datenelement"]:
         return True
     return False
