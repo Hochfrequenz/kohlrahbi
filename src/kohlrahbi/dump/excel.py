@@ -1,3 +1,7 @@
+"""
+This module contains all functions to export a kohlrahbi to excel file
+"""
+
 from pathlib import Path
 from typing import Union
 
@@ -20,6 +24,9 @@ _column_letter_width_mapping: dict[str, Union[float, int]] = {
 
 
 def dump_kohlrahbi_to_excel(kohlrahbi: pd.DataFrame, pruefi: str, output_directory_path: Path):
+    """
+    Dump a given kohlrahbi into an excel file
+    """
 
     edifact_format = get_format_of_pruefidentifikator(pruefi)
     if edifact_format is None:

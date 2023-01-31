@@ -1,7 +1,7 @@
 from typing import Optional
 
 from attr import define, field
-from docx.shared import Length
+from docx.shared import Length  # type:ignore[import]
 
 
 @define(auto_attribs=True, kw_only=True)

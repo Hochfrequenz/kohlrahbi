@@ -1,6 +1,6 @@
 from pathlib import Path
 
-import pytest
+import pytest  # type:ignore[import]
 
 from kohlrahbi.harvester import get_docx_files_which_may_contain_searched_pruefi
 

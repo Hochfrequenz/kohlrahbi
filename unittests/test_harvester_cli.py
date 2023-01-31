@@ -1,6 +1,6 @@
 from pathlib import Path
 
-import pytest
+import pytest  # type:ignore[import]
 from click.testing import CliRunner, Result
 
 from kohlrahbi.harvester import harvest

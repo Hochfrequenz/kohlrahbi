@@ -1,6 +1,6 @@
 import pandas as pd
-import pytest
-from docx.shared import Length, Twips
+import pytest  # type:ignore[import]
+from docx.shared import Length, Twips  # type:ignore[import]
 
 from kohlrahbi.cells import BodyCell
 from unittests.cellparagraph import CellParagraph

@@ -1,4 +1,4 @@
-import pytest
+import pytest  # type:ignore[import]
 
 from kohlrahbi.harvester import get_valid_pruefis
 

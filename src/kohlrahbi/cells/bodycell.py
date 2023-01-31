@@ -8,6 +8,8 @@ import pandas as pd
 from docx.table import _Cell  # type:ignore[import]
 from maus.reader.flat_ahb_reader import FlatAhbCsvReader
 
+from kohlrahbi.helper.seed import get_tabstop_positions
+
 INDEX_OF_CODES_AND_QUALIFIER_COLUMN = 3
 
 
@@ -48,7 +50,9 @@ class BodyCell:
                 # code or qualifier
 
                 if (
-                    FlatAhbCsvReader._is_value_pool_entry(candidate=splitted_text_at_tabs[0])
+                    FlatAhbCsvReader._is_value_pool_entry(  # pylint: disable=protected-access
+                        candidate=splitted_text_at_tabs[0]
+                    )
                     and len(splitted_text_at_tabs) >= 2
                     # the second check makes sure, that we parse ORDER\nS correct e.g. in 17001
                 ):
@@ -74,9 +78,7 @@ class BodyCell:
             paragraph_contains_tabstops: bool = self.has_paragraph_tabstops(paragraph=paragraph)
 
             if paragraph_contains_tabstops:
-                tab_stops_in_current_paragraph = [
-                    tabstop.pos for tabstop in paragraph.paragraph_format.tab_stops._pPr.tabs
-                ]
+                tab_stops_in_current_paragraph = get_tabstop_positions(paragraph=paragraph)
 
                 for tabstop in tab_stops_in_current_paragraph:
                     for indicator_tabstop_position, column_index in zip(
@@ -102,4 +104,5 @@ class BodyCell:
         """
         Checks if the given paragraph contains tabstops
         """
-        return paragraph.paragraph_format.tab_stops._pPr.tabs is not None
+        tab_stops = list(paragraph.paragraph_format.tab_stops)
+        return len(tab_stops) > 0

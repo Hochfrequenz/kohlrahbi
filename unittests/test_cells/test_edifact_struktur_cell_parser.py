@@ -1,6 +1,6 @@
 import pandas as pd
-import pytest
-from docx.shared import Twips
+import pytest  # type:ignore[import]
+from docx.shared import Twips  # type:ignore[import]
 
 from kohlrahbi.cells import EdifactStrukturCell
 from unittests.cellparagraph import CellParagraph
@@ -129,7 +129,7 @@ class TestEdifactStrukturCell:
     )
     def test_edifact_struktur_cell_parser(
         self, get_ahb_table_with_multiple_paragraphs, edifact_struktur_cell_paragraph, expected_dataframe
-    ):
+    ) -> None:
 
         table = get_ahb_table_with_multiple_paragraphs(body_cell_paragraphs=edifact_struktur_cell_paragraph)
 

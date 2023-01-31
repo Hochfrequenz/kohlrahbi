@@ -118,7 +118,10 @@ def does_the_table_contain_pruefidentifikatoren(table: Table) -> bool:
 
 
 def sanitize_ahb_table_dataframe(ahb_table_dataframe: pd.DataFrame) -> pd.DataFrame:
-    """ """
+    """
+    In some cases there is the content of one cell splitted in two.
+    We need to merge the content into one cell and delete the deprecated cell afterwards.
+    """
     indizes_of_to_delete_rows: list[int] = []
     keys_that_must_no_hold_any_values: set[str] = {
         "Segment",
@@ -128,7 +131,7 @@ def sanitize_ahb_table_dataframe(ahb_table_dataframe: pd.DataFrame) -> pd.DataFr
         "Bedingung",
     }
 
-    def line_only_contains_segment_gruppe(raw_line: pd.Series) -> bool:
+    def line_contains_only_segment_gruppe(raw_line: pd.Series) -> bool:
         """
         returns true if the given raw line only contains some meaningful data in the "Segment Gruppe" key
         """
@@ -159,13 +162,21 @@ def sanitize_ahb_table_dataframe(ahb_table_dataframe: pd.DataFrame) -> pd.DataFr
         if (
             "Segment Gruppe" in row
             and row["Segment Gruppe"]
-            and line_only_contains_segment_gruppe(row)
+            and line_contains_only_segment_gruppe(row)
             and not next_row["Segment Gruppe"].startswith("SG")
             and not next_row["Segment"]
         ):
             merged_segment_gruppe_content = " ".join([row["Segment Gruppe"], next_row["Segment Gruppe"]])
             row["Segment Gruppe"] = merged_segment_gruppe_content.strip()
-            indizes_of_to_delete_rows.append(index_of_next_row)
+
+            if isinstance(index_of_next_row, int):
+
+                if index_of_next_row == 0:
+                    # this case is only for the first and last row. These lines should not get deleted.
+                    continue
+                indizes_of_to_delete_rows.append(index_of_next_row)
+            else:
+                raise TypeError(f"The 'index_of_next_row' must by of type `int` but it is '{type(index_of_next_row)}'")
 
     def drop_unnecessary_lines(df: pd.DataFrame, lines_to_drop: list[int]) -> pd.DataFrame:
         """ """

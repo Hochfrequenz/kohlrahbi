@@ -1,5 +1,5 @@
 import pandas as pd
-import pytest
+import pytest  # type:ignore[import]
 
 from kohlrahbi.ahbtable import AhbTable
 from kohlrahbi.helper.read_functions import sanitize_ahb_table_dataframe
@@ -24,15 +24,15 @@ from kohlrahbi.helper.read_functions import sanitize_ahb_table_dataframe
             ),
             pd.DataFrame(
                 {
-                    "Segment Gruppe": ["SG8", "Referenz auf die ID einer Messlokation"],
-                    "Segment": ["SEQ", ""],
-                    "Datenelement": ["1229", ""],
-                    "Codes und Qualifier": ["Z50", ""],
-                    "Beschreibung": ["Messdatenregistriergerätedaten", ""],
-                    "11042": ["", ""],
-                    "11043": ["X", ""],
-                    "11044": ["", ""],
-                    "Bedingung": ["", ""],
+                    "Segment Gruppe": ["SG8", "Referenz auf die ID einer Messlokation", "SG8"],
+                    "Segment": ["SEQ", "", ""],
+                    "Datenelement": ["1229", "", ""],
+                    "Codes und Qualifier": ["Z50", "", ""],
+                    "Beschreibung": ["Messdatenregistriergerätedaten", "", ""],
+                    "11042": ["", "", ""],
+                    "11043": ["X", "", ""],
+                    "11044": ["", "", ""],
+                    "Bedingung": ["", "", ""],
                 }
             ),
         )

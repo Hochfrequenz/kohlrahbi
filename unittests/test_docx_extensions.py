@@ -3,7 +3,7 @@ tests all the features the kohlrahbi package provides to process Docx files (by 
 """
 import pytest  # type:ignore[import]
 from _pytest.fixtures import SubRequest  # type:ignore[import]
-from docx import Document
+from docx import Document  # type:ignore[import]
 from docx.document import Document as DocumentClass  # type:ignore[import]
 from docx.table import Table  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
