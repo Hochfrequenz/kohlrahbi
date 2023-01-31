@@ -1,3 +1,7 @@
+"""
+This module contains the RowType enumeration.
+"""
+
 from enum import StrEnum, auto
 
 

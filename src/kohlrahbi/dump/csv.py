@@ -1,3 +1,7 @@
+"""
+This module contains all functions to dump a kohlrahbi into a csv file.
+"""
+
 from pathlib import Path
 
 import pandas as pd
@@ -8,7 +12,9 @@ from kohlrahbi.logger import logger
 
 
 def dump_kohlrahbi_to_csv(kohlrahbi: pd.DataFrame, pruefi: str, output_directory_path: Path):
-
+    """
+    Dump a given kohlrahbi into a csv file.
+    """
     edifact_format = get_format_of_pruefidentifikator(pruefi)
     if edifact_format is None:
         logger.warning("'%s' is not a pruefidentifikator", pruefi)

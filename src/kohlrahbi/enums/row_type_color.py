@@ -1,3 +1,7 @@
+"""
+This module contains the enumeration for the colors of different row types
+"""
+
 from enum import StrEnum
 
 

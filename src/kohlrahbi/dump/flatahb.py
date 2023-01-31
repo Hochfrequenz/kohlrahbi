@@ -226,6 +226,9 @@ def convert_ahb_table_to_flatahb(ahb_table: pd.DataFrame, pruefi: str) -> FlatAn
 
 
 def dump_kohlrahbi_to_flatahb(kohlrahbi: pd.DataFrame, pruefi: str, output_directory_path: Path):
+    """
+    Dump a given kohlrahbi to flatahb
+    """
 
     edifact_format = get_format_of_pruefidentifikator(pruefi)
     if edifact_format is None:
