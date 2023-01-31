@@ -68,7 +68,12 @@ def is_segment_opening_line(ahb_row: pd.Series) -> bool:
     The first line in the example is a segment opening line
     """
 
-    if ahb_row["Segment"] and not ahb_row["Datenelement"]:
+    if (
+        _segment_group_pattern.match(ahb_row["Segment Gruppe"])
+        and not ahb_row["Segment"]
+        and ahb_row["Segment"]
+        and not ahb_row["Datenelement"]
+    ):
         return True
     return False
 
