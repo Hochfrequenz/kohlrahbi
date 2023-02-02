@@ -134,23 +134,6 @@ def load_all_known_pruefis_from_file(
     return pruefis
 
 
-# def foo(pruefis: list[str]) -> list[str]:
-#     """
-#     Checks if the user has provided some Prüfidentifikatoren and validates them.
-#     If no Prüfidentifikatoren are given it will load all known Prüfidentifikatoren from a file.
-#     """
-
-#     # check if one or more pruefidentifikatoren are given
-#     if len(pruefis) == 0:
-#         click.secho("☝️ No pruefis were given. I will parse all known pruefis.", fg="yellow")
-
-#         pruefis = load_all_known_pruefis_from_file()
-
-#     valid_pruefis: list[str] = get_valid_pruefis(list_of_pruefis=pruefis)
-
-#     return valid_pruefis
-
-
 @click.command()
 @click.option(
     "-p",
