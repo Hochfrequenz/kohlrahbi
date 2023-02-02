@@ -17,6 +17,7 @@ from maus.edifact import EdifactFormatVersion, get_edifact_format_version
 from more_itertools import peekable
 
 from kohlrahbi.ahbtable import AhbTable
+from kohlrahbi.dump.flatahb import keys_that_must_no_hold_any_values
 from kohlrahbi.helper.seed import Seed
 from kohlrahbi.logger import logger
 
@@ -123,13 +124,6 @@ def sanitize_ahb_table_dataframe(ahb_table_dataframe: pd.DataFrame) -> pd.DataFr
     We need to merge the content into one cell and delete the deprecated cell afterwards.
     """
     indizes_of_to_delete_rows: list[int] = []
-    keys_that_must_no_hold_any_values: set[str] = {
-        "Segment",
-        "Datenelement",
-        "Codes und Qualifier",
-        "Beschreibung",
-        "Bedingung",
-    }
 
     def line_contains_only_segment_gruppe(raw_line: pd.Series) -> bool:
         """

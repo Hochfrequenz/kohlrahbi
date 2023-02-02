@@ -9,7 +9,7 @@ import click
 import docx  # type:ignore[import]
 import pandas as pd
 import tomlkit
-from maus.edifact import get_format_of_pruefidentifikator
+from maus.edifact import EdifactFormat, get_format_of_pruefidentifikator
 
 from kohlrahbi.dump import dump_kohlrahbi_to_csv, dump_kohlrahbi_to_excel, dump_kohlrahbi_to_flatahb
 from kohlrahbi.helper.read_functions import get_kohlrahbi
@@ -26,6 +26,29 @@ def get_valid_pruefis(list_of_pruefis: list[str]) -> list[str]:
     return valid_pruefis
 
 
+def get_all_ahb_docx_files(path_to_ahb_documents: Path) -> list[Path]:
+    """
+    Get all paths to the latest AHB docx files.
+    The latest files contain `LesefassungmitFehlerkorrekturen` in their file names.
+    """
+    return [
+        path
+        for path in path_to_ahb_documents.iterdir()
+        if path.is_file()
+        if path.suffix == ".docx"
+        if "AHB" in path.name
+        if "LesefassungmitFehlerkorrekturen" in path.name
+    ]
+
+
+def filter_docx_files_for_edifact_format(list_of_ahb_docx_paths: list[Path], edifact_format: EdifactFormat):
+    """
+    Filter the list of AHB docx paths for the given EDIFACT format
+    """
+
+    return [path for path in list_of_ahb_docx_paths if str(edifact_format) in path.name]
+
+
 def get_docx_files_which_may_contain_searched_pruefi(searched_pruefi: str, path_to_ahb_documents: Path) -> list[Path]:
     """
     This functions takes a pruefidentifikator and returns a list of docx files which can contain the searched pruefi.
@@ -39,17 +62,13 @@ def get_docx_files_which_may_contain_searched_pruefi(searched_pruefi: str, path_
         logger.exception("❌ There is no known format known for the prüfi '%s'.", searched_pruefi)
         return []
 
-    docx_files_in_ahb_documents: list[Path] = [
-        path
-        for path in path_to_ahb_documents.iterdir()
-        if path.is_file()
-        if path.suffix == ".docx"
-        if "AHB" in path.name
-        if "LesefassungmitFehlerkorrekturen" in path.name
-        if str(edifact_format) in path.name
-    ]
+    docx_files_in_ahb_documents = get_all_ahb_docx_files(path_to_ahb_documents=path_to_ahb_documents)
 
-    return docx_files_in_ahb_documents
+    filtered_docx_files_in_ahb_documents = filter_docx_files_for_edifact_format(
+        list_of_ahb_docx_paths=docx_files_in_ahb_documents, edifact_format=edifact_format
+    )
+
+    return filtered_docx_files_in_ahb_documents
 
 
 def check_input_path(path: Path) -> None:
@@ -106,12 +125,10 @@ def load_all_known_pruefis_from_file(
 
     if meta_data_section is None:
         click.secho(f"There is no 'meta_data' section in the provided toml file: {path_to_all_known_pruefis}", fg="red")
-        click.Abort()
-        return []  # this is just to please the linter
+        raise click.Abort()
     if content_section is None:
         click.secho(f"There is no 'content' section in the toml file: {path_to_all_known_pruefis}", fg="red")
-        click.Abort()
-        return []  # this is just to please the linter
+        raise click.Abort()
 
     pruefis: list[str] = content_section.get("pruefidentifikatoren")
     return pruefis
@@ -206,9 +223,9 @@ def harvest(
             try:
                 doc = docx.Document(ahb_file_path)  # Creating word reader object.
 
-            except IOError:
+            except IOError as ioe:
                 logger.exception("There was an error opening the file '%s'", ahb_file_path, exc_info=True)
-                click.Abort()
+                raise click.Abort() from ioe
 
             logger.info("start reading docx file(s)")
 

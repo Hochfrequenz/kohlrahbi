@@ -24,6 +24,9 @@ _column_letter_width_mapping: dict[str, Union[float, int]] = {
 
 
 def write_excel_file(df_to_export: pd.DataFrame, pruefi: str, output_directory_path: Path):
+    """
+    Write your dataframe of the given Prüfidentifikator in the given output directory.
+    """
     edifact_format = get_format_of_pruefidentifikator(pruefi)
     xlsx_output_directory_path: Path = output_directory_path / "xlsx" / str(edifact_format)
     xlsx_output_directory_path.mkdir(parents=True, exist_ok=True)

@@ -22,6 +22,16 @@ from kohlrahbi.logger import logger
 
 _segment_group_pattern = re.compile(r"^SG\d+$")
 
+# pylint found the same variable in kohlrahbi.helper.read_functions
+# I am not happy about this and it will hopefully disappear after the next code iteration.
+keys_that_must_no_hold_any_values: set[str] = {
+    "Segment",
+    "Datenelement",
+    "Codes und Qualifier",
+    "Beschreibung",
+    "Bedingung",
+}
+
 
 def get_section_name(segment_gruppe_or_section_name: str, last_section_name: str) -> str:
     """
@@ -35,14 +45,9 @@ def get_section_name(segment_gruppe_or_section_name: str, last_section_name: str
 
 
 def is_section_name(ahb_row: pd.Series) -> bool:
-    """Checks if the current AHB row is a section name."""
-    keys_that_must_no_hold_any_values: set[str] = {
-        "Segment",
-        "Datenelement",
-        "Codes und Qualifier",
-        "Beschreibung",
-        "Bedingung",
-    }
+    """
+    Checks if the current AHB row is a section name.
+    """
 
     for row_key in keys_that_must_no_hold_any_values:
         if ahb_row[row_key]:

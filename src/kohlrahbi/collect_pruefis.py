@@ -10,6 +10,7 @@ import tomlkit
 from docx.table import Table  # type:ignore[import]
 from maus.edifact import EdifactFormat
 
+from kohlrahbi.harvester import get_all_ahb_docx_files
 from kohlrahbi.helper.read_functions import does_the_table_contain_pruefidentifikatoren, get_all_paragraphs_and_tables
 from kohlrahbi.helper.seed import Seed
 from kohlrahbi.logger import logger
@@ -19,15 +20,7 @@ all_pruefis: list[str] = []
 for edifact_format in EdifactFormat:
     path_to_ahb_documents: Path = Path("/Users/kevin/workspaces/hochfrequenz/edi_energy_mirror/edi_energy_de/current")
 
-    docx_files_in_ahb_documents: list[Path] = [
-        path
-        for path in path_to_ahb_documents.iterdir()
-        if path.is_file()
-        if path.suffix == ".docx"
-        if "AHB" in path.name
-        if "LesefassungmitFehlerkorrekturen" in path.name
-        if edifact_format.name in path.name
-    ]
+    docx_files_in_ahb_documents = get_all_ahb_docx_files(path_to_ahb_documents=path_to_ahb_documents)
 
     for ahb_file_path in docx_files_in_ahb_documents:
         doc = docx.Document(ahb_file_path)  # Creating word reader object.

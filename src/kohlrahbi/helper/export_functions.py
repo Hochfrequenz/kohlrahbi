@@ -11,11 +11,12 @@ save all Prüfidentifikators of one AHB in one Excel file.
 
 import re
 from pathlib import Path
-from typing import Any, Dict, TypeVar, Union, overload
+from typing import Any, TypeVar, overload
 
 import pandas as pd
 from maus.edifact import get_format_of_pruefidentifikator
 
+from kohlrahbi.dump.excel import write_excel_file
 from kohlrahbi.logger import logger
 
 _T = TypeVar("_T")
@@ -73,18 +74,6 @@ def beautify_bedingungen(bedingung: Any) -> Any:
     return bedingung
 
 
-_column_letter_width_mapping: Dict[str, Union[float, int]] = {
-    "A": 3.5,
-    "B": 47,
-    "C": 9,
-    "D": 14,
-    "E": 39,
-    "F": 33,
-    "G": 18,
-    "H": 102,
-}
-
-
 # pylint: disable=too-many-locals
 def export_single_pruefidentifikator(pruefi: str, df: pd.DataFrame, output_directory_path: Path) -> None:
     """Exports the current Prüfidentifikator in different file formats: json, csv and xlsx
@@ -116,21 +105,8 @@ def export_single_pruefidentifikator(pruefi: str, df: pd.DataFrame, output_direc
     df_to_export.to_csv(csv_output_directory_path / f"{pruefi}.csv")
 
     df_to_export.to_json(json_output_directory_path / f"{pruefi}.json", force_ascii=False, orient="records")
-    excel_file_name = f"{pruefi}.xlsx"
-    try:
-        # https://github.com/PyCQA/pylint/issues/3060 pylint: disable=abstract-class-instantiated
-        with pd.ExcelWriter(xlsx_output_directory_path / excel_file_name, engine="xlsxwriter") as writer:
-            df_to_export.to_excel(writer, sheet_name=f"{pruefi}")
-            # pylint: disable=no-member
-            workbook = writer.book
-            worksheet = writer.sheets[f"{pruefi}"]
-            wrap_format = workbook.add_format({"text_wrap": True})
-            for column_letter, column_width in _column_letter_width_mapping.items():
-                excel_header = f"{column_letter}:{column_letter}"
-                worksheet.set_column(excel_header, column_width, wrap_format)
-            logger.info("💾 Saved files for Pruefidentifikator %s", pruefi)
-    except PermissionError:
-        logger.error("The Excel file %s is open. Please close this file and try again.", excel_file_name)
+
+    write_excel_file(df_to_export=df_to_export, pruefi=pruefi, output_directory_path=output_directory_path)
 
 
 def export_all_pruefidentifikatoren_in_one_file(
