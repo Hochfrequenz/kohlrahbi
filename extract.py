@@ -14,8 +14,8 @@ from kohlrahbi import harvester
 from kohlrahbi.helper.read_functions import remove_duplicates_from_ahb_list
 
 if __name__ == "__main__":
-    if sys.version_info.major != 3 or sys.version_info.minor < 10:
-        sys.exit("Python >=3.10 is required to run this script")
+    if sys.version_info.major != 3 or sys.version_info.minor < 11:
+        sys.exit("Python >=3.11 is required to run this script")
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--path", "-p", help="relative path to either a directory that contains docx files or a single docx file"
