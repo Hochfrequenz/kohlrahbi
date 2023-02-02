@@ -214,19 +214,24 @@ def get_kohlrahbi(
         if isinstance(item, Paragraph) and "Heading" in item.style.name and "Änderungshistorie" in item.text:
             return None
 
-        if isinstance(item, Table) and does_the_table_contain_pruefidentifikatoren(table=item):
-            # check which pruefis
-            seed = Seed.from_table(docx_table=item)
-
-        # @konstantin: Wie war nochmal die Reihenfolge in Python in der die Bedingungen geprüft werden?
-        if seed is not None and pruefi not in seed.pruefidentifikatoren and searched_pruefi_is_found:
-            seed = None
-            logger.info("🏁 We reached the end of the AHB table of the Prüfidentifikator '%s'", pruefi)
-            break
-
         # Check if there is just a text paragraph,
         if isinstance(item, Paragraph) and not "Heading" in item.style.name:
             continue
+
+        if isinstance(item, Table) and does_the_table_contain_pruefidentifikatoren(table=item):
+            # check which pruefis
+            seed = Seed.from_table(docx_table=item)
+            logger.info("Found a table with the following pruefis: %s", seed.pruefidentifikatoren)
+
+        did_we_reached_the_end_of_the_ahb_table_of_the_searched_pruefi: bool = (
+            seed is not None and pruefi not in seed.pruefidentifikatoren and searched_pruefi_is_found
+        )
+
+        # @konstantin: Wie war nochmal die Reihenfolge in Python in der die Bedingungen geprüft werden?
+        if did_we_reached_the_end_of_the_ahb_table_of_the_searched_pruefi:
+            seed = None
+            logger.info("🏁 We reached the end of the AHB table of the Prüfidentifikator '%s'", pruefi)
+            break
 
         if isinstance(item, Table) and does_the_table_contain_pruefidentifikatoren(table=item):
             # check which pruefis
