@@ -46,7 +46,6 @@ class AhbTable:
         """
 
         for row in self.table.rows:
-
             sanitized_row = list(self._iter_visible_cells(row=row))
 
             current_edifact_struktur_cell = sanitized_row[0]
@@ -63,7 +62,6 @@ class AhbTable:
 
             # this case covers the "normal" docx table row
             if not (current_row_type is RowType.EMPTY and self.seed.last_two_row_types[0] is RowType.HEADER):
-
                 ahb_table_row = AhbTableRow(
                     seed=self.seed,
                     edifact_struktur_cell=edifact_struktur_cell,
@@ -77,7 +75,6 @@ class AhbTable:
                     ahb_table_dataframe = pd.concat([ahb_table_dataframe, ahb_table_row_dataframe], ignore_index=True)
             # this case covers the page break situation
             else:
-
                 ahb_table_row = AhbTableRow(
                     seed=self.seed,
                     edifact_struktur_cell=edifact_struktur_cell,
@@ -115,7 +112,6 @@ class AhbTable:
         latest_datenelement: Optional[str] = ""
 
         for _, row in df.iterrows():
-
             if row["Segment Gruppe"] != "":
                 latest_segement_gruppe = row["Segment Gruppe"]
 

@@ -6,7 +6,6 @@ from kohlrahbi.helper.row_type_checker import RowType, get_row_type
 
 
 class TestCheckRowType:
-
     # this is the touchstone position for the left indent of the edifact struktur cells
     # example rows with this left indent position:
     # |      UNH       |

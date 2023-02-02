@@ -74,7 +74,6 @@ def check_output_path(path: Path) -> None:
                 path.mkdir(exist_ok=True)
                 click.secho("📂 The output directory is created.", fg="yellow")
             except FileNotFoundError as fnfe:
-
                 click.secho(
                     "😱 There was an path error. I can only create a new directory in an already existing directory.",
                     fg="red",
@@ -198,14 +197,12 @@ def harvest(
         click.secho(f"I will continue with the following valid pruefis: {valid_pruefis}.", fg="yellow")
 
     for pruefi in valid_pruefis:
-
         logger.info("start looking for pruefi '%s'", pruefi)
         ahb_file_paths: list[Path] = get_docx_files_which_may_contain_searched_pruefi(
             searched_pruefi=pruefi, path_to_ahb_documents=input_path
         )
 
         for ahb_file_path in ahb_file_paths:
-
             try:
                 doc = docx.Document(ahb_file_path)  # Creating word reader object.
 

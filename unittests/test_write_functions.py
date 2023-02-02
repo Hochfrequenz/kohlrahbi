@@ -11,7 +11,6 @@ from kohlrahbi.helper.seed import Seed
 
 
 class TestParseFunctions:
-
     # create table test cell
     # it contains per default an empty paragraph
     test_document = docx.Document()
@@ -422,7 +421,6 @@ class _Paragraph:
 
 
 class TestWriteFunctions:
-
     # this left indent and tabstop positions are equal to
     # the left indent and tabstop positions of the indicator paragraph
     middle_cell_left_indent_position_of_indicator_paragraph = 36830

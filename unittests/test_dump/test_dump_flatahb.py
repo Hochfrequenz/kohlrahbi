@@ -6,7 +6,6 @@ from kohlrahbi.dump.flatahb import convert_ahb_table_to_flatahb
 
 
 def test_convert_ahb_table_to_flatahb():
-
     ahb_table: pd.DataFrame = pd.DataFrame(
         {
             "Segment Gruppe": ["Ansprechpartner", "SG3", "SG3", "SG3", "SG3"],

@@ -84,6 +84,7 @@ _column_letter_width_mapping: Dict[str, Union[float, int]] = {
     "H": 102,
 }
 
+
 # pylint: disable=too-many-locals
 def export_single_pruefidentifikator(pruefi: str, df: pd.DataFrame, output_directory_path: Path) -> None:
     """Exports the current Prüfidentifikator in different file formats: json, csv and xlsx

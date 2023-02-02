@@ -109,7 +109,6 @@ def convert_ahb_table_to_flatahb(ahb_table: pd.DataFrame, pruefi: str) -> FlatAn
     iterable_ahb_table = peekable(ahb_table.iterrows())
 
     for _, row in iterable_ahb_table:
-
         current_section_name = get_section_name(
             segment_gruppe_or_section_name=row["Segment Gruppe"], last_section_name=current_section_name
         )

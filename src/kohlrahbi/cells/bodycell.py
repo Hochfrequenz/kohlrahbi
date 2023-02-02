@@ -41,7 +41,6 @@ class BodyCell:
         is_first_iteration = True
 
         for paragraph in self.table_cell.paragraphs:
-
             row_index = ahb_row_dataframe.index.max()
             paragraph.text = paragraph.text.replace("\xa0", "")
             splitted_text_at_tabs = paragraph.text.split("\t")

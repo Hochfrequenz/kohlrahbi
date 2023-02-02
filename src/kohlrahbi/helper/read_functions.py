@@ -143,7 +143,6 @@ def sanitize_ahb_table_dataframe(ahb_table_dataframe: pd.DataFrame) -> pd.DataFr
     iterable_ahb_table = peekable(ahb_table_dataframe.iterrows())
 
     for _, row in iterable_ahb_table:
-
         index_of_next_row, next_row = iterable_ahb_table.peek(
             (
                 0,
@@ -170,7 +169,6 @@ def sanitize_ahb_table_dataframe(ahb_table_dataframe: pd.DataFrame) -> pd.DataFr
             row["Segment Gruppe"] = merged_segment_gruppe_content.strip()
 
             if isinstance(index_of_next_row, int):
-
                 if index_of_next_row == 0:
                     # this case is only for the first and last row. These lines should not get deleted.
                     continue
@@ -218,13 +216,11 @@ def get_kohlrahbi(
     # Iterate through the whole word document
     logger.info("Start iterating through paragraphs and tables")
     for item in get_all_paragraphs_and_tables(parent=document):
-
         # Check if we reached the end of the current AHB document and stop if it's true.
         if isinstance(item, Paragraph) and "Heading" in item.style.name and "Änderungshistorie" in item.text:
             return None
 
         if isinstance(item, Table) and does_the_table_contain_pruefidentifikatoren(table=item):
-
             # check which pruefis
             seed = Seed.from_table(docx_table=item)
 
@@ -239,7 +235,6 @@ def get_kohlrahbi(
             continue
 
         if isinstance(item, Table) and does_the_table_contain_pruefidentifikatoren(table=item):
-
             # check which pruefis
             seed = Seed.from_table(docx_table=item)
             logger.info("Found a table with the following pruefis: %s", seed.pruefidentifikatoren)
@@ -259,7 +254,6 @@ def get_kohlrahbi(
                 ahb_table_dataframe = ahb_table.parse(ahb_table_dataframe=ahb_table_dataframe)
                 continue
         if isinstance(item, Table) and seed is not None and ahb_table_dataframe is not None:
-
             ahb_table = AhbTable(seed=seed, table=item)
             ahb_table_dataframe = ahb_table.parse(ahb_table_dataframe=ahb_table_dataframe)
 

@@ -21,7 +21,6 @@ from kohlrahbi.harvester import get_docx_files_which_may_contain_searched_pruefi
     ],
 )
 def test_docx_finder(searched_pruefi: str, expected_docx_count: int):
-
     path_to_ahb_documents: Path = Path.cwd() / Path("unittests/docx_files")
 
     paths_to_docx_files: list[Path] = get_docx_files_which_may_contain_searched_pruefi(

@@ -7,7 +7,6 @@ from unittests.cellparagraph import CellParagraph
 @pytest.fixture
 def get_ahb_table_with_multiple_paragraphs():
     def _setup_ahb_table(body_cell_paragraphs: list[CellParagraph]):
-
         doc = docx.Document()
         table = doc.add_table(rows=1, cols=1)
 

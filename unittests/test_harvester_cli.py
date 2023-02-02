@@ -74,7 +74,6 @@ class TestCli:
     def test_harvester_cli_with_valid_arguments(
         self, datafiles, pruefis, input_folder_name: str, output_folder_name: str, expected_response
     ):
-
         input_path: Path = Path(datafiles) / Path(input_folder_name)
         output_path: Path = Path(datafiles) / Path(output_folder_name)
 

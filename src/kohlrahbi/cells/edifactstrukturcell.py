@@ -39,7 +39,6 @@ class EdifactStrukturCell:
             self.table_cell.paragraphs[0].paragraph_format.left_indent
             != self.edifact_struktur_cell_left_indent_position
         ):
-
             if tab_count == 2:
                 ahb_row_dataframe.at[row_index, "Segment Gruppe"] = splitted_text_at_tabs[0]
                 ahb_row_dataframe.at[row_index, "Segment"] = splitted_text_at_tabs[1]
@@ -63,7 +62,6 @@ class EdifactStrukturCell:
 
         # Now the text should start in middle of the EDIFACT Struktur column
         else:
-
             if tab_count == 1:
                 # Example: "UNH\t0062"
                 ahb_row_dataframe.at[row_index, "Segment"] = splitted_text_at_tabs[0]
