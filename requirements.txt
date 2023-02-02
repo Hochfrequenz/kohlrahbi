@@ -30,7 +30,7 @@ openpyxl==3.0.10
     # via -r requirements.in
 packaging==22.0
     # via marshmallow
-pandas==1.5.2
+pandas==1.5.3
     # via -r requirements.in
 python-dateutil==2.8.2
     # via pandas
@@ -42,5 +42,5 @@ six==1.16.0
     # via python-dateutil
 tomlkit==0.11.6
     # via -r requirements.in
-xlsxwriter==3.0.4
+xlsxwriter==3.0.7
     # via -r requirements.in
