@@ -10,7 +10,7 @@ from docx.table import Table  # type:ignore[import]
 from docx.table import _Cell
 
 from kohlrahbi.ahbtablerow import AhbTableRow
-from kohlrahbi.helper.row_type_checker import RowType, get_row_type
+from kohlrahbi.row_type_checker import RowType, get_row_type
 from kohlrahbi.seed import Seed
 
 

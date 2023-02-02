@@ -2,7 +2,7 @@ import docx  # type:ignore[import]
 import pytest  # type:ignore[import]
 from docx.shared import RGBColor  # type:ignore[import]
 
-from kohlrahbi.helper.row_type_checker import RowType, get_row_type
+from kohlrahbi.row_type_checker import RowType, get_row_type
 
 
 class TestCheckRowType:
