@@ -23,26 +23,10 @@ _column_letter_width_mapping: dict[str, Union[float, int]] = {
 }
 
 
-def dump_kohlrahbi_to_excel(kohlrahbi: pd.DataFrame, pruefi: str, output_directory_path: Path):
-    """
-    Dump a given kohlrahbi into an excel file
-    """
-
+def write_excel_file(df_to_export: pd.DataFrame, pruefi: str, output_directory_path: Path):
     edifact_format = get_format_of_pruefidentifikator(pruefi)
-    if edifact_format is None:
-        logger.warning("'%s' is not a pruefidentifikator", pruefi)
-        return
-
     xlsx_output_directory_path: Path = output_directory_path / "xlsx" / str(edifact_format)
     xlsx_output_directory_path.mkdir(parents=True, exist_ok=True)
-
-    # write for each pruefi an extra file
-    columns_to_export = list(kohlrahbi.columns)[:5] + [pruefi]
-    columns_to_export.append("Bedingung")
-
-    AhbTable.fill_segement_gruppe_segement_dataelement(df=kohlrahbi)
-
-    df_to_export = kohlrahbi[columns_to_export]
 
     excel_file_name = f"{pruefi}.xlsx"
     try:
@@ -59,3 +43,31 @@ def dump_kohlrahbi_to_excel(kohlrahbi: pd.DataFrame, pruefi: str, output_directo
             logger.info("💾 Saved files for Pruefidentifikator %s", pruefi)
     except PermissionError:
         logger.error("The Excel file %s is open. Please close this file and try again.", excel_file_name)
+
+
+def extract_one_pruefi_from_ahb_table(df: pd.DataFrame, pruefi: str) -> pd.DataFrame:
+    """
+    AHB tables often include more than one Prüfidentifikatoren.
+    This function creates a table which contains only one Prüfidentifikator at the end.
+    """
+    columns_to_export = list(df.columns)[:5] + [pruefi]
+    columns_to_export.append("Bedingung")
+
+    AhbTable.fill_segement_gruppe_segement_dataelement(df=df)
+
+    return df[columns_to_export]
+
+
+def dump_kohlrahbi_to_excel(kohlrahbi: pd.DataFrame, pruefi: str, output_directory_path: Path):
+    """
+    Dump a given kohlrahbi into an excel file
+    """
+
+    edifact_format = get_format_of_pruefidentifikator(pruefi)
+    if edifact_format is None:
+        logger.warning("'%s' is not a pruefidentifikator", pruefi)
+        return
+
+    df_to_export = extract_one_pruefi_from_ahb_table(df=kohlrahbi, pruefi=pruefi)
+
+    write_excel_file(df_to_export=df_to_export, pruefi=pruefi, output_directory_path=output_directory_path)
