@@ -25,6 +25,8 @@ class BodyCell:
     left_indent_position: int
     indicator_tabstop_positions: List[int]
 
+    # I see why pylint is not happy about this many branches, but at the moment I have no clue how to avoid them.
+    # pylint: disable=too-many-branches
     def parse(self, ahb_row_dataframe: pd.DataFrame) -> pd.DataFrame:
         """Parses a paragraph in the middle column and puts the information into the appropriate columns
 
