@@ -18,8 +18,8 @@ from more_itertools import peekable
 
 from kohlrahbi.ahbtable import AhbTable
 from kohlrahbi.dump.flatahb import keys_that_must_no_hold_any_values
-from kohlrahbi.helper.seed import Seed
 from kohlrahbi.logger import logger
+from kohlrahbi.seed import Seed
 
 _ahb_file_name_pattern = re.compile(r"^(?P<name>.+Lesefassung)(?P<version>\d+\.\d+[a-z]?)(?P<suffix>.*\.docx)$")
 """

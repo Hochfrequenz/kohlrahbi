@@ -11,7 +11,7 @@ from docx.table import _Cell
 
 from kohlrahbi.ahbtablerow import AhbTableRow
 from kohlrahbi.helper.row_type_checker import RowType, get_row_type
-from kohlrahbi.helper.seed import Seed
+from kohlrahbi.seed import Seed
 
 
 @attrs.define(auto_attribs=True, kw_only=True)

@@ -5,7 +5,7 @@ import docx  # type:ignore[import]
 import pandas as pd
 import pytest  # type:ignore[import]
 
-from kohlrahbi.helper.seed import Seed
+from kohlrahbi.seed import Seed
 
 # from kohlrahbi.helper.ahb_table_row_parser import parse_bedingung_cell, parse_edifact_struktur_cell, parse_middle_cell
 

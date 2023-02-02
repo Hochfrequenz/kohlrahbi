@@ -9,7 +9,7 @@ from docx.table import _Cell  # type:ignore[import]
 
 from kohlrahbi.cells import BedingungCell, BodyCell, EdifactStrukturCell
 from kohlrahbi.helper.row_type_checker import RowType
-from kohlrahbi.helper.seed import Seed
+from kohlrahbi.seed import Seed
 
 
 # pylint:disable=too-few-public-methods
