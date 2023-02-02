@@ -223,12 +223,12 @@ def get_kohlrahbi(
             seed = Seed.from_table(docx_table=item)
             logger.info("Found a table with the following pruefis: %s", seed.pruefidentifikatoren)
 
-        did_we_reached_the_end_of_the_ahb_table_of_the_searched_pruefi: bool = (
+        we_reached_the_end_of_the_ahb_table_of_the_searched_pruefi: bool = (
             seed is not None and pruefi not in seed.pruefidentifikatoren and searched_pruefi_is_found
         )
 
         # @konstantin: Wie war nochmal die Reihenfolge in Python in der die Bedingungen geprüft werden?
-        if did_we_reached_the_end_of_the_ahb_table_of_the_searched_pruefi:
+        if we_reached_the_end_of_the_ahb_table_of_the_searched_pruefi:
             seed = None
             logger.info("🏁 We reached the end of the AHB table of the Prüfidentifikator '%s'", pruefi)
             break
