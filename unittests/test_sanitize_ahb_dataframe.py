@@ -2,7 +2,6 @@ import pandas as pd
 import pytest  # type:ignore[import]
 
 from kohlrahbi.ahbtable import AhbTable
-from kohlrahbi.read_functions import sanitize_ahb_table_dataframe
 
 
 @pytest.mark.parametrize(
@@ -40,6 +39,7 @@ from kohlrahbi.read_functions import sanitize_ahb_table_dataframe
 )
 def test_sanitize_ahb_dataframe(ahb_table_dataframe, expected_ahb_table_dataframe):
     """ """
+    # TODO put this test into test class TestAhbTable
     sanitized_ahb_table_dataframe: pd.DataFrame = sanitize_ahb_table_dataframe(ahb_table_dataframe=ahb_table_dataframe)
 
     assert len(sanitized_ahb_table_dataframe) == len(expected_ahb_table_dataframe)
