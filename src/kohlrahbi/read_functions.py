@@ -4,7 +4,7 @@ A collection of functions to get information from AHB tables.
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Generator, List, Optional, Union
+from typing import Generator, Optional, Union
 
 import pandas as pd
 import pytz
@@ -97,8 +97,7 @@ def get_kohlrahbi(
     output_directory_path: Path = root_output_directory_path / str(edifact_format_version)
     logger.info("The output directory is: %s", output_directory_path)
 
-    ahb_table_dataframe: Optional[pd.DataFrame] = None
-    new_ahb_table: Optional[AhbTable] = None
+    ahb_table: Optional[AhbTable] = None
     is_ahb_table_initialized: bool = False
     searched_pruefi_is_found: bool = False
 
@@ -140,22 +139,22 @@ def get_kohlrahbi(
 
                 ahb_sub_table = AhbSubTable.from_table_with_header(docx_table=item)
 
-                new_ahb_table = AhbTable.from_ahb_sub_table(ahb_sub_table=ahb_sub_table)
+                ahb_table = AhbTable.from_ahb_sub_table(ahb_sub_table=ahb_sub_table)
 
                 is_ahb_table_initialized = True
                 continue
-        if isinstance(item, Table) and seed is not None and new_ahb_table is not None:
+        if isinstance(item, Table) and seed is not None and ahb_table is not None:
             ahb_sub_table = AhbSubTable.from_headless_table(docx_table=item, tmd=ahb_sub_table.table_meta_data)
-            new_ahb_table.append_ahb_sub_table(ahb_sub_table=ahb_sub_table)
+            ahb_table.append_ahb_sub_table(ahb_sub_table=ahb_sub_table)
 
-    if new_ahb_table is None:
+    if ahb_table is None:
         logger.warning("⛔️ Your searched pruefi '%s' was not found in the provided files.\n", pruefi)
         return None
 
-    new_ahb_table.sanitize()
+    ahb_table.sanitize()
 
-    unfolded_ahb = UnfoldedAhb.from_ahb_table(ahb_table=new_ahb_table, pruefi=pruefi)
+    unfolded_ahb = UnfoldedAhb.from_ahb_table(ahb_table=ahb_table, pruefi=pruefi)
 
     unfolded_ahb.convert_to_flat_ahb()
 
-    return new_ahb_table.table
+    return ahb_table.table
