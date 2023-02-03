@@ -16,9 +16,11 @@ from docx.text.paragraph import Paragraph  # type:ignore[import]
 from maus.edifact import EdifactFormatVersion, get_edifact_format_version
 from more_itertools import peekable
 
+from kohlrahbi.ahbsubtable import AhbSubTable
 from kohlrahbi.ahbtable import AhbTable
 from kohlrahbi.dump.flatahb import keys_that_must_no_hold_any_values
 from kohlrahbi.logger import logger
+from kohlrahbi.newahbtable import NewAhbTable
 from kohlrahbi.seed import Seed
 
 _ahb_file_name_pattern = re.compile(r"^(?P<name>.+Lesefassung)(?P<version>\d+\.\d+[a-z]?)(?P<suffix>.*\.docx)$")
@@ -203,8 +205,8 @@ def get_kohlrahbi(
     logger.info("The output directory is: %s", output_directory_path)
 
     ahb_table_dataframe: Optional[pd.DataFrame] = None
-
-    is_dataframe_initialized: bool = False
+    new_ahb_table: Optional[NewAhbTable] = None
+    is_ahb_table_initialized: bool = False
     searched_pruefi_is_found: bool = False
 
     # Iterate through the whole word document
@@ -238,29 +240,38 @@ def get_kohlrahbi(
             seed = Seed.from_table(docx_table=item)
             logger.info("Found a table with the following pruefis: %s", seed.pruefidentifikatoren)
 
-            if pruefi in seed.pruefidentifikatoren and not is_dataframe_initialized:
+            if pruefi in seed.pruefidentifikatoren and not is_ahb_table_initialized:
                 logger.info("👀 Found the AHB table with the Prüfidentifkator you are looking for %s", pruefi)
                 searched_pruefi_is_found = True
                 logger.info("✨ Initializing new ahb table dataframe")
-                ahb_table_dataframe = pd.DataFrame(
-                    columns=seed.column_headers,
-                    dtype="str",
-                )
-                is_dataframe_initialized = True
 
-                ahb_table: AhbTable = AhbTable(seed=seed, table=item)
+                ahb_sub_table = AhbSubTable.from_table_with_header(docx_table=item)
 
-                ahb_table_dataframe = ahb_table.parse(ahb_table_dataframe=ahb_table_dataframe)
+                new_ahb_table = NewAhbTable.from_ahb_sub_table(ahb_sub_table=ahb_sub_table)
+
+                # ahb_table_dataframe = pd.DataFrame(
+                #     columns=seed.column_headers,
+                #     dtype="str",
+                # )
+                is_ahb_table_initialized = True
+
+                # ahb_table: AhbTable = AhbTable(seed=seed, docx_table=item)
+
+                # ahb_table_dataframe = ahb_table.parse(ahb_table_dataframe=ahb_table_dataframe)
                 continue
-        if isinstance(item, Table) and seed is not None and ahb_table_dataframe is not None:
-            ahb_table = AhbTable(seed=seed, table=item)
-            ahb_table_dataframe = ahb_table.parse(ahb_table_dataframe=ahb_table_dataframe)
+        if isinstance(item, Table) and seed is not None and new_ahb_table is not None:
+            ahb_sub_table = AhbSubTable.from_headless_table(docx_table=item, tmd=ahb_sub_table.table_meta_data)
+            new_ahb_table.append_ahb_sub_table(ahb_sub_table=ahb_sub_table)
 
-    if ahb_table_dataframe is None:
+            # ahb_table = AhbTable(seed=seed, docx_table=item)
+            # ahb_table_dataframe = ahb_table.parse(ahb_table_dataframe=ahb_table_dataframe)
+
+    if new_ahb_table is None:
         logger.warning("⛔️ Your searched pruefi '%s' was not found in the provided files.\n", pruefi)
         return None
 
     # sanitize dataframe here
-    final_ahb_dataframe = sanitize_ahb_table_dataframe(ahb_table_dataframe=ahb_table_dataframe)
+    # final_ahb_dataframe = sanitize_ahb_table_dataframe(ahb_table_dataframe=ahb_table_dataframe)
+    new_ahb_table.sanitize_ahb_table()
 
-    return final_ahb_dataframe
+    return new_ahb_table.table

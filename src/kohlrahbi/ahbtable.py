@@ -9,6 +9,7 @@ import pandas as pd
 from docx.table import Table  # type:ignore[import]
 from docx.table import _Cell
 
+from kohlrahbi.ahbsubtable import AhbSubTable
 from kohlrahbi.ahbtablerow import AhbTableRow
 from kohlrahbi.row_type_checker import RowType, get_row_type
 from kohlrahbi.seed import Seed
@@ -23,7 +24,8 @@ class AhbTable:
     """
 
     seed: Seed
-    table: Table
+    docx_table: Table
+    # table: pd.DataFrame
 
     def _iter_visible_cells(self, row):
         """
@@ -45,7 +47,7 @@ class AhbTable:
             pd.DataFrame: Returns the ahb_table_dataframe with the added information.
         """
 
-        for row in self.table.rows:
+        for row in self.docx_table.rows:
             sanitized_row = list(self._iter_visible_cells(row=row))
 
             current_edifact_struktur_cell = sanitized_row[0]
@@ -127,3 +129,9 @@ class AhbTable:
                 row["Segment Gruppe"] = latest_segement_gruppe
                 row["Segment"] = latest_segement
                 row["Datenelement"] = latest_datenelement
+
+    def append_ahb_sub_table(self, ahb_sub_table: AhbSubTable):
+        if self.table is None:
+            self.table = ahb_sub_table.table
+        else:
+            pd.concat([self.table, ahb_sub_table.table], ignore_index=True)

@@ -26,7 +26,7 @@ class TestAhbSubTable:
         ]  # the first item in a word file seems to be always a paragraph. So we need the second item.
 
         if isinstance(docx_table, Table):
-            ahb_sub_table = AhbSubTable.from_table(docx_table=docx_table)
+            ahb_sub_table = AhbSubTable.from_table_with_header(docx_table=docx_table)
 
             assert isinstance(ahb_sub_table, AhbSubTable)
         else:
