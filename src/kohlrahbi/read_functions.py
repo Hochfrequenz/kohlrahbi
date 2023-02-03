@@ -77,9 +77,7 @@ def does_the_table_contain_pruefidentifikatoren(table: Table) -> bool:
 
 
 # pylint: disable=inconsistent-return-statements
-def get_kohlrahbi(
-    document: Document, root_output_directory_path: Path, ahb_file_name: Path, pruefi: str
-) -> Optional[pd.DataFrame]:
+def get_kohlrahbi(document: Document, ahb_file_name: Path, pruefi: str) -> Optional[pd.DataFrame]:
     """Reads a docx file and extracts all information for each Prüfidentifikator.
 
     Args:
@@ -92,10 +90,6 @@ def get_kohlrahbi(
     """
 
     seed: Optional[Seed] = None
-    edifact_format_version: EdifactFormatVersion = _get_format_version_from_ahbfile_name(str(ahb_file_name))
-    logger.info("Extracted format version: %s", edifact_format_version)
-    output_directory_path: Path = root_output_directory_path / str(edifact_format_version)
-    logger.info("The output directory is: %s", output_directory_path)
 
     ahb_table: Optional[AhbTable] = None
     is_ahb_table_initialized: bool = False
