@@ -1,5 +1,5 @@
 """
-Main script of the AHB Extractor
+Main script of the Kohlrahbi
 """
 import re
 import sys
