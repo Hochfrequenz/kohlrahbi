@@ -22,6 +22,7 @@ from kohlrahbi.dump.flatahb import keys_that_must_no_hold_any_values
 from kohlrahbi.logger import logger
 from kohlrahbi.newahbtable import NewAhbTable
 from kohlrahbi.seed import Seed
+from kohlrahbi.unfoldedahbtable import UnfoldedAhb
 
 _ahb_file_name_pattern = re.compile(r"^(?P<name>.+Lesefassung)(?P<version>\d+\.\d+[a-z]?)(?P<suffix>.*\.docx)$")
 """
@@ -260,5 +261,9 @@ def get_kohlrahbi(
         return None
 
     new_ahb_table.sanitize()
+
+    unfolded_ahb = UnfoldedAhb.from_ahb_table(ahb_table=new_ahb_table, pruefi=pruefi)
+
+    unfolded_ahb.convert_to_flat_ahb()
 
     return new_ahb_table.table
