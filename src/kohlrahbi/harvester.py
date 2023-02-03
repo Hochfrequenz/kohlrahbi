@@ -11,8 +11,8 @@ import pandas as pd
 import tomlkit
 from maus.edifact import EdifactFormat, get_format_of_pruefidentifikator
 
-from kohlrahbi.helper.read_functions import get_kohlrahbi
 from kohlrahbi.logger import logger
+from kohlrahbi.read_functions import get_kohlrahbi
 
 _pruefi_pattern = re.compile(r"^[1-9]\d{4}$")
 

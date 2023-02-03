@@ -11,8 +11,8 @@ from docx.table import Table  # type:ignore[import]
 from maus.edifact import EdifactFormat
 
 from kohlrahbi.harvester import get_all_ahb_docx_files
-from kohlrahbi.helper.read_functions import does_the_table_contain_pruefidentifikatoren, get_all_paragraphs_and_tables
 from kohlrahbi.logger import logger
+from kohlrahbi.read_functions import does_the_table_contain_pruefidentifikatoren, get_all_paragraphs_and_tables
 from kohlrahbi.seed import Seed
 
 all_pruefis: list[str] = []

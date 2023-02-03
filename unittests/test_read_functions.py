@@ -6,7 +6,7 @@ import pytest  # type:ignore[import]
 import pytz
 from maus.edifact import EdifactFormatVersion, get_edifact_format_version
 
-from kohlrahbi.helper.read_functions import _get_format_version_from_ahbfile_name, remove_duplicates_from_ahb_list
+from kohlrahbi.read_functions import _get_format_version_from_ahbfile_name, remove_duplicates_from_ahb_list
 
 
 class TestReadFunctions:

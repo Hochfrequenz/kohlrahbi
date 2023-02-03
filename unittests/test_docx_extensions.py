@@ -8,7 +8,7 @@ from docx.document import Document as DocumentClass  # type:ignore[import]
 from docx.table import Table  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
 
-from kohlrahbi.helper.read_functions import get_all_paragraphs_and_tables
+from kohlrahbi.read_functions import get_all_paragraphs_and_tables
 
 
 class TestDocxExtensions:

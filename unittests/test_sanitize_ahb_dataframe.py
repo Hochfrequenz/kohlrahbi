@@ -2,7 +2,7 @@ import pandas as pd
 import pytest  # type:ignore[import]
 
 from kohlrahbi.ahbtable import AhbTable
-from kohlrahbi.helper.read_functions import sanitize_ahb_table_dataframe
+from kohlrahbi.read_functions import sanitize_ahb_table_dataframe
 
 
 @pytest.mark.parametrize(

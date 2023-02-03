@@ -5,7 +5,7 @@ import pytest  # type: ignore[import]
 from docx.table import Table
 
 from kohlrahbi.ahbsubtable import AhbSubTable
-from kohlrahbi.helper.read_functions import get_all_paragraphs_and_tables
+from kohlrahbi.read_functions import get_all_paragraphs_and_tables
 
 
 class TestAhbSubTable:
