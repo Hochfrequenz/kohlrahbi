@@ -249,28 +249,16 @@ def get_kohlrahbi(
 
                 new_ahb_table = NewAhbTable.from_ahb_sub_table(ahb_sub_table=ahb_sub_table)
 
-                # ahb_table_dataframe = pd.DataFrame(
-                #     columns=seed.column_headers,
-                #     dtype="str",
-                # )
                 is_ahb_table_initialized = True
-
-                # ahb_table: AhbTable = AhbTable(seed=seed, docx_table=item)
-
-                # ahb_table_dataframe = ahb_table.parse(ahb_table_dataframe=ahb_table_dataframe)
                 continue
         if isinstance(item, Table) and seed is not None and new_ahb_table is not None:
             ahb_sub_table = AhbSubTable.from_headless_table(docx_table=item, tmd=ahb_sub_table.table_meta_data)
             new_ahb_table.append_ahb_sub_table(ahb_sub_table=ahb_sub_table)
 
-            # ahb_table = AhbTable(seed=seed, docx_table=item)
-            # ahb_table_dataframe = ahb_table.parse(ahb_table_dataframe=ahb_table_dataframe)
-
     if new_ahb_table is None:
         logger.warning("⛔️ Your searched pruefi '%s' was not found in the provided files.\n", pruefi)
         return None
 
-    # sanitize dataframe here
     new_ahb_table.sanitize()
 
     return new_ahb_table.table
