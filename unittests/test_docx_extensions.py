@@ -37,14 +37,3 @@ class TestDocxExtensions:
         actual = list(get_all_paragraphs_and_tables(create_docx_from_filename))
         assert len(actual) == expected_length
         assert all([isinstance(x, Table) or isinstance(x, Paragraph) for x in actual]) is True
-
-    # @pytest.mark.parametrize(
-    #     "create_docx_from_filename",
-    #     [pytest.param("test-dataelement-on-after-page-break.docx")],
-    #     indirect=True,
-    # )
-    # @pytest.mark.datafiles("unittests/docx_files/test-dataelement-on-after-page-break.docx")
-    # def test_write_dataelement_after_page_break(self, create_docx_from_filename: DocumentClass):
-    #     get_ahb_extract(
-    #         create_docx_from_filename, output_directory_path=Path.cwd() / "test-output", ahb_file_name="foo.bar"
-    #     )

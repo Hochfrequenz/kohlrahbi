@@ -1,5 +1,5 @@
-import pytest
 import attrs
+import pytest
 
 
 @attrs.define(auto_attribs=True, kw_only=True)
