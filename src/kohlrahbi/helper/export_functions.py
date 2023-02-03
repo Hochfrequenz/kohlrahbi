@@ -16,7 +16,6 @@ from typing import Any, TypeVar, overload
 import pandas as pd
 from maus.edifact import get_format_of_pruefidentifikator
 
-from kohlrahbi.dump.excel import write_excel_file
 from kohlrahbi.logger import logger
 
 _T = TypeVar("_T")
