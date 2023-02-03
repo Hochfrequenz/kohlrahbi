@@ -11,7 +11,7 @@ import pandas as pd
 import tomlkit
 from maus.edifact import EdifactFormat, get_format_of_pruefidentifikator
 
-from kohlrahbi.dump import dump_kohlrahbi_to_csv, dump_kohlrahbi_to_excel, dump_kohlrahbi_to_flatahb
+from kohlrahbi.dump import dump_kohlrahbi_to_excel, dump_kohlrahbi_to_flatahb
 from kohlrahbi.helper.read_functions import get_kohlrahbi
 from kohlrahbi.logger import logger
 
