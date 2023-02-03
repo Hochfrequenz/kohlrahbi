@@ -200,6 +200,6 @@ class AhbTable:
                 for column_letter, column_width in _column_letter_width_mapping.items():
                     excel_header = f"{column_letter}:{column_letter}"
                     worksheet.set_column(excel_header, column_width, wrap_format)
-                logger.info("💾 Saved files for Pruefidentifikator %s", pruefi)
+                logger.info("💾 Saved file(s) for Pruefidentifikator %s", pruefi)
         except PermissionError:
             logger.error("The Excel file %s is open. Please close this file and try again.", excel_file_name)
