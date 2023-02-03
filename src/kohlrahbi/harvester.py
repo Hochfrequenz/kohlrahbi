@@ -12,8 +12,10 @@ import pandas as pd
 import tomlkit
 from maus.edifact import EdifactFormat, get_format_of_pruefidentifikator
 
+from kohlrahbi.ahbtable import AhbTable
 from kohlrahbi.logger import logger
-from kohlrahbi.read_functions import get_kohlrahbi
+from kohlrahbi.read_functions import get_ahb_table
+from kohlrahbi.unfoldedahbtable import UnfoldedAhb
 
 _pruefi_pattern = re.compile(r"^[1-9]\d{4}$")
 
@@ -221,36 +223,28 @@ def harvest(
 
             logger.info("start reading docx file(s)")
 
-            kohlrahbi: pd.DataFrame | None = get_kohlrahbi(
+            ahb_table: AhbTable | None = get_ahb_table(
                 document=doc,
-                root_output_directory_path=output_directory_path,
-                ahb_file_name=ahb_file_path,
                 pruefi=pruefi,
             )
 
-            if kohlrahbi is None:
+            if ahb_table is None:
                 continue
 
-            # save kohlrahbi
-            logger.info("💾 Saving kohlrahbi %s \n", pruefi)
-            if "xlsx" in file_type:
-                dump_kohlrahbi_to_excel(
-                    kohlrahbi=kohlrahbi,
-                    pruefi=pruefi,
-                    output_directory_path=output_directory_path,
-                )
-            if "flatahb" in file_type:
-                dump_kohlrahbi_to_flatahb(
-                    kohlrahbi=kohlrahbi,
-                    pruefi=pruefi,
-                    output_directory_path=output_directory_path,
-                )
-            if "csv" in file_type:
-                dump_kohlrahbi_to_csv(
-                    kohlrahbi=kohlrahbi,
-                    pruefi=pruefi,
-                    output_directory_path=output_directory_path,
-                )
+            if isinstance(ahb_table, AhbTable):
+                unfolded_ahb = UnfoldedAhb.from_ahb_table(ahb_table=ahb_table, pruefi=pruefi)
+
+                logger.info("💾 Saving files %s \n", pruefi)
+                if "xlsx" in file_type:
+                    unfolded_ahb.to_xlsx(path_to_output_directory=output_directory_path)
+
+                if "flatahb" in file_type:
+                    unfolded_ahb.to_flatahb_json(output_directory_path=output_directory_path)
+
+                if "csv" in file_type:
+                    unfolded_ahb.to_csv(path_to_output_directory=output_directory_path)
+
+                break
 
 
 if __name__ == "__main__":
