@@ -9,9 +9,8 @@ from maus.models.anwendungshandbuch import AhbLine, AhbMetaInformation, FlatAnwe
 from maus.reader.flat_ahb_reader import FlatAhbCsvReader
 from more_itertools import peekable
 
-from kohlrahbi.dump.flatahb import keys_that_must_no_hold_any_values
 from kohlrahbi.logger import logger
-from kohlrahbi.newahbtable import NewAhbTable
+from kohlrahbi.newahbtable import NewAhbTable, keys_that_must_no_hold_any_values
 from kohlrahbi.unfoldedahbline import UnfoldedAhbLine
 from kohlrahbi.unfoldedahbtablemetadata import UnfoldedAhbTableMetaData
 

@@ -11,8 +11,15 @@ from maus.edifact import get_format_of_pruefidentifikator
 from more_itertools import peekable
 
 from kohlrahbi.ahbsubtable import AhbSubTable
-from kohlrahbi.dump.flatahb import keys_that_must_no_hold_any_values
 from kohlrahbi.logger import logger
+
+keys_that_must_no_hold_any_values: set[str] = {
+    "Segment",
+    "Datenelement",
+    "Codes und Qualifier",
+    "Beschreibung",
+    "Bedingung",
+}
 
 _segment_group_pattern = re.compile(r"^SG\d+$")
 

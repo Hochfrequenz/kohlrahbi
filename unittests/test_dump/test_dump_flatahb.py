@@ -1,10 +1,8 @@
-import maus
 import pandas as pd
 from maus.models.anwendungshandbuch import AhbLine, AhbMetaInformation, FlatAnwendungshandbuch
 
-from kohlrahbi.dump.flatahb import convert_ahb_table_to_flatahb
 
-
+# TODO: put the flatahb conversion test into the test class TestUnfoldedAhbTable
 def test_convert_ahb_table_to_flatahb():
     ahb_table: pd.DataFrame = pd.DataFrame(
         {

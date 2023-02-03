@@ -17,10 +17,8 @@ from maus.edifact import EdifactFormatVersion, get_edifact_format_version
 from more_itertools import peekable
 
 from kohlrahbi.ahbsubtable import AhbSubTable
-from kohlrahbi.ahbtable import AhbTable
-from kohlrahbi.dump.flatahb import keys_that_must_no_hold_any_values
 from kohlrahbi.logger import logger
-from kohlrahbi.newahbtable import NewAhbTable
+from kohlrahbi.newahbtable import NewAhbTable, keys_that_must_no_hold_any_values
 from kohlrahbi.seed import Seed
 from kohlrahbi.unfoldedahbtable import UnfoldedAhb
 
