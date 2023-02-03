@@ -77,16 +77,12 @@ def does_the_table_contain_pruefidentifikatoren(table: Table) -> bool:
 
 
 # pylint: disable=inconsistent-return-statements
-def get_kohlrahbi(document: Document, ahb_file_name: Path, pruefi: str) -> Optional[pd.DataFrame]:
-    """Reads a docx file and extracts all information for each Prüfidentifikator.
+def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
+    """
+    Reads a docx file and extracts all information for each Prüfidentifikator.
 
     Args:
-        document (Document): AHB which is read by python-docx package
-        output_directory_path (Path): Location of the output files
-        ahb_file_name (str): Name of the AHB document
-
-    Returns:
-        int: Error code, 0 means success
+        document (Document): AHB word document which is read by python-docx package
     """
 
     seed: Optional[Seed] = None
@@ -129,7 +125,7 @@ def get_kohlrahbi(document: Document, ahb_file_name: Path, pruefi: str) -> Optio
             if pruefi in seed.pruefidentifikatoren and not is_ahb_table_initialized:
                 logger.info("👀 Found the AHB table with the Prüfidentifkator you are looking for %s", pruefi)
                 searched_pruefi_is_found = True
-                logger.info("✨ Initializing new ahb table dataframe")
+                logger.info("✨ Initializing new ahb table")
 
                 ahb_sub_table = AhbSubTable.from_table_with_header(docx_table=item)
 
@@ -147,8 +143,4 @@ def get_kohlrahbi(document: Document, ahb_file_name: Path, pruefi: str) -> Optio
 
     ahb_table.sanitize()
 
-    unfolded_ahb = UnfoldedAhb.from_ahb_table(ahb_table=ahb_table, pruefi=pruefi)
-
-    unfolded_ahb.convert_to_flat_ahb()
-
-    return ahb_table.table
+    return ahb_table
