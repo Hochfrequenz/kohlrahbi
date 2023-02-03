@@ -17,8 +17,8 @@ from maus.edifact import EdifactFormatVersion, get_edifact_format_version
 from more_itertools import peekable
 
 from kohlrahbi.ahbsubtable import AhbSubTable
+from kohlrahbi.ahbtable import AhbTable, keys_that_must_no_hold_any_values
 from kohlrahbi.logger import logger
-from kohlrahbi.newahbtable import NewAhbTable, keys_that_must_no_hold_any_values
 from kohlrahbi.seed import Seed
 from kohlrahbi.unfoldedahbtable import UnfoldedAhb
 
@@ -204,7 +204,7 @@ def get_kohlrahbi(
     logger.info("The output directory is: %s", output_directory_path)
 
     ahb_table_dataframe: Optional[pd.DataFrame] = None
-    new_ahb_table: Optional[NewAhbTable] = None
+    new_ahb_table: Optional[AhbTable] = None
     is_ahb_table_initialized: bool = False
     searched_pruefi_is_found: bool = False
 
@@ -246,7 +246,7 @@ def get_kohlrahbi(
 
                 ahb_sub_table = AhbSubTable.from_table_with_header(docx_table=item)
 
-                new_ahb_table = NewAhbTable.from_ahb_sub_table(ahb_sub_table=ahb_sub_table)
+                new_ahb_table = AhbTable.from_ahb_sub_table(ahb_sub_table=ahb_sub_table)
 
                 is_ahb_table_initialized = True
                 continue

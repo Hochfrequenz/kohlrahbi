@@ -9,8 +9,8 @@ from maus.models.anwendungshandbuch import AhbLine, AhbMetaInformation, FlatAnwe
 from maus.reader.flat_ahb_reader import FlatAhbCsvReader
 from more_itertools import peekable
 
+from kohlrahbi.ahbtable import AhbTable, keys_that_must_no_hold_any_values
 from kohlrahbi.logger import logger
-from kohlrahbi.newahbtable import NewAhbTable, keys_that_must_no_hold_any_values
 from kohlrahbi.unfoldedahbline import UnfoldedAhbLine
 from kohlrahbi.unfoldedahbtablemetadata import UnfoldedAhbTableMetaData
 
@@ -31,7 +31,7 @@ class UnfoldedAhb:
     )
 
     @classmethod
-    def from_ahb_table(cls, ahb_table: NewAhbTable, pruefi: str):
+    def from_ahb_table(cls, ahb_table: AhbTable, pruefi: str):
         unfolded_ahb_lines: list[UnfoldedAhbLine] = []
         index = 0
         current_section_name: str = ""
