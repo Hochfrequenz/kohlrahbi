@@ -76,7 +76,7 @@ class NewAhbTable:
         else:
             self.table = pd.concat([self.table, ahb_sub_table.table], ignore_index=True)
 
-    def sanitize_ahb_table(self):
+    def sanitize(self):
         """
         In some cases there is the content of one cell splitted in two.
         We need to merge the content into one cell and delete the deprecated cell afterwards.

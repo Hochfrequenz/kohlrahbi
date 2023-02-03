@@ -271,7 +271,6 @@ def get_kohlrahbi(
         return None
 
     # sanitize dataframe here
-    # final_ahb_dataframe = sanitize_ahb_table_dataframe(ahb_table_dataframe=ahb_table_dataframe)
-    new_ahb_table.sanitize_ahb_table()
+    new_ahb_table.sanitize()
 
     return new_ahb_table.table
