@@ -1,11 +1,18 @@
+import json
 import re
 from pathlib import Path
+from typing import Union
 from uuid import uuid4
 
 import attrs
 import pandas as pd
 from maus.edifact import get_format_of_pruefidentifikator
-from maus.models.anwendungshandbuch import AhbLine, AhbMetaInformation, FlatAnwendungshandbuch
+from maus.models.anwendungshandbuch import (
+    AhbLine,
+    AhbMetaInformation,
+    FlatAnwendungshandbuch,
+    FlatAnwendungshandbuchSchema,
+)
 from maus.reader.flat_ahb_reader import FlatAhbCsvReader
 from more_itertools import peekable
 
@@ -237,7 +244,7 @@ class UnfoldedAhb:
 
     def convert_to_flat_ahb(self) -> FlatAnwendungshandbuch:
         x = self.convert_to_dataframe()
-        meta = AhbMetaInformation(pruefidentifikator="11042")
+        meta = AhbMetaInformation(pruefidentifikator=self.meta_data.pruefidentifikator)
         lines: list[AhbLine] = []
 
         for unfolded_ahb_line in self.unfolded_ahb_lines:
@@ -256,6 +263,22 @@ class UnfoldedAhb:
             )
 
         return FlatAnwendungshandbuch(meta=meta, lines=lines)
+
+    def to_flatahb_json(self, output_directory_path: Path):
+        edifact_format = get_format_of_pruefidentifikator(self.meta_data.pruefidentifikator)
+        if edifact_format is None:
+            logger.warning("'%s' is not a pruefidentifikator", self.meta_data.pruefidentifikator)
+            return
+
+        flatahb_output_directory_path = output_directory_path / "flatahb" / str(edifact_format)
+        flatahb_output_directory_path.mkdir(parents=True, exist_ok=True)
+
+        dump_data = FlatAnwendungshandbuchSchema().dump(self.convert_to_flat_ahb())
+
+        with open(
+            flatahb_output_directory_path / f"{self.meta_data.pruefidentifikator}.json", "w", encoding="utf-8"
+        ) as file:
+            json.dump(dump_data, file)
 
     def convert_to_dataframe(self) -> pd.DataFrame:
         unfolded_ahb_lines = [
@@ -297,3 +320,41 @@ class UnfoldedAhb:
             self.meta_data.pruefidentifikator,
             csv_output_directory_path / f"{self.meta_data.pruefidentifikator}.csv",
         )
+
+    def to_xlsx(self, path_to_output_directory: Path):
+        """
+        Dump a AHB table of a given pruefi into an excel file.
+        """
+        edifact_format = get_format_of_pruefidentifikator(self.meta_data.pruefidentifikator)
+        xlsx_output_directory_path: Path = path_to_output_directory / "xlsx" / str(edifact_format)
+        xlsx_output_directory_path.mkdir(parents=True, exist_ok=True)
+
+        excel_file_name = f"{self.meta_data.pruefidentifikator}.xlsx"
+
+        df = self.convert_to_dataframe()
+
+        _column_letter_width_mapping: dict[str, Union[float, int]] = {
+            "A": 3.5,
+            "B": 47,
+            "C": 9,
+            "D": 14,
+            "E": 39,
+            "F": 33,
+            "G": 18,
+            "H": 102,
+        }
+
+        try:
+            # https://github.com/PyCQA/pylint/issues/3060 pylint: disable=abstract-class-instantiated
+            with pd.ExcelWriter(xlsx_output_directory_path / excel_file_name, engine="xlsxwriter") as writer:
+                df.to_excel(writer, sheet_name=f"{self.meta_data.pruefidentifikator}")
+                # pylint: disable=no-member
+                workbook = writer.book
+                worksheet = writer.sheets[f"{self.meta_data.pruefidentifikator}"]
+                wrap_format = workbook.add_format({"text_wrap": True})
+                for column_letter, column_width in _column_letter_width_mapping.items():
+                    excel_header = f"{column_letter}:{column_letter}"
+                    worksheet.set_column(excel_header, column_width, wrap_format)
+                logger.info("💾 Saved file(s) for Pruefidentifikator %s", self.meta_data.pruefidentifikator)
+        except PermissionError:
+            logger.error("The Excel file %s is open. Please close this file and try again.", excel_file_name)
