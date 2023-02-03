@@ -2,6 +2,7 @@
 Main script of the AHB Extractor
 """
 import re
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -68,6 +69,16 @@ def get_docx_files_which_may_contain_searched_pruefi(searched_pruefi: str, path_
     )
 
     return filtered_docx_files_in_ahb_documents
+
+
+def check_python_version():
+    """
+    Check if the Python interpreter is greater or equal to 3.11
+    """
+    if sys.version_info.major != 3 or sys.version_info.minor < 11:
+        raise click.Abort(
+            f"Python >=3.11 is required to run this script but you use Python {sys.version_info.major}.{sys.version_info.minor}"
+        )
 
 
 def check_input_path(path: Path) -> None:
@@ -171,11 +182,10 @@ def harvest(
     """
     A program to get a machine readable version of the AHBs docx files published by edi@energy.
     """
+    check_python_version()
 
-    # check if input path exists
     check_input_path(path=input_path)
 
-    # check if output path exists
     check_output_path(path=output_path)
 
     output_directory_path: Path = Path.cwd() / Path("output")
