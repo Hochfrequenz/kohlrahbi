@@ -3,7 +3,7 @@ import pandas as pd
 from docx.table import Table as DocxTable  # type:ignore[import]
 from docx.table import _Cell  # type:ignore[import]
 
-from kohlrahbi.ahbtablerow import AhbTableRow
+from kohlrahbi.ahb.ahbtablerow import AhbTableRow
 from kohlrahbi.row_type_checker import RowType, get_row_type
 from kohlrahbi.seed import Seed
 

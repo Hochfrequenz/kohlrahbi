@@ -10,7 +10,7 @@ import pandas as pd
 from maus.edifact import get_format_of_pruefidentifikator
 from more_itertools import peekable
 
-from kohlrahbi.ahbsubtable import AhbSubTable
+from kohlrahbi.ahb.ahbsubtable import AhbSubTable
 from kohlrahbi.logger import logger
 
 keys_that_must_no_hold_any_values: set[str] = {

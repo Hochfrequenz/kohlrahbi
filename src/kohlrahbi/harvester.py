@@ -12,10 +12,10 @@ import pandas as pd
 import tomlkit
 from maus.edifact import EdifactFormat, get_format_of_pruefidentifikator
 
-from kohlrahbi.ahbtable import AhbTable
+from kohlrahbi.ahb.ahbtable import AhbTable
 from kohlrahbi.logger import logger
 from kohlrahbi.read_functions import get_ahb_table
-from kohlrahbi.unfoldedahbtable import UnfoldedAhb
+from kohlrahbi.unfoldedahb.unfoldedahbtable import UnfoldedAhb
 
 _pruefi_pattern = re.compile(r"^[1-9]\d{4}$")
 

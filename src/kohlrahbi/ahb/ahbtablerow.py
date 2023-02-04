@@ -7,7 +7,7 @@ import attrs
 import pandas as pd
 from docx.table import _Cell  # type:ignore[import]
 
-from kohlrahbi.cells import BedingungCell, BodyCell, EdifactStrukturCell
+from kohlrahbi.docxtablecells import BedingungCell, BodyCell, EdifactStrukturCell
 from kohlrahbi.row_type_checker import RowType
 from kohlrahbi.seed import Seed
 

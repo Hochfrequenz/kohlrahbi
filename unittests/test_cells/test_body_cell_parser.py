@@ -2,7 +2,7 @@ import pandas as pd
 import pytest  # type:ignore[import]
 from docx.shared import Length, Twips  # type:ignore[import]
 
-from kohlrahbi.cells import BodyCell
+from kohlrahbi.docxtablecells import BodyCell
 from unittests.cellparagraph import CellParagraph
 
 left_indent_length: Length = Twips(64)

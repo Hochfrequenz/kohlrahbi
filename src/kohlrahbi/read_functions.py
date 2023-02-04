@@ -15,11 +15,11 @@ from docx.table import Table, _Cell  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
 from maus.edifact import EdifactFormatVersion, get_edifact_format_version
 
-from kohlrahbi.ahbsubtable import AhbSubTable
-from kohlrahbi.ahbtable import AhbTable
+from kohlrahbi.ahb.ahbsubtable import AhbSubTable
+from kohlrahbi.ahb.ahbtable import AhbTable
 from kohlrahbi.logger import logger
 from kohlrahbi.seed import Seed
-from kohlrahbi.unfoldedahbtable import UnfoldedAhb
+from kohlrahbi.unfoldedahb.unfoldedahbtable import UnfoldedAhb
 
 
 def get_all_paragraphs_and_tables(parent: Union[Document, _Cell]) -> Generator[Union[Paragraph, Table], None, None]:

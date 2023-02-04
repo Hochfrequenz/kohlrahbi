@@ -2,7 +2,7 @@ import pandas as pd
 import pytest  # type:ignore[import]
 from docx.shared import Twips  # type:ignore[import]
 
-from kohlrahbi.cells import EdifactStrukturCell
+from kohlrahbi.docxtablecells import EdifactStrukturCell
 from unittests.cellparagraph import CellParagraph
 
 

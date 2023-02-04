@@ -1,6 +1,6 @@
 import pytest
 
-from kohlrahbi.unfoldedahbtable import UnfoldedAhb
+from kohlrahbi.unfoldedahb.unfoldedahbtable import UnfoldedAhb
 
 
 class TestUnfoldedAhbTable:

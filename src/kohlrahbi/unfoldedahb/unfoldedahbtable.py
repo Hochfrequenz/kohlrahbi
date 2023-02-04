@@ -16,10 +16,10 @@ from maus.models.anwendungshandbuch import (
 from maus.reader.flat_ahb_reader import FlatAhbCsvReader
 from more_itertools import peekable
 
-from kohlrahbi.ahbtable import AhbTable, keys_that_must_no_hold_any_values
+from kohlrahbi.ahb.ahbtable import AhbTable, keys_that_must_no_hold_any_values
 from kohlrahbi.logger import logger
-from kohlrahbi.unfoldedahbline import UnfoldedAhbLine
-from kohlrahbi.unfoldedahbtablemetadata import UnfoldedAhbTableMetaData
+from kohlrahbi.unfoldedahb.unfoldedahbline import UnfoldedAhbLine
+from kohlrahbi.unfoldedahb.unfoldedahbtablemetadata import UnfoldedAhbTableMetaData
 
 _segment_group_pattern = re.compile(r"^SG\d+$")
 

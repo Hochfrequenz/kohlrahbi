@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest  # type:ignore[import]
 
-from kohlrahbi.ahbtable import AhbTable
+from kohlrahbi.ahb.ahbtable import AhbTable
 
 
 @pytest.mark.parametrize(
