@@ -8,7 +8,6 @@ from typing import Any
 
 import click
 import docx  # type:ignore[import]
-import pandas as pd
 import tomlkit
 from maus.edifact import EdifactFormat, get_format_of_pruefidentifikator
 
@@ -79,7 +78,8 @@ def check_python_version():
     """
     if sys.version_info.major != 3 or sys.version_info.minor < 11:
         raise click.Abort(
-            f"Python >=3.11 is required to run this script but you use Python {sys.version_info.major}.{sys.version_info.minor}"
+            f"""Python >=3.11 is required to run this script but you use Python 
+{sys.version_info.major}.{sys.version_info.minor}"""
         )
 
 

@@ -1,7 +1,10 @@
+"""
+This module contains the UnfoldedAhbTable class.
+"""
+
 import json
 import re
 from pathlib import Path
-from typing import Union
 from uuid import uuid4
 
 import attrs
@@ -16,7 +19,7 @@ from maus.models.anwendungshandbuch import (
 from maus.reader.flat_ahb_reader import FlatAhbCsvReader
 from more_itertools import peekable
 
-from kohlrahbi.ahb.ahbtable import AhbTable, keys_that_must_no_hold_any_values
+from kohlrahbi.ahb.ahbtable import AhbTable, _column_letter_width_mapping, keys_that_must_no_hold_any_values
 from kohlrahbi.logger import logger
 from kohlrahbi.unfoldedahb.unfoldedahbline import UnfoldedAhbLine
 from kohlrahbi.unfoldedahb.unfoldedahbtablemetadata import UnfoldedAhbTableMetaData
@@ -39,6 +42,9 @@ class UnfoldedAhb:
 
     @classmethod
     def from_ahb_table(cls, ahb_table: AhbTable, pruefi: str):
+        """
+        This function creates an UnfoldedAhb from an AhbTable.
+        """
         unfolded_ahb_lines: list[UnfoldedAhbLine] = []
         index = 0
         current_section_name: str = ""
@@ -243,7 +249,9 @@ class UnfoldedAhb:
         return False
 
     def convert_to_flat_ahb(self) -> FlatAnwendungshandbuch:
-        x = self.convert_to_dataframe()
+        """
+        Converts the unfolded AHB to a flat AHB.
+        """
         meta = AhbMetaInformation(pruefidentifikator=self.meta_data.pruefidentifikator)
         lines: list[AhbLine] = []
 
@@ -255,7 +263,7 @@ class UnfoldedAhb:
                     segment_code=unfolded_ahb_line.segment,
                     data_element=unfolded_ahb_line.datenelement,
                     value_pool_entry=unfolded_ahb_line.code,
-                    name=unfolded_ahb_line.beschreibung,
+                    name=unfolded_ahb_line.beschreibung or unfolded_ahb_line.qualifier,
                     ahb_expression=unfolded_ahb_line.bedinung_ausdruck,
                     section_name=unfolded_ahb_line.segment_name,
                     index=unfolded_ahb_line.index,
@@ -265,6 +273,9 @@ class UnfoldedAhb:
         return FlatAnwendungshandbuch(meta=meta, lines=lines)
 
     def to_flatahb_json(self, output_directory_path: Path):
+        """
+        Converts the unfolded AHB to a flat AHB and writes it to a json file.
+        """
         edifact_format = get_format_of_pruefidentifikator(self.meta_data.pruefidentifikator)
         if edifact_format is None:
             logger.warning("'%s' is not a pruefidentifikator", self.meta_data.pruefidentifikator)
@@ -281,6 +292,9 @@ class UnfoldedAhb:
             json.dump(dump_data, file)
 
     def convert_to_dataframe(self) -> pd.DataFrame:
+        """
+        Converts the unfolded AHB to a pandas dataframe.
+        """
         unfolded_ahb_lines = [
             {
                 "Segmentname": unfolded_ahb_line.segment_name,
@@ -332,17 +346,6 @@ class UnfoldedAhb:
         excel_file_name = f"{self.meta_data.pruefidentifikator}.xlsx"
 
         df = self.convert_to_dataframe()
-
-        _column_letter_width_mapping: dict[str, Union[float, int]] = {
-            "A": 3.5,
-            "B": 47,
-            "C": 9,
-            "D": 14,
-            "E": 39,
-            "F": 33,
-            "G": 18,
-            "H": 102,
-        }
 
         try:
             # https://github.com/PyCQA/pylint/issues/3060 pylint: disable=abstract-class-instantiated

@@ -1,8 +1,7 @@
 from pathlib import Path
 
-import docx
-import pytest  # type: ignore[import]
-from docx.table import Table
+import docx  # type:ignore[import]
+from docx.table import Table  # type:ignore[import]
 
 from kohlrahbi.ahb.ahbsubtable import AhbSubTable
 from kohlrahbi.read_functions import get_all_paragraphs_and_tables
@@ -13,7 +12,7 @@ class TestAhbSubTable:
     All tests regarding the AhbSubTable class
     """
 
-    def test_from_table(self):
+    def test_from_table(self) -> None:
         """
         Test the instantiation of a AhbSubTable
         """

@@ -3,10 +3,8 @@ A collection of functions to get information from AHB tables.
 """
 import re
 from datetime import datetime
-from pathlib import Path
 from typing import Generator, Optional, Union
 
-import pandas as pd
 import pytz
 from docx.document import Document  # type:ignore[import]
 from docx.oxml.table import CT_Tbl  # type:ignore[import]
@@ -19,7 +17,6 @@ from kohlrahbi.ahb.ahbsubtable import AhbSubTable
 from kohlrahbi.ahb.ahbtable import AhbTable
 from kohlrahbi.logger import logger
 from kohlrahbi.seed import Seed
-from kohlrahbi.unfoldedahb.unfoldedahbtable import UnfoldedAhb
 
 
 def get_all_paragraphs_and_tables(parent: Union[Document, _Cell]) -> Generator[Union[Paragraph, Table], None, None]:

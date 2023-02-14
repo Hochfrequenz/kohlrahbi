@@ -1,3 +1,7 @@
+"""
+This module contains the AhbSubTable class.
+"""
+
 import attrs
 import pandas as pd
 from docx.table import Table as DocxTable  # type:ignore[import]
@@ -65,6 +69,9 @@ class AhbSubTable:
 
     @staticmethod
     def initialize_dataframe_with_columns(columns: list[str]):
+        """
+        Initialize a new dataframe with the given columns
+        """
         return pd.DataFrame(
             columns=columns,
             dtype="str",

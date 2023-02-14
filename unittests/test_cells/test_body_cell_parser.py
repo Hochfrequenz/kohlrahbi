@@ -135,7 +135,7 @@ class TestBodyCell:
     )
     def test_body_cell_parse_with_one_line(
         self, get_ahb_table_with_multiple_paragraphs, body_cell_paragraphs, expected_dataframe
-    ):
+    ) -> None:
         table = get_ahb_table_with_multiple_paragraphs(body_cell_paragraphs=body_cell_paragraphs)
 
         indicator_tabstop_positions: list[int] = [Twips(693), Twips(3088), Twips(4064), Twips(5026)]
@@ -324,7 +324,7 @@ class TestBodyCell:
     )
     def test_body_cell_parse_with_multiple_lines(
         self, get_ahb_table_with_multiple_paragraphs, body_cell_paragraphs, empty_ahb_row, expected_dataframe
-    ):
+    ) -> None:
         table = get_ahb_table_with_multiple_paragraphs(body_cell_paragraphs=body_cell_paragraphs)
 
         indicator_tabstop_positions: list[int] = [Twips(693), Twips(3088), Twips(4064), Twips(5026)]

@@ -22,6 +22,16 @@ keys_that_must_no_hold_any_values: set[str] = {
 }
 
 _segment_group_pattern = re.compile(r"^SG\d+$")
+_column_letter_width_mapping: dict[str, Union[float, int]] = {
+    "A": 3.5,
+    "B": 47,
+    "C": 9,
+    "D": 14,
+    "E": 39,
+    "F": 33,
+    "G": 18,
+    "H": 102,
+}
 
 
 @attrs.define(auto_attribs=True, kw_only=True)
@@ -34,7 +44,7 @@ class AhbTable:
 
     table: pd.DataFrame
 
-    def fill_segement_gruppe_segement_dataelement(self):
+    def fill_segement_gruppe_segement_dataelement(self) -> None:
         """
         For easier readability this functions adds the segment
 
@@ -73,10 +83,13 @@ class AhbTable:
                 row["Datenelement"] = latest_datenelement
 
     @classmethod
-    def from_ahb_sub_table(cls, ahb_sub_table: AhbSubTable):
+    def from_ahb_sub_table(cls, ahb_sub_table: AhbSubTable) -> "AhbTable":
+        """
+        Create an AHB table from an AHB sub table
+        """
         return cls(table=ahb_sub_table.table)
 
-    def append_ahb_sub_table(self, ahb_sub_table: AhbSubTable):
+    def append_ahb_sub_table(self, ahb_sub_table: AhbSubTable) -> None:
         """
         Append an AHB sub table to the AHB table
         """
@@ -85,7 +98,7 @@ class AhbTable:
         else:
             self.table = pd.concat([self.table, ahb_sub_table.table], ignore_index=True)
 
-    def sanitize(self):
+    def sanitize(self) -> None:
         """
         In some cases there is the content of one cell splitted in two.
         We need to merge the content into one cell and delete the deprecated cell afterwards.
@@ -119,14 +132,14 @@ class AhbTable:
                 )
             )
 
-            # TODO put the condition into a meaningful bool variable
-            if (
+            segment_gruppe_contains_multiple_lines = (
                 "Segment Gruppe" in row
                 and row["Segment Gruppe"]
                 and line_contains_only_segment_gruppe(row)
                 and not next_row["Segment Gruppe"].startswith("SG")
                 and not next_row["Segment"]
-            ):
+            )
+            if segment_gruppe_contains_multiple_lines:
                 merged_segment_gruppe_content = " ".join([row["Segment Gruppe"], next_row["Segment Gruppe"]])
                 row["Segment Gruppe"] = merged_segment_gruppe_content.strip()
 
@@ -143,7 +156,7 @@ class AhbTable:
         self.table.drop(lines_to_drop, inplace=True)
         self.table.reset_index(drop=True)
 
-    def to_csv(self, pruefi: str, path_to_output_directory: Path):
+    def to_csv(self, pruefi: str, path_to_output_directory: Path) -> None:
         """
         Dump a AHB table of a given pruefi into a csv file.
         """
@@ -164,7 +177,8 @@ class AhbTable:
         df_to_export.to_csv(csv_output_directory_path / f"{pruefi}.csv")
         logger.info("The csv file for %s is saved at %s", pruefi, csv_output_directory_path / f"{pruefi}.csv")
 
-    def to_xlsx(self, pruefi: str, path_to_output_directory: Path):
+    # pylint: disable=too-many-locals
+    def to_xlsx(self, pruefi: str, path_to_output_directory: Path) -> None:
         """
         Dump a AHB table of a given pruefi into an excel file.
         """
@@ -177,17 +191,6 @@ class AhbTable:
         columns_to_export = list(self.table.columns)[:5] + [pruefi]
         columns_to_export.append("Bedingung")
         df_to_export = self.table[columns_to_export]
-
-        _column_letter_width_mapping: dict[str, Union[float, int]] = {
-            "A": 3.5,
-            "B": 47,
-            "C": 9,
-            "D": 14,
-            "E": 39,
-            "F": 33,
-            "G": 18,
-            "H": 102,
-        }
 
         try:
             # https://github.com/PyCQA/pylint/issues/3060 pylint: disable=abstract-class-instantiated
