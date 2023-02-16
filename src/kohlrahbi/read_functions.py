@@ -108,7 +108,6 @@ def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
             seed is not None and pruefi not in seed.pruefidentifikatoren and searched_pruefi_is_found
         )
 
-        # @konstantin: Wie war nochmal die Reihenfolge in Python in der die Bedingungen geprüft werden?
         if we_reached_the_end_of_the_ahb_table_of_the_searched_pruefi:
             seed = None
             logger.info("🏁 We reached the end of the AHB table of the Prüfidentifikator '%s'", pruefi)
