@@ -21,11 +21,7 @@ class BedingungCell:
 
     def parse(self, ahb_row_dataframe: pd.DataFrame) -> pd.DataFrame:
         """
-        Parses a cell in the Bedingung column and puts the information into the appropriate column of the dataframe
-
-        Args:
-            bedingung_cell (_Cell): Cell from the Bedingung column
-            dataframe (pd.DataFrame): Saves all infos
+        Parses a cell in the Bedingung column and puts the information into the appropriate column of the dataframe.
         """
 
         bedingung = self.table_cell.text.replace("\n", " ")
