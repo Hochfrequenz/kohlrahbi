@@ -24,7 +24,7 @@ more-itertools==9.0.0
     # via maus
 numpy==1.24.1
     # via pandas
-openpyxl==3.0.10
+openpyxl==3.1.1
     # via -r requirements.in
 packaging==22.0
     # via marshmallow
@@ -40,5 +40,5 @@ six==1.16.0
     # via python-dateutil
 tomlkit==0.11.6
     # via -r requirements.in
-xlsxwriter==3.0.7
+xlsxwriter==3.0.8
     # via -r requirements.in
