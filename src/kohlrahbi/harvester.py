@@ -3,15 +3,16 @@ Main script of the Kohlrahbi
 """
 import re
 import sys
+from itertools import groupby
 from pathlib import Path
 from typing import Any
 
 import click
 import docx  # type:ignore[import]
 import tomlkit
-from maus.edifact import EdifactFormat, get_format_of_pruefidentifikator
 
 from kohlrahbi.ahb.ahbtable import AhbTable
+from kohlrahbi.ahbfilefinder import AhbFileFinder
 from kohlrahbi.logger import logger
 from kohlrahbi.read_functions import get_ahb_table
 from kohlrahbi.unfoldedahb.unfoldedahbtable import UnfoldedAhb
@@ -25,51 +26,6 @@ def get_valid_pruefis(list_of_pruefis: list[str]) -> list[str]:
     """
     valid_pruefis: list[str] = [pruefi for pruefi in list_of_pruefis if _pruefi_pattern.match(pruefi)]
     return valid_pruefis
-
-
-def get_all_ahb_docx_files(path_to_ahb_documents: Path) -> list[Path]:
-    """
-    Get all paths to the latest AHB docx files.
-    The latest files contain `LesefassungmitFehlerkorrekturen` in their file names.
-    """
-    return [
-        path
-        for path in path_to_ahb_documents.iterdir()
-        if path.is_file()
-        if path.suffix == ".docx"
-        if "AHB" in path.name
-        if "LesefassungmitFehlerkorrekturen" in path.name
-    ]
-
-
-def filter_docx_files_for_edifact_format(list_of_ahb_docx_paths: list[Path], edifact_format: EdifactFormat):
-    """
-    Filter the list of AHB docx paths for the given EDIFACT format
-    """
-
-    return [path for path in list_of_ahb_docx_paths if str(edifact_format) in path.name]
-
-
-def get_docx_files_which_may_contain_searched_pruefi(searched_pruefi: str, path_to_ahb_documents: Path) -> list[Path]:
-    """
-    This functions takes a pruefidentifikator and returns a list of docx files which can contain the searched pruefi.
-    Unfortunately, it is not clear in which docx the pruefidentifikator you are looking for is located.
-    A 11042 belongs to the UTILMD format. However, there are seven docx files that describe the UTILMD format.
-    A further reduction of the number of files is not possible with the pruefidentifikator only.
-    """
-
-    edifact_format = get_format_of_pruefidentifikator(searched_pruefi)
-    if edifact_format is None:
-        logger.exception("❌ There is no known format known for the prüfi '%s'.", searched_pruefi)
-        return []
-
-    docx_files_in_ahb_documents = get_all_ahb_docx_files(path_to_ahb_documents=path_to_ahb_documents)
-
-    filtered_docx_files_in_ahb_documents = filter_docx_files_for_edifact_format(
-        list_of_ahb_docx_paths=docx_files_in_ahb_documents, edifact_format=edifact_format
-    )
-
-    return filtered_docx_files_in_ahb_documents
 
 
 def check_python_version():
@@ -209,8 +165,11 @@ def harvest(
 
     for pruefi in valid_pruefis:
         logger.info("start looking for pruefi '%s'", pruefi)
-        ahb_file_paths: list[Path] = get_docx_files_which_may_contain_searched_pruefi(
-            searched_pruefi=pruefi, path_to_ahb_documents=input_path
+
+        ahb_file_finder = AhbFileFinder.from_input_path(input_path=input_path)
+
+        ahb_file_paths: list[Path] = ahb_file_finder.get_docx_files_which_may_contain_searched_pruefi(
+            searched_pruefi=pruefi
         )
 
         for ahb_file_path in ahb_file_paths:
