@@ -345,7 +345,8 @@ class UnfoldedAhb:
         df = self.convert_to_dataframe()
 
         try:
-            # https://github.com/PyCQA/pylint/issues/3060 pylint: disable=abstract-class-instantiated
+            # https://github.com/PyCQA/pylint/issues/3060
+            # pylint: disable=abstract-class-instantiated
             with pd.ExcelWriter(xlsx_output_directory_path / excel_file_name, engine="xlsxwriter") as writer:
                 df.to_excel(writer, sheet_name=f"{self.meta_data.pruefidentifikator}")
                 # pylint: disable=no-member
