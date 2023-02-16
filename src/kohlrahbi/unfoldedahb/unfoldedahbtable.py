@@ -46,13 +46,14 @@ class UnfoldedAhb:
         This function creates an UnfoldedAhb from an AhbTable.
         """
         unfolded_ahb_lines: list[UnfoldedAhbLine] = []
-        index = 0
         current_section_name: str = ""
 
         # we need to peek one iteration in front of us
         iterable_ahb_table = peekable(ahb_table.table.iterrows())
 
-        for _, row in iterable_ahb_table:
+        for index, series in enumerate(iterable_ahb_table):
+            row = series[1]
+
             current_section_name = UnfoldedAhb._get_section_name(
                 segment_gruppe_or_section_name=row["Segment Gruppe"], last_section_name=current_section_name
             )
@@ -80,7 +81,6 @@ class UnfoldedAhb:
                         bedingung=None,
                     )
                 )
-                index = index + 1
                 continue
 
             if UnfoldedAhb._is_segment_group(ahb_row=row):
@@ -117,7 +117,6 @@ class UnfoldedAhb:
                         bedingung=row["Beschreibung"],
                     )
                 )
-                index = index + 1
                 continue
 
             if UnfoldedAhb._is_just_segment(ahb_row=row):
@@ -138,7 +137,6 @@ class UnfoldedAhb:
                         bedingung=row["Beschreibung"],
                     )
                 )
-                index = index + 1
                 continue
 
             if UnfoldedAhb._is_dataelement(ahb_row=row):
@@ -165,7 +163,6 @@ class UnfoldedAhb:
                         bedingung=row["Beschreibung"],
                     )
                 )
-                index = index + 1
                 continue
 
         return cls(
