@@ -176,6 +176,10 @@ class AhbTable:
         Dump a AHB table of a given pruefi into an excel file.
         """
         edifact_format = get_format_of_pruefidentifikator(pruefi)
+        if edifact_format is None:
+            logger.warning("'%s' is not a pruefidentifikator", pruefi)
+            return
+
         xlsx_output_directory_path: Path = path_to_output_directory / "xlsx" / str(edifact_format)
         xlsx_output_directory_path.mkdir(parents=True, exist_ok=True)
 
