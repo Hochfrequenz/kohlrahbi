@@ -45,6 +45,7 @@ _validity_start_date_from_ahbname_pattern = re.compile(r"^.*(?P<germanLocalTimeS
 """
 https://regex101.com/r/g4wWrT/1
 This pattern is strictly coupled to the edi_energy_scraper.
+https://github.com/Hochfrequenz/edi_energy_scraper/blob/9cc6552d0bf655f98a09f0d3500a5736c68c9c01/src/edi_energy_scraper/__init__.py#L261
 """
 
 
