@@ -189,8 +189,10 @@ class UnfoldedAhb:
         Checks if the current AHB row is a section name.
         """
 
-        for row_key in keys_that_must_no_hold_any_values:
-            if ahb_row[row_key]:
+        for k, v in ahb_row.items():
+            if k == "Segment Gruppe":
+                continue
+            if v is not None and len(v.strip()) > 0:
                 return False
         return True
 

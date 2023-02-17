@@ -13,15 +13,6 @@ from more_itertools import peekable
 from kohlrahbi.ahb.ahbsubtable import AhbSubTable
 from kohlrahbi.logger import logger
 
-keys_that_must_no_hold_any_values: set[str] = {
-    "Segment",
-    "Datenelement",
-    "Codes und Qualifier",
-    "Beschreibung",
-    "Bedingung",
-}
-
-_segment_group_pattern = re.compile(r"^SG\d+$")
 _column_letter_width_mapping: dict[str, Union[float, int]] = {
     "A": 3.5,
     "B": 47,
@@ -107,10 +98,12 @@ class AhbTable:
 
         def line_contains_only_segment_gruppe(raw_line: pd.Series) -> bool:
             """
-            returns true if the given raw line only contains some meaningful data in the "Segment Gruppe" key
+            Returns true if the given raw line only contains some meaningful data in the "Segment Gruppe" key
             """
-            for row_key in keys_that_must_no_hold_any_values:
-                if row_key in raw_line and raw_line[row_key] is not None and len(raw_line[row_key].strip()) > 0:
+            for k, v in raw_line.items():
+                if k == "Segment Gruppe":
+                    continue
+                if v is not None and len(v.strip()) > 0:
                     return False
             return True
 
