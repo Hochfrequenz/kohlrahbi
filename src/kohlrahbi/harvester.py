@@ -115,15 +115,11 @@ def load_all_known_pruefis_from_file(
     Loads the file which contains all known Prüfidentifikatoren.
     """
 
-    # would be happy for name suggestions for "loaded_toml"
-    # it contains only two sections: meta_data and content
-    # meta_data holds the updated_on date
-    # content a list of all known pruefis
     with open(path_to_all_known_pruefis, "rb") as file:
-        loaded_toml: dict[str, Any] = tomlkit.load(file)
+        state_of_kohlrahbi: dict[str, Any] = tomlkit.load(file)
 
-    meta_data_section = loaded_toml.get("meta_data")
-    content_section = loaded_toml.get("content")
+    meta_data_section = state_of_kohlrahbi.get("meta_data")
+    content_section = state_of_kohlrahbi.get("content")
 
     if meta_data_section is None:
         click.secho(f"There is no 'meta_data' section in the provided toml file: {path_to_all_known_pruefis}", fg="red")
