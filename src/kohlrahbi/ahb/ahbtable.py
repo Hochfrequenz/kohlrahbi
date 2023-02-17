@@ -33,7 +33,7 @@ class AhbTable:
 
     table: pd.DataFrame
 
-    def fill_segement_gruppe_segement_dataelement(self) -> None:
+    def fill_segment_gruppe_segment_dataelement(self) -> None:
         """
         For easier readability this functions adds the segment
 
@@ -160,7 +160,7 @@ class AhbTable:
         csv_output_directory_path = path_to_output_directory / "csv" / str(edifact_format)
         csv_output_directory_path.mkdir(parents=True, exist_ok=True)
 
-        self.fill_segement_gruppe_segement_dataelement()
+        self.fill_segment_gruppe_segment_dataelement()
 
         columns_to_export = list(self.table.columns)[:5] + [pruefi]
         columns_to_export.append("Bedingung")
