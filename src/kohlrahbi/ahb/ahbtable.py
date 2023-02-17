@@ -1,9 +1,8 @@
 """
 This module provides the AhbTable class
 """
-import re
 from pathlib import Path
-from typing import Optional, Union
+from typing import Union
 
 import attrs
 import pandas as pd
@@ -92,10 +91,10 @@ class AhbTable:
         """
         Returns true if the given raw line only contains some meaningful data in the "Segment Gruppe" key
         """
-        for k, v in raw_line.items():
-            if k == "Segment Gruppe":
+        for key, value in raw_line.items():
+            if key == "Segment Gruppe":
                 continue
-            if v is not None and len(v.strip()) > 0:
+            if value is not None and len(value.strip()) > 0:
                 return False
         return True
 
