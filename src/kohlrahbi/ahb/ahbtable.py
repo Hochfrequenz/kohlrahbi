@@ -103,7 +103,7 @@ class AhbTable:
         In some cases there is the content of one cell splitted in two.
         We need to merge the content into one cell and delete the deprecated cell afterwards.
         """
-        lines_to_drop: list[int] = []
+        index_of_lines_to_drop: list[int] = []
 
         iterable_ahb_table = peekable(self.table.iterrows())
 
@@ -138,13 +138,13 @@ class AhbTable:
                     if index_of_next_row == 0:
                         # this case is only for the first and last row. These lines should not get deleted.
                         continue
-                    lines_to_drop.append(index_of_next_row)
+                    index_of_lines_to_drop.append(index_of_next_row)
                 else:
                     raise TypeError(
                         f"The 'index_of_next_row' must by of type `int` but it is '{type(index_of_next_row)}'"
                     )
 
-        self.table.drop(lines_to_drop, inplace=True)
+        self.table.drop(index_of_lines_to_drop, inplace=True)
         self.table.reset_index(drop=True)
 
     def to_csv(self, pruefi: str, path_to_output_directory: Path) -> None:
