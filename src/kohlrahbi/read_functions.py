@@ -120,9 +120,10 @@ def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
             seed = Seed.from_table(docx_table=item)
             logger.info("Found a table with the following pruefis: %s", seed.pruefidentifikatoren)
 
-            if pruefi in seed.pruefidentifikatoren and not is_ahb_table_initialized:
+            searched_pruefi_is_found = pruefi in seed.pruefidentifikatoren and not is_ahb_table_initialized
+
+            if searched_pruefi_is_found:
                 logger.info("👀 Found the AHB table with the Prüfidentifkator you are looking for %s", pruefi)
-                searched_pruefi_is_found = True
                 logger.info("✨ Initializing new ahb table")
 
                 ahb_sub_table = AhbSubTable.from_table_with_header(docx_table=item)
