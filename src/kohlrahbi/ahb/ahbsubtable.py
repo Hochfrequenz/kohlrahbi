@@ -23,7 +23,9 @@ class AhbSubTable:
     table: pd.DataFrame
 
     @staticmethod
-    def _parse_docx_table(table_meta_data: Seed, ahb_table_dataframe: pd.DataFrame, docx_table: DocxTable):
+    def _parse_docx_table(
+        table_meta_data: Seed, ahb_table_dataframe: pd.DataFrame, docx_table: DocxTable
+    ) -> pd.DataFrame:
         for row in docx_table.rows:
             sanitized_row = list(AhbSubTable._iter_visible_cells(row=row))
 
