@@ -80,7 +80,7 @@ class AhbTable:
 
     def append_ahb_sub_table(self, ahb_sub_table: AhbSubTable) -> None:
         """
-        Append an AHB sub table to the AHB table
+        Append an AHB sub table to this AHB table instance
         """
         if self.table is None:
             self.table = ahb_sub_table.table
