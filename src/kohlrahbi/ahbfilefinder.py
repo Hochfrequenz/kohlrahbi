@@ -44,7 +44,11 @@ class AhbFileFinder:
                 result.append(group[0])
             else:
                 for path in group:
-                    if "KonsolidierteLesefassungmitFehlerkorrekturen" in path.name:
+                    error_corrected_version_is_present = (
+                        "KonsolidierteLesefassungmitFehlerkorrekturen" in path.name
+                        or "AußerordentlicheVeröffentlichung" in path.name
+                    )
+                    if error_corrected_version_is_present:
                         result.append(path)
 
         self.paths_to_docx_files = result
