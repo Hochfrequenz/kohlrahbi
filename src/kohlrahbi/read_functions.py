@@ -74,7 +74,6 @@ def does_the_table_contain_pruefidentifikatoren(table: Table) -> bool:
     return table.cell(row_idx=0, col_idx=0).text == "EDIFACT Struktur"
 
 
-# pylint: disable=inconsistent-return-statements
 def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
     """
     Reads a docx file and extracts all information for each Prüfidentifikator.
