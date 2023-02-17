@@ -174,6 +174,8 @@ class AhbTable:
     def to_xlsx(self, pruefi: str, path_to_output_directory: Path) -> None:
         """
         Dump a AHB table of a given pruefi into an excel file.
+        The excel file will be saved in the following directory structure:
+            <path_to_output_directory>/xlsx/<edifact_format>/<pruefi>.xlsx
         """
         edifact_format = get_format_of_pruefidentifikator(pruefi)
         if edifact_format is None:
