@@ -70,7 +70,7 @@ def does_the_table_contain_pruefidentifikatoren(table: Table) -> bool:
     Checks if the given table is a AHB table with pruefidentifikatoren.
     """
 
-    return table.cell(row_idx=0, col_idx=0).text == "EDIFACT Struktur"
+    return table.cell(row_idx=0, col_idx=0).text.strip() == "EDIFACT Struktur"
 
 
 # pylint: disable=inconsistent-return-statements
@@ -119,7 +119,7 @@ def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
             logger.info("Found a table with the following pruefis: %s", seed.pruefidentifikatoren)
 
             if pruefi in seed.pruefidentifikatoren and not is_ahb_table_initialized:
-                logger.info("👀 Found the AHB table with the Prüfidentifkator you are looking for %s", pruefi)
+                logger.info("👀 Found the AHB table with the Prüfidentifkator you are looking for %s in file ", pruefi)
                 searched_pruefi_is_found = True
                 logger.info("✨ Initializing new ahb table")
 
