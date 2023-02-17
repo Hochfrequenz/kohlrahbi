@@ -28,9 +28,7 @@ _column_letter_width_mapping: dict[str, Union[float, int]] = {
 @attrs.define(auto_attribs=True, kw_only=True)
 class AhbTable:
     """
-    This class contains the docx table and class with the table meta data.
-    Seed contains meta data about the ahb table like the left indent or which prüfis are in the current ahb table.
-    The table is the read table from the docx file.
+    This class contains the AHB table as you see it in the AHB documents, but in a machine readable format.
     """
 
     table: pd.DataFrame
