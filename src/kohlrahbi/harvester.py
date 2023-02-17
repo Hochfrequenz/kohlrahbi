@@ -205,7 +205,7 @@ def harvest(
                 logger.exception("There was an error opening the file '%s'", ahb_file_path, exc_info=True)
                 raise click.Abort() from ioe
 
-            logger.info("start reading docx file(s)")
+            logger.info("start reading docx file(s) '%s'", str(ahb_file_path))
 
             ahb_table: AhbTable | None = get_ahb_table(
                 document=doc,
