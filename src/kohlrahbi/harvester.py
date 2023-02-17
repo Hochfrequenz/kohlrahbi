@@ -27,14 +27,14 @@ def get_valid_pruefis(list_of_pruefis: list[str]) -> list[str]:
     return valid_pruefis
 
 
-def get_all_ahb_docx_files(path_to_ahb_documents: Path) -> list[Path]:
+def get_all_ahb_docx_files(path_to_ahb_documents_directory: Path) -> list[Path]:
     """
     Get all paths to the latest AHB docx files.
     The latest files contain `LesefassungmitFehlerkorrekturen` in their file names.
     """
     return [
         path
-        for path in path_to_ahb_documents.iterdir()
+        for path in path_to_ahb_documents_directory.iterdir()
         if path.is_file()
         if path.suffix == ".docx"
         if "AHB" in path.name
@@ -63,7 +63,7 @@ def get_docx_files_which_may_contain_searched_pruefi(searched_pruefi: str, path_
         logger.exception("❌ There is no known format known for the prüfi '%s'.", searched_pruefi)
         return []
 
-    docx_files_in_ahb_documents = get_all_ahb_docx_files(path_to_ahb_documents=path_to_ahb_documents)
+    docx_files_in_ahb_documents = get_all_ahb_docx_files(path_to_ahb_documents_directory=path_to_ahb_documents)
 
     filtered_docx_files_in_ahb_documents = filter_docx_files_for_edifact_format(
         list_of_ahb_docx_paths=docx_files_in_ahb_documents, edifact_format=edifact_format
