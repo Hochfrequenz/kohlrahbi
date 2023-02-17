@@ -3,7 +3,6 @@ Main script of the Kohlrahbi
 """
 import re
 import sys
-from itertools import groupby
 from pathlib import Path
 from typing import Any
 

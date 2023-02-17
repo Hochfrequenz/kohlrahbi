@@ -23,8 +23,6 @@ all_pruefis: list[str] = []
 path_to_ahb_documents: Path = Path.cwd().parent / Path("edi_energy_mirror/edi_energy_de/current")
 
 for edifact_format in EdifactFormat:
-    docx_files_in_ahb_documents = get_all_ahb_docx_files(path_to_ahb_documents_directory=path_to_ahb_documents)
-
     ahb_file_finder = AhbFileFinder.from_input_path(input_path=path_to_ahb_documents)
 
     ahb_file_finder.filter_for_latest_ahb_docx_files()

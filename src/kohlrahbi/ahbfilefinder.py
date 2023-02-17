@@ -1,3 +1,7 @@
+"""
+This module contains the AhbFileFinder class.
+"""
+
 from itertools import groupby
 from pathlib import Path
 
@@ -26,6 +30,15 @@ class AhbFileFinder:
         ]
         return cls(paths_to_docx_files=ahb_file_paths)
 
+    @staticmethod
+    def get_first_part_of_ahb_docx_file_name(path_to_ahb_document: Path) -> str:
+        """
+        Return the first part of the AHB docx file name.
+        The first part contains the information about the EDIFACT formats.
+        """
+
+        return path_to_ahb_document.name.split("-")[0]
+
     def filter_for_latest_ahb_docx_files(self):
         """
         Filter the list of AHB docx paths for the latest AHB docx files.
@@ -33,10 +46,12 @@ class AhbFileFinder:
         """
         result: list[Path] = []
 
-        key_func = lambda path: path.name.split("-")[0]
         groups = {}
 
-        for key, group in groupby(sorted(self.paths_to_docx_files, key=key_func), key_func):
+        for key, group in groupby(
+            sorted(self.paths_to_docx_files, key=AhbFileFinder.get_first_part_of_ahb_docx_file_name),
+            AhbFileFinder.get_first_part_of_ahb_docx_file_name,
+        ):
             groups[key] = list(group)
 
         for group in groups.values():
@@ -62,7 +77,7 @@ class AhbFileFinder:
 
     def get_docx_files_which_may_contain_searched_pruefi(self, searched_pruefi: str) -> list[Path]:
         """
-        This functions takes a pruefidentifikator and returns a list of docx files which can contain the searched pruefi.
+        This functions takes a pruefidentifikator and returns a list of docx files which can contain the searched pruefi
         Unfortunately, it is not clear in which docx the pruefidentifikator you are looking for is located.
         A 11042 belongs to the UTILMD format. However, there are seven docx files that describe the UTILMD format.
         A further reduction of the number of files is not possible with the pruefidentifikator only.
