@@ -39,16 +39,18 @@ class AhbTableRow:
             return None
 
         ahb_row_dataframe = pd.DataFrame(
+            # pylint: disable=no-member
             columns=self.seed.column_headers,
             dtype="str",
         )
-        # pylint: disable=unsubscriptable-object
+        # pylint: disable=unsubscriptable-object, no-member
         empty_row: pd.Series[str] = pd.Series(len(ahb_row_dataframe.columns) * [""], index=self.seed.column_headers)
 
         ahb_row_dataframe = pd.concat([ahb_row_dataframe, empty_row.to_frame().T], ignore_index=True)
 
         # EDIFACT STRUKTUR
         esc: EdifactStrukturCell = EdifactStrukturCell(
+            # pylint: disable=no-member
             table_cell=self.edifact_struktur_cell,
             edifact_struktur_cell_left_indent_position=self.seed.edifact_struktur_left_indent_position,
         )
@@ -56,6 +58,7 @@ class AhbTableRow:
 
         # BODY
         boc: BodyCell = BodyCell(
+            # pylint: disable=no-member
             table_cell=self.middle_cell,
             left_indent_position=self.seed.middle_cell_left_indent_position,
             indicator_tabstop_positions=self.seed.tabstop_positions,
