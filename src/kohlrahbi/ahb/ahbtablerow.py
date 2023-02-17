@@ -3,8 +3,8 @@ This module contains the class AhbTableRow
 """
 from typing import Optional
 
-import attrs
 import pandas as pd
+from attrs import define, field, validators
 from docx.table import _Cell  # type:ignore[import]
 
 from kohlrahbi.docxtablecells import BedingungCell, BodyCell, EdifactStrukturCell
@@ -13,17 +13,17 @@ from kohlrahbi.seed import Seed
 
 
 # pylint:disable=too-few-public-methods
-@attrs.define(auto_attribs=True, kw_only=True)
+@define(auto_attribs=True, kw_only=True)
 class AhbTableRow:
     """
     A AhbTableRow is a single row from an AHB table.
     It contains a seed and the three cells (columns).
     """
 
-    seed: Seed
-    edifact_struktur_cell: _Cell
-    middle_cell: _Cell
-    bedingung_cell: _Cell
+    seed: Seed = field(validator=validators.instance_of(Seed))
+    edifact_struktur_cell: _Cell = field(validator=validators.instance_of(_Cell))
+    middle_cell: _Cell = field(validator=validators.instance_of(_Cell))
+    bedingung_cell: _Cell = field(validator=validators.instance_of(_Cell))
 
     def parse(
         self,
