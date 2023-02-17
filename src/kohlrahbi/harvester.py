@@ -223,10 +223,10 @@ def harvest(
                     unfolded_ahb.to_xlsx(path_to_output_directory=output_directory_path)
 
                 if "flatahb" in file_type:
-                    unfolded_ahb.to_flatahb_json(output_directory_path=output_directory_path)
+                    unfolded_ahb.dump_flatahb_json(output_directory_path=output_directory_path)
 
                 if "csv" in file_type:
-                    unfolded_ahb.to_csv(path_to_output_directory=output_directory_path)
+                    unfolded_ahb.dump_csv(path_to_output_directory=output_directory_path)
 
                 break
 

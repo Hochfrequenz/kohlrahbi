@@ -267,9 +267,11 @@ class UnfoldedAhb:
 
         return FlatAnwendungshandbuch(meta=meta, lines=lines)
 
-    def to_flatahb_json(self, output_directory_path: Path):
+    def dump_flatahb_json(self, output_directory_path: Path) -> None:
         """
         Converts the unfolded AHB to a flat AHB and writes it to a json file.
+        The file will be stored in the directory:
+            'output_directory_path/flatahb/<edifact_format>/<pruefidentifikator>.json'
         """
         edifact_format = get_format_of_pruefidentifikator(self.meta_data.pruefidentifikator)
         if edifact_format is None:
@@ -309,9 +311,11 @@ class UnfoldedAhb:
         df.fillna(value="", inplace=True)
         return df
 
-    def to_csv(self, path_to_output_directory: Path):
+    def dump_csv(self, path_to_output_directory: Path):
         """
         Dump a UnfoldedAHB table into a csv file.
+        The file will be stored in the directory:
+            'path_to_output_directory/csv/<edifact_format>/<pruefidentifikator>.csv'
         """
         df = self.convert_to_dataframe()
 
