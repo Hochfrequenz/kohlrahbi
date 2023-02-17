@@ -52,9 +52,9 @@ class AhbTable:
         Nachrichten-Kopfsegment     UNH    0062
         """
 
-        latest_segement_gruppe: Optional[str] = ""
-        latest_segement: Optional[str] = ""
-        latest_datenelement: Optional[str] = ""
+        latest_segement_gruppe: str = ""
+        latest_segement: str = ""
+        latest_datenelement: str = ""
 
         for _, row in self.table.iterrows():
             if row["Segment Gruppe"] != "":
