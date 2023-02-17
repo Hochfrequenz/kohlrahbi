@@ -72,7 +72,7 @@ class AhbSubTable:
         return ahb_table_dataframe
 
     @staticmethod
-    def initialize_dataframe_with_columns(columns: list[str]):
+    def initialize_dataframe_with_columns(columns: list[str]) -> pd.DataFrame:
         """
         Initialize a new dataframe with the given columns
         """
@@ -88,8 +88,6 @@ class AhbSubTable:
         """
 
         ahb_table_meta_data = Seed.from_table(docx_table=docx_table)
-
-        # ahb_sub_table = cls.parse(docx_table=docx_table, ahb_table_meta_data=table_meta_data)
 
         ahb_table_dataframe = AhbSubTable.initialize_dataframe_with_columns(columns=ahb_table_meta_data.column_headers)
 
