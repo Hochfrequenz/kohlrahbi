@@ -77,6 +77,8 @@ def does_the_table_contain_pruefidentifikatoren(table: Table) -> bool:
 def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
     """
     Reads a docx file and extracts all information for each Prüfidentifikator.
+    If the Prüfidentifikator is not found or we reached the end of the AHB document
+    - indicated by the section 'Änderungshistorie' - it returns None.
 
     Args:
         document (Document): AHB word document which is read by python-docx package
