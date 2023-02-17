@@ -583,7 +583,7 @@ class TestAhbTable:
         actual_ahb_table = AhbTable(table=example_dataframe)
         expected_ahb_table = AhbTable(table=expected_dataframe)
 
-        actual_ahb_table.fill_segement_gruppe_segement_dataelement()
+        actual_ahb_table.fill_segment_gruppe_segment_dataelement()
 
         # in case of debugging this test I can recommend the following command
         # diff = actual_ahb_table.table.eq(expected_ahb_table.table)

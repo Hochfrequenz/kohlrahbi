@@ -37,7 +37,9 @@ class BodyCell:
             tabstop_positions (List[int]): All tabstop positions of the indicator middle cell
         """
 
-        if self.table_cell.paragraphs[0].text == "":
+        cell_is_empty = self.table_cell.paragraphs[0].text == ""
+
+        if cell_is_empty:
             return ahb_row_dataframe
 
         is_first_iteration = True

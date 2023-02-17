@@ -17,8 +17,13 @@ from kohlrahbi.seed import Seed
 
 all_pruefis: list[str] = []
 
+# You have to clone the edi_energy_mirror repository and define the path to the current folder.
+# https://github.com/Hochfrequenz/edi_energy_mirror
+# Just put it next to the kohlrahbi repository.
+path_to_ahb_documents: Path = Path.cwd().parent / Path("edi_energy_mirror/edi_energy_de/current")
+
 for edifact_format in EdifactFormat:
-    path_to_ahb_documents: Path = Path("/Users/kevin/workspaces/hochfrequenz/edi_energy_mirror/edi_energy_de/current")
+    docx_files_in_ahb_documents = get_all_ahb_docx_files(path_to_ahb_documents_directory=path_to_ahb_documents)
 
     ahb_file_finder = AhbFileFinder.from_input_path(input_path=path_to_ahb_documents)
 

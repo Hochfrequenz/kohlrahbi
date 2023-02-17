@@ -2,6 +2,8 @@
 This module contains the AhbSubTable class.
 """
 
+from typing import Generator
+
 import attrs
 import pandas as pd
 from docx.table import Table as DocxTable  # type:ignore[import]
@@ -23,7 +25,9 @@ class AhbSubTable:
     table: pd.DataFrame
 
     @staticmethod
-    def _parse_docx_table(table_meta_data: Seed, ahb_table_dataframe: pd.DataFrame, docx_table: DocxTable):
+    def _parse_docx_table(
+        table_meta_data: Seed, ahb_table_dataframe: pd.DataFrame, docx_table: DocxTable
+    ) -> pd.DataFrame:
         for row in docx_table.rows:
             sanitized_row = list(AhbSubTable._iter_visible_cells(row=row))
 
@@ -63,12 +67,14 @@ class AhbSubTable:
 
                 ahb_table_row.parse(row_type=table_meta_data.last_two_row_types[1])
 
+            # An AhbSubTable can go over two pages. But the header is on all pages at the top.
+            # So we have to recognize the last two row types to be able to handle the page break situation.
             table_meta_data.last_two_row_types[1] = table_meta_data.last_two_row_types[0]
             table_meta_data.last_two_row_types[0] = current_row_type
         return ahb_table_dataframe
 
     @staticmethod
-    def initialize_dataframe_with_columns(columns: list[str]):
+    def initialize_dataframe_with_columns(columns: list[str]) -> pd.DataFrame:
         """
         Initialize a new dataframe with the given columns
         """
@@ -84,8 +90,6 @@ class AhbSubTable:
         """
 
         ahb_table_meta_data = Seed.from_table(docx_table=docx_table)
-
-        # ahb_sub_table = cls.parse(docx_table=docx_table, ahb_table_meta_data=table_meta_data)
 
         ahb_table_dataframe = AhbSubTable.initialize_dataframe_with_columns(columns=ahb_table_meta_data.column_headers)
 
@@ -114,7 +118,7 @@ class AhbSubTable:
         return cls(table_meta_data=tmd, table=ahb_table_dataframe)
 
     @staticmethod
-    def _iter_visible_cells(row):
+    def _iter_visible_cells(row) -> Generator[_Cell, None, None]:
         """
         This function makes sure that you will iterate over the cells you see in the word document.
         For more information go to https://github.com/python-openxml/python-docx/issues/970#issuecomment-877386927

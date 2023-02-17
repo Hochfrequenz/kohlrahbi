@@ -4,6 +4,6 @@ colorlog
 openpyxl
 pandas
 python-docx
+tomlkit
 XlsxWriter
 maus>=0.1.23
-tomlkit

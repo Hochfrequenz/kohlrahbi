@@ -19,7 +19,7 @@ from maus.models.anwendungshandbuch import (
 from maus.reader.flat_ahb_reader import FlatAhbCsvReader
 from more_itertools import peekable
 
-from kohlrahbi.ahb.ahbtable import AhbTable, _column_letter_width_mapping, keys_that_must_no_hold_any_values
+from kohlrahbi.ahb.ahbtable import AhbTable, _column_letter_width_mapping
 from kohlrahbi.logger import logger
 from kohlrahbi.unfoldedahb.unfoldedahbline import UnfoldedAhbLine
 from kohlrahbi.unfoldedahb.unfoldedahbtablemetadata import UnfoldedAhbTableMetaData
@@ -31,8 +31,8 @@ _segment_group_pattern = re.compile(r"^SG\d+$")
 class UnfoldedAhb:
     """
     The UnfoldedAhb contains one Prüfidentifikator.
-    Some columns in the AHB documents contain multiple information like Segmentname and Segmentgruppe.
-    This class unfolds these columns with multiple information.
+    Some columns in the AHB documents contain multiple information in one column e.g. Segmentname and Segmentgruppe.
+    The unfolded classes add new columns/attribues to avoid the duplication of information in one column.
     """
 
     meta_data: UnfoldedAhbTableMetaData
@@ -187,12 +187,10 @@ class UnfoldedAhb:
     def _is_section_name(ahb_row: pd.Series) -> bool:
         """
         Checks if the current AHB row is a section name.
+        It uses the same logic as the function 'line_contains_only_segment_gruppe'
+        So to avoid duplicate code, this function just calls the other function.
         """
-
-        for row_key in keys_that_must_no_hold_any_values:
-            if ahb_row[row_key]:
-                return False
-        return True
+        return AhbTable.line_contains_only_segment_gruppe(ahb_row)
 
     @staticmethod
     def _is_segment_group(ahb_row: pd.Series) -> bool:
@@ -275,9 +273,11 @@ class UnfoldedAhb:
             )
             raise e
 
-    def to_flatahb_json(self, output_directory_path: Path):
+    def dump_flatahb_json(self, output_directory_path: Path) -> None:
         """
         Converts the unfolded AHB to a flat AHB and writes it to a json file.
+        The file will be stored in the directory:
+            'output_directory_path/flatahb/<edifact_format>/<pruefidentifikator>.json'
         """
         edifact_format = get_format_of_pruefidentifikator(self.meta_data.pruefidentifikator)
         if edifact_format is None:
@@ -317,9 +317,11 @@ class UnfoldedAhb:
         df.fillna(value="", inplace=True)
         return df
 
-    def to_csv(self, path_to_output_directory: Path):
+    def dump_csv(self, path_to_output_directory: Path) -> None:
         """
         Dump a UnfoldedAHB table into a csv file.
+        The file will be stored in the directory:
+            'path_to_output_directory/csv/<edifact_format>/<pruefidentifikator>.csv'
         """
         df = self.convert_to_dataframe()
 
@@ -338,9 +340,11 @@ class UnfoldedAhb:
             csv_output_directory_path / f"{self.meta_data.pruefidentifikator}.csv",
         )
 
-    def to_xlsx(self, path_to_output_directory: Path):
+    def dump_xlsx(self, path_to_output_directory: Path) -> None:
         """
         Dump a AHB table of a given pruefi into an excel file.
+        The file will be stored in the directory:
+            'path_to_output_directory/xlsx/<edifact_format>/<pruefidentifikator>.xlsx'
         """
         edifact_format = get_format_of_pruefidentifikator(self.meta_data.pruefidentifikator)
         xlsx_output_directory_path: Path = path_to_output_directory / "xlsx" / str(edifact_format)

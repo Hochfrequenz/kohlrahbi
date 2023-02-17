@@ -22,7 +22,7 @@ _pruefi_pattern = re.compile(r"^[1-9]\d{4}$")
 
 def get_valid_pruefis(list_of_pruefis: list[str]) -> list[str]:
     """
-    This function returns only pruefis which match the pruefi_pattern.
+    This function returns a new list with only those pruefis which match the pruefi_pattern.
     """
     valid_pruefis: list[str] = [pruefi for pruefi in list_of_pruefis if _pruefi_pattern.match(pruefi)]
     return valid_pruefis
@@ -37,16 +37,6 @@ def check_python_version():
             f"""Python >=3.11 is required to run this script but you use Python
 {sys.version_info.major}.{sys.version_info.minor}"""
         )
-
-
-def check_input_path(path: Path) -> None:
-    """
-    Checks if the given path exists.
-    Iff it does NOT exist a error message gets printed to inform the user.
-    """
-    if not path.exists():
-        click.secho("⚠️ The input directory does not exist.", fg="red")
-        raise click.Abort()
 
 
 def check_output_path(path: Path) -> None:
@@ -81,15 +71,11 @@ def load_all_known_pruefis_from_file(
     Loads the file which contains all known Prüfidentifikatoren.
     """
 
-    # would be happy for name suggestions for "loaded_toml"
-    # it contains only two sections: meta_data and content
-    # meta_data holds the updated_on date
-    # content a list of all known pruefis
     with open(path_to_all_known_pruefis, "rb") as file:
-        loaded_toml: dict[str, Any] = tomlkit.load(file)
+        state_of_kohlrahbi: dict[str, Any] = tomlkit.load(file)
 
-    meta_data_section = loaded_toml.get("meta_data")
-    content_section = loaded_toml.get("content")
+    meta_data_section = state_of_kohlrahbi.get("meta_data")
+    content_section = state_of_kohlrahbi.get("content")
 
     if meta_data_section is None:
         click.secho(f"There is no 'meta_data' section in the provided toml file: {path_to_all_known_pruefis}", fg="red")
@@ -142,8 +128,6 @@ def harvest(
     """
     check_python_version()
 
-    check_input_path(path=input_path)
-
     check_output_path(path=output_path)
 
     output_directory_path: Path = Path.cwd() / Path("output")
@@ -180,7 +164,7 @@ def harvest(
                 logger.exception("There was an error opening the file '%s'", ahb_file_path, exc_info=True)
                 raise click.Abort() from ioe
 
-            logger.info("start reading docx file(s)")
+            logger.info("start reading docx file(s) '%s'", str(ahb_file_path))
 
             ahb_table: AhbTable | None = get_ahb_table(
                 document=doc,
@@ -195,13 +179,13 @@ def harvest(
 
                 logger.info("💾 Saving files %s \n", pruefi)
                 if "xlsx" in file_type:
-                    unfolded_ahb.to_xlsx(path_to_output_directory=output_directory_path)
+                    unfolded_ahb.dump_xlsx(path_to_output_directory=output_directory_path)
 
                 if "flatahb" in file_type:
-                    unfolded_ahb.to_flatahb_json(output_directory_path=output_directory_path)
+                    unfolded_ahb.dump_flatahb_json(output_directory_path=output_directory_path)
 
                 if "csv" in file_type:
-                    unfolded_ahb.to_csv(path_to_output_directory=output_directory_path)
+                    unfolded_ahb.dump_csv(path_to_output_directory=output_directory_path)
 
                 break
 

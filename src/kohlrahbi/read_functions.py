@@ -45,6 +45,7 @@ _validity_start_date_from_ahbname_pattern = re.compile(r"^.*(?P<germanLocalTimeS
 """
 https://regex101.com/r/g4wWrT/1
 This pattern is strictly coupled to the edi_energy_scraper.
+https://github.com/Hochfrequenz/edi_energy_scraper/blob/9cc6552d0bf655f98a09f0d3500a5736c68c9c01/src/edi_energy_scraper/__init__.py#L261
 """
 
 
@@ -73,10 +74,11 @@ def does_the_table_contain_pruefidentifikatoren(table: Table) -> bool:
     return table.cell(row_idx=0, col_idx=0).text.strip() == "EDIFACT Struktur"
 
 
-# pylint: disable=inconsistent-return-statements
 def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
     """
     Reads a docx file and extracts all information for each Prüfidentifikator.
+    If the Prüfidentifikator is not found or we reached the end of the AHB document
+    - indicated by the section 'Änderungshistorie' - it returns None.
 
     Args:
         document (Document): AHB word document which is read by python-docx package
@@ -118,9 +120,10 @@ def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
             seed = Seed.from_table(docx_table=item)
             logger.info("Found a table with the following pruefis: %s", seed.pruefidentifikatoren)
 
-            if pruefi in seed.pruefidentifikatoren and not is_ahb_table_initialized:
-                logger.info("👀 Found the AHB table with the Prüfidentifkator you are looking for %s in file ", pruefi)
-                searched_pruefi_is_found = True
+            searched_pruefi_is_found = pruefi in seed.pruefidentifikatoren and not is_ahb_table_initialized
+
+            if searched_pruefi_is_found:
+                logger.info("👀 Found the AHB table with the Prüfidentifkator you are looking for %s", pruefi)
                 logger.info("✨ Initializing new ahb table")
 
                 ahb_sub_table = AhbSubTable.from_table_with_header(docx_table=item)

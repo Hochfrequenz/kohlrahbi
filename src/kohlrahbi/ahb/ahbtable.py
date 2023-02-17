@@ -1,9 +1,8 @@
 """
 This module provides the AhbTable class
 """
-import re
 from pathlib import Path
-from typing import Optional, Union
+from typing import Union
 
 import attrs
 import pandas as pd
@@ -12,14 +11,6 @@ from more_itertools import peekable
 
 from kohlrahbi.ahb.ahbsubtable import AhbSubTable
 from kohlrahbi.logger import logger
-
-keys_that_must_no_hold_any_values: set[str] = {
-    "Segment",
-    "Datenelement",
-    "Codes und Qualifier",
-    "Beschreibung",
-    "Bedingung",
-}
 
 _column_letter_width_mapping: dict[str, Union[float, int]] = {
     "A": 3.5,
@@ -36,14 +27,12 @@ _column_letter_width_mapping: dict[str, Union[float, int]] = {
 @attrs.define(auto_attribs=True, kw_only=True)
 class AhbTable:
     """
-    This class contains the docx table and class with the table meta data.
-    Seed contains meta data about the ahb table like the left indent or which prüfis are in the current ahb table.
-    The table is the read table from the docx file.
+    This class contains the AHB table as you see it in the AHB documents, but in a machine readable format.
     """
 
     table: pd.DataFrame
 
-    def fill_segement_gruppe_segement_dataelement(self) -> None:
+    def fill_segment_gruppe_segment_dataelement(self) -> None:
         """
         For easier readability this functions adds the segment
 
@@ -62,9 +51,9 @@ class AhbTable:
         Nachrichten-Kopfsegment     UNH    0062
         """
 
-        latest_segement_gruppe: Optional[str] = ""
-        latest_segement: Optional[str] = ""
-        latest_datenelement: Optional[str] = ""
+        latest_segement_gruppe: str = ""
+        latest_segement: str = ""
+        latest_datenelement: str = ""
 
         for _, row in self.table.iterrows():
             if row["Segment Gruppe"] != "":
@@ -90,28 +79,31 @@ class AhbTable:
 
     def append_ahb_sub_table(self, ahb_sub_table: AhbSubTable) -> None:
         """
-        Append an AHB sub table to the AHB table
+        Append an AHB sub table to this AHB table instance
         """
         if self.table is None:
             self.table = ahb_sub_table.table
         else:
             self.table = pd.concat([self.table, ahb_sub_table.table], ignore_index=True)
 
+    @staticmethod
+    def line_contains_only_segment_gruppe(raw_line: pd.Series) -> bool:
+        """
+        Returns true if the given raw line only contains some meaningful data in the "Segment Gruppe" key
+        """
+        for key, value in raw_line.items():
+            if key == "Segment Gruppe":
+                continue
+            if value is not None and len(value.strip()) > 0:
+                return False
+        return True
+
     def sanitize(self) -> None:
         """
         In some cases there is the content of one cell splitted in two.
         We need to merge the content into one cell and delete the deprecated cell afterwards.
         """
-        lines_to_drop: list[int] = []
-
-        def line_contains_only_segment_gruppe(raw_line: pd.Series) -> bool:
-            """
-            returns true if the given raw line only contains some meaningful data in the "Segment Gruppe" key
-            """
-            for row_key in keys_that_must_no_hold_any_values:
-                if row_key in raw_line and raw_line[row_key] is not None and len(raw_line[row_key].strip()) > 0:
-                    return False
-            return True
+        index_of_lines_to_drop: list[int] = []
 
         iterable_ahb_table = peekable(self.table.iterrows())
 
@@ -134,7 +126,7 @@ class AhbTable:
             segment_gruppe_contains_multiple_lines = (
                 "Segment Gruppe" in row
                 and row["Segment Gruppe"]
-                and line_contains_only_segment_gruppe(row)
+                and AhbTable.line_contains_only_segment_gruppe(row)
                 and not next_row["Segment Gruppe"].startswith("SG")
                 and not next_row["Segment"]
             )
@@ -142,22 +134,24 @@ class AhbTable:
                 merged_segment_gruppe_content = " ".join([row["Segment Gruppe"], next_row["Segment Gruppe"]])
                 row["Segment Gruppe"] = merged_segment_gruppe_content.strip()
 
-                if isinstance(index_of_next_row, int):
-                    if index_of_next_row == 0:
-                        # this case is only for the first and last row. These lines should not get deleted.
-                        continue
-                    lines_to_drop.append(index_of_next_row)
-                else:
+                if not isinstance(index_of_next_row, int):
                     raise TypeError(
                         f"The 'index_of_next_row' must by of type `int` but it is '{type(index_of_next_row)}'"
                     )
 
-        self.table.drop(lines_to_drop, inplace=True)
+                if index_of_next_row == 0:
+                    # this case is only for the first and last row. These lines should not get deleted.
+                    continue
+                index_of_lines_to_drop.append(index_of_next_row)
+
+        self.table.drop(index_of_lines_to_drop, inplace=True)
         self.table.reset_index(drop=True)
 
     def to_csv(self, pruefi: str, path_to_output_directory: Path) -> None:
         """
-        Dump a AHB table of a given pruefi into a csv file.
+        Dump an AHB table of a given pruefi into a csv file.
+        The csv file will be saved in the following directory structure:
+            <path_to_output_directory>/csv/<edifact_format>/<pruefi>.csv
         """
         edifact_format = get_format_of_pruefidentifikator(pruefi)
         if edifact_format is None:
@@ -167,7 +161,7 @@ class AhbTable:
         csv_output_directory_path = path_to_output_directory / "csv" / str(edifact_format)
         csv_output_directory_path.mkdir(parents=True, exist_ok=True)
 
-        self.fill_segement_gruppe_segement_dataelement()
+        self.fill_segment_gruppe_segment_dataelement()
 
         columns_to_export = list(self.table.columns)[:5] + [pruefi]
         columns_to_export.append("Bedingung")
@@ -180,8 +174,14 @@ class AhbTable:
     def to_xlsx(self, pruefi: str, path_to_output_directory: Path) -> None:
         """
         Dump a AHB table of a given pruefi into an excel file.
+        The excel file will be saved in the following directory structure:
+            <path_to_output_directory>/xlsx/<edifact_format>/<pruefi>.xlsx
         """
         edifact_format = get_format_of_pruefidentifikator(pruefi)
+        if edifact_format is None:
+            logger.warning("'%s' is not a pruefidentifikator", pruefi)
+            return
+
         xlsx_output_directory_path: Path = path_to_output_directory / "xlsx" / str(edifact_format)
         xlsx_output_directory_path.mkdir(parents=True, exist_ok=True)
 

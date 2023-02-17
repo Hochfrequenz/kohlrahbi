@@ -9,7 +9,6 @@ import pandas as pd
 from docx.table import _Cell  # type:ignore[import]
 
 
-# pylint:disable=too-few-public-methods
 @attrs.define(auto_attribs=True, kw_only=True)
 class BedingungCell:
     """
@@ -24,12 +23,28 @@ class BedingungCell:
         Parses a cell in the Bedingung column and puts the information into the appropriate column of the dataframe.
         """
 
-        bedingung = self.table_cell.text.replace("\n", " ")
-        matches = re.findall(r"\[\d+\]", bedingung)
-        for match in matches[1:]:
-            index = bedingung.find(match)
-            bedingung = bedingung[:index] + "\n" + bedingung[index:]
+        bedingung = self.beautify_bedingungen()
 
         row_index = ahb_row_dataframe.index.max()
         ahb_row_dataframe.at[row_index, "Bedingung"] += bedingung
         return ahb_row_dataframe
+
+    # pylint: disable=line-too-long
+    def beautify_bedingungen(self) -> str:
+        """
+        Beautifies the Bedingungen by removing the given line breaks and insert the line breaks at the correct places.
+
+        Example input:
+        [494] Das hier genannte Datum muss der Zeitpunkt sein, zu dem das Dokument erstellt wurde, oder ein Zeitpunkt, der davor liegt\n[931] Format: ZZZ = +00
+        result:
+        [494] Das hier genannte Datum muss der Zeitpunkt sein, zu dem das Dokument erstellt wurde, oder ein Zeitpunkt, der davor liegt
+        [931] Format: ZZZ = +00
+        """
+        beautified_bedingung = self.table_cell.text.replace("\n", " ")
+
+        matches = re.findall(r"\[\d+\]", beautified_bedingung)
+        for match in matches[1:]:
+            index = beautified_bedingung.find(match)
+            beautified_bedingung = beautified_bedingung[:index] + "\n" + beautified_bedingung[index:]
+
+        return beautified_bedingung
