@@ -29,14 +29,9 @@ class AhbTableRow:
         self,
         row_type: RowType,
     ) -> Optional[pd.DataFrame]:
-        """Writes the current row of the current table into the DataFrame depending on the type of the row
-
-        Args:
-            seed (Seed):
-            row_type (RowType): Type of the current row
-            ahb_table (Table): Current table
-            ahb_table_row (int): Row of the current ahb table
-            index_for_middle_column (int): Index of the actual middle column
+        """
+        Writes the current row of the current table into the DataFrame depending on the type of the row.
+        If the row is a header row, it will be skipped and None will be returned.
         """
 
         if row_type is RowType.HEADER:
