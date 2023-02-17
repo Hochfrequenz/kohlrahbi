@@ -21,7 +21,6 @@ keys_that_must_no_hold_any_values: set[str] = {
     "Bedingung",
 }
 
-_segment_group_pattern = re.compile(r"^SG\d+$")
 _column_letter_width_mapping: dict[str, Union[float, int]] = {
     "A": 3.5,
     "B": 47,
