@@ -134,15 +134,15 @@ class AhbTable:
                 merged_segment_gruppe_content = " ".join([row["Segment Gruppe"], next_row["Segment Gruppe"]])
                 row["Segment Gruppe"] = merged_segment_gruppe_content.strip()
 
-                if isinstance(index_of_next_row, int):
-                    if index_of_next_row == 0:
-                        # this case is only for the first and last row. These lines should not get deleted.
-                        continue
-                    index_of_lines_to_drop.append(index_of_next_row)
-                else:
+                if not isinstance(index_of_next_row, int):
                     raise TypeError(
                         f"The 'index_of_next_row' must by of type `int` but it is '{type(index_of_next_row)}'"
                     )
+
+                if index_of_next_row == 0:
+                    # this case is only for the first and last row. These lines should not get deleted.
+                    continue
+                index_of_lines_to_drop.append(index_of_next_row)
 
         self.table.drop(index_of_lines_to_drop, inplace=True)
         self.table.reset_index(drop=True)
