@@ -38,7 +38,5 @@ pytz==2022.7
     # via pandas
 six==1.16.0
     # via python-dateutil
-tomlkit==0.11.6
-    # via -r requirements.in
 xlsxwriter==3.0.8
     # via -r requirements.in
