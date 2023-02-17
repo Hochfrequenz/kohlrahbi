@@ -21,7 +21,7 @@ _pruefi_pattern = re.compile(r"^[1-9]\d{4}$")
 
 def get_valid_pruefis(list_of_pruefis: list[str]) -> list[str]:
     """
-    This function returns only pruefis which match the pruefi_pattern.
+    This function returns a new list with only those pruefis which match the pruefi_pattern.
     """
     valid_pruefis: list[str] = [pruefi for pruefi in list_of_pruefis if _pruefi_pattern.match(pruefi)]
     return valid_pruefis
