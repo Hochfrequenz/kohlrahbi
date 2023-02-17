@@ -31,8 +31,8 @@ _segment_group_pattern = re.compile(r"^SG\d+$")
 class UnfoldedAhb:
     """
     The UnfoldedAhb contains one Prüfidentifikator.
-    Some columns in the AHB documents contain multiple information like Segmentname and Segmentgruppe.
-    This class unfolds these columns with multiple information.
+    Some columns in the AHB documents contain multiple information in one column e.g. Segmentname and Segmentgruppe.
+    The unfolded classes add new columns/attribues to avoid the duplication of information in one column.
     """
 
     meta_data: UnfoldedAhbTableMetaData
