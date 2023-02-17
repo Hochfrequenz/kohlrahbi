@@ -149,7 +149,9 @@ class AhbTable:
 
     def to_csv(self, pruefi: str, path_to_output_directory: Path) -> None:
         """
-        Dump a AHB table of a given pruefi into a csv file.
+        Dump an AHB table of a given pruefi into a csv file.
+        The csv file will be saved in the following directory structure:
+            <path_to_output_directory>/csv/<edifact_format>/<pruefi>.csv
         """
         edifact_format = get_format_of_pruefidentifikator(pruefi)
         if edifact_format is None:
