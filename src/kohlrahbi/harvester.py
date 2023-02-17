@@ -83,16 +83,6 @@ def check_python_version():
         )
 
 
-def check_input_path(path: Path) -> None:
-    """
-    Checks if the given path exists.
-    Iff it does NOT exist a error message gets printed to inform the user.
-    """
-    if not path.exists():
-        click.secho("⚠️ The input directory does not exist.", fg="red")
-        raise click.Abort()
-
-
 def check_output_path(path: Path) -> None:
     """
     Checks if the given path exists and if not it asks the user if they want to create the given directory.
@@ -185,8 +175,6 @@ def harvest(
     A program to get a machine readable version of the AHBs docx files published by edi@energy.
     """
     check_python_version()
-
-    check_input_path(path=input_path)
 
     check_output_path(path=output_path)
 
