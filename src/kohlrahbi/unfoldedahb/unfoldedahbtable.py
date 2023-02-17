@@ -311,7 +311,7 @@ class UnfoldedAhb:
         df.fillna(value="", inplace=True)
         return df
 
-    def dump_csv(self, path_to_output_directory: Path):
+    def dump_csv(self, path_to_output_directory: Path) -> None:
         """
         Dump a UnfoldedAHB table into a csv file.
         The file will be stored in the directory:
@@ -334,9 +334,11 @@ class UnfoldedAhb:
             csv_output_directory_path / f"{self.meta_data.pruefidentifikator}.csv",
         )
 
-    def to_xlsx(self, path_to_output_directory: Path):
+    def dump_xlsx(self, path_to_output_directory: Path) -> None:
         """
         Dump a AHB table of a given pruefi into an excel file.
+        The file will be stored in the directory:
+            'path_to_output_directory/xlsx/<edifact_format>/<pruefidentifikator>.xlsx'
         """
         edifact_format = get_format_of_pruefidentifikator(self.meta_data.pruefidentifikator)
         xlsx_output_directory_path: Path = path_to_output_directory / "xlsx" / str(edifact_format)

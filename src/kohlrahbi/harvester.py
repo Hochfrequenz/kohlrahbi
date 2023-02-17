@@ -220,7 +220,7 @@ def harvest(
 
                 logger.info("💾 Saving files %s \n", pruefi)
                 if "xlsx" in file_type:
-                    unfolded_ahb.to_xlsx(path_to_output_directory=output_directory_path)
+                    unfolded_ahb.dump_xlsx(path_to_output_directory=output_directory_path)
 
                 if "flatahb" in file_type:
                     unfolded_ahb.dump_flatahb_json(output_directory_path=output_directory_path)
