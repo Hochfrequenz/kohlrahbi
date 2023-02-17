@@ -39,7 +39,7 @@ class AhbFileFinder:
 
         return path_to_ahb_document.name.split("-")[0]
 
-    def filter_for_latest_ahb_docx_files(self):
+    def filter_for_latest_ahb_docx_files(self) -> None:
         """
         Filter the list of AHB docx paths for the latest AHB docx files.
         The latest files contain `LesefassungmitFehlerkorrekturen` in their file names.
@@ -68,7 +68,7 @@ class AhbFileFinder:
 
         self.paths_to_docx_files = result
 
-    def filter_docx_files_for_edifact_format(self, edifact_format: EdifactFormat):
+    def filter_docx_files_for_edifact_format(self, edifact_format: EdifactFormat) -> None:
         """
         Filter the list of AHB docx paths for the given EDIFACT format
         """
@@ -85,8 +85,8 @@ class AhbFileFinder:
 
         edifact_format = get_format_of_pruefidentifikator(searched_pruefi)
         if edifact_format is None:
-            logger.exception("❌ There is no known format known for the prüfi '%s'.", searched_pruefi)
-            return []
+            logger.exception("❌ There is no known format for the prüfi '%s'.", searched_pruefi)
+            raise ValueError(f"There is no known format for the prüfi '{searched_pruefi}'.")
 
         self.filter_for_latest_ahb_docx_files()
         self.filter_docx_files_for_edifact_format(edifact_format=edifact_format)
