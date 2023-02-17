@@ -19,7 +19,7 @@ from maus.models.anwendungshandbuch import (
 from maus.reader.flat_ahb_reader import FlatAhbCsvReader
 from more_itertools import peekable
 
-from kohlrahbi.ahb.ahbtable import AhbTable, _column_letter_width_mapping, keys_that_must_no_hold_any_values
+from kohlrahbi.ahb.ahbtable import AhbTable, _column_letter_width_mapping
 from kohlrahbi.logger import logger
 from kohlrahbi.unfoldedahb.unfoldedahbline import UnfoldedAhbLine
 from kohlrahbi.unfoldedahb.unfoldedahbtablemetadata import UnfoldedAhbTableMetaData
@@ -187,14 +187,10 @@ class UnfoldedAhb:
     def _is_section_name(ahb_row: pd.Series) -> bool:
         """
         Checks if the current AHB row is a section name.
+        It uses the same logic as the function 'line_contains_only_segment_gruppe'
+        So to avoid duplicate code, this function just calls the other function.
         """
-
-        for k, v in ahb_row.items():
-            if k == "Segment Gruppe":
-                continue
-            if v is not None and len(v.strip()) > 0:
-                return False
-        return True
+        return AhbTable.line_contains_only_segment_gruppe(ahb_row)
 
     @staticmethod
     def _is_segment_group(ahb_row: pd.Series) -> bool:

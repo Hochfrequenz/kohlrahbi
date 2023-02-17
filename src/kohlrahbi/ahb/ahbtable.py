@@ -89,23 +89,24 @@ class AhbTable:
         else:
             self.table = pd.concat([self.table, ahb_sub_table.table], ignore_index=True)
 
+    @staticmethod
+    def line_contains_only_segment_gruppe(raw_line: pd.Series) -> bool:
+        """
+        Returns true if the given raw line only contains some meaningful data in the "Segment Gruppe" key
+        """
+        for k, v in raw_line.items():
+            if k == "Segment Gruppe":
+                continue
+            if v is not None and len(v.strip()) > 0:
+                return False
+        return True
+
     def sanitize(self) -> None:
         """
         In some cases there is the content of one cell splitted in two.
         We need to merge the content into one cell and delete the deprecated cell afterwards.
         """
         lines_to_drop: list[int] = []
-
-        def line_contains_only_segment_gruppe(raw_line: pd.Series) -> bool:
-            """
-            Returns true if the given raw line only contains some meaningful data in the "Segment Gruppe" key
-            """
-            for k, v in raw_line.items():
-                if k == "Segment Gruppe":
-                    continue
-                if v is not None and len(v.strip()) > 0:
-                    return False
-            return True
 
         iterable_ahb_table = peekable(self.table.iterrows())
 
@@ -128,7 +129,7 @@ class AhbTable:
             segment_gruppe_contains_multiple_lines = (
                 "Segment Gruppe" in row
                 and row["Segment Gruppe"]
-                and line_contains_only_segment_gruppe(row)
+                and AhbTable.line_contains_only_segment_gruppe(row)
                 and not next_row["Segment Gruppe"].startswith("SG")
                 and not next_row["Segment"]
             )
