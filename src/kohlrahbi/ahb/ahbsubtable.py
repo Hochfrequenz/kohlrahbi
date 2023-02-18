@@ -67,8 +67,11 @@ class AhbSubTable:
 
                 ahb_table_row.parse(row_type=table_meta_data.last_two_row_types[1])
 
-            # An AhbSubTable can go over two pages. But the header is on all pages at the top.
-            # So we have to recognize the last two row types to be able to handle the page break situation.
+            # An AhbSubTable can span over two pages.
+            # But after every page break, even if we're still in the same subtable,
+            # there'll be the header at the top of every page.
+            # This distracts our detection logic but we workaround it by remembering
+            # the last two row types.
             table_meta_data.last_two_row_types[1] = table_meta_data.last_two_row_types[0]
             table_meta_data.last_two_row_types[0] = current_row_type
         return ahb_table_dataframe
