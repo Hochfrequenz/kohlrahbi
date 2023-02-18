@@ -29,9 +29,9 @@ class AhbSubTable:
         table_meta_data: Seed, ahb_table_dataframe: pd.DataFrame, docx_table: DocxTable
     ) -> pd.DataFrame:
         for row in docx_table.rows:
-            sanitized_row = list(AhbSubTable._iter_visible_cells(row=row))
+            sanitized_cells = list(AhbSubTable._iter_visible_cells(row=row))
 
-            current_edifact_struktur_cell = sanitized_row[0]
+            current_edifact_struktur_cell = sanitized_cells[0]
 
             # check for row type
             current_row_type = get_row_type(
@@ -39,9 +39,9 @@ class AhbSubTable:
                 left_indent_position=table_meta_data.edifact_struktur_left_indent_position,
             )
 
-            edifact_struktur_cell = sanitized_row[0]
-            middle_cell = sanitized_row[1]
-            bedingung_cell = sanitized_row[-1]
+            edifact_struktur_cell = sanitized_cells[0]
+            middle_cell = sanitized_cells[1]
+            bedingung_cell = sanitized_cells[-1]
 
             # this case covers the "normal" docx table row
             if not (current_row_type is RowType.EMPTY and table_meta_data.last_two_row_types[0] is RowType.HEADER):
@@ -67,8 +67,11 @@ class AhbSubTable:
 
                 ahb_table_row.parse(row_type=table_meta_data.last_two_row_types[1])
 
-            # An AhbSubTable can go over two pages. But the header is on all pages at the top.
-            # So we have to recognize the last two row types to be able to handle the page break situation.
+            # An AhbSubTable can span over two pages.
+            # But after every page break, even if we're still in the same subtable,
+            # there'll be the header at the top of every page.
+            # This distracts our detection logic but we workaround it by remembering
+            # the last two row types.
             table_meta_data.last_two_row_types[1] = table_meta_data.last_two_row_types[0]
             table_meta_data.last_two_row_types[0] = current_row_type
         return ahb_table_dataframe
