@@ -70,7 +70,7 @@ class AhbFileFinder:
 
     def filter_docx_files_for_edifact_format(self, edifact_format: EdifactFormat) -> None:
         """
-        Filter the list of AHB docx paths for the given EDIFACT format
+        Returns a list of docx files which contain the given edifact format.
         """
 
         self.paths_to_docx_files = [path for path in self.paths_to_docx_files if str(edifact_format) in path.name]
