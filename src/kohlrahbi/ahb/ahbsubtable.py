@@ -29,9 +29,9 @@ class AhbSubTable:
         table_meta_data: Seed, ahb_table_dataframe: pd.DataFrame, docx_table: DocxTable
     ) -> pd.DataFrame:
         for row in docx_table.rows:
-            sanitized_row = list(AhbSubTable._iter_visible_cells(row=row))
+            sanitized_cells = list(AhbSubTable._iter_visible_cells(row=row))
 
-            current_edifact_struktur_cell = sanitized_row[0]
+            current_edifact_struktur_cell = sanitized_cells[0]
 
             # check for row type
             current_row_type = get_row_type(
@@ -39,9 +39,9 @@ class AhbSubTable:
                 left_indent_position=table_meta_data.edifact_struktur_left_indent_position,
             )
 
-            edifact_struktur_cell = sanitized_row[0]
-            middle_cell = sanitized_row[1]
-            bedingung_cell = sanitized_row[-1]
+            edifact_struktur_cell = sanitized_cells[0]
+            middle_cell = sanitized_cells[1]
+            bedingung_cell = sanitized_cells[-1]
 
             # this case covers the "normal" docx table row
             if not (current_row_type is RowType.EMPTY and table_meta_data.last_two_row_types[0] is RowType.HEADER):
