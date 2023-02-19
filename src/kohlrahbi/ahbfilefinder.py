@@ -46,7 +46,7 @@ class AhbFileFinder:
         """
         result: list[Path] = []
 
-        groups = {}
+        groups : dict[str, list[Path]] = {} # the key is the first part of the file name, the values are matching files
 
         for key, group in groupby(
             sorted(self.paths_to_docx_files, key=AhbFileFinder.get_first_part_of_ahb_docx_file_name),
