@@ -266,12 +266,12 @@ class UnfoldedAhb:
             )
         try:
             return FlatAnwendungshandbuch(meta=meta, lines=lines)
-        except ValueError as value_error:
+        except ValueError:
             logger.error(
                 "Could not convert the unfolded AHB to a flat AHB for Prüfidentifikator '%s'",
                 self.meta_data.pruefidentifikator,
             )
-            raise value_error
+            raise
 
     def dump_flatahb_json(self, output_directory_path: Path) -> None:
         """

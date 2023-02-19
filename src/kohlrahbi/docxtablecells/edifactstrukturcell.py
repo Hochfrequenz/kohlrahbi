@@ -56,7 +56,7 @@ class EdifactStrukturCell:
                     _segment_group_pattern.match(joined_text)
                 )
 
-                is_segment = _segment_pattern.match(joined_text)
+                is_segment = bool(_segment_pattern.match(joined_text))
                 if is_segment_gruppe:
                     # Segmentgruppe: SG8
                     ahb_row_dataframe.at[row_index, "Segment Gruppe"] = splitted_text_at_tabs[0]
