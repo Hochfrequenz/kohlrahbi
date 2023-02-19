@@ -172,3 +172,9 @@ backup_documents/
 *.csv
 *.json
 *.7z
+
+# Word temporary
+~$*.doc*
+
+# Word Auto Backup File
+Backup of *.doc*

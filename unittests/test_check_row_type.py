@@ -2,11 +2,10 @@ import docx  # type:ignore[import]
 import pytest  # type:ignore[import]
 from docx.shared import RGBColor  # type:ignore[import]
 
-from kohlrahbi.helper.check_row_type import RowType, define_row_type
+from kohlrahbi.row_type_checker import RowType, get_row_type
 
 
 class TestCheckRowType:
-
     # this is the touchstone position for the left indent of the edifact struktur cells
     # example rows with this left indent position:
     # |      UNH       |
@@ -91,7 +90,5 @@ class TestCheckRowType:
         # set font color
         test_cell.paragraphs[0].runs[0].font.color.rgb = font_color
 
-        result = define_row_type(
-            edifact_struktur_cell=test_cell, left_indent_position=self.segment_left_indent_position
-        )
+        result = get_row_type(edifact_struktur_cell=test_cell, left_indent_position=self.segment_left_indent_position)
         assert result == expected
