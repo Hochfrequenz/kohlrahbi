@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest  # type:ignore[import]
 from click.testing import CliRunner, Result
 
-from kohlrahbi.harvester import harvest
+from kohlrahbi import main
 
 runner: CliRunner = CliRunner()
 
@@ -51,7 +51,7 @@ class TestCli:
         ]
 
         # Call the CLI tool with the desired arguments
-        response = runner.invoke(harvest, argument_options)
+        response = runner.invoke(main, argument_options)
 
         assert response.exit_code == expected_response.get("exit_code")
         assert expected_response.get("output_snippet") in response.output
@@ -87,7 +87,7 @@ class TestCli:
         ]
 
         # Call the CLI tool with the desired arguments
-        response: Result = runner.invoke(harvest, argument_options)
+        response: Result = runner.invoke(main, argument_options)
 
         assert response.exit_code == expected_response.get("exit_code")
         assert expected_response.get("output_snippet") in response.output
