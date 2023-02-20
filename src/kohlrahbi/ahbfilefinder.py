@@ -53,11 +53,11 @@ class AhbFileFinder:
         ):
             groups[key] = list(group)
 
-        for group in groups.values():
-            if len(group) == 1:
-                result.append(group[0])
+        for group_items in groups.values():
+            if len(group_items) == 1:
+                result.append(group_items[0])
             else:
-                for path in group:
+                for path in group_items:
                     error_corrected_version_is_present = (
                         "KonsolidierteLesefassungmitFehlerkorrekturen" in path.name
                         or "AußerordentlicheVeröffentlichung" in path.name
