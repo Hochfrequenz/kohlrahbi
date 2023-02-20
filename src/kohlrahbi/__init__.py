@@ -2,9 +2,7 @@
 kohlrahbi is a package to scrape AHBs (in docx format)
 """
 
-"""
-Main script of the Kohlrahbi
-"""
+
 import re
 import sys
 from pathlib import Path
