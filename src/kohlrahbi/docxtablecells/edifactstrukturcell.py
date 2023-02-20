@@ -1,9 +1,14 @@
 """
 This module contains the class EdifactStrukturCell
 """
+import re
+
 import attrs
 import pandas as pd
 from docx.table import _Cell  # type:ignore[import]
+
+_segment_group_pattern = re.compile(r"^SG\d+$")
+_segment_pattern = re.compile(r"^[A-Z]{3}$")
 
 
 # pylint: disable=too-few-public-methods
@@ -47,9 +52,16 @@ class EdifactStrukturCell:
                 ahb_row_dataframe.at[row_index, "Segment Gruppe"] = splitted_text_at_tabs[0]
                 ahb_row_dataframe.at[row_index, "Segment"] = splitted_text_at_tabs[1]
             elif tab_count == 0 and joined_text.strip() != "":
-                if self.table_cell.paragraphs[0].runs[0].bold:
+                is_segment_gruppe: bool = bool(self.table_cell.paragraphs[0].runs[0].bold) and bool(
+                    _segment_group_pattern.match(joined_text)
+                )
+
+                is_segment = bool(_segment_pattern.match(joined_text))
+                if is_segment_gruppe:
                     # Segmentgruppe: SG8
                     ahb_row_dataframe.at[row_index, "Segment Gruppe"] = splitted_text_at_tabs[0]
+                elif is_segment:
+                    ahb_row_dataframe.at[row_index, "Segment"] = splitted_text_at_tabs[0]
                 else:
                     # Segmentname: Referenzen auf die ID der\nTranche
                     _sg_text = ahb_row_dataframe.at[row_index, "Segment Gruppe"]

@@ -71,7 +71,7 @@ def does_the_table_contain_pruefidentifikatoren(table: Table) -> bool:
     Checks if the given table is a AHB table with pruefidentifikatoren.
     """
 
-    return table.cell(row_idx=0, col_idx=0).text == "EDIFACT Struktur"
+    return table.cell(row_idx=0, col_idx=0).text.strip() == "EDIFACT Struktur"
 
 
 def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
