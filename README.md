@@ -74,30 +74,30 @@ pip install kohlrahbi
 ## Usage
 
 There are two ways to use kohlrahbi.
-1. You can extract all prüfidetifikatoren listed in [all_known_pruefis.toml,](src/kohlrahbi/all_known_pruefis.toml)
-2. or you can extract a specific prüfidetifikator.
-### Get all Prüfidetifikatoren
-If you want to extract all prüfidetifikatoren, you can run the following command.
+1. You can extract all prüfidentifikatoren listed in [all_known_pruefis.toml,](src/kohlrahbi/all_known_pruefis.toml)
+2. or you can extract a specific prüfidentifikator.
+### Get all Prüfidentifikatoren
+If you want to extract all prüfidentifikatoren, you can run the following command.
 
 ```bash
 kohlrahbi --input_path ../edi_energy_mirror/ --output_path ./output/
 ```
 
-This will extract all prüfidetifikatoren listed in [all_known_pruefis.toml](src/kohlrahbi/all_known_pruefis.toml) and save them in the provided output path.
+This will extract all prüfidentifikatoren listed in [all_known_pruefis.toml](src/kohlrahbi/all_known_pruefis.toml) and save them in the provided output path.
 
 ### `.docx` Data Sources
 kohlrahbi internally relies on a [specific naming schema](https://github.com/Hochfrequenz/kohlrahbi/blob/22a78dc076c7d5f9248cb9e8707b0cc14a2981d3/src/kohlrahbi/read_functions.py#L57) of the `.docx` files in which the file name holds information about the edifact format and validity period of the AHBs contained within the file.
 The easiest way to be compliant with this naming schema is to clone our [edi_energy_mirror](https://github.com/Hochfrequenz/edi_energy_mirror/) repository to your localhost.
 
-### Get a specific Prüfidetifikator
+### Get a specific Prüfidentifikator
 
-If you want to extract a specific prüfidetifikator, you can run the following command.
+If you want to extract a specific prüfidentifikator, you can run the following command.
 
 ```bash
 kohlrahbi --input_path ../edi_energy_mirror/ --output_path ./output/ --pruefi 11039
 ```
 
-You can also provide multiple prüfidetifikatoren.
+You can also provide multiple prüfidentifikatoren.
 
 ```bash
 kohlrahbi --input_path ../edi_energy_mirror/ --output_path ./output/ --pruefi 11039 --pruefi 11040 --pruefi 11041
