@@ -9,10 +9,10 @@ Kohlrahbi generates machine-readable files from AHB documents.
 
 ## Rationale
 German utilities exchange data using [EDIFACT](https://en.wikipedia.org/wiki/EDIFACT); This is called market communication (mako).
-The _Forum Datenformate_ of the BDEW publish the technical regulations of the EDIFACT based market communication on [`edi-energy.de`](https://www.edi-energy.de/).
+The _Forum Datenformate_ of the BDEW publishes the technical regulations of the EDIFACT based market communication on [`edi-energy.de`](https://www.edi-energy.de/).
 These rules are not stable but change twice a year (in theory) or few times per year (in reality).
 
-Specific rules, which are binding for every German utility are kind of  formalised in so called "**A**nwendungs**h**and**b**üchern" (AHB).
+Specific rules, which are binding for every German utility are kind of formalised in so called "**A**nwendungs**h**and**b**üchern" (AHB).
 Those AHBs are basically long tables that describe:
 > As a utility, if I want to exchange data about business process XYZ with a market partner, then I have to provide the following information: [...]
 
