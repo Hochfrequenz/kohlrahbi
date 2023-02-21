@@ -73,7 +73,8 @@ pip install kohlrahbi
 ## Usage
 
 There are two ways to use kohlrahbi.
-You can extract all prüfidetifikatoren listed in [all_known_pruefis.toml](src/kohlrahbi/all_known_pruefis.toml) or you can extract a specific prüfidetifikator.
+1. You can extract all prüfidetifikatoren listed in [all_known_pruefis.toml,](src/kohlrahbi/all_known_pruefis.toml)
+2. or you can extract a specific prüfidetifikator.
 ### Get all Prüfidetifikatoren
 If you want to extract all prüfidetifikatoren, you can run the following command.
 
@@ -125,7 +126,7 @@ flowchart TB
 
 ### Setup
 
-To setup the development environment, you have to install the dev dependencies.
+To set up the development environment, you have to install the dev dependencies.
 
 ```bash
 tox -e dev
@@ -137,6 +138,7 @@ To run the tests, you can use tox.
 
 ```bash
 tox
+See our [Python Template Repository](https://github.com/Hochfrequenz/python_template_repository#how-to-use-this-repository-on-your-machine) for detailed explanations.
 ```
 
 ## Contribute
