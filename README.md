@@ -1,8 +1,9 @@
 # KohlrAHBi
-![Unittests status badge](https://github.com/Hochfrequenz/AHBExtractor/workflows/Unittests/badge.svg)
-![Coverage status badge](https://github.com/Hochfrequenz/AHBExtractor/workflows/Coverage/badge.svg)
-![Linting status badge](https://github.com/Hochfrequenz/AHBExtractor/workflows/Linting/badge.svg)
-![Black status badge](https://github.com/Hochfrequenz/AHBExtractor/workflows/Black/badge.svg)
+![Unittests status badge](https://github.com/Hochfrequenz/kohlrahbi/workflows/Unittests/badge.svg)
+![Coverage status badge](https://github.com/Hochfrequenz/kohlrahbi/workflows/Coverage/badge.svg)
+![Linting status badge](https://github.com/Hochfrequenz/kohlrahbi/workflows/Linting/badge.svg)
+![Black status badge](https://github.com/Hochfrequenz/kohlrahbi/workflows/Black/badge.svg)
+![PyPI](https://img.shields.io/pypi/v/kohlrahbi)
 
 
 Kohlrahbi generates machine-readable files from AHB documents.
