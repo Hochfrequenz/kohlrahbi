@@ -92,7 +92,7 @@ def load_all_known_pruefis_from_file(
 @click.command()
 @click.option(
     "-p",
-    "--pruefi",
+    "--pruefis",
     default=[],
     required=False,
     help="Five digit number like 11042.",
