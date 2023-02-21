@@ -3,6 +3,7 @@
 ![Coverage status badge](https://github.com/Hochfrequenz/AHBExtractor/workflows/Coverage/badge.svg)
 ![Linting status badge](https://github.com/Hochfrequenz/AHBExtractor/workflows/Linting/badge.svg)
 ![Black status badge](https://github.com/Hochfrequenz/AHBExtractor/workflows/Black/badge.svg)
+![PyPI](https://img.shields.io/pypi/v/kohlrahbi)
 
 
 Kohlrahbi generates machine-readable files from AHB documents.
