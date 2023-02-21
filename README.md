@@ -9,7 +9,7 @@ This tool helps to generate machine-readable files from AHB documents.
 
 
 ## Installation
-The AHB Extractor is a Python based tool.
+Kohlrahbi is a Python based tool.
 Therefor you have to make sure, that Python is running on your machine.
 
 We recommend to use virtual environments to keep your system clean.
