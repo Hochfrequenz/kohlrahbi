@@ -94,13 +94,13 @@ The easiest way to be compliant with this naming schema is to clone our [edi_ene
 If you want to extract a specific prüfidentifikator, you can run the following command.
 
 ```bash
-kohlrahbi --input_path ../edi_energy_mirror/ --output_path ./output/ --pruefi 11039
+kohlrahbi --input_path ../edi_energy_mirror/ --output_path ./output/ --pruefis 11039
 ```
 
 You can also provide multiple prüfidentifikatoren.
 
 ```bash
-kohlrahbi --input_path ../edi_energy_mirror/ --output_path ./output/ --pruefi 11039 --pruefi 11040 --pruefi 11041
+kohlrahbi --input_path ../edi_energy_mirror/ --output_path ./output/ --pruefis 11039 --pruefis 11040 --pruefi 11041
 ```
 
 ## Workflow
