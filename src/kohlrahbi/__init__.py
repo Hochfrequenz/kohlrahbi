@@ -158,7 +158,7 @@ def main(
         )
 
         if len(ahb_file_paths) == 0:
-            logger.info("No docx file was found for pruefi '%s'", pruefi)
+            logger.warning("No docx file was found for pruefi '%s'", pruefi)
             continue
 
         for ahb_file_path in ahb_file_paths:
