@@ -157,6 +157,10 @@ def main(
             searched_pruefi=pruefi
         )
 
+        if len(ahb_file_paths) == 0:
+            logger.warning("No docx file was found for pruefi '%s'", pruefi)
+            continue
+
         for ahb_file_path in ahb_file_paths:
             try:
                 doc = docx.Document(ahb_file_path)  # Creating word reader object.
