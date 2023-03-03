@@ -293,6 +293,11 @@ class UnfoldedAhb:
             flatahb_output_directory_path / f"{self.meta_data.pruefidentifikator}.json", "w", encoding="utf-8"
         ) as file:
             json.dump(dump_data, file)
+        logger.info(
+            "The flatahb file for %s is saved at %s",
+            self.meta_data.pruefidentifikator,
+            flatahb_output_directory_path / f"{self.meta_data.pruefidentifikator}.json",
+        )
 
     def convert_to_dataframe(self) -> pd.DataFrame:
         """
@@ -369,3 +374,9 @@ class UnfoldedAhb:
                 logger.info("💾 Saved file(s) for Pruefidentifikator %s", self.meta_data.pruefidentifikator)
         except PermissionError:
             logger.error("The Excel file %s is open. Please close this file and try again.", excel_file_name)
+
+        logger.info(
+            "The xlsx file for %s is saved at %s",
+            self.meta_data.pruefidentifikator,
+            xlsx_output_directory_path / f"{self.meta_data.pruefidentifikator}.json",
+        )
