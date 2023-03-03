@@ -124,6 +124,7 @@ def load_all_known_pruefis_from_file(
     is_flag=True,
     help="Confirm all prompts automatically.",
 )
+# pylint: disable=too-many-branches
 def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: list[str], assume_yes: bool):
     """
     A program to get a machine readable version of the AHBs docx files published by edi@energy.
