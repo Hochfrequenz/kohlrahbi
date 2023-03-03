@@ -277,14 +277,14 @@ class UnfoldedAhb:
         """
         Converts the unfolded AHB to a flat AHB and writes it to a json file.
         The file will be stored in the directory:
-            'output_directory_path/flatahb/<edifact_format>/<pruefidentifikator>.json'
+            'output_directory_path/<edifact_format>/flatahb/<pruefidentifikator>.json'
         """
         edifact_format = get_format_of_pruefidentifikator(self.meta_data.pruefidentifikator)
         if edifact_format is None:
             logger.warning("'%s' is not a pruefidentifikator", self.meta_data.pruefidentifikator)
             return
 
-        flatahb_output_directory_path = output_directory_path / "flatahb" / str(edifact_format)
+        flatahb_output_directory_path = output_directory_path / str(edifact_format) / "flatahb"
         flatahb_output_directory_path.mkdir(parents=True, exist_ok=True)
 
         dump_data = FlatAnwendungshandbuchSchema().dump(self.convert_to_flat_ahb())
@@ -321,7 +321,7 @@ class UnfoldedAhb:
         """
         Dump a UnfoldedAHB table into a csv file.
         The file will be stored in the directory:
-            'path_to_output_directory/csv/<edifact_format>/<pruefidentifikator>.csv'
+            'path_to_output_directory/<edifact_format>/csv/<pruefidentifikator>.csv'
         """
         df = self.convert_to_dataframe()
 
@@ -330,7 +330,7 @@ class UnfoldedAhb:
             logger.warning("'%s' is not a pruefidentifikator", self.meta_data.pruefidentifikator)
             return
 
-        csv_output_directory_path = path_to_output_directory / "csv" / str(edifact_format)
+        csv_output_directory_path = path_to_output_directory / str(edifact_format) / "csv"
         csv_output_directory_path.mkdir(parents=True, exist_ok=True)
 
         df.to_csv(csv_output_directory_path / f"{self.meta_data.pruefidentifikator}.csv")
@@ -344,10 +344,10 @@ class UnfoldedAhb:
         """
         Dump a AHB table of a given pruefi into an excel file.
         The file will be stored in the directory:
-            'path_to_output_directory/xlsx/<edifact_format>/<pruefidentifikator>.xlsx'
+            'path_to_output_directory/<edifact_format>/xlsx/<pruefidentifikator>.xlsx'
         """
         edifact_format = get_format_of_pruefidentifikator(self.meta_data.pruefidentifikator)
-        xlsx_output_directory_path: Path = path_to_output_directory / "xlsx" / str(edifact_format)
+        xlsx_output_directory_path: Path = path_to_output_directory / str(edifact_format) / "xlsx"
         xlsx_output_directory_path.mkdir(parents=True, exist_ok=True)
 
         excel_file_name = f"{self.meta_data.pruefidentifikator}.xlsx"
