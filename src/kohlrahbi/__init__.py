@@ -131,7 +131,7 @@ def main(
 
     check_output_path(path=output_path)
 
-    output_directory_path: Path = Path.cwd() / Path("output")
+    output_directory_path: Path = output_path
     output_directory_path.mkdir(exist_ok=True)
 
     if len(pruefis) == 0:
@@ -182,14 +182,16 @@ def main(
             if isinstance(ahb_table, AhbTable):
                 unfolded_ahb = UnfoldedAhb.from_ahb_table(ahb_table=ahb_table, pruefi=pruefi)
 
-                logger.info("💾 Saving files %s \n", pruefi)
                 if "xlsx" in file_type:
+                    logger.info("💾 Saving xlsx file %s", pruefi)
                     unfolded_ahb.dump_xlsx(path_to_output_directory=output_directory_path)
 
                 if "flatahb" in file_type:
+                    logger.info("💾 Saving flatahb file %s", pruefi)
                     unfolded_ahb.dump_flatahb_json(output_directory_path=output_directory_path)
 
                 if "csv" in file_type:
+                    logger.info("💾 Saving csv file %s", pruefi)
                     unfolded_ahb.dump_csv(path_to_output_directory=output_directory_path)
 
                 break
