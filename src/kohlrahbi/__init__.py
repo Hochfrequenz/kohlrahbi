@@ -118,21 +118,27 @@ def load_all_known_pruefis_from_file(
     type=click.Choice(["flatahb", "csv", "xlsx"], case_sensitive=False),
     multiple=True,
 )
-def main(
-    pruefis: list[str],
-    input_path: Path,
-    output_path: Path,
-    file_type: list[str],
-):
+@click.option(
+    "--assume-yes",
+    "-y",
+    is_flag=True,
+    help="Confirm all prompts automatically.",
+)
+# pylint: disable=too-many-branches
+def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: list[str], assume_yes: bool):
     """
     A program to get a machine readable version of the AHBs docx files published by edi@energy.
     """
     check_python_version()
 
-    check_output_path(path=output_path)
-
-    output_directory_path: Path = output_path
-    output_directory_path.mkdir(exist_ok=True)
+    if not assume_yes:
+        check_output_path(path=output_path)
+    else:
+        if output_path.exists():
+            click.secho(f"The output directory '{output_path}' exists already.", fg="yellow")
+        else:
+            output_path.mkdir(parents=True)
+            click.secho(f"I created a new directory at {output_path}", fg="yellow")
 
     if len(pruefis) == 0:
         click.secho("☝️ No pruefis were given. I will parse all known pruefis.", fg="yellow")
@@ -184,15 +190,15 @@ def main(
 
                 if "xlsx" in file_type:
                     logger.info("💾 Saving xlsx file %s", pruefi)
-                    unfolded_ahb.dump_xlsx(path_to_output_directory=output_directory_path)
+                    unfolded_ahb.dump_xlsx(path_to_output_directory=output_path)
 
                 if "flatahb" in file_type:
                     logger.info("💾 Saving flatahb file %s", pruefi)
-                    unfolded_ahb.dump_flatahb_json(output_directory_path=output_directory_path)
+                    unfolded_ahb.dump_flatahb_json(output_directory_path=output_path)
 
                 if "csv" in file_type:
                     logger.info("💾 Saving csv file %s", pruefi)
-                    unfolded_ahb.dump_csv(path_to_output_directory=output_directory_path)
+                    unfolded_ahb.dump_csv(path_to_output_directory=output_path)
 
                 break
 
