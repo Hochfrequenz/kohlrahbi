@@ -24,7 +24,7 @@ more-itertools==9.0.0
     # via maus
 numpy==1.24.1
     # via pandas
-openpyxl==3.1.1
+openpyxl==3.1.2
     # via -r requirements.in
 packaging==22.0
     # via marshmallow
