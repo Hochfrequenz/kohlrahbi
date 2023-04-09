@@ -27,7 +27,7 @@ However, the technical specifications of this API are
 The Anwendungshandbücher are the epitome of digitization with some good intentions.
 
 Although the AHBs are publicly available as PDF or Word files on `edi-energy.de`, they are hardly accessible in a technical sense:
-* You cannot automatically extract information from the AHBs. 
+* You cannot automatically extract information from the AHBs.
 * You cannot run automatic comparisons between different versions.
 * You cannot automatically test your own API against the set of rules, described in the AHBs (as prose).
 * You cannot view or visualize the information from the AHBs in any more intuitive or practical way, than the raw tables from the AHB files.
@@ -76,11 +76,13 @@ pip install kohlrahbi
 There are two ways to use kohlrahbi.
 1. You can extract all prüfidentifikatoren listed in [all_known_pruefis.toml,](src/kohlrahbi/all_known_pruefis.toml)
 2. or you can extract a specific prüfidentifikator.
+
 ### Get all Prüfidentifikatoren
 If you want to extract all prüfidentifikatoren, you can run the following command.
+For the following steps we assume that you cloned our [edi_energy_mirror](https://github.com/Hochfrequenz/edi_energy_mirror/) to a neighbouring directory.
 
 ```bash
-kohlrahbi --input_path ../edi_energy_mirror/ --output_path ./output/
+kohlrahbi --input_path ../edi_energy_mirror/edi_energy_de/current --output_path ./output/ --file-type flatahb
 ```
 
 This will extract all prüfidentifikatoren listed in [all_known_pruefis.toml](src/kohlrahbi/all_known_pruefis.toml) and save them in the provided output path.
@@ -94,13 +96,13 @@ The easiest way to be compliant with this naming schema is to clone our [edi_ene
 If you want to extract a specific prüfidentifikator, you can run the following command.
 
 ```bash
-kohlrahbi --input_path ../edi_energy_mirror/ --output_path ./output/ --pruefis 11039
+kohlrahbi --input_path ../edi_energy_mirror/edi_energy_de/current --output_path ./output/ --pruefis 11039 --file-type xslx
 ```
 
 You can also provide multiple prüfidentifikatoren.
 
 ```bash
-kohlrahbi --input_path ../edi_energy_mirror/ --output_path ./output/ --pruefis 11039 --pruefis 11040 --pruefi 11041
+kohlrahbi --input_path ../edi_energy_mirror/edi_energy_de/current --output_path ./output/ --pruefis 11039 --pruefis 11040 --pruefi 11041 --file-type csv
 ```
 
 ## Workflow
