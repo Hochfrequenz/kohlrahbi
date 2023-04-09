@@ -50,7 +50,7 @@ def check_output_path(path: Path) -> None:
         if click.confirm(f"Should I try to create the directory at '{path}'?", default=True):
             try:
                 path.mkdir(exist_ok=True)
-                click.secho("📂 The output directory is created.", fg="yellow")
+                click.secho(f"📂 The output directory is created at {path.absolute()}.", fg="yellow")
             except FileNotFoundError as fnfe:
                 click.secho(
                     "😱 There was an path error. I can only create a new directory in an already existing directory.",
@@ -143,9 +143,11 @@ def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: lis
     if len(pruefis) == 0:
         click.secho("☝️ No pruefis were given. I will parse all known pruefis.", fg="yellow")
         pruefis = load_all_known_pruefis_from_file()
-
+    if len(file_type) == 0:
+        click.secho(
+            "ℹ You did not provide any value for the parameter --file-type. No files will be created.", fg="yellow"
+        )
     valid_pruefis: list[str] = get_valid_pruefis(list_of_pruefis=pruefis)
-
     if valid_pruefis == []:
         click.secho("⚠️ There are no valid pruefidentifkatoren.", fg="red")
         raise click.Abort()
