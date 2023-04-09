@@ -6,7 +6,7 @@ from docx.oxml.ns import qn  # type:ignore[import]
 from docx.shared import RGBColor  # type:ignore[import]
 from docx.table import _Cell  # type:ignore[import]
 
-from kohlrahbi.enums import RowType, RowTypeColor
+from kohlrahbi.enums import RowType
 
 
 def set_table_header_bg_color(cell, hex_color: str):
