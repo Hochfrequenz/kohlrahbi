@@ -2,13 +2,14 @@
 This module provides a class to collect information which of need for all parsing functions
 """
 
-from typing import List
+from typing import Generator, List
 
 from attrs import define
-from docx.table import Table  # type:ignore[import]
+from docx.table import Table, _Cell  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
 
 from kohlrahbi.enums import RowType
+from kohlrahbi.table_header import TableHeader
 
 
 def get_tabstop_positions(paragraph: Paragraph) -> List[int]:
@@ -52,11 +53,12 @@ class Seed:
         Args:
             item (Union[Paragraph, Table]): A paragraph or table from the docx
         """
-        header_cells = [cell.text for cell in docx_table.row_cells(0)]
-        look_up_term = "Prüfidentifikator"
-        cutter_index = header_cells[-1].find(look_up_term) + 1
-        # +1 cause of \t after Prüfidentifikator
-        pruefidentifikatoren = header_cells[-1][cutter_index + len(look_up_term) :].split("\t")
+
+        header_cell_with_all_pruefi_information = docx_table.row_cells(0)[-1]
+
+        table_header = TableHeader.from_header_cell(row_cell=header_cell_with_all_pruefi_information)
+
+        pruefidentifikatoren = table_header.get_pruefidentifikatoren()
 
         # edifact struktur cell
         edifact_struktur_indicator_paragraph = docx_table.cell(row_idx=4, col_idx=0).paragraphs[0]
