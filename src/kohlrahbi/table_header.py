@@ -121,7 +121,6 @@ class TableHeader:
         section_type: Optional[HeaderSection] = None
 
         for paragraph in row_cell.paragraphs:
-            print(paragraph.text)
             if paragraph.text.startswith("Prüfidentifikator"):
                 continue
             elif paragraph.text.startswith("Beschreibung"):
@@ -160,13 +159,20 @@ class TableHeader:
             else:
                 current_tabstop_positions = get_tabstop_positions(paragraph=paragraph)
                 splitted_text = paragraph.text.split("\t")
-                splitted_text.remove("")
+                if "" in splitted_text:
+                    splitted_text.remove("")
 
                 for tabstop_position, text in zip(current_tabstop_positions, splitted_text):
                     pruefi = tabstop_mapper[tabstop_position]
                     collector[pruefi][section_type.value] += text + " "
 
         pruefi_meta_data = []
+
+        def ensure_single_space_between_words(text: str) -> str:
+            """
+            Ensure that there is only one space between words
+            """
+            return " ".join(text.split())
 
         for pruefi, meta_data in collector.items():
             if isinstance(meta_data[HeaderSection.BESCHREIBUNG.value], int) or isinstance(
@@ -176,10 +182,13 @@ class TableHeader:
 
             pruefi_with_meta_data = PruefiMetaData(
                 pruefidentifikator=pruefi,
-                communication_direction=meta_data[HeaderSection.KOMMUNIKATION.value],
-                name=meta_data[HeaderSection.BESCHREIBUNG.value],
+                communication_direction=ensure_single_space_between_words(meta_data[HeaderSection.KOMMUNIKATION.value]),
+                name=ensure_single_space_between_words(meta_data[HeaderSection.BESCHREIBUNG.value]),
             )
 
             pruefi_meta_data.append(pruefi_with_meta_data)
 
         return cls(pruefi_meta_data=pruefi_meta_data)
+
+    def get_pruefidentifikatoren(self) -> List[str]:
+        return [pruefi.pruefidentifikator for pruefi in self.pruefi_meta_data]
