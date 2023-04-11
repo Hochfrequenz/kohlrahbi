@@ -37,16 +37,6 @@ def get_tabstop_positions(paragraph: Paragraph) -> List[int]:
     return tabstop_positions
 
 
-def get_tabstop_postions_of_pruefis(tabstop_positions: List[int]) -> List[int]:
-    """
-    Get the tabstop positions of the Prüfidentifikatoren columns.
-    The first and the last tabstop position are not part of the Prüfidentifikatoren columns.
-
-    """
-
-    return tabstop_positions[1:-1]
-
-
 def create_mapping_of_tabstop_positions(
     initial_tabstop_positions: List[int],
     current_tabstop_positions: List[int],
