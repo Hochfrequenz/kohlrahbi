@@ -145,10 +145,7 @@ class TableHeader:
 
                 section_type = HeaderSection.BESCHREIBUNG
 
-                tabstop_mapper = {
-                    tabstop_position: pruefi
-                    for tabstop_position, pruefi in zip(initial_tabstop_positions, collector.keys())
-                }
+                tabstop_mapper = dict(zip(initial_tabstop_positions, collector.keys()))
 
                 splitted_text = paragraph.text.split("\t")
                 splitted_text.remove("Beschreibung")
