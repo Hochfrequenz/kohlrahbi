@@ -118,7 +118,7 @@ class TableHeader:
                 for pruefidentifikator, tab_stop in zip(splitted_text, current_tabstop_positions)
             }
 
-            if collector == {}:
+            if not collector:
                 raise ValueError("collector should not be empty")
 
             return collector
