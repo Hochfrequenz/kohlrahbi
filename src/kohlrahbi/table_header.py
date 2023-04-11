@@ -3,7 +3,7 @@ This module contains the TableHeader class.
 """
 
 from enum import StrEnum
-from typing import Dict, List, Optional
+from typing import Dict, List, cast
 
 from attrs import define
 from docx.table import _Cell  # type:ignore[import]
@@ -128,7 +128,7 @@ class TableHeader:
 
         collector = initialize_collector(paragraph=row_cell.paragraphs[-1])
 
-        section_type: Optional[HeaderSection] = None
+        section_type: HeaderSection
 
         for paragraph in row_cell.paragraphs:
             splitted_text = paragraph.text.split("\t")
@@ -159,11 +159,14 @@ class TableHeader:
             PruefiMetaData(
                 pruefidentifikator=pruefi,
                 communication_direction=ensure_single_space_between_words(
-                    meta_data[HeaderSection.KOMMUNIKATION_VON.value]
+                    #  The cast function is a no-op at runtime and doesn't perform any actual type conversion;
+                    #  it's only used for type checking purposes.
+                    cast(str, meta_data[HeaderSection.KOMMUNIKATION_VON.value])
                 ),
-                name=ensure_single_space_between_words(meta_data[HeaderSection.BESCHREIBUNG.value]),
+                name=ensure_single_space_between_words(cast(str, meta_data[HeaderSection.BESCHREIBUNG.value])),
             )
             for pruefi, meta_data in collector.items()
+            if isinstance(meta_data[HeaderSection.KOMMUNIKATION_VON.value], str)
         ]
 
         return cls(pruefi_meta_data=pruefi_meta_data)
