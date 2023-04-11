@@ -292,7 +292,7 @@ class UnfoldedAhb:
         with open(
             flatahb_output_directory_path / f"{self.meta_data.pruefidentifikator}.json", "w", encoding="utf-8"
         ) as file:
-            json.dump(dump_data, file)
+            json.dump(dump_data, file, ensure_ascii=False, indent=2, sort_keys=True)
         logger.info(
             "The flatahb file for %s is saved at %s",
             self.meta_data.pruefidentifikator,
