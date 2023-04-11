@@ -105,10 +105,6 @@ class TableHeader:
         """
 
         def initialize_collector(paragraph) -> Dict[str, Dict[str, str | int]]:
-            """
-            Initialize the collector dictionary.
-            The collector dictionary contains the information about the Prüfidentifikatoren.
-            """
             current_tabstop_positions = get_tabstop_positions(paragraph=paragraph)
             splitted_text = paragraph.text.split("\t")
             splitted_text.remove("Prüfidentifikator")
