@@ -1,15 +1,20 @@
-from enum import StrEnum, auto
+"""
+This module contains the TableHeader class.
+"""
+
+from enum import StrEnum
 from typing import Dict, List, Optional
 
 from attrs import define
 from docx.table import _Cell  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
 
-# from kohlrahbi.ahb.ahbsubtable import AhbSubTable
-# from kohlrahbi.seed import get_tabstop_positions
-
 
 class HeaderSection(StrEnum):
+    """
+    Enum for the different sections of the table header
+    """
+
     BESCHREIBUNG = "beschreibung"
     KOMMUNIKATION = "kommunikation"
     PRUEFIDENTIFIKATOR = "pruefidentifikator"
@@ -46,6 +51,9 @@ def create_mapping_of_tabstop_positions(
     initial_tabstop_positions: List[int],
     current_tabstop_positions: List[int],
 ) -> Dict[int, int]:
+    """
+    Create a mapping of the tabstop positions of the Prüfidentifikatoren columns.
+    """
     # create a mapping of the tabstop positions
     mapping: Dict[int, int] = {}
     # Sort the lists in ascending order
@@ -82,6 +90,11 @@ class PruefiMetaData:
 
 @define
 class TableHeader:
+    """
+    Class for the table header.
+    It contains the information about the Prüfidentifikatoren.
+    """
+
     pruefi_meta_data: List[PruefiMetaData] = []
 
     @classmethod
@@ -91,6 +104,10 @@ class TableHeader:
         """
 
         def initialize_collector(paragraph) -> Dict[str, Dict[str, str | int]]:
+            """
+            Initialize the collector dictionary.
+            The collector dictionary contains the information about the Prüfidentifikatoren.
+            """
             current_tabstop_positions = get_tabstop_positions(paragraph=paragraph)
             splitted_text = paragraph.text.split("\t")
             splitted_text.remove("Prüfidentifikator")
@@ -191,4 +208,7 @@ class TableHeader:
         return cls(pruefi_meta_data=pruefi_meta_data)
 
     def get_pruefidentifikatoren(self) -> List[str]:
+        """
+        Get all Prüfidentifikatoren
+        """
         return [pruefi.pruefidentifikator for pruefi in self.pruefi_meta_data]
