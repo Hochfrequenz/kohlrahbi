@@ -16,7 +16,7 @@ class HeaderSection(StrEnum):
     """
 
     BESCHREIBUNG = "beschreibung"
-    KOMMUNIKATION = "kommunikation"
+    KOMMUNIKATION_VON = "kommunikation von"
     PRUEFIDENTIFIKATOR = "pruefidentifikator"
 
 
@@ -112,7 +112,7 @@ class TableHeader:
             collector: Dict[str, Dict[str, str | int]] = {
                 pruefidentifikator: {
                     HeaderSection.BESCHREIBUNG.value: "",
-                    HeaderSection.KOMMUNIKATION.value: "",
+                    HeaderSection.KOMMUNIKATION_VON.value: "",
                     "tabstop_position": tab_stop,
                 }
                 for pruefidentifikator, tab_stop in zip(splitted_text, current_tabstop_positions)
@@ -126,78 +126,45 @@ class TableHeader:
         if not row_cell.paragraphs[-1].text.startswith("Prüfidentifikator"):
             raise ValueError("The last paragraph should start with 'Prüfidentifikator'")
 
-        pruefidentifikator_paragraoh = row_cell.paragraphs[-1]
-
-        collector = initialize_collector(paragraph=pruefidentifikator_paragraoh)
-
-        # you need to loop over the paragraphs cause we need the tabstop positions of the paragraphs
+        collector = initialize_collector(paragraph=row_cell.paragraphs[-1])
 
         section_type: Optional[HeaderSection] = None
 
         for paragraph in row_cell.paragraphs:
-            if paragraph.text.startswith("Prüfidentifikator"):
+            splitted_text = paragraph.text.split("\t")
+            text_prefix = splitted_text[0]
+
+            if text_prefix == "Prüfidentifikator":
                 continue
-            if paragraph.text.startswith("Beschreibung"):
+
+            if text_prefix in ("Beschreibung", "Kommunikation von"):
                 initial_tabstop_positions = get_tabstop_positions(paragraph=paragraph)
-
-                section_type = HeaderSection.BESCHREIBUNG
-
                 tabstop_mapper = dict(zip(initial_tabstop_positions, collector.keys()))
-
-                splitted_text = paragraph.text.split("\t")
-                splitted_text.remove("Beschreibung")
-
+                section_type = HeaderSection[text_prefix.replace(" ", "_").upper()]
+                splitted_text.pop(0)
                 for pruefi, text in zip(collector.keys(), splitted_text):
-                    collector[pruefi][HeaderSection.BESCHREIBUNG.value] = text + " "
-
-            elif paragraph.text.startswith("Kommunikation"):
-                initial_tabstop_positions = get_tabstop_positions(paragraph=paragraph)
-
-                section_type = HeaderSection.KOMMUNIKATION
-
-                collector.keys()
-
-                tabstop_mapper = {
-                    tabstop_position: pruefi
-                    for tabstop_position, pruefi in zip(initial_tabstop_positions, collector.keys())
-                }
-
-                splitted_text = paragraph.text.split("\t")
-                splitted_text.remove("Kommunikation von")
-                for pruefi, text in zip(collector.keys(), splitted_text):
-                    collector[pruefi][HeaderSection.KOMMUNIKATION.value] = text + " "
-
+                    collector[pruefi][section_type.value] = text + " "
             else:
-                current_tabstop_positions = get_tabstop_positions(paragraph=paragraph)
-                splitted_text = paragraph.text.split("\t")
-                if "" in splitted_text:
+                if "" in splitted_text and len(splitted_text) > len(collector.keys()):
                     splitted_text.remove("")
 
-                for tabstop_position, text in zip(current_tabstop_positions, splitted_text):
+                for tabstop_position, text in zip(initial_tabstop_positions, splitted_text):
                     pruefi = tabstop_mapper[tabstop_position]
                     collector[pruefi][section_type.value] += text + " "
 
-        pruefi_meta_data = []
-
         def ensure_single_space_between_words(text: str) -> str:
-            """
-            Ensure that there is only one space between words
-            """
             return " ".join(text.split())
 
-        for pruefi, meta_data in collector.items():
-            if isinstance(meta_data[HeaderSection.BESCHREIBUNG.value], int) or isinstance(
-                meta_data[HeaderSection.KOMMUNIKATION.value], int
-            ):
-                raise ValueError("The meta data should not be an int")
-
-            pruefi_with_meta_data = PruefiMetaData(
+        pruefi_meta_data = [
+            PruefiMetaData(
                 pruefidentifikator=pruefi,
-                communication_direction=ensure_single_space_between_words(meta_data[HeaderSection.KOMMUNIKATION.value]),
+                communication_direction=ensure_single_space_between_words(
+                    meta_data[HeaderSection.KOMMUNIKATION_VON.value]
+                ),
                 name=ensure_single_space_between_words(meta_data[HeaderSection.BESCHREIBUNG.value]),
             )
-
-            pruefi_meta_data.append(pruefi_with_meta_data)
+            for pruefi, meta_data in collector.items()
+        ]
 
         return cls(pruefi_meta_data=pruefi_meta_data)
 
