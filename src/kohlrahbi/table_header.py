@@ -112,14 +112,14 @@ class TableHeader:
             splitted_text = paragraph.text.split("\t")
             splitted_text.remove("Prüfidentifikator")
 
-            collector: Dict[str, Dict[str, str | int]] = {}
-
-            for pruefidentifikator, tab_stop in zip(splitted_text, current_tabstop_positions):
-                collector[pruefidentifikator] = {
+            collector: Dict[str, Dict[str, str | int]] = {
+                pruefidentifikator: {
                     HeaderSection.BESCHREIBUNG.value: "",
                     HeaderSection.KOMMUNIKATION.value: "",
                     "tabstop_position": tab_stop,
                 }
+                for pruefidentifikator, tab_stop in zip(splitted_text, current_tabstop_positions)
+            }
 
             if collector == {}:
                 raise ValueError("collector should not be empty")
