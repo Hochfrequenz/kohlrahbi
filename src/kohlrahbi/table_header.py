@@ -77,6 +77,7 @@ def create_mapping_of_tabstop_positions(
     return mapping
 
 
+# pylint: disable=too-few-public-methods
 @define
 class PruefiMetaData:
     """
