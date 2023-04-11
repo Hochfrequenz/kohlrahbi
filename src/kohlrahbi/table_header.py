@@ -61,11 +61,11 @@ def create_mapping_of_tabstop_positions(
     current_tabstop_positions.sort()
 
     # Iterate over the sorted lists and find the entries with the least difference
-    for i in range(len(current_tabstop_positions)):
+    for i, current_pos in enumerate(current_tabstop_positions):
         min_diff = float("inf")
         min_j = None
-        for j in range(len(initial_tabstop_positions)):
-            diff = abs(current_tabstop_positions[i] - initial_tabstop_positions[j])
+        for j, initial_pos in enumerate(initial_tabstop_positions):
+            diff = abs(current_pos - initial_pos)
             if diff < min_diff:
                 min_diff = diff
                 min_j = j
