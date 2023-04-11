@@ -140,7 +140,7 @@ class TableHeader:
         for paragraph in row_cell.paragraphs:
             if paragraph.text.startswith("Prüfidentifikator"):
                 continue
-            elif paragraph.text.startswith("Beschreibung"):
+            if paragraph.text.startswith("Beschreibung"):
                 initial_tabstop_positions = get_tabstop_positions(paragraph=paragraph)
 
                 section_type = HeaderSection.BESCHREIBUNG
