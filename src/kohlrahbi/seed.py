@@ -2,10 +2,10 @@
 This module provides a class to collect information which of need for all parsing functions
 """
 
-from typing import Generator, List
+from typing import List
 
 from attrs import define
-from docx.table import Table, _Cell  # type:ignore[import]
+from docx.table import Table  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
 
 from kohlrahbi.enums import RowType
