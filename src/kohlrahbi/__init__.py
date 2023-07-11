@@ -6,7 +6,7 @@ kohlrahbi is a package to scrape AHBs (in docx format)
 import re
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 import click
 import docx  # type:ignore[import]
@@ -21,12 +21,29 @@ from kohlrahbi.unfoldedahb.unfoldedahbtable import UnfoldedAhb
 _pruefi_pattern = re.compile(r"^[1-9]\d{4}$")
 
 
-def get_valid_pruefis(list_of_pruefis: list[str]) -> list[str]:
+def get_valid_pruefis(list_of_pruefis: list[str], all_known_pruefis: Optional[list[str]] = None) -> list[str]:
     """
     This function returns a new list with only those pruefis which match the pruefi_pattern.
+    It also
     """
-    valid_pruefis: list[str] = [pruefi for pruefi in list_of_pruefis if _pruefi_pattern.match(pruefi)]
-    return valid_pruefis
+    result: set[str] = set()
+    for pruefi in list_of_pruefis:
+        if pruefi.count("*") > 1:
+            raise ValueError(f"Only one wildcard '*' is allowed per pruefi: '{pruefi}'")
+        if pruefi.endswith("*") and all_known_pruefis:
+            result = result.union({x for x in all_known_pruefis if x.startswith(pruefi[:-1])})
+        elif pruefi.startswith("*") and all_known_pruefis:
+            result = result.union({x for x in all_known_pruefis if x.endswith(pruefi[1:])})
+        elif "*" in pruefi:
+            first_part = pruefi.split("*")[0]
+            second_part = pruefi.split("*")[1]
+            result = result.union(
+                {x for x in all_known_pruefis if x.startswith(first_part) and x.endswith(second_part)}
+            )
+        elif _pruefi_pattern.match(pruefi):
+            result.add(pruefi)
+        # else: is neither a wildcard nor a valid pruefi
+    return sorted(list(result))
 
 
 def check_python_version():
@@ -140,15 +157,16 @@ def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: lis
             output_path.mkdir(parents=True)
             click.secho(f"I created a new directory at {output_path}", fg="yellow")
 
+    all_known_pruefis = load_all_known_pruefis_from_file()
     if len(pruefis) == 0:
         click.secho("☝️ No pruefis were given. I will parse all known pruefis.", fg="yellow")
-        pruefis = load_all_known_pruefis_from_file()
+        pruefis = all_known_pruefis
     if len(file_type) == 0:
         click.secho(
             "ℹ You did not provide any value for the parameter --file-type. No files will be created.", fg="yellow"
         )
-    valid_pruefis: list[str] = get_valid_pruefis(list_of_pruefis=pruefis)
-    if valid_pruefis == []:
+    valid_pruefis: list[str] = get_valid_pruefis(list_of_pruefis=pruefis, all_known_pruefis=all_known_pruefis)
+    if not any(valid_pruefis):
         click.secho("⚠️ There are no valid pruefidentifkatoren.", fg="red")
         raise click.Abort()
 
