@@ -54,6 +54,10 @@ class Seed:
             item (Union[Paragraph, Table]): A paragraph or table from the docx
         """
 
+        # the header cell with all pruefi information is the last cell in the first row
+        # the first row contains the 'EDIFACT Struktur' column, which is not needed
+        # often there is a second row with the pruefidentifikatoren information but it is not reliable for all tables
+        # therefore we use the last cell in the first row which seems to be the most reliable
         header_cell_with_all_pruefi_information = docx_table.row_cells(0)[-1]
 
         table_header = TableHeader.from_header_cell(row_cell=header_cell_with_all_pruefi_information)
