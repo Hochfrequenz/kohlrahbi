@@ -34,7 +34,7 @@ def get_valid_pruefis(list_of_pruefis: list[str], all_known_pruefis: Optional[li
             result = result.union({x for x in all_known_pruefis if x.startswith(pruefi[:-1])})
         elif pruefi.startswith("*") and all_known_pruefis:
             result = result.union({x for x in all_known_pruefis if x.endswith(pruefi[1:])})
-        elif "*" in pruefi:
+        elif "*" in pruefi and all_known_pruefis:
             first_part = pruefi.split("*")[0]
             second_part = pruefi.split("*")[1]
             result = result.union(
@@ -158,10 +158,10 @@ def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: lis
             click.secho(f"I created a new directory at {output_path}", fg="yellow")
 
     all_known_pruefis = load_all_known_pruefis_from_file()
-    if len(pruefis) == 0:
+    if not any(pruefis):
         click.secho("☝️ No pruefis were given. I will parse all known pruefis.", fg="yellow")
         pruefis = all_known_pruefis
-    if len(file_type) == 0:
+    if not any(file_type):
         click.secho(
             "ℹ You did not provide any value for the parameter --file-type. No files will be created.", fg="yellow"
         )
