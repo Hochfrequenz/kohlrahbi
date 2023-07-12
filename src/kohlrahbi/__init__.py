@@ -203,9 +203,7 @@ def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: lis
                 if "csv" in file_type:
                     logger.info("💾 Saving csv file %s", pruefi)
                     unfolded_ahb.dump_csv(path_to_output_directory=output_path)
-
-                break
-            del ahb_table
+            del ahb_table, unfolded_ahb
 
 
 if __name__ == "__main__":
