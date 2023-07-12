@@ -155,29 +155,31 @@ def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: lis
     if len(valid_pruefis) != len(pruefis):
         click.secho("☝️ Not all given pruefidentifikatoren are valid.", fg="yellow")
         click.secho(f"I will continue with the following valid pruefis: {valid_pruefis}.", fg="yellow")
+    ahb_file_finder = AhbFileFinder.from_input_path(input_path=input_path)
+    path_to_document_mapping: dict[Path, docx.Document] = {}
 
     for pruefi in valid_pruefis:
         logger.info("start looking for pruefi '%s'", pruefi)
-
-        ahb_file_finder = AhbFileFinder.from_input_path(input_path=input_path)
 
         ahb_file_paths: list[Path] = ahb_file_finder.get_docx_files_which_may_contain_searched_pruefi(
             searched_pruefi=pruefi
         )
 
-        if len(ahb_file_paths) == 0:
+        if not any(ahb_file_paths):
             logger.warning("No docx file was found for pruefi '%s'", pruefi)
             continue
 
         for ahb_file_path in ahb_file_paths:
-            try:
-                doc = docx.Document(ahb_file_path)  # Creating word reader object.
+            if not (doc := path_to_document_mapping.get(ahb_file_path, None)):
+                try:
+                    doc = docx.Document(ahb_file_path)  # Creating word reader object.
+                    path_to_document_mapping[ahb_file_path] = doc
+                    logger.debug("Saved %s document in cache", ahb_file_path)  # to not re-read it every time
+                except IOError as ioe:
+                    logger.exception("There was an error opening the file '%s'", ahb_file_path, exc_info=True)
+                    raise click.Abort() from ioe
 
-            except IOError as ioe:
-                logger.exception("There was an error opening the file '%s'", ahb_file_path, exc_info=True)
-                raise click.Abort() from ioe
-
-            logger.info("start reading docx file(s) '%s'", str(ahb_file_path))
+            logger.info("start reading docx file '%s'", str(ahb_file_path))
 
             ahb_table: AhbTable | None = get_ahb_table(
                 document=doc,
@@ -203,6 +205,7 @@ def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: lis
                     unfolded_ahb.dump_csv(path_to_output_directory=output_path)
 
                 break
+            del ahb_table
 
 
 if __name__ == "__main__":
