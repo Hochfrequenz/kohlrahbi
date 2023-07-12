@@ -24,10 +24,14 @@ _pruefi_pattern = re.compile(r"^[1-9]\d{4}$")
 def get_valid_pruefis(list_of_pruefis: list[str], all_known_pruefis: Optional[list[str]] = None) -> list[str]:
     """
     This function returns a new list with only those pruefis which match the pruefi_pattern.
-    It also support '*' style wildcards iff a list of known pruefis is given.
+    It also supports '*' style wildcards iff a list of known pruefis is given.
+    E.g. '11*' for all pruefis starting with '11' or '*01' for all pruefis ending with '01'.
     """
     result: set[str] = set()
     for pruefi in list_of_pruefis:
+        # We could replace every occurrence of "*" with ".*" and try to interpret the result as a regex
+        # But do we want this? Do we need it? The following branches are all covered by unittests.
+        # We can still add the more complex regex support once there's the need for it.
         if pruefi.count("*") > 1:
             raise ValueError(f"Only one wildcard '*' is allowed per pruefi: '{pruefi}'")
         if pruefi.endswith("*") and all_known_pruefis:
