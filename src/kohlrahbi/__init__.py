@@ -1,8 +1,7 @@
 """
 kohlrahbi is a package to scrape AHBs (in docx format)
 """
-
-
+import gc
 import re
 import sys
 from pathlib import Path
@@ -217,6 +216,7 @@ def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: lis
         del ahb_table
         if "unfolded_ahb" in locals():
             del unfolded_ahb
+        gc.collect()
 
 
 if __name__ == "__main__":
