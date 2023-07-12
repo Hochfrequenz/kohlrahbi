@@ -3,7 +3,7 @@ This module contains the TableHeader class.
 """
 
 from enum import StrEnum
-from typing import Dict, List, cast
+from typing import Dict, List, Mapping, cast
 
 from attrs import define
 from docx.table import _Cell  # type:ignore[import]
@@ -42,7 +42,7 @@ def get_tabstop_positions(paragraph: Paragraph) -> List[int]:
 def create_mapping_of_tabstop_positions(
     initial_tabstop_positions: List[int],
     current_tabstop_positions: List[int],
-) -> Dict[int, int]:
+) -> Mapping[int, int]:
     """
     Create a mapping of the tabstop positions of the Prüfidentifikatoren columns.
     """
