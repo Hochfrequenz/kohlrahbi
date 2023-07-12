@@ -313,7 +313,7 @@ class UnfoldedAhb:
                 "Qualifier": unfolded_ahb_line.qualifier,
                 "Beschreibung": unfolded_ahb_line.beschreibung,
                 "Bedingungsausdruck": unfolded_ahb_line.bedinung_ausdruck,
-                "Bedinung": unfolded_ahb_line.bedingung,
+                "Bedingung": unfolded_ahb_line.bedingung,
             }
             for unfolded_ahb_line in self.unfolded_ahb_lines
         ]
