@@ -2,8 +2,6 @@
 This module provides a class to collect information which of need for all parsing functions
 """
 
-from typing import List
-
 from attrs import define
 from docx.table import Table  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
@@ -11,7 +9,7 @@ from docx.text.paragraph import Paragraph  # type:ignore[import]
 from kohlrahbi.enums import RowType
 
 
-def get_tabstop_positions(paragraph: Paragraph) -> List[int]:
+def get_tabstop_positions(paragraph: Paragraph) -> list[int]:
     """Find all tabstop positions in a given paragraph.
 
     Mainly the tabstop positions of cells from the middle column are determined
@@ -22,7 +20,7 @@ def get_tabstop_positions(paragraph: Paragraph) -> List[int]:
     Returns:
         List[int]: All tabstop positions in the given paragraph
     """
-    tabstop_positions: List[int] = []
+    tabstop_positions: list[int] = []
     for tabstop in paragraph.paragraph_format.tab_stops:
         tabstop_positions.append(tabstop.position)
     return tabstop_positions
@@ -35,12 +33,12 @@ class Seed:
     helper class to store all values to extract the AHB and the final AHB as dataframe
     """
 
-    pruefidentifikatoren: List[str] = []
-    column_headers: List[str] = []
+    pruefidentifikatoren: list[str] = []
+    column_headers: list[str] = []
     edifact_struktur_left_indent_position: int = 0
     middle_cell_left_indent_position: int = 0
-    tabstop_positions: List[int] = []
-    last_two_row_types: List[RowType] = []
+    tabstop_positions: list[int] = []
+    last_two_row_types: list[RowType] = []
 
     # why this classmethod?
     # to decouple the data structure of Elixir from the input data
@@ -67,7 +65,7 @@ class Seed:
         middle_cell_left_indent_position = middle_cell_indicator_paragraph.paragraph_format.left_indent
         tabstop_positions = get_tabstop_positions(middle_cell_indicator_paragraph)
 
-        base_column_names: List = [
+        base_column_names: list = [
             "Segment Gruppe",
             "Segment",
             "Datenelement",
@@ -77,7 +75,7 @@ class Seed:
         columns = base_column_names + pruefidentifikatoren + ["Bedingung"]
 
         # Initialize help variables
-        last_two_row_types: List = [RowType.EMPTY, RowType.EMPTY]
+        last_two_row_types: list[RowType] = [RowType.EMPTY, RowType.EMPTY]
 
         return cls(
             pruefidentifikatoren=pruefidentifikatoren,

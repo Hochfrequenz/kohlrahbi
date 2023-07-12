@@ -1,8 +1,6 @@
 """
 This module contains the class BodyCell
 """
-from typing import List
-
 import attrs
 import pandas as pd
 from docx.table import _Cell  # type:ignore[import]
@@ -23,7 +21,7 @@ class BodyCell:
 
     table_cell: _Cell
     left_indent_position: int
-    indicator_tabstop_positions: List[int]
+    indicator_tabstop_positions: list[int]
 
     # I see why pylint is not happy about this many branches, but at the moment I have no clue how to avoid them.
     # pylint: disable=too-many-branches
