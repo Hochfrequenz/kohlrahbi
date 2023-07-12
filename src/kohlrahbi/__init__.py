@@ -140,10 +140,10 @@ def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: lis
             output_path.mkdir(parents=True)
             click.secho(f"I created a new directory at {output_path}", fg="yellow")
 
-    if not any(pruefis) == 0:
+    if not any(pruefis):
         click.secho("☝️ No pruefis were given. I will parse all known pruefis.", fg="yellow")
         pruefis = load_all_known_pruefis_from_file()
-    if not any(file_type) == 0:
+    if not any(file_type):
         message = "ℹ You did not provide any value for the parameter --file-type. No files will be created."
         click.secho(message, fg="yellow")
         logger.warning(message)
