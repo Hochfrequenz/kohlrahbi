@@ -214,7 +214,9 @@ def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: lis
                 exc_info=True,
             )
             continue
-        del ahb_table, unfolded_ahb
+        del ahb_table
+        if "unfolded_ahb" in locals():
+            del unfolded_ahb
 
 
 if __name__ == "__main__":
