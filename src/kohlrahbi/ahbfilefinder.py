@@ -92,7 +92,7 @@ class AhbFileFinder:
         if (
             edifact_format == EdifactFormat.UTILMD
             and searched_pruefi.startswith("11")
-            and all(["202310" in path.name for path in self.paths_to_docx_files])
+            and all("202310" in path.name for path in self.paths_to_docx_files)
         ):
             logger.info(
                 # pylint:disable=line-too-long
