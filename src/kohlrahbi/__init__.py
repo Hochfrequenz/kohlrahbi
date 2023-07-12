@@ -24,7 +24,7 @@ _pruefi_pattern = re.compile(r"^[1-9]\d{4}$")
 def get_valid_pruefis(list_of_pruefis: list[str], all_known_pruefis: Optional[list[str]] = None) -> list[str]:
     """
     This function returns a new list with only those pruefis which match the pruefi_pattern.
-    It also
+    It also support '*' style wildcards iff a list of known pruefis is given.
     """
     result: set[str] = set()
     for pruefi in list_of_pruefis:
