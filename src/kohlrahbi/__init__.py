@@ -1,8 +1,7 @@
 """
 kohlrahbi is a package to scrape AHBs (in docx format)
 """
-
-
+import gc
 import re
 import sys
 from pathlib import Path
@@ -124,7 +123,7 @@ def load_all_known_pruefis_from_file(
     is_flag=True,
     help="Confirm all prompts automatically.",
 )
-# pylint: disable=too-many-branches, too-many-statements
+# pylint: disable=too-many-branches, too-many-statements, too-many-locals
 def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: list[str], assume_yes: bool):
     """
     A program to get a machine readable version of the AHBs docx files published by edi@energy.
@@ -140,15 +139,16 @@ def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: lis
             output_path.mkdir(parents=True)
             click.secho(f"I created a new directory at {output_path}", fg="yellow")
 
-    if len(pruefis) == 0:
+    if not any(pruefis):
         click.secho("☝️ No pruefis were given. I will parse all known pruefis.", fg="yellow")
         pruefis = load_all_known_pruefis_from_file()
-    if len(file_type) == 0:
-        click.secho(
-            "ℹ You did not provide any value for the parameter --file-type. No files will be created.", fg="yellow"
-        )
+    if not any(file_type):
+        message = "ℹ You did not provide any value for the parameter --file-type. No files will be created."
+        click.secho(message, fg="yellow")
+        logger.warning(message)
+
     valid_pruefis: list[str] = get_valid_pruefis(list_of_pruefis=pruefis)
-    if valid_pruefis == []:
+    if not any(valid_pruefis):
         click.secho("⚠️ There are no valid pruefidentifkatoren.", fg="red")
         raise click.Abort()
 
@@ -159,53 +159,64 @@ def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: lis
     path_to_document_mapping: dict[Path, docx.Document] = {}
 
     for pruefi in valid_pruefis:
-        logger.info("start looking for pruefi '%s'", pruefi)
+        try:
+            logger.info("start looking for pruefi '%s'", pruefi)
 
-        ahb_file_paths: list[Path] = ahb_file_finder.get_docx_files_which_may_contain_searched_pruefi(
-            searched_pruefi=pruefi
-        )
-
-        if not any(ahb_file_paths):
-            logger.warning("No docx file was found for pruefi '%s'", pruefi)
-            continue
-
-        for ahb_file_path in ahb_file_paths:
-            if not (doc := path_to_document_mapping.get(ahb_file_path, None)):
-                try:
-                    doc = docx.Document(ahb_file_path)  # Creating word reader object.
-                    path_to_document_mapping[ahb_file_path] = doc
-                    logger.debug("Saved %s document in cache", ahb_file_path)  # to not re-read it every time
-                except IOError as ioe:
-                    logger.exception("There was an error opening the file '%s'", ahb_file_path, exc_info=True)
-                    raise click.Abort() from ioe
-
-            logger.info("start reading docx file '%s'", str(ahb_file_path))
-
-            ahb_table: AhbTable | None = get_ahb_table(
-                document=doc,
-                pruefi=pruefi,
+            ahb_file_paths: list[Path] = ahb_file_finder.get_docx_files_which_may_contain_searched_pruefi(
+                searched_pruefi=pruefi
             )
 
-            if ahb_table is None:
+            if not any(ahb_file_paths):
+                logger.warning("No docx file was found for pruefi '%s'", pruefi)
                 continue
 
-            if isinstance(ahb_table, AhbTable):
-                unfolded_ahb = UnfoldedAhb.from_ahb_table(ahb_table=ahb_table, pruefi=pruefi)
+            for ahb_file_path in ahb_file_paths:
+                if not (doc := path_to_document_mapping.get(ahb_file_path, None)):
+                    try:
+                        doc = docx.Document(ahb_file_path)  # Creating word reader object.
+                        path_to_document_mapping[ahb_file_path] = doc
+                        logger.debug("Saved %s document in cache", ahb_file_path)  # to not re-read it every time
+                    except IOError as ioe:
+                        logger.exception("There was an error opening the file '%s'", ahb_file_path, exc_info=True)
+                        raise click.Abort() from ioe
 
-                if "xlsx" in file_type:
-                    logger.info("💾 Saving xlsx file %s", pruefi)
-                    unfolded_ahb.dump_xlsx(path_to_output_directory=output_path)
+                logger.info("start reading docx file '%s'", str(ahb_file_path))
 
-                if "flatahb" in file_type:
-                    logger.info("💾 Saving flatahb file %s", pruefi)
-                    unfolded_ahb.dump_flatahb_json(output_directory_path=output_path)
+                ahb_table: AhbTable | None = get_ahb_table(
+                    document=doc,
+                    pruefi=pruefi,
+                )
 
-                if "csv" in file_type:
-                    logger.info("💾 Saving csv file %s", pruefi)
-                    unfolded_ahb.dump_csv(path_to_output_directory=output_path)
+                if ahb_table is None:
+                    continue
 
-                break
-            del ahb_table
+                if isinstance(ahb_table, AhbTable):
+                    unfolded_ahb = UnfoldedAhb.from_ahb_table(ahb_table=ahb_table, pruefi=pruefi)
+
+                    if "xlsx" in file_type:
+                        logger.info("💾 Saving xlsx file %s", pruefi)
+                        unfolded_ahb.dump_xlsx(path_to_output_directory=output_path)
+
+                    if "flatahb" in file_type:
+                        logger.info("💾 Saving flatahb file %s", pruefi)
+                        unfolded_ahb.dump_flatahb_json(output_directory_path=output_path)
+
+                    if "csv" in file_type:
+                        logger.info("💾 Saving csv file %s", pruefi)
+                        unfolded_ahb.dump_csv(path_to_output_directory=output_path)
+                    break
+        except Exception as general_error:  # pylint:disable=broad-except
+            logger.exception(
+                "There was an uncaught error while processing the pruefi '%s': %s",
+                pruefi,
+                str(general_error),
+                exc_info=True,
+            )
+            continue
+        del ahb_table
+        if "unfolded_ahb" in locals():
+            del unfolded_ahb
+        gc.collect()
 
 
 if __name__ == "__main__":
