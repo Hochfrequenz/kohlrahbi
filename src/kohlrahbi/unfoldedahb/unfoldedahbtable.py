@@ -344,6 +344,7 @@ class UnfoldedAhb:
             self.meta_data.pruefidentifikator,
             csv_output_directory_path / f"{self.meta_data.pruefidentifikator}.csv",
         )
+        del df
 
     def dump_xlsx(self, path_to_output_directory: Path) -> None:
         """

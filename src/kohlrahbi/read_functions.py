@@ -95,6 +95,7 @@ def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
     for item in get_all_paragraphs_and_tables(parent=document):
         # Check if we reached the end of the current AHB document and stop if it's true.
         if isinstance(item, Paragraph) and "Heading" in item.style.name and "Änderungshistorie" in item.text:
+            del seed
             return None
 
         # Check if there is just a text paragraph,
@@ -111,6 +112,7 @@ def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
         )
 
         if we_reached_the_end_of_the_ahb_table_of_the_searched_pruefi:
+            del seed
             seed = None
             logger.info("🏁 We reached the end of the AHB table of the Prüfidentifikator '%s'", pruefi)
             break
@@ -141,5 +143,5 @@ def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
         return None
 
     ahb_table.sanitize()
-
+    del seed
     return ahb_table
