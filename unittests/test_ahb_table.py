@@ -1,11 +1,9 @@
-import attrs
 import pandas as pd
 import pytest  # type:ignore[import]
 
 from kohlrahbi.ahb.ahbtable import AhbTable
 
 
-@attrs.define(auto_attribs=True, kw_only=True)
 class TestAhbTable:
     """
     All tests regarding the AhbTable class
