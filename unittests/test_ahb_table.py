@@ -1,11 +1,11 @@
-import attrs
+from pathlib import Path
+
 import pandas as pd
 import pytest  # type:ignore[import]
 
 from kohlrahbi.ahb.ahbtable import AhbTable
 
 
-@attrs.define(auto_attribs=True, kw_only=True)
 class TestAhbTable:
     """
     All tests regarding the AhbTable class
@@ -61,6 +61,20 @@ class TestAhbTable:
 
         assert len(ahb_table.table) == len(expected_ahb_table_dataframe)
         assert ahb_table.table.equals(expected_ahb_table_dataframe)
+
+    def test_sanitize_ahb_table_dataframe_44001(self):
+        """
+        test the sanitizing bug from https://github.com/Hochfrequenz/kohlrahbi/issues/140
+        """
+        df_file = Path(__file__).parent / "dataframes" / "44001_before_sanitizing.json"
+        assert df_file.exists()
+        df_table = pd.read_json(df_file)
+        ahb_table = AhbTable(table=df_table)
+        assert "E02" in ahb_table.table["Codes und Qualifier"].values
+        assert "ZD2" in ahb_table.table["Codes und Qualifier"].values
+        ahb_table.sanitize()
+        assert "E02" in ahb_table.table["Codes und Qualifier"].values
+        assert "ZD2" in ahb_table.table["Codes und Qualifier"].values
 
     def test_fill_segement_gruppe_segement_dataelement(self):
         """
