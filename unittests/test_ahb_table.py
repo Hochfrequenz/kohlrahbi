@@ -1,11 +1,9 @@
-import attrs
 import pandas as pd
 import pytest  # type:ignore[import]
 
 from kohlrahbi.ahb.ahbtable import AhbTable
 
 
-@attrs.define(auto_attribs=True, kw_only=True)
 class TestAhbTable:
     """
     All tests regarding the AhbTable class
@@ -36,6 +34,8 @@ class TestAhbTable:
                 ),
                 pd.DataFrame(
                     {
+                        # note that the two fields in "Segment Gruppe" should be merged
+                        # and the remaining artefact column should be dropped
                         "Segment Gruppe": ["SG8", "Referenz auf die ID einer Messlokation", "SG8"],
                         "Segment": ["SEQ", "", ""],
                         "Datenelement": ["1229", "", ""],
