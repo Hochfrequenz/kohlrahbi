@@ -164,6 +164,24 @@ class UnfoldedAhb:
                     )
                 )
                 continue
+            if any(unfolded_ahb_lines) and UnfoldedAhb._is_just_value_pool_entry(ahb_row=row):
+                previous_segment_group_key = unfolded_ahb_lines[-1].segment_gruppe
+                previous_segment_code = unfolded_ahb_lines[-1].segment
+                previous_data_element = unfolded_ahb_lines[-1].datenelement
+                unfolded_ahb_lines.append(
+                    UnfoldedAhbLine(
+                        index=index,
+                        segment_name=current_section_name,
+                        segment_gruppe=previous_segment_group_key,
+                        segment=previous_segment_code,
+                        datenelement=previous_data_element,
+                        code=row["Codes und Qualifier"],
+                        qualifier="",
+                        beschreibung=row["Beschreibung"],
+                        bedinung_ausdruck=row[pruefi] or None,
+                        bedingung=row["Bedingung"],
+                    )
+                )
 
         return cls(
             unfolded_ahb_lines=unfolded_ahb_lines,
@@ -242,6 +260,18 @@ class UnfoldedAhb:
         if ahb_row["Datenelement"]:
             return True
         return False
+
+    @staticmethod
+    def _is_just_value_pool_entry(ahb_row: pd.Series) -> bool:
+        """
+        Checks if the given AHB row contains only a value pool entry (w/o Segment (group) and data element)
+        """
+        return (
+            (not ahb_row["Segment Gruppe"])
+            and (not ahb_row["Segment"])
+            and (not ahb_row["Datenelement"])
+            and ahb_row["Codes und Qualifier"]
+        )
 
     def convert_to_flat_ahb(self) -> FlatAnwendungshandbuch:
         """
