@@ -4,6 +4,7 @@ import pandas as pd
 import pytest  # type:ignore[import]
 
 from kohlrahbi.ahb.ahbtable import AhbTable
+from kohlrahbi.unfoldedahb import UnfoldedAhb
 
 
 class TestAhbTable:
@@ -77,6 +78,17 @@ class TestAhbTable:
         ahb_table.sanitize()
         assert "E02" in ahb_table.table["Codes und Qualifier"].values
         assert "ZD2" in ahb_table.table["Codes und Qualifier"].values
+        unfolded_ahb = UnfoldedAhb.from_ahb_table(ahb_table=ahb_table, pruefi="44001")
+        assert unfolded_ahb is not None
+        for expected_transaktionsgrund in ["E01", "E02", "E03", "ZD2"]:
+            assert any(
+                l
+                for l in unfolded_ahb.unfolded_ahb_lines
+                if l.segment_gruppe == "SG4"
+                and l.segment == "STS"
+                and l.datenelement == "9013"
+                and l.code == expected_transaktionsgrund
+            ), f"No line with Transaktionsgrund '{expected_transaktionsgrund}' found"
 
     def test_fill_segement_gruppe_segement_dataelement(self):
         """
