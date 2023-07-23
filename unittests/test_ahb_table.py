@@ -80,15 +80,21 @@ class TestAhbTable:
         assert "ZD2" in ahb_table.table["Codes und Qualifier"].values
         unfolded_ahb = UnfoldedAhb.from_ahb_table(ahb_table=ahb_table, pruefi="44001")
         assert unfolded_ahb is not None
-        for expected_transaktionsgrund in ["E01", "E02", "E03", "ZD2"]:
+        for expected_transaktionsgrund, expected_beschreibung in [
+            ("E01", "Ein-/Auszug (Umzug)"),
+            ("E02", "Einzug in Neuanlage"),
+            ("E03", "Wechsel"),
+            ("ZD2", "Lieferbeginn undAbmeldung aus derErsatzversorgung"),
+        ]:
             assert any(
-                l
-                for l in unfolded_ahb.unfolded_ahb_lines
-                if l.segment_gruppe == "SG4"
-                and l.segment == "STS"
-                and l.datenelement == "9013"
-                and l.code == expected_transaktionsgrund
-            ), f"No line with Transaktionsgrund '{expected_transaktionsgrund}' found"
+                line
+                for line in unfolded_ahb.unfolded_ahb_lines
+                if line.segment_gruppe == "SG4"
+                and line.segment == "STS"
+                and line.datenelement == "9013"
+                and line.code == expected_transaktionsgrund
+                and line.beschreibung == expected_beschreibung
+            ), f"No line with Transaktionsgrund '{expected_transaktionsgrund}' ({expected_beschreibung}) found"
 
     def test_fill_segement_gruppe_segement_dataelement(self):
         """
