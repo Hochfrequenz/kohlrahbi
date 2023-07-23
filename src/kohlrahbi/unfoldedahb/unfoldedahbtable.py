@@ -165,16 +165,13 @@ class UnfoldedAhb:
                 )
                 continue
             if any(unfolded_ahb_lines) and UnfoldedAhb._is_just_value_pool_entry(ahb_row=row):
-                previous_segment_group_key = unfolded_ahb_lines[-1].segment_gruppe
-                previous_segment_code = unfolded_ahb_lines[-1].segment
-                previous_data_element = unfolded_ahb_lines[-1].datenelement
                 unfolded_ahb_lines.append(
                     UnfoldedAhbLine(
                         index=index,
                         segment_name=current_section_name,
-                        segment_gruppe=previous_segment_group_key,
-                        segment=previous_segment_code,
-                        datenelement=previous_data_element,
+                        segment_gruppe=unfolded_ahb_lines[-1].segment_gruppe,
+                        segment=unfolded_ahb_lines[-1].segment,
+                        datenelement=unfolded_ahb_lines[-1].datenelement,
                         code=row["Codes und Qualifier"],
                         qualifier="",
                         beschreibung=row["Beschreibung"],
