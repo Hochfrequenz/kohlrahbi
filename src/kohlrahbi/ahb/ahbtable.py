@@ -145,7 +145,7 @@ class AhbTable:
                 index_of_lines_to_drop.append(index_of_next_row)
 
         self.table.drop(index_of_lines_to_drop, inplace=True)
-        self.table.reset_index(drop=True)
+        self.table.reset_index(drop=True, inplace=True)
 
     def to_csv(self, pruefi: str, path_to_output_directory: Path) -> None:
         """
