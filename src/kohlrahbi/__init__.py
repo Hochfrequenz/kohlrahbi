@@ -30,11 +30,11 @@ def get_valid_pruefis(list_of_pruefis: list[str], all_known_pruefis: Optional[li
     result: set[str] = set()
 
     for pruefi in list_of_pruefis:
-        if all_known_pruefis is None:
-            all_known_pruefis = load_all_known_pruefis_from_file()
-
-        filtered_pruefis = fnmatch.filter(all_known_pruefis, pruefi)
-        result = result.union(filtered_pruefis)
+        if ("*" in pruefi or "?" in pruefi) and all_known_pruefis:
+            filtered_pruefis = fnmatch.filter(all_known_pruefis, pruefi)
+            result = result.union(filtered_pruefis)
+        elif _pruefi_pattern.match(pruefi):
+            result.add(pruefi)
 
     return sorted(list(result))
 
