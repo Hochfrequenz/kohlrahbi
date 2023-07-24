@@ -46,14 +46,17 @@ def _keep_guids_of_unchanged_lines_stable(
     existing_ahb. Only applies if metadata of both AHBs match.
     """
     if updated_ahb.meta == existing_ahb.meta:
-        start_index = 0
+        existing_ahb_search_start_index = 0
         for update_index, updated_line in enumerate(updated_ahb.lines.copy()):
             if existing_line_match := first_true(  # ⚠ performance wise this goes like O(n^2)
-                existing_ahb.lines[start_index:], pred=lambda x: _lines_are_equal_when_ignoring_guid(x, updated_line)
+                existing_ahb.lines[existing_ahb_search_start_index:],
+                pred=lambda x: _lines_are_equal_when_ignoring_guid(
+                    x, updated_line  # pylint:disable=cell-var-from-loop
+                ),
             ):
                 updated_ahb.lines[update_index].guid = existing_line_match.guid
                 # if we found a line match, we can start the next search at the next line in the next loop iteration
-                start_index = existing_ahb.lines.index(existing_line_match) + 1
+                existing_ahb_search_start_index = existing_ahb.lines.index(existing_line_match) + 1
 
 
 @attrs.define(auto_attribs=True, kw_only=True)
