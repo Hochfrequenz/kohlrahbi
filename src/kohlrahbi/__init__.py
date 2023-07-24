@@ -106,7 +106,7 @@ def load_all_known_pruefis_from_file(
     "--pruefis",
     default=[],
     required=False,
-    help="Five digit number like 11042 or use wildcards like 110* or *042 or 11*42.",
+    help="Five digit number like 11042 or use wildcards like 110* or *042 or 11?42.",
     multiple=True,
 )
 @click.option(
