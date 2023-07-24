@@ -27,6 +27,8 @@ class AhbFileFinder:
         ahb_file_paths: list[Path] = [
             path for path in input_path.iterdir() if path.is_file() if path.suffix == ".docx" if "AHB" in path.name
         ]
+        if not any(ahb_file_paths):  # this is suspicious at least
+            logger.warning("The directory '%s' does not contain any AHB docx files.", input_path.absolute())
         return cls(paths_to_docx_files=ahb_file_paths)
 
     @staticmethod
@@ -46,7 +48,7 @@ class AhbFileFinder:
         result: list[Path] = []
 
         groups: dict[str, list[Path]] = {}  # the key is the first part of the file name, the values are matching files
-
+        logger.debug("The list self.paths_to_docx_files contains %i entries", len(self.paths_to_docx_files))
         for key, group in groupby(
             sorted(self.paths_to_docx_files, key=AhbFileFinder.get_first_part_of_ahb_docx_file_name),
             AhbFileFinder.get_first_part_of_ahb_docx_file_name,
