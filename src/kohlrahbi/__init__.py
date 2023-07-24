@@ -69,6 +69,7 @@ def load_all_known_pruefis_from_file(
 ) -> list[str]:
     """
     Loads the file which contains all known Prüfidentifikatoren.
+    The file may be manually updated with the script `collect_pruefis.py`.
     """
 
     with open(path_to_all_known_pruefis, "rb") as file:
