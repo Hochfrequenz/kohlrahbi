@@ -27,6 +27,8 @@ class AhbFileFinder:
         ahb_file_paths: list[Path] = [
             path for path in input_path.iterdir() if path.is_file() if path.suffix == ".docx" if "AHB" in path.name
         ]
+        if not any(ahb_file_paths):  # this is suspicious at least
+            logger.warning("The directory '%s' does not contain any AHB docx files.", input_path.absolute())
         return cls(paths_to_docx_files=ahb_file_paths)
 
     @staticmethod

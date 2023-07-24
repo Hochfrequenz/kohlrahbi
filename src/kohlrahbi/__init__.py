@@ -69,6 +69,7 @@ def load_all_known_pruefis_from_file(
 ) -> list[str]:
     """
     Loads the file which contains all known Prüfidentifikatoren.
+    The file may be manually updated with the script `collect_pruefis.py`.
     """
 
     with open(path_to_all_known_pruefis, "rb") as file:
@@ -155,13 +156,12 @@ def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: lis
     if len(valid_pruefis) != len(pruefis):
         click.secho("☝️ Not all given pruefidentifikatoren are valid.", fg="yellow")
         click.secho(f"I will continue with the following valid pruefis: {valid_pruefis}.", fg="yellow")
-    ahb_file_finder = AhbFileFinder.from_input_path(input_path=input_path)
     path_to_document_mapping: dict[Path, docx.Document] = {}
 
     for pruefi in valid_pruefis:
         try:
             logger.info("start looking for pruefi '%s'", pruefi)
-
+            ahb_file_finder = AhbFileFinder.from_input_path(input_path=input_path)
             ahb_file_paths: list[Path] = ahb_file_finder.get_docx_files_which_may_contain_searched_pruefi(
                 searched_pruefi=pruefi
             )
