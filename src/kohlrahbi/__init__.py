@@ -1,11 +1,12 @@
 """
 kohlrahbi is a package to scrape AHBs (in docx format)
 """
+import fnmatch
 import gc
 import re
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 import click
 import docx  # type:ignore[import]
@@ -20,12 +21,23 @@ from kohlrahbi.unfoldedahb.unfoldedahbtable import UnfoldedAhb
 _pruefi_pattern = re.compile(r"^[1-9]\d{4}$")
 
 
-def get_valid_pruefis(list_of_pruefis: list[str]) -> list[str]:
+# pylint:disable=anomalous-backslash-in-string
+def get_valid_pruefis(list_of_pruefis: list[str], all_known_pruefis: Optional[list[str]] = None) -> list[str]:
     """
-    This function returns a new list with only those pruefis which match the pruefi_pattern.
+    This function returns a new list with only those pruefis which match the pruefi_pattern r"^[1-9]\d{4}$".
+    It also supports unix wildcards like '*' and '?' iff a list of known pruefis is given.
+    E.g. '11*' for all pruefis starting with '11' or '*01' for all pruefis ending with '01'.
     """
-    valid_pruefis: list[str] = [pruefi for pruefi in list_of_pruefis if _pruefi_pattern.match(pruefi)]
-    return valid_pruefis
+    result: set[str] = set()
+
+    for pruefi in list_of_pruefis:
+        if ("*" in pruefi or "?" in pruefi) and all_known_pruefis:
+            filtered_pruefis = fnmatch.filter(all_known_pruefis, pruefi)
+            result = result.union(filtered_pruefis)
+        elif _pruefi_pattern.match(pruefi):
+            result.add(pruefi)
+
+    return sorted(list(result))
 
 
 def check_python_version():
@@ -95,7 +107,7 @@ def load_all_known_pruefis_from_file(
     "--pruefis",
     default=[],
     required=False,
-    help="Five digit number like 11042.",
+    help="Five digit number like 11042 or use wildcards like 110* or *042 or 11?42.",
     multiple=True,
 )
 @click.option(
