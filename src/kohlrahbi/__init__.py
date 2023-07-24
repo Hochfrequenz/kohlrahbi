@@ -156,13 +156,12 @@ def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: lis
     if len(valid_pruefis) != len(pruefis):
         click.secho("☝️ Not all given pruefidentifikatoren are valid.", fg="yellow")
         click.secho(f"I will continue with the following valid pruefis: {valid_pruefis}.", fg="yellow")
-    ahb_file_finder = AhbFileFinder.from_input_path(input_path=input_path)
     path_to_document_mapping: dict[Path, docx.Document] = {}
 
     for pruefi in valid_pruefis:
         try:
             logger.info("start looking for pruefi '%s'", pruefi)
-
+            ahb_file_finder = AhbFileFinder.from_input_path(input_path=input_path)
             ahb_file_paths: list[Path] = ahb_file_finder.get_docx_files_which_may_contain_searched_pruefi(
                 searched_pruefi=pruefi
             )
