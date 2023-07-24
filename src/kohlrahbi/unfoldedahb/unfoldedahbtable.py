@@ -1,7 +1,7 @@
 """
 This module contains the UnfoldedAhbTable class.
 """
-
+import copy
 import json
 import re
 from pathlib import Path
@@ -12,13 +12,12 @@ import pandas as pd
 from maus.edifact import get_format_of_pruefidentifikator
 from maus.models.anwendungshandbuch import (
     AhbLine,
-    AhbLineSchema,
     AhbMetaInformation,
     FlatAnwendungshandbuch,
     FlatAnwendungshandbuchSchema,
 )
 from maus.reader.flat_ahb_reader import FlatAhbCsvReader
-from more_itertools import peekable
+from more_itertools import first_true, peekable
 
 from kohlrahbi.ahb.ahbtable import AhbTable, _column_letter_width_mapping
 from kohlrahbi.logger import logger
@@ -26,6 +25,35 @@ from kohlrahbi.unfoldedahb.unfoldedahbline import UnfoldedAhbLine
 from kohlrahbi.unfoldedahb.unfoldedahbtablemetadata import UnfoldedAhbTableMetaData
 
 _segment_group_pattern = re.compile(r"^SG\d+$")
+
+
+def _lines_are_equal_when_ignoring_guid(line1: AhbLine, line2: AhbLine) -> bool:
+    """
+    returns true iff the line1 and line2 are equal except for their guid
+    """
+    line1_copy = copy.deepcopy(line1)
+    line2_copy = copy.deepcopy(line2)
+    line1_copy.guid = None
+    line2_copy.guid = None
+    return line1_copy == line2_copy
+
+
+def _keep_guids_of_unchanged_lines_stable(
+    updated_ahb: FlatAnwendungshandbuch, existing_ahb: FlatAnwendungshandbuch
+) -> None:
+    """
+    Modifies the instance of updated_ahb such that the guids of all lines that are unchanged are the same as in the
+    existing_ahb. Only applies if metadata of both AHBs match.
+    """
+    if updated_ahb.meta == existing_ahb.meta:
+        start_index = 0
+        for update_index, updated_line in enumerate(updated_ahb.lines.copy()):
+            if existing_line_match := first_true(  # ⚠ performance wise this goes like O(n^2)
+                existing_ahb.lines[start_index:], pred=lambda x: _lines_are_equal_when_ignoring_guid(x, updated_line)
+            ):
+                updated_ahb.lines[update_index].guid = existing_line_match.guid
+                # if we found a line match, we can start the next search at the next line in the next loop iteration
+                start_index = existing_ahb.lines.index(existing_line_match) + 1
 
 
 @attrs.define(auto_attribs=True, kw_only=True)
@@ -320,23 +348,7 @@ class UnfoldedAhb:
         if file_path.exists():
             with open(file_path, "r", encoding="utf-8") as file:
                 existing_flat_ahb = FlatAnwendungshandbuchSchema().load(json.load(file))
-        dump_equals_existing_file_except_for_guids = flat_ahb.meta == existing_flat_ahb.meta and len(
-            flat_ahb.lines
-        ) == len(existing_flat_ahb.lines)
-        if dump_equals_existing_file_except_for_guids:
-            ahb_line_schema = AhbLineSchema()
-            for line, existing_line in zip(flat_ahb.lines, existing_flat_ahb.lines):
-                line_copy = ahb_line_schema.load(ahb_line_schema.dump(line))
-                existing_line_copy = ahb_line_schema.load(ahb_line_schema.dump(existing_line))
-                line_copy.guid = None
-                existing_line_copy.guid = None
-                if line_copy == existing_line_copy:
-                    # keep the same guid if lines didn't change
-                    line.guid = existing_line.guid
-                else:
-                    dump_equals_existing_file_except_for_guids = False
-        if dump_equals_existing_file_except_for_guids:
-            logger.info("The AHB for Prüfi %s didn't change", self.meta_data.pruefidentifikator)
+            _keep_guids_of_unchanged_lines_stable(flat_ahb, existing_flat_ahb)
         dump_data = FlatAnwendungshandbuchSchema().dump(flat_ahb)
         with open(file_path, "w", encoding="utf-8") as file:
             json.dump(dump_data, file, ensure_ascii=False, indent=2, sort_keys=True)
