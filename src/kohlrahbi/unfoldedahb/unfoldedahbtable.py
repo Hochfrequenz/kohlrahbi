@@ -1,7 +1,7 @@
 """
 This module contains the UnfoldedAhbTable class.
 """
-
+import copy
 import json
 import re
 from pathlib import Path
@@ -17,7 +17,7 @@ from maus.models.anwendungshandbuch import (
     FlatAnwendungshandbuchSchema,
 )
 from maus.reader.flat_ahb_reader import FlatAhbCsvReader
-from more_itertools import peekable
+from more_itertools import first_true, peekable
 
 from kohlrahbi.ahb.ahbtable import AhbTable, _column_letter_width_mapping
 from kohlrahbi.logger import logger
@@ -25,6 +25,38 @@ from kohlrahbi.unfoldedahb.unfoldedahbline import UnfoldedAhbLine
 from kohlrahbi.unfoldedahb.unfoldedahbtablemetadata import UnfoldedAhbTableMetaData
 
 _segment_group_pattern = re.compile(r"^SG\d+$")
+
+
+def _lines_are_equal_when_ignoring_guid(line1: AhbLine, line2: AhbLine) -> bool:
+    """
+    returns true iff the line1 and line2 are equal except for their guid
+    """
+    line1_copy = copy.deepcopy(line1)
+    line2_copy = copy.deepcopy(line2)
+    line1_copy.guid = None
+    line2_copy.guid = None
+    return line1_copy == line2_copy
+
+
+def _keep_guids_of_unchanged_lines_stable(
+    updated_ahb: FlatAnwendungshandbuch, existing_ahb: FlatAnwendungshandbuch
+) -> None:
+    """
+    Modifies the instance of updated_ahb such that the guids of all lines that are unchanged are the same as in the
+    existing_ahb. Only applies if metadata of both AHBs match.
+    """
+    if updated_ahb.meta == existing_ahb.meta:
+        existing_ahb_search_start_index = 0
+        for update_index, updated_line in enumerate(updated_ahb.lines.copy()):
+            if existing_line_match := first_true(  # ⚠ performance wise this goes like O(n^2)
+                existing_ahb.lines[existing_ahb_search_start_index:],
+                pred=lambda x: _lines_are_equal_when_ignoring_guid(
+                    x, updated_line  # pylint:disable=cell-var-from-loop
+                ),
+            ):
+                updated_ahb.lines[update_index].guid = existing_line_match.guid
+                # if we found a line match, we can start the next search at the next line in the next loop iteration
+                existing_ahb_search_start_index = existing_ahb.lines.index(existing_line_match) + 1
 
 
 @attrs.define(auto_attribs=True, kw_only=True)
@@ -164,6 +196,21 @@ class UnfoldedAhb:
                     )
                 )
                 continue
+            if any(unfolded_ahb_lines) and UnfoldedAhb._is_just_value_pool_entry(ahb_row=row):
+                unfolded_ahb_lines.append(
+                    UnfoldedAhbLine(
+                        index=index,
+                        segment_name=current_section_name,
+                        segment_gruppe=unfolded_ahb_lines[-1].segment_gruppe,
+                        segment=unfolded_ahb_lines[-1].segment,
+                        datenelement=unfolded_ahb_lines[-1].datenelement,
+                        code=row["Codes und Qualifier"],
+                        qualifier="",
+                        beschreibung=row["Beschreibung"],
+                        bedinung_ausdruck=row[pruefi] or None,
+                        bedingung=row["Bedingung"],
+                    )
+                )
 
         return cls(
             unfolded_ahb_lines=unfolded_ahb_lines,
@@ -243,6 +290,18 @@ class UnfoldedAhb:
             return True
         return False
 
+    @staticmethod
+    def _is_just_value_pool_entry(ahb_row: pd.Series) -> bool:
+        """
+        Checks if the given AHB row contains only a value pool entry (w/o Segment (group) and data element)
+        """
+        return (
+            (not ahb_row["Segment Gruppe"])
+            and (not ahb_row["Segment"])
+            and (not ahb_row["Datenelement"])
+            and ahb_row["Codes und Qualifier"]
+        )
+
     def convert_to_flat_ahb(self) -> FlatAnwendungshandbuch:
         """
         Converts the unfolded AHB to a flat AHB.
@@ -286,12 +345,15 @@ class UnfoldedAhb:
 
         flatahb_output_directory_path = output_directory_path / str(edifact_format) / "flatahb"
         flatahb_output_directory_path.mkdir(parents=True, exist_ok=True)
+        flat_ahb = self.convert_to_flat_ahb()
 
-        dump_data = FlatAnwendungshandbuchSchema().dump(self.convert_to_flat_ahb())
-
-        with open(
-            flatahb_output_directory_path / f"{self.meta_data.pruefidentifikator}.json", "w", encoding="utf-8"
-        ) as file:
+        file_path = flatahb_output_directory_path / f"{self.meta_data.pruefidentifikator}.json"
+        if file_path.exists():
+            with open(file_path, "r", encoding="utf-8") as file:
+                existing_flat_ahb = FlatAnwendungshandbuchSchema().load(json.load(file))
+            _keep_guids_of_unchanged_lines_stable(flat_ahb, existing_flat_ahb)
+        dump_data = FlatAnwendungshandbuchSchema().dump(flat_ahb)
+        with open(file_path, "w", encoding="utf-8") as file:
             json.dump(dump_data, file, ensure_ascii=False, indent=2, sort_keys=True)
         logger.info(
             "The flatahb file for %s is saved at %s",
@@ -313,7 +375,7 @@ class UnfoldedAhb:
                 "Qualifier": unfolded_ahb_line.qualifier,
                 "Beschreibung": unfolded_ahb_line.beschreibung,
                 "Bedingungsausdruck": unfolded_ahb_line.bedinung_ausdruck,
-                "Bedinung": unfolded_ahb_line.bedingung,
+                "Bedingung": unfolded_ahb_line.bedingung,
             }
             for unfolded_ahb_line in self.unfolded_ahb_lines
         ]
@@ -344,6 +406,7 @@ class UnfoldedAhb:
             self.meta_data.pruefidentifikator,
             csv_output_directory_path / f"{self.meta_data.pruefidentifikator}.csv",
         )
+        del df
 
     def dump_xlsx(self, path_to_output_directory: Path) -> None:
         """

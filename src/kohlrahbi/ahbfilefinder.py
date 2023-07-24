@@ -27,6 +27,8 @@ class AhbFileFinder:
         ahb_file_paths: list[Path] = [
             path for path in input_path.iterdir() if path.is_file() if path.suffix == ".docx" if "AHB" in path.name
         ]
+        if not any(ahb_file_paths):  # this is suspicious at least
+            logger.warning("The directory '%s' does not contain any AHB docx files.", input_path.absolute())
         return cls(paths_to_docx_files=ahb_file_paths)
 
     @staticmethod
@@ -46,7 +48,7 @@ class AhbFileFinder:
         result: list[Path] = []
 
         groups: dict[str, list[Path]] = {}  # the key is the first part of the file name, the values are matching files
-
+        logger.debug("The list self.paths_to_docx_files contains %i entries", len(self.paths_to_docx_files))
         for key, group in groupby(
             sorted(self.paths_to_docx_files, key=AhbFileFinder.get_first_part_of_ahb_docx_file_name),
             AhbFileFinder.get_first_part_of_ahb_docx_file_name,
@@ -89,5 +91,16 @@ class AhbFileFinder:
 
         self.filter_for_latest_ahb_docx_files()
         self.filter_docx_files_for_edifact_format(edifact_format=edifact_format)
-
+        if (
+            edifact_format == EdifactFormat.UTILMD
+            and searched_pruefi.startswith("11")
+            and all("202310" in path.name for path in self.paths_to_docx_files)
+        ):
+            logger.info(
+                # pylint:disable=line-too-long
+                "You searched for a UTILMD prüfi %s starting with the soon deprecated prefix '11' but all relevant files %s are valid from 2023-10 onwards. They won't contain any match.",
+                searched_pruefi,
+                ", ".join([path.name for path in self.paths_to_docx_files]),
+            )
+            return []
         return self.paths_to_docx_files
