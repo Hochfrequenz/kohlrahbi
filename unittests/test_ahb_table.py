@@ -1,7 +1,10 @@
+from pathlib import Path
+
 import pandas as pd
 import pytest  # type:ignore[import]
 
 from kohlrahbi.ahb.ahbtable import AhbTable
+from kohlrahbi.unfoldedahb import UnfoldedAhb
 
 
 class TestAhbTable:
@@ -61,6 +64,37 @@ class TestAhbTable:
 
         assert len(ahb_table.table) == len(expected_ahb_table_dataframe)
         assert ahb_table.table.equals(expected_ahb_table_dataframe)
+
+    def test_sanitize_ahb_table_dataframe_44001(self):
+        """
+        test the sanitizing bug from https://github.com/Hochfrequenz/kohlrahbi/issues/140
+        """
+        df_file = Path(__file__).parent / "dataframes" / "44001_before_sanitizing.json"
+        assert df_file.exists()
+        df_table = pd.read_json(df_file)
+        ahb_table = AhbTable(table=df_table)
+        assert "E02" in ahb_table.table["Codes und Qualifier"].values
+        assert "ZD2" in ahb_table.table["Codes und Qualifier"].values
+        ahb_table.sanitize()
+        assert "E02" in ahb_table.table["Codes und Qualifier"].values
+        assert "ZD2" in ahb_table.table["Codes und Qualifier"].values
+        unfolded_ahb = UnfoldedAhb.from_ahb_table(ahb_table=ahb_table, pruefi="44001")
+        assert unfolded_ahb is not None
+        for expected_transaktionsgrund, expected_beschreibung in [
+            ("E01", "Ein-/Auszug (Umzug)"),
+            ("E02", "Einzug in Neuanlage"),
+            ("E03", "Wechsel"),
+            ("ZD2", "Lieferbeginn undAbmeldung aus derErsatzversorgung"),
+        ]:
+            assert any(
+                line
+                for line in unfolded_ahb.unfolded_ahb_lines
+                if line.segment_gruppe == "SG4"
+                and line.segment == "STS"
+                and line.datenelement == "9013"
+                and line.code == expected_transaktionsgrund
+                and line.beschreibung == expected_beschreibung
+            ), f"No line with Transaktionsgrund '{expected_transaktionsgrund}' ({expected_beschreibung}) found"
 
     def test_fill_segement_gruppe_segement_dataelement(self):
         """
