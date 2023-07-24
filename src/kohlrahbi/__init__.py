@@ -1,6 +1,7 @@
 """
 kohlrahbi is a package to scrape AHBs (in docx format)
 """
+import fnmatch
 import gc
 import re
 import sys
@@ -23,29 +24,18 @@ _pruefi_pattern = re.compile(r"^[1-9]\d{4}$")
 def get_valid_pruefis(list_of_pruefis: list[str], all_known_pruefis: Optional[list[str]] = None) -> list[str]:
     """
     This function returns a new list with only those pruefis which match the pruefi_pattern.
-    It also supports '*' style wildcards iff a list of known pruefis is given.
+    It also supports '*' and '+' style wildcards iff a list of known pruefis is given.
     E.g. '11*' for all pruefis starting with '11' or '*01' for all pruefis ending with '01'.
     """
     result: set[str] = set()
+
     for pruefi in list_of_pruefis:
-        # We could replace every occurrence of "*" with ".*" and try to interpret the result as a regex
-        # But do we want this? Do we need it? The following branches are all covered by unittests.
-        # We can still add the more complex regex support once there's the need for it.
-        if pruefi.count("*") > 1:
-            raise ValueError(f"Only one wildcard '*' is allowed per pruefi: '{pruefi}'")
-        if pruefi.endswith("*") and all_known_pruefis:
-            result = result.union({x for x in all_known_pruefis if x.startswith(pruefi[:-1])})
-        elif pruefi.startswith("*") and all_known_pruefis:
-            result = result.union({x for x in all_known_pruefis if x.endswith(pruefi[1:])})
-        elif "*" in pruefi and all_known_pruefis:
-            first_part = pruefi.split("*")[0]
-            second_part = pruefi.split("*")[1]
-            result = result.union(
-                {x for x in all_known_pruefis if x.startswith(first_part) and x.endswith(second_part)}
-            )
-        elif _pruefi_pattern.match(pruefi):
-            result.add(pruefi)
-        # else: is neither a wildcard nor a valid pruefi
+        if all_known_pruefis is None:
+            all_known_pruefis = load_all_known_pruefis_from_file()
+
+        filtered_pruefis = fnmatch.filter(all_known_pruefis, pruefi)
+        result = result.union(filtered_pruefis)
+
     return sorted(list(result))
 
 
@@ -116,7 +106,7 @@ def load_all_known_pruefis_from_file(
     "--pruefis",
     default=[],
     required=False,
-    help="Five digit number like 11042.",
+    help="Five digit number like 11042 or use wildcards like 110* or *042 or 11*42.",
     multiple=True,
 )
 @click.option(
