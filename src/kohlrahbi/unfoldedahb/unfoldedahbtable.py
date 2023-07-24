@@ -12,6 +12,7 @@ import pandas as pd
 from maus.edifact import get_format_of_pruefidentifikator
 from maus.models.anwendungshandbuch import (
     AhbLine,
+    AhbLineSchema,
     AhbMetaInformation,
     FlatAnwendungshandbuch,
     FlatAnwendungshandbuchSchema,
@@ -313,12 +314,31 @@ class UnfoldedAhb:
 
         flatahb_output_directory_path = output_directory_path / str(edifact_format) / "flatahb"
         flatahb_output_directory_path.mkdir(parents=True, exist_ok=True)
+        flat_ahb = self.convert_to_flat_ahb()
 
-        dump_data = FlatAnwendungshandbuchSchema().dump(self.convert_to_flat_ahb())
-
-        with open(
-            flatahb_output_directory_path / f"{self.meta_data.pruefidentifikator}.json", "w", encoding="utf-8"
-        ) as file:
+        file_path = flatahb_output_directory_path / f"{self.meta_data.pruefidentifikator}.json"
+        if file_path.exists():
+            with open(file_path, "r", encoding="utf-8") as file:
+                existing_flat_ahb = FlatAnwendungshandbuchSchema().load(json.load(file))
+        dump_equals_existing_file_except_for_guids = flat_ahb.meta == existing_flat_ahb.meta and len(
+            flat_ahb.lines
+        ) == len(existing_flat_ahb.lines)
+        if dump_equals_existing_file_except_for_guids:
+            ahb_line_schema = AhbLineSchema()
+            for line, existing_line in zip(flat_ahb.lines, existing_flat_ahb.lines):
+                line_copy = ahb_line_schema.load(ahb_line_schema.dump(line))
+                existing_line_copy = ahb_line_schema.load(ahb_line_schema.dump(existing_line))
+                line_copy.guid = None
+                existing_line_copy.guid = None
+                if line_copy == existing_line_copy:
+                    # keep the same guid if lines didn't change
+                    line.guid = existing_line.guid
+                else:
+                    dump_equals_existing_file_except_for_guids = False
+        if dump_equals_existing_file_except_for_guids:
+            logger.info("The AHB for Prüfi %s didn't change", self.meta_data.pruefidentifikator)
+        dump_data = FlatAnwendungshandbuchSchema().dump(flat_ahb)
+        with open(file_path, "w", encoding="utf-8") as file:
             json.dump(dump_data, file, ensure_ascii=False, indent=2, sort_keys=True)
         logger.info(
             "The flatahb file for %s is saved at %s",
