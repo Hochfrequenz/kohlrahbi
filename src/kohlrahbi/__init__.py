@@ -226,6 +226,7 @@ def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: lis
             )
             continue
         del ahb_table
+        del ahb_file_finder
         if "unfolded_ahb" in locals():
             del unfolded_ahb
         gc.collect()
