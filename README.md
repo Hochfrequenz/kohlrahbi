@@ -141,8 +141,8 @@ To run the tests, you can use tox.
 
 ```bash
 tox
-See our [Python Template Repository](https://github.com/Hochfrequenz/python_template_repository#how-to-use-this-repository-on-your-machine) for detailed explanations.
 ```
+See our [Python Template Repository](https://github.com/Hochfrequenz/python_template_repository#how-to-use-this-repository-on-your-machine) for detailed explanations.
 
 ## Contribute
 
