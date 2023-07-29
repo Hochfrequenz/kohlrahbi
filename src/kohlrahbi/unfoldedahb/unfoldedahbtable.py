@@ -360,6 +360,10 @@ class UnfoldedAhb:
             self.meta_data.pruefidentifikator,
             flatahb_output_directory_path / f"{self.meta_data.pruefidentifikator}.json",
         )
+        del flat_ahb
+        del dump_data
+        if "existing_flat_ahb" in locals():
+            del existing_flat_ahb
 
     def convert_to_dataframe(self) -> pd.DataFrame:
         """

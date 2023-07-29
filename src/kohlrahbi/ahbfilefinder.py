@@ -44,6 +44,7 @@ class AhbFileFinder:
         """
         Filter the list of AHB docx paths for the latest AHB docx files.
         The latest files contain `LesefassungmitFehlerkorrekturen` in their file names.
+        This method is _not_ pure. It changes the state of the object.
         """
         result: list[Path] = []
 
@@ -75,6 +76,7 @@ class AhbFileFinder:
     def filter_docx_files_for_edifact_format(self, edifact_format: EdifactFormat) -> None:
         """
         Returns a list of docx files which contain the given edifact format.
+        This method is not pure. It changes the state of the object.
         """
 
         self.paths_to_docx_files = [path for path in self.paths_to_docx_files if str(edifact_format) in path.name]
@@ -85,6 +87,7 @@ class AhbFileFinder:
         Unfortunately, it is not clear in which docx the pruefidentifikator you are looking for is located.
         A 11042 belongs to the UTILMD format. However, there are seven docx files that describe the UTILMD format.
         A further reduction of the number of files is not possible with the pruefidentifikator only.
+        This method is _not_ pure. It changes the state of the object.
         """
 
         edifact_format = get_format_of_pruefidentifikator(searched_pruefi)
