@@ -9,9 +9,7 @@ attrs==23.1.0
     #   -r requirements.in
     #   maus
 click==8.1.6
-    # via
-    #   -r requirements.in
-    #   maus
+    # via -r requirements.in
 colorlog==6.7.0
     # via -r requirements.in
 et-xmlfile==1.1.0
@@ -20,7 +18,7 @@ lxml==4.9.2
     # via python-docx
 marshmallow==3.19.0
     # via maus
-maus==0.3.41
+maus==0.3.43
     # via -r requirements.in
 more-itertools==9.0.0
     # via maus
