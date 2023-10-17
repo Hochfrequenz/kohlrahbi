@@ -192,7 +192,7 @@ class UnfoldedAhb:
                         qualifier="",
                         beschreibung=description,
                         bedinung_ausdruck=row[pruefi] or None,
-                        bedingung=row["Beschreibung"],
+                        bedingung=row["Bedingung"],
                     )
                 )
                 continue
