@@ -10,7 +10,9 @@ from typing import Any, Optional
 
 import click
 import docx  # type:ignore[import]
+import pandas as pd
 import tomlkit
+from maus.edifact import EdifactFormat
 
 from kohlrahbi.ahb.ahbtable import AhbTable
 from kohlrahbi.ahbfilefinder import AhbFileFinder
@@ -127,7 +129,7 @@ def load_all_known_pruefis_from_file(
 )
 @click.option(
     "--file-type",
-    type=click.Choice(["flatahb", "csv", "xlsx"], case_sensitive=False),
+    type=click.Choice(["flatahb", "csv", "xlsx", "conditions"], case_sensitive=False),
     multiple=True,
 )
 @click.option(
@@ -169,6 +171,9 @@ def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: lis
         click.secho("☝️ Not all given pruefidentifikatoren are valid.", fg="yellow")
         click.secho(f"I will continue with the following valid pruefis: {valid_pruefis}.", fg="yellow")
     path_to_document_mapping: dict[Path, docx.Document] = {}
+
+    if "conditions" in file_type:  # and not any(pruefis):
+        collected_conditions: dict[EdifactFormat, dict[str, str]] = {}
 
     for pruefi in valid_pruefis:
         try:
@@ -216,6 +221,11 @@ def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: lis
                     if "csv" in file_type:
                         logger.info("💾 Saving csv file %s", pruefi)
                         unfolded_ahb.dump_csv(path_to_output_directory=output_path)
+
+                    if "conditions" in file_type:
+                        logger.info(" Collecting conditions file %s", pruefi)
+                        unfolded_ahb.collect_condition(already_known_conditions=collected_conditions)
+
                     break
         except Exception as general_error:  # pylint:disable=broad-except
             logger.exception(
@@ -230,6 +240,35 @@ def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: lis
         if "unfolded_ahb" in locals():
             del unfolded_ahb
         gc.collect()
+
+    if "conditions" in file_type:
+        # store conditions in conditions.json files
+        dump_conditions_json(output_directory_path=output_path, already_known_conditions=collected_conditions)
+
+
+def dump_conditions_json(output_directory_path: Path, already_known_conditions: dict) -> None:
+    """
+    Writes all collected conditions to a json file.
+    The file will be stored in the directory:
+        'output_directory_path/<edifact_format>/conditions.json'
+    """
+    for edifact_format, df in already_known_conditions.items():
+        condition_json_output_directory_path = output_directory_path / str(edifact_format)
+        condition_json_output_directory_path.mkdir(parents=True, exist_ok=True)
+        file_path = condition_json_output_directory_path / "conditions.json"
+        df = pd.DataFrame.from_dict(
+            already_known_conditions[edifact_format], orient="index", columns=["condition_text"]
+        )
+        df = df.reset_index()
+        df.columns = ["condition_key", "condition_text"]
+        df["edifact_format"] = edifact_format
+        df.to_json(file_path, orient="records", force_ascii=False, mode="w")
+
+        logger.info(
+            "The conditions.json file for %s is saved at %s",
+            edifact_format,
+            file_path,
+        )
 
 
 if __name__ == "__main__":
