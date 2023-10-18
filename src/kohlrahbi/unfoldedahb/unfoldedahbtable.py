@@ -459,7 +459,7 @@ class UnfoldedAhb:
             logger.warning("'%s' is not a pruefidentifikator", self.meta_data.pruefidentifikator)
             return
         if already_known_conditions.get(edifact_format) is None:
-            already_known_conditions[edifact_format]: dict[str, str] = {}
+            already_known_conditions[edifact_format] = {}
         # check if there are conditions:
         there_are_no_conditions = (df["Bedingung"] != "").all()
         if not there_are_no_conditions:
