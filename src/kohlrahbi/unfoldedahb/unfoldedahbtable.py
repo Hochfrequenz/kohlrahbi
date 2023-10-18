@@ -130,7 +130,7 @@ class UnfoldedAhb:
                         qualifier="",
                         beschreibung=description,
                         bedinung_ausdruck=row[pruefi] or None,
-                        bedingung=row["Beschreibung"],
+                        bedingung=row["Bedingung"],
                     )
                 )
 
@@ -146,7 +146,7 @@ class UnfoldedAhb:
                         qualifier="",
                         beschreibung=None,
                         bedinung_ausdruck=row[pruefi] or None,
-                        bedingung=row["Beschreibung"],
+                        bedingung=row["Bedingung"],
                     )
                 )
                 continue
@@ -166,7 +166,7 @@ class UnfoldedAhb:
                         qualifier="",
                         beschreibung=description,
                         bedinung_ausdruck=row[pruefi] or None,
-                        bedingung=row["Beschreibung"],
+                        bedingung=row["Bedingung"],
                     )
                 )
                 continue
@@ -192,7 +192,7 @@ class UnfoldedAhb:
                         qualifier="",
                         beschreibung=description,
                         bedinung_ausdruck=row[pruefi] or None,
-                        bedingung=row["Beschreibung"],
+                        bedingung=row["Bedingung"],
                     )
                 )
                 continue
