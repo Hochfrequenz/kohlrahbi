@@ -460,8 +460,6 @@ class UnfoldedAhb:
             return
         if already_known_conditions.get(edifact_format) is None:
             already_known_conditions[edifact_format]: dict[str, str] = {}
-            # pd.DataFrame(columns=['condition_key', 'condition_text'])
-        # find condition:
         # check if there are conditions:
         there_are_no_conditions = (df["Bedingung"] != "").all()
         if not there_are_no_conditions:
@@ -469,13 +467,16 @@ class UnfoldedAhb:
                 # Split the input into parts enclosed in square brackets and other parts
                 matches = re.findall(r"\[(\d+)\]([\s\S]*?)(?=\[|$)", conditions_text)
                 for match in matches:
+                    # make text prettier:
+                    text = match[1].strip()
                     # check whether condition was already collected:
-                    condition_key_not_collected_yet = already_known_conditions[edifact_format].get(match[0]) == None
-                    if condition_key_not_collected_yet:
-                        already_known_conditions[edifact_format][match[0]] = match[1]
-                        # new_row = {'condition_key': match[0], 'condition_text': match[1]}
-                        # already_known_conditions[edifact_format] = \
-                        #   pd.concat([already_known_conditions[edifact_format], pd.DataFrame([new_row])])
+                    condition_key_not_collected_yet = already_known_conditions[edifact_format].get(match[0]) is None
+                    if not condition_key_not_collected_yet:
+                        key_exits_but_shorter_text = len(text) > len(
+                            already_known_conditions[edifact_format].get(match[0])
+                        )
+                    if condition_key_not_collected_yet or key_exits_but_shorter_text:
+                        already_known_conditions[edifact_format][match[0]] = text
 
         logger.info("The conditions for %s were collected", self.meta_data.pruefidentifikator)
         del df
