@@ -10,10 +10,6 @@ attrs==23.1.0
     #   maus
 click==8.1.7
     # via -r requirements.in
-colorama==0.4.6
-    # via
-    #   click
-    #   colorlog
 colorlog==6.7.0
     # via -r requirements.in
 et-xmlfile==1.1.0
@@ -48,5 +44,5 @@ typing-extensions==4.8.0
     # via python-docx
 tzdata==2023.3
     # via pandas
-xlsxwriter==3.1.8
+xlsxwriter==3.1.9
     # via -r requirements.in
