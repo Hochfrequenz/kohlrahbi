@@ -181,98 +181,98 @@ class TestUnfoldedAhbTable:
         unfolded_ahb_lines = [
             UnfoldedAhbLine(
                 index=0,
-                segment_name=None,
+                segment_name="segment_name",
                 segment_gruppe=None,
                 segment=None,
                 datenelement=None,
                 code=None,
                 qualifier=None,
                 beschreibung=None,
-                bedinung_ausdruck=None,
+                bedingung_ausdruck=None,
                 bedingung="[1] Normale Bedingung",
             ),
             UnfoldedAhbLine(
                 index=1,
-                segment_name=None,
+                segment_name="segment_name",
                 segment_gruppe=None,
                 segment=None,
                 datenelement=None,
                 code=None,
                 qualifier=None,
                 beschreibung=None,
-                bedinung_ausdruck=None,
+                bedingung_ausdruck=None,
                 bedingung="[2] 2. normale Bedingung\n[3] gefolgt von einer zweiten [4] und dritten",
             ),
             UnfoldedAhbLine(
                 index=2,
-                segment_name=None,
+                segment_name="segment_name",
                 segment_gruppe=None,
                 segment=None,
                 datenelement=None,
                 code=None,
                 qualifier=None,
                 beschreibung=None,
-                bedinung_ausdruck=None,
+                bedingung_ausdruck=None,
                 bedingung="[1] Normale Bedingung mit längerem Text",
             ),
             UnfoldedAhbLine(
                 index=3,
-                segment_name=None,
+                segment_name="segment_name",
                 segment_gruppe=None,
                 segment=None,
                 datenelement=None,
                 code=None,
                 qualifier=None,
                 beschreibung=None,
-                bedinung_ausdruck=None,
+                bedingung_ausdruck=None,
                 bedingung="[5] Länger Bedingung \n über mehrere\n Zeilen\n",
             ),
             UnfoldedAhbLine(
                 index=4,
-                segment_name=None,
+                segment_name="segment_name",
                 segment_gruppe=None,
                 segment=None,
                 datenelement=None,
                 code=None,
                 qualifier=None,
                 beschreibung=None,
-                bedinung_ausdruck=None,
+                bedingung_ausdruck=None,
                 bedingung="[6] Länger Bedingung \n über mehrere\n Zeilen\n[7] gefolgt von noch einer\n über\n Zeilen",
             ),
             UnfoldedAhbLine(
                 index=5,
-                segment_name=None,
+                segment_name="segment_name",
                 segment_gruppe=None,
                 segment=None,
                 datenelement=None,
                 code=None,
                 qualifier=None,
                 beschreibung=None,
-                bedinung_ausdruck=None,
+                bedingung_ausdruck=None,
                 bedingung="[8]   Länger Bedi   ngung \n mit  \n zu viel White space\n\n[9] gefolgt \n über\n Zeilen",
             ),
             UnfoldedAhbLine(
                 index=6,
-                segment_name=None,
+                segment_name="segment_name",
                 segment_gruppe=None,
                 segment=None,
                 datenelement=None,
                 code=None,
                 qualifier=None,
                 beschreibung=None,
-                bedinung_ausdruck=None,
+                bedingung_ausdruck=None,
                 bedingung="[keine Zahl] mit einem Text",
             ),
             UnfoldedAhbLine(
                 index=7,
-                segment_name=None,
+                segment_name="segment_name",
                 segment_gruppe=None,
                 segment=None,
                 datenelement=None,
                 code=None,
                 qualifier=None,
                 beschreibung="keine Bedingung",
-                bedinung_ausdruck=None,
+                bedingung_ausdruck=None,
                 bedingung="",
             ),
         ]
@@ -282,33 +282,43 @@ class TestUnfoldedAhbTable:
         unfolded_ahb.collect_condition(already_known_conditions=collected_conditions)
 
         assert len(collected_conditions) == 1
-        assert "UTILMD" in collected_conditions
-        assert len(collected_conditions["UTILMD"]) == 9
+        assert EdifactFormat.UTILMD in collected_conditions
+        assert len(collected_conditions[EdifactFormat.UTILMD]) == 9
         assert (
-            "1" in collected_conditions["UTILMD"]
-            and collected_conditions["UTILMD"]["1"] == "Normale Bedingung mit längerem Text"
-        )
-        assert "2" in collected_conditions["UTILMD"] and collected_conditions["UTILMD"]["2"] == "2. normale Bedingung"
-        assert (
-            "3" in collected_conditions["UTILMD"] and collected_conditions["UTILMD"]["3"] == "gefolgt von einer zweiten"
-        )
-        assert "4" in collected_conditions["UTILMD"] and collected_conditions["UTILMD"]["4"] == "und dritten"
-        assert (
-            "5" in collected_conditions["UTILMD"]
-            and collected_conditions["UTILMD"]["5"] == "Länger Bedingung über mehrere Zeilen"
+            "1" in collected_conditions[EdifactFormat.UTILMD]
+            and collected_conditions[EdifactFormat.UTILMD]["1"] == "Normale Bedingung mit längerem Text"
         )
         assert (
-            "6" in collected_conditions["UTILMD"]
-            and collected_conditions["UTILMD"]["6"] == "Länger Bedingung über mehrere Zeilen"
+            "2" in collected_conditions[EdifactFormat.UTILMD]
+            and collected_conditions[EdifactFormat.UTILMD]["2"] == "2. normale Bedingung"
         )
         assert (
-            "7" in collected_conditions["UTILMD"]
-            and collected_conditions["UTILMD"]["7"] == "gefolgt von noch einer über Zeilen"
+            "3" in collected_conditions[EdifactFormat.UTILMD]
+            and collected_conditions[EdifactFormat.UTILMD]["3"] == "gefolgt von einer zweiten"
         )
         assert (
-            "8" in collected_conditions["UTILMD"]
-            and collected_conditions["UTILMD"]["8"] == "Länger Bedi ngung mit zu viel White space"
+            "4" in collected_conditions[EdifactFormat.UTILMD]
+            and collected_conditions[EdifactFormat.UTILMD]["4"] == "und dritten"
         )
-        assert "9" in collected_conditions["UTILMD"] and collected_conditions["UTILMD"]["9"] == "gefolgt über Zeilen"
-        assert "keine Zahl" not in collected_conditions["UTILMD"]
-        assert "Normale Bedingung" not in collected_conditions["UTILMD"].values()
+        assert (
+            "5" in collected_conditions[EdifactFormat.UTILMD]
+            and collected_conditions[EdifactFormat.UTILMD]["5"] == "Länger Bedingung über mehrere Zeilen"
+        )
+        assert (
+            "6" in collected_conditions[EdifactFormat.UTILMD]
+            and collected_conditions[EdifactFormat.UTILMD]["6"] == "Länger Bedingung über mehrere Zeilen"
+        )
+        assert (
+            "7" in collected_conditions[EdifactFormat.UTILMD]
+            and collected_conditions[EdifactFormat.UTILMD]["7"] == "gefolgt von noch einer über Zeilen"
+        )
+        assert (
+            "8" in collected_conditions[EdifactFormat.UTILMD]
+            and collected_conditions[EdifactFormat.UTILMD]["8"] == "Länger Bedi ngung mit zu viel White space"
+        )
+        assert (
+            "9" in collected_conditions[EdifactFormat.UTILMD]
+            and collected_conditions[EdifactFormat.UTILMD]["9"] == "gefolgt über Zeilen"
+        )
+        assert "keine Zahl" not in collected_conditions[EdifactFormat.UTILMD]
+        assert "Normale Bedingung" not in collected_conditions[EdifactFormat.UTILMD].values()
