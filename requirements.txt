@@ -48,5 +48,5 @@ typing-extensions==4.8.0
     # via python-docx
 tzdata==2023.3
     # via pandas
-xlsxwriter==3.1.8
+xlsxwriter==3.1.9
     # via -r requirements.in

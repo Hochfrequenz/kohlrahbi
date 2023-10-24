@@ -45,7 +45,7 @@ class TestUnfoldedAhbTable:
                 code=None,
                 qualifier=None,
                 beschreibung=None,
-                bedinung_ausdruck="Kann",
+                bedingung_ausdruck="Kann",
                 bedingung=None,
             ),
             UnfoldedAhbLine(
@@ -57,7 +57,7 @@ class TestUnfoldedAhbTable:
                 code=None,
                 qualifier=None,
                 beschreibung=None,
-                bedinung_ausdruck="Kann",
+                bedingung_ausdruck="Kann",
                 bedingung=None,
             ),
             UnfoldedAhbLine(
@@ -69,7 +69,7 @@ class TestUnfoldedAhbTable:
                 code=None,
                 qualifier=None,
                 beschreibung=None,
-                bedinung_ausdruck="Muss",
+                bedingung_ausdruck="Muss",
                 bedingung=None,
             ),
             UnfoldedAhbLine(
@@ -81,7 +81,7 @@ class TestUnfoldedAhbTable:
                 code="IC",
                 qualifier=None,
                 beschreibung="Informationskontakt",
-                bedinung_ausdruck="X",
+                bedingung_ausdruck="X",
                 bedingung=None,
             ),
             UnfoldedAhbLine(
@@ -93,7 +93,7 @@ class TestUnfoldedAhbTable:
                 code=None,
                 qualifier="Name vom Ansprechpartner",
                 beschreibung=None,
-                bedinung_ausdruck="X",
+                bedingung_ausdruck="X",
                 bedingung=None,
             ),
         ]
