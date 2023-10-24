@@ -461,14 +461,19 @@ class UnfoldedAhb:
         if already_known_conditions.get(edifact_format) is None:
             already_known_conditions[edifact_format] = {}
         # check if there are conditions:
-        there_are_no_conditions = (df["Bedingung"] != "").all()
+        there_are_no_conditions = (df["Bedingung"] == "").all()
         if not there_are_no_conditions:
             for conditions_text in df["Bedingung"][df["Bedingung"] != ""]:
                 # Split the input into parts enclosed in square brackets and other parts
-                matches = re.findall(r"\[(\d+)\]([\s\S]*?)(?=\[|$)", conditions_text)
+                matches = re.findall(
+                    r"\[(\d+)](.*?)(?=\[\d+]|$)",
+                    conditions_text,
+                    re.DOTALL,
+                )
                 for match in matches:
                     # make text prettier:
                     text = match[1].strip()
+                    text = re.sub(r"\s+", " ", text)
                     # check whether condition was already collected:
                     condition_key_not_collected_yet = already_known_conditions[edifact_format].get(match[0]) is None
                     if not condition_key_not_collected_yet:
