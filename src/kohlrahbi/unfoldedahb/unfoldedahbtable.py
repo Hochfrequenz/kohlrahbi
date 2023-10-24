@@ -109,7 +109,7 @@ class UnfoldedAhb:
                         code=None,
                         qualifier=None,
                         beschreibung=None,
-                        bedinung_ausdruck=ahb_expression or None,
+                        bedingung_ausdruck=ahb_expression or None,
                         bedingung=None,
                     )
                 )
@@ -129,7 +129,7 @@ class UnfoldedAhb:
                         code=value_pool_entry,
                         qualifier="",
                         beschreibung=description,
-                        bedinung_ausdruck=row[pruefi] or None,
+                        bedingung_ausdruck=row[pruefi] or None,
                         bedingung=row["Bedingung"],
                     )
                 )
@@ -145,7 +145,7 @@ class UnfoldedAhb:
                         code=None,
                         qualifier="",
                         beschreibung=None,
-                        bedinung_ausdruck=row[pruefi] or None,
+                        bedingung_ausdruck=row[pruefi] or None,
                         bedingung=row["Bedingung"],
                     )
                 )
@@ -165,7 +165,7 @@ class UnfoldedAhb:
                         code=value_pool_entry,
                         qualifier="",
                         beschreibung=description,
-                        bedinung_ausdruck=row[pruefi] or None,
+                        bedingung_ausdruck=row[pruefi] or None,
                         bedingung=row["Bedingung"],
                     )
                 )
@@ -191,7 +191,7 @@ class UnfoldedAhb:
                         code=value_pool_entry,
                         qualifier="",
                         beschreibung=description,
-                        bedinung_ausdruck=row[pruefi] or None,
+                        bedingung_ausdruck=row[pruefi] or None,
                         bedingung=row["Bedingung"],
                     )
                 )
@@ -207,7 +207,7 @@ class UnfoldedAhb:
                         code=row["Codes und Qualifier"],
                         qualifier="",
                         beschreibung=row["Beschreibung"],
-                        bedinung_ausdruck=row[pruefi] or None,
+                        bedingung_ausdruck=row[pruefi] or None,
                         bedingung=row["Bedingung"],
                     )
                 )
@@ -318,7 +318,7 @@ class UnfoldedAhb:
                     data_element=unfolded_ahb_line.datenelement,
                     value_pool_entry=unfolded_ahb_line.code,
                     name=unfolded_ahb_line.beschreibung or unfolded_ahb_line.qualifier,
-                    ahb_expression=unfolded_ahb_line.bedinung_ausdruck,
+                    ahb_expression=unfolded_ahb_line.bedingung_ausdruck,
                     section_name=unfolded_ahb_line.segment_name,
                     index=unfolded_ahb_line.index,
                 )
@@ -378,7 +378,7 @@ class UnfoldedAhb:
                 "Code": unfolded_ahb_line.code,
                 "Qualifier": unfolded_ahb_line.qualifier,
                 "Beschreibung": unfolded_ahb_line.beschreibung,
-                "Bedingungsausdruck": unfolded_ahb_line.bedinung_ausdruck,
+                "Bedingungsausdruck": unfolded_ahb_line.bedingung_ausdruck,
                 "Bedingung": unfolded_ahb_line.bedingung,
             }
             for unfolded_ahb_line in self.unfolded_ahb_lines
