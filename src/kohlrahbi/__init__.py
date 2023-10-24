@@ -173,7 +173,8 @@ def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: lis
         click.secho(f"I will continue with the following valid pruefis: {valid_pruefis}.", fg="yellow")
     path_to_document_mapping: dict[Path, docx.Document] = {}
 
-    if "conditions" in file_type:  # and not any(pruefis):
+    if "conditions" in file_type:
+        # mapping of EdifactFormat to ConditionKeyConditionTextMapping for all given prufis
         collected_conditions: dict[EdifactFormat, dict[str, str]] = {}
 
     for pruefi in valid_pruefis:
@@ -257,7 +258,7 @@ def dump_conditions_json(output_directory_path: Path, already_known_conditions: 
         condition_json_output_directory_path = output_directory_path / str(edifact_format)
         condition_json_output_directory_path.mkdir(parents=True, exist_ok=True)
         file_path = condition_json_output_directory_path / "conditions.json"
-
+        # resort  ConditionKeyConditionTextMappings for output
         sorted_condition_dict = {
             k: already_known_conditions[edifact_format][k]
             for k in sorted(already_known_conditions[edifact_format], key=int)
