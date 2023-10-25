@@ -461,8 +461,8 @@ class UnfoldedAhb:
         if already_known_conditions.get(edifact_format) is None:
             already_known_conditions[edifact_format] = {}
         # check if there are conditions:
-        there_are_no_conditions = (df["Bedingung"] == "").all()
-        if not there_are_no_conditions:
+        there_are_conditions = (df["Bedingung"] != "").any()
+        if there_are_conditions:
             for conditions_text in df["Bedingung"][df["Bedingung"] != ""]:
                 # Split the input into parts enclosed in square brackets and other parts
                 matches = re.findall(
