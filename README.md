@@ -108,7 +108,7 @@ kohlrahbi --input_path ../edi_energy_mirror/edi_energy_de/current --output_path 
 There is a kohlrahbi based CI pipeline from the edi_energy_mirror mentioned above to the repository [machine-readable_anwendungshandbuecher](https://github.com/Hochfrequenz/machine-readable_anwendungshandbuecher) where you can find scraped AHBs as JSON, CSV or Excel files.
 
 ### Export ConditionKeys and ConditionTexts
-For example to export condition.json files to [edi_energy_ahb_conditions_and_packages](https://github.com/Hochfrequenz/edi_energy_ahb_conditions_and_packages). Works best with all know pruefindentifikatoren.
+For example to export condition.json files to [edi_energy_ahb_conditions_and_packages](https://github.com/Hochfrequenz/edi_energy_ahb_conditions_and_packages). Works best if no flags for "Prüfindentifikatoren" (--pruefis). In this case all known "Prüfidentifikatoren" are scanned. Thus all related conditions are gathered.
 ```bash
 kohlrahbi --file-type conditions --input_path "Path\to\edi_energy_mirror\edi_energy_de\current" --output_path "Path\to\edi_energy_ahb_conditions_and_packages\aktuelleFV"
 ```
