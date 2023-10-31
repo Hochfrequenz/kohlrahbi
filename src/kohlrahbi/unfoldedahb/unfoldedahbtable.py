@@ -447,3 +447,41 @@ class UnfoldedAhb:
             self.meta_data.pruefidentifikator,
             xlsx_output_directory_path / f"{self.meta_data.pruefidentifikator}.json",
         )
+
+    def collect_condition(self, already_known_conditions: dict) -> None:
+        """
+        Collect conditions of UnfoldedAHB in dict if they are not known yet.
+        """
+        df = self.convert_to_dataframe()
+
+        edifact_format = get_format_of_pruefidentifikator(self.meta_data.pruefidentifikator)
+        if edifact_format is None:
+            logger.warning("'%s' is not a pruefidentifikator", self.meta_data.pruefidentifikator)
+            return
+        if already_known_conditions.get(edifact_format) is None:
+            already_known_conditions[edifact_format] = {}
+        # check if there are conditions:
+        there_are_conditions = (df["Bedingung"] != "").any()
+        if there_are_conditions:
+            for conditions_text in df["Bedingung"][df["Bedingung"] != ""]:
+                # Split the input into parts enclosed in square brackets and other parts
+                matches = re.findall(
+                    r"\[(\d+)](.*?)(?=\[\d+]|$)",
+                    conditions_text,
+                    re.DOTALL,
+                )
+                for match in matches:
+                    # make text prettier:
+                    text = match[1].strip()
+                    text = re.sub(r"\s+", " ", text)
+                    # check whether condition was already collected:
+                    condition_key_not_collected_yet = already_known_conditions[edifact_format].get(match[0]) is None
+                    if not condition_key_not_collected_yet:
+                        key_exits_but_shorter_text = len(text) > len(
+                            already_known_conditions[edifact_format].get(match[0])
+                        )
+                    if condition_key_not_collected_yet or key_exits_but_shorter_text:
+                        already_known_conditions[edifact_format][match[0]] = text
+
+        logger.info("The conditions for %s were collected", self.meta_data.pruefidentifikator)
+        del df
