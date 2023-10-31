@@ -450,7 +450,7 @@ class UnfoldedAhb:
 
     def collect_condition(self, already_known_conditions: dict) -> None:
         """
-        Collect conditions of UnfoldedAHB in dict if they are not know yet.
+        Collect conditions of UnfoldedAHB in dict if they are not known yet.
         """
         df = self.convert_to_dataframe()
 
