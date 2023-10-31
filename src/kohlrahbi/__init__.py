@@ -225,7 +225,7 @@ def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: lis
                         unfolded_ahb.dump_csv(path_to_output_directory=output_path)
 
                     if "conditions" in file_type:
-                        logger.info(" Collecting conditions file %s", pruefi)
+                        logger.info("🧺 Collecting conditions file %s", pruefi)
                         unfolded_ahb.collect_condition(already_known_conditions=collected_conditions)
 
                     break
