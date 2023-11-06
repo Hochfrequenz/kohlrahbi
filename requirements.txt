@@ -10,10 +10,6 @@ attrs==23.1.0
     #   maus
 click==8.1.7
     # via -r requirements.in
-colorama==0.4.6
-    # via
-    #   click
-    #   colorlog
 colorlog==6.7.0
     # via -r requirements.in
 et-xmlfile==1.1.0
@@ -36,7 +32,7 @@ pandas==2.1.2
     # via -r requirements.in
 python-dateutil==2.8.2
     # via pandas
-python-docx==1.0.1
+python-docx==1.1.0
     # via -r requirements.in
 pytz==2023.3.post1
     # via pandas
