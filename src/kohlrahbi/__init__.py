@@ -3,6 +3,7 @@ kohlrahbi is a package to scrape AHBs (in docx format)
 """
 import fnmatch
 import gc
+import json
 import re
 import sys
 from pathlib import Path
@@ -10,7 +11,9 @@ from typing import Any, Optional
 
 import click
 import docx  # type:ignore[import]
+import pandas as pd
 import tomlkit
+from maus.edifact import EdifactFormat
 
 from kohlrahbi.ahb.ahbtable import AhbTable
 from kohlrahbi.ahbfilefinder import AhbFileFinder
@@ -127,7 +130,7 @@ def load_all_known_pruefis_from_file(
 )
 @click.option(
     "--file-type",
-    type=click.Choice(["flatahb", "csv", "xlsx"], case_sensitive=False),
+    type=click.Choice(["flatahb", "csv", "xlsx", "conditions"], case_sensitive=False),
     multiple=True,
 )
 @click.option(
@@ -169,6 +172,10 @@ def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: lis
         click.secho("☝️ Not all given pruefidentifikatoren are valid.", fg="yellow")
         click.secho(f"I will continue with the following valid pruefis: {valid_pruefis}.", fg="yellow")
     path_to_document_mapping: dict[Path, docx.Document] = {}
+
+    if "conditions" in file_type:
+        # mapping of EdifactFormat to ConditionKeyConditionTextMapping for all given prufis
+        collected_conditions: dict[EdifactFormat, dict[str, str]] = {}
 
     for pruefi in valid_pruefis:
         try:
@@ -216,6 +223,11 @@ def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: lis
                     if "csv" in file_type:
                         logger.info("💾 Saving csv file %s", pruefi)
                         unfolded_ahb.dump_csv(path_to_output_directory=output_path)
+
+                    if "conditions" in file_type:
+                        logger.info("🧺 Collecting conditions file %s", pruefi)
+                        unfolded_ahb.collect_condition(already_known_conditions=collected_conditions)
+
                     break
         except Exception as general_error:  # pylint:disable=broad-except
             logger.exception(
@@ -230,6 +242,39 @@ def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: lis
         if "unfolded_ahb" in locals():
             del unfolded_ahb
         gc.collect()
+
+    if "conditions" in file_type:
+        # store conditions in conditions.json files
+        dump_conditions_json(output_directory_path=output_path, already_known_conditions=collected_conditions)
+
+
+def dump_conditions_json(output_directory_path: Path, already_known_conditions: dict) -> None:
+    """
+    Writes all collected conditions to a json file.
+    The file will be stored in the directory:
+        'output_directory_path/<edifact_format>/conditions.json'
+    """
+    for edifact_format in already_known_conditions:
+        condition_json_output_directory_path = output_directory_path / str(edifact_format)
+        condition_json_output_directory_path.mkdir(parents=True, exist_ok=True)
+        file_path = condition_json_output_directory_path / "conditions.json"
+        # resort  ConditionKeyConditionTextMappings for output
+        sorted_condition_dict = {
+            k: already_known_conditions[edifact_format][k]
+            for k in sorted(already_known_conditions[edifact_format], key=int)
+        }
+        array = [
+            {"condition_key": i, "condition_text": sorted_condition_dict[i], "edifact_format": edifact_format}
+            for i in sorted_condition_dict
+        ]
+        with open(file_path, "w", encoding="utf-8") as file:
+            json.dump(array, file, ensure_ascii=False, indent=2)
+
+        logger.info(
+            "The conditions.json file for %s is saved at %s",
+            edifact_format,
+            file_path,
+        )
 
 
 if __name__ == "__main__":

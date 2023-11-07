@@ -17,7 +17,7 @@ class TestCli:
                 "11016",
                 "/invalid-input-path",
                 "",  # if the folder name is empty, the path will point on the temporary directory which is created by datafiles -> valid path
-                {"exit_code": 2, "output_snippet": "'/invalid-input-path' does not exist"},
+                {"exit_code": 2, "output_snippet": "invalid-input-path' does not exist"},
                 id="invalid input path",
             ),
             pytest.param(
