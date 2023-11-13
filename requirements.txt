@@ -14,7 +14,7 @@ colorlog==6.7.0
     # via -r requirements.in
 et-xmlfile==1.1.0
     # via openpyxl
-lxml==4.9.2
+lxml==4.9.3
     # via python-docx
 marshmallow==3.19.0
     # via maus
