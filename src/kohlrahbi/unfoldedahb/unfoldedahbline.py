@@ -86,5 +86,5 @@ class UnfoldedAhbLine:
     code: str | None  # IC
     qualifier: str | None  # Name vom Ansprechpartner
     beschreibung: str | None  # Informationskontakt
-    bedinung_ausdruck: str | None  # Muss / X / X [1P0..1]
+    bedingung_ausdruck: str | None  # Muss / X / X [1P0..1]
     bedingung: str | None  # [492] Wenn MP-ID in NAD+MR (Nachrichtenempfänger) aus Sparte Strom

@@ -12,7 +12,7 @@ build-backend = "hatchling.build"
 [project]
 name = "kohlrahbi"
 description = "Tool to generate machine readable files from AHB documents"
-license = { text = "MIT" }
+license = { text = "GPL" }
 requires-python = ">=3.11"
 authors = [{ name = "Kevin Krechan", email = "kevin.krechan@hochfrequenz.de" }]
 keywords = ["automation", "ahb", "bdew", "edi@energy"]
@@ -20,7 +20,7 @@ classifiers = [
   "Development Status :: 4 - Beta",
   "Environment :: Console",
   "Intended Audience :: Developers",
-  "License :: OSI Approved :: MIT License",
+  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
   "Operating System :: OS Independent",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3 :: Only",
@@ -30,10 +30,10 @@ dependencies = [
   "attrs>=22.2.0",
   "click>=8.0.0",
   "colorlog>=6.7.0",
-  "maus>=0.3.2",
+  "maus>=0.3.43",
   "openpyxl>=3.1.1",
   "pandas>=1.5.3",
-  "python-docx>=0.8.11",
+  "python-docx>=1.0.0",
   "pytz>=2022.7.1",
   "tomlkit>=0.11.6",
   "xlsxwriter>=3.0.8",

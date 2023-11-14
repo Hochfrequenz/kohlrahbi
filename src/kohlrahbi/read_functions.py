@@ -93,24 +93,32 @@ def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
     # Iterate through the whole word document
     logger.info("Start iterating through paragraphs and tables")
     for item in get_all_paragraphs_and_tables(parent=document):
+        style_name = item.style.name  # this is a bit expensive. we should only call it once per item
         # Check if we reached the end of the current AHB document and stop if it's true.
-        if isinstance(item, Paragraph) and "Heading" in item.style.name and "Änderungshistorie" in item.text:
+        if isinstance(item, Paragraph) and "Änderungshistorie" in item.text and "Heading" in style_name:
+            # checking the style is quite expensive for the CPU because it includes some xpath searches;
+            # we should only check the style if the other (easier/cheap) checks returned True
+            logger.info(
+                "We reached the end of the document before any table containing the searched Prüfi %s was found", pruefi
+            )
+            del seed
             return None
 
         # Check if there is just a text paragraph,
-        if isinstance(item, Paragraph) and not "Heading" in item.style.name:
+        if isinstance(item, Paragraph) and not "Heading" in style_name:
             continue
 
         if isinstance(item, Table) and does_the_table_contain_pruefidentifikatoren(table=item):
             # check which pruefis
             seed = Seed.from_table(docx_table=item)
-            logger.info("Found a table with the following pruefis: %s", seed.pruefidentifikatoren)
+            logger.debug("Found a table with the following pruefis (A): %s", seed.pruefidentifikatoren)
 
         we_reached_the_end_of_the_ahb_table_of_the_searched_pruefi: bool = (
             seed is not None and pruefi not in seed.pruefidentifikatoren and searched_pruefi_is_found
         )
 
         if we_reached_the_end_of_the_ahb_table_of_the_searched_pruefi:
+            del seed
             seed = None
             logger.info("🏁 We reached the end of the AHB table of the Prüfidentifikator '%s'", pruefi)
             break
@@ -118,7 +126,7 @@ def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
         if isinstance(item, Table) and does_the_table_contain_pruefidentifikatoren(table=item):
             # check which pruefis
             seed = Seed.from_table(docx_table=item)
-            logger.info("Found a table with the following pruefis: %s", seed.pruefidentifikatoren)
+            logger.debug("Found a table with the following pruefis (B): %s", seed.pruefidentifikatoren)
 
             searched_pruefi_is_found = pruefi in seed.pruefidentifikatoren and not is_ahb_table_initialized
 
@@ -141,5 +149,5 @@ def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
         return None
 
     ahb_table.sanitize()
-
+    del seed
     return ahb_table
