@@ -40,6 +40,7 @@ class Seed:
     middle_cell_left_indent_position: int = 0
     tabstop_positions: list[int] = []
     last_two_row_types: list[RowType] = []
+    metadata: list[str] = []
 
     # why this classmethod?
     # to decouple the data structure of Elixir from the input data
@@ -71,6 +72,9 @@ class Seed:
         middle_cell_left_indent_position = middle_cell_indicator_paragraph.paragraph_format.left_indent
         tabstop_positions = get_tabstop_positions(middle_cell_indicator_paragraph)
 
+        # metadata
+        metadata = table_header.pruefi_meta_data
+
         base_column_names: list = [
             "Segment Gruppe",
             "Segment",
@@ -90,4 +94,5 @@ class Seed:
             middle_cell_left_indent_position=middle_cell_left_indent_position,
             tabstop_positions=tabstop_positions,
             last_two_row_types=last_two_row_types,
+            metadata=metadata,
         )

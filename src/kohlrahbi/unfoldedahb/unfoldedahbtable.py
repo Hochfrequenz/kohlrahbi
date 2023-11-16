@@ -216,6 +216,8 @@ class UnfoldedAhb:
             unfolded_ahb_lines=unfolded_ahb_lines,
             meta_data=UnfoldedAhbTableMetaData(
                 pruefidentifikator=pruefi,
+                beschreibung=ahb_table.metadata[0].name,
+                kommunikation_von=ahb_table.metadata[0].communication_direction,
             ),
         )
 
@@ -306,7 +308,11 @@ class UnfoldedAhb:
         """
         Converts the unfolded AHB to a flat AHB.
         """
-        meta = AhbMetaInformation(pruefidentifikator=self.meta_data.pruefidentifikator)
+        meta = AhbMetaInformation(
+            pruefidentifikator=self.meta_data.pruefidentifikator,
+            description=self.meta_data.beschreibung,
+            direction=self.meta_data.kommunikation_von,
+        )
         lines: list[AhbLine] = []
 
         for unfolded_ahb_line in self.unfolded_ahb_lines:
