@@ -114,6 +114,7 @@ def scrape_change_histories(input_path: Path):
 
     for ahb_file_path in ahb_file_paths:
         doc = docx.Document(ahb_file_path)  # Creating word reader object.
+        logger.info("start reading docx file '%s'", str(ahb_file_path))
         get_change_history_table(document=doc)
 
 
