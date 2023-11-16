@@ -1,3 +1,6 @@
+"""
+This module provides the ChangeHistorySubTable class
+"""
 import attrs
 import pandas as pd
 
