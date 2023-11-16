@@ -81,6 +81,15 @@ class AhbFileFinder:
 
         self.paths_to_docx_files = [path for path in self.paths_to_docx_files if str(edifact_format) in path.name]
 
+    def remove_temporary_files(self):
+        """
+        This method removes all temporary files from paths_to_docx_files.
+        Temporary files lead to the exception `BadZipFile: File is not a zip file`.
+        It appears if a docx file is opened by Word.
+        """
+
+        self.paths_to_docx_files = [path for path in self.paths_to_docx_files if not path.name.startswith("~")]
+
     def get_docx_files_which_may_contain_searched_pruefi(self, searched_pruefi: str) -> list[Path]:
         """
         This functions takes a pruefidentifikator and returns a list of docx files which can contain the searched pruefi
@@ -118,5 +127,6 @@ class AhbFileFinder:
         """
 
         self.filter_for_latest_ahb_docx_files()
+        self.remove_temporary_files()
 
         return self.paths_to_docx_files
