@@ -110,3 +110,13 @@ class AhbFileFinder:
             )
             return []
         return self.paths_to_docx_files
+
+    def get_all_docx_files_which_contain_change_histories(self) -> list[Path]:
+        """
+        This function returns a list of docx fils which probably contain a change history.
+        Only format documents like UTILMD, MSCONS etc. contain a change history.
+        """
+
+        self.filter_for_latest_ahb_docx_files()
+
+        return self.paths_to_docx_files
