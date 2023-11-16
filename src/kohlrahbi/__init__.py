@@ -18,7 +18,7 @@ from maus.edifact import EdifactFormat
 from kohlrahbi.ahb.ahbtable import AhbTable
 from kohlrahbi.ahbfilefinder import AhbFileFinder
 from kohlrahbi.logger import logger
-from kohlrahbi.read_functions import get_ahb_table
+from kohlrahbi.read_functions import get_ahb_table, get_change_history_table
 from kohlrahbi.unfoldedahb.unfoldedahbtable import UnfoldedAhb
 
 _pruefi_pattern = re.compile(r"^[1-9]\d{4}$")
@@ -104,56 +104,23 @@ def load_all_known_pruefis_from_file(
     return pruefis
 
 
-@click.command()
-@click.option(
-    "-p",
-    "--pruefis",
-    default=[],
-    required=False,
-    help="Five digit number like 11042 or use wildcards like 110* or *042 or 11?42.",
-    multiple=True,
-)
-@click.option(
-    "-i",
-    "--input_path",
-    type=click.Path(exists=True, dir_okay=True, file_okay=False, path_type=Path),
-    prompt="Input directory",
-    help="Define the path to the folder with the docx AHBs.",
-)
-@click.option(
-    "-o",
-    "--output_path",
-    type=click.Path(exists=False, dir_okay=True, file_okay=False, path_type=Path),
-    default="output",
-    prompt="Output directory",
-    help="Define the path where you want to save the generated files.",
-)
-@click.option(
-    "--file-type",
-    type=click.Choice(["flatahb", "csv", "xlsx", "conditions"], case_sensitive=False),
-    multiple=True,
-)
-@click.option(
-    "--assume-yes",
-    "-y",
-    is_flag=True,
-    help="Confirm all prompts automatically.",
-)
-# pylint: disable=too-many-branches, too-many-statements, too-many-locals
-def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: list[str], assume_yes: bool):
+def scrape_change_histories(input_path: Path):
     """
-    A program to get a machine readable version of the AHBs docx files published by edi@energy.
+    starts the scraping process of the change histories
     """
-    check_python_version()
+    logger.info("start looking for change histories")
+    ahb_file_finder = AhbFileFinder.from_input_path(input_path=input_path)
+    ahb_file_paths: list[Path] = ahb_file_finder.get_all_docx_files_which_contain_change_histories()
 
-    if not assume_yes:
-        check_output_path(path=output_path)
-    else:
-        if output_path.exists():
-            click.secho(f"The output directory '{output_path}' exists already.", fg="yellow")
-        else:
-            output_path.mkdir(parents=True)
-            click.secho(f"I created a new directory at {output_path}", fg="yellow")
+    for ahb_file_path in ahb_file_paths:
+        doc = docx.Document(ahb_file_path)  # Creating word reader object.
+        get_change_history_table(document=doc)
+
+
+def scrape_pruefis(pruefis: list[str], input_path: Path, output_path: Path, file_type: list[str]):
+    """
+    starts the scraping process for provided pruefis
+    """
 
     if not any(pruefis):
         click.secho("☝️ No pruefis were given. I will parse all known pruefis.", fg="yellow")
@@ -246,6 +213,77 @@ def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: lis
     if "conditions" in file_type:
         # store conditions in conditions.json files
         dump_conditions_json(output_directory_path=output_path, already_known_conditions=collected_conditions)
+
+
+@click.command()
+@click.option(
+    "-f",
+    "--flavour",
+    type=click.Choice(["pruefi", "changehistory"], case_sensitive=False),
+    default="pruefi",
+    help='Choose between "pruefi" and "changehistory".',
+)
+@click.option(
+    "-p",
+    "--pruefis",
+    default=[],
+    required=False,
+    help="Five digit number like 11042 or use wildcards like 110* or *042 or 11?42.",
+    multiple=True,
+)
+@click.option(
+    "-i",
+    "--input_path",
+    type=click.Path(exists=True, dir_okay=True, file_okay=False, path_type=Path),
+    prompt="Input directory",
+    help="Define the path to the folder with the docx AHBs.",
+)
+@click.option(
+    "-o",
+    "--output_path",
+    type=click.Path(exists=False, dir_okay=True, file_okay=False, path_type=Path),
+    default="output",
+    prompt="Output directory",
+    help="Define the path where you want to save the generated files.",
+)
+@click.option(
+    "--file-type",
+    type=click.Choice(["flatahb", "csv", "xlsx", "conditions"], case_sensitive=False),
+    multiple=True,
+)
+@click.option(
+    "--assume-yes",
+    "-y",
+    is_flag=True,
+    help="Confirm all prompts automatically.",
+)
+# pylint: disable=too-many-branches, too-many-statements, too-many-locals
+def main(flavour: str, pruefis: list[str], input_path: Path, output_path: Path, file_type: list[str], assume_yes: bool):
+    """
+    A program to get a machine readable version of the AHBs docx files published by edi@energy.
+    """
+    check_python_version()
+
+    if not assume_yes:
+        check_output_path(path=output_path)
+    else:
+        if output_path.exists():
+            click.secho(f"The output directory '{output_path}' exists already.", fg="yellow")
+        else:
+            output_path.mkdir(parents=True)
+            click.secho(f"I created a new directory at {output_path}", fg="yellow")
+
+    match flavour:
+        case "pruefi":
+            scrape_pruefis(
+                pruefis=pruefis,
+                input_path=input_path,
+                output_path=output_path,
+                file_type=file_type,
+                assume_yes=assume_yes,
+            )
+        case "changehistory":
+            scrape_change_histories(input_path=input_path)
 
 
 def dump_conditions_json(output_directory_path: Path, already_known_conditions: dict) -> None:
