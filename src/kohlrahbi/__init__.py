@@ -280,7 +280,6 @@ def main(flavour: str, pruefis: list[str], input_path: Path, output_path: Path, 
                 input_path=input_path,
                 output_path=output_path,
                 file_type=file_type,
-                assume_yes=assume_yes,
             )
         case "changehistory":
             scrape_change_histories(input_path=input_path)
