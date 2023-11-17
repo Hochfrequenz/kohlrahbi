@@ -33,7 +33,9 @@ class TestUnfoldedAhbTable:
         pass
 
     def test_convert_to_flat_ahb(self) -> None:
-        meta_data = UnfoldedAhbTableMetaData(pruefidentifikator="11016")
+        meta_data = UnfoldedAhbTableMetaData(
+            pruefidentifikator="11016", beschreibung="Nicht vorhanden", kommunikation_von="Nicht vorhanden"
+        )
 
         unfolded_ahb_lines = [
             UnfoldedAhbLine(
@@ -101,7 +103,9 @@ class TestUnfoldedAhbTable:
         unfolded_ahb = UnfoldedAhb(meta_data=meta_data, unfolded_ahb_lines=unfolded_ahb_lines)
 
         expected_flat_ahb: FlatAnwendungshandbuch = FlatAnwendungshandbuch(
-            meta=AhbMetaInformation(pruefidentifikator="11016"),
+            meta=AhbMetaInformation(
+                pruefidentifikator="11016", description="Nicht vorhanden", direction="Nicht vorhanden"
+            ),
             lines=[
                 AhbLine(
                     guid=None,
@@ -176,7 +180,9 @@ class TestUnfoldedAhbTable:
         pass
 
     def test_collect_condition(self) -> None:
-        meta_data = UnfoldedAhbTableMetaData(pruefidentifikator="44014")
+        meta_data = UnfoldedAhbTableMetaData(
+            pruefidentifikator="44014", beschreibung="Anmeldung EOG", kommunikation_von="NB an LF"
+        )
 
         unfolded_ahb_lines = [
             UnfoldedAhbLine(
