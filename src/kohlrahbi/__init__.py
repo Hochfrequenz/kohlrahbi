@@ -16,8 +16,8 @@ import tomlkit
 from maus.edifact import EdifactFormat
 
 from kohlrahbi.ahb.ahbtable import AhbTable
-from kohlrahbi.ahbfilefinder import DocxFileFinder
 from kohlrahbi.changehistory.changehistorytable import ChangeHistoryTable
+from kohlrahbi.docxfilefinder import DocxFileFinder
 from kohlrahbi.logger import logger
 from kohlrahbi.read_functions import get_ahb_table, get_change_history_table
 from kohlrahbi.unfoldedahb.unfoldedahbtable import UnfoldedAhb
