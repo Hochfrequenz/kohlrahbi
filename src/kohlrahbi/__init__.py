@@ -17,6 +17,7 @@ from maus.edifact import EdifactFormat
 
 from kohlrahbi.ahb.ahbtable import AhbTable
 from kohlrahbi.ahbfilefinder import DocxFileFinder
+from kohlrahbi.changehistory.changehistorytable import ChangeHistoryTable
 from kohlrahbi.logger import logger
 from kohlrahbi.read_functions import get_ahb_table, get_change_history_table
 from kohlrahbi.unfoldedahb.unfoldedahbtable import UnfoldedAhb
@@ -104,7 +105,7 @@ def load_all_known_pruefis_from_file(
     return pruefis
 
 
-def scrape_change_histories(input_path: Path):
+def scrape_change_histories(input_path: Path, output_path: Path):
     """
     starts the scraping process of the change histories
     """
@@ -112,10 +113,46 @@ def scrape_change_histories(input_path: Path):
     ahb_file_finder = DocxFileFinder.from_input_path(input_path=input_path)
     ahb_file_paths: list[Path] = ahb_file_finder.get_all_docx_files_which_contain_change_histories()
 
+    change_history_collection: dict[str, pd.DataFrame] = {}
+
     for ahb_file_path in ahb_file_paths:
+        # extract the sheet name from the file name
+        # COMDISAHB-informatorischeLesefassung1.0e_99991231_20240401.docx -> COMDISAHB
+        sheet_name = ahb_file_path.name.split("-")[0]
+
         doc = docx.Document(ahb_file_path)  # Creating word reader object.
         logger.info("start reading docx file '%s'", str(ahb_file_path))
-        get_change_history_table(document=doc)
+        change_history_table: ChangeHistoryTable = get_change_history_table(document=doc)
+
+        change_history_collection[sheet_name] = change_history_table.table
+
+    path_to_change_history_excel_file = output_path / "change_histories.xlsx"
+
+    logger.info("💾 Saving change histories xlsx file %s", path_to_change_history_excel_file)
+
+    # Define column widths (example: 20, 15, 30, etc.)
+    column_widths = [6, 6, 46, 52, 52, 38, 10]  # Replace with your desired widths
+
+    # Create a Pandas Excel writer using XlsxWriter as the engine
+    with pd.ExcelWriter(path_to_change_history_excel_file, engine="xlsxwriter") as writer:
+        for sheet_name, df in change_history_collection.items():
+            df.to_excel(writer, sheet_name=sheet_name)
+
+            # Access the XlsxWriter workbook and worksheet objects
+            workbook = writer.book
+            worksheet = writer.sheets[sheet_name]
+
+            # Create a text wrap format
+            wrap_format = workbook.add_format({"text_wrap": True})
+
+            # Get the dimensions of the DataFrame
+            (max_row, max_col) = df.shape
+
+            assert max_col + 1 == len(column_widths)  # +1 cause of index
+
+            # Apply text wrap format to each cell
+            for col_num, width in enumerate(column_widths):
+                worksheet.set_column(col_num, col_num, width, wrap_format)
 
 
 def scrape_pruefis(pruefis: list[str], input_path: Path, output_path: Path, file_type: list[str]):
@@ -283,7 +320,7 @@ def main(flavour: str, pruefis: list[str], input_path: Path, output_path: Path, 
                 file_type=file_type,
             )
         case "changehistory":
-            scrape_change_histories(input_path=input_path)
+            scrape_change_histories(input_path=input_path, output_path=output_path)
 
 
 def dump_conditions_json(output_directory_path: Path, already_known_conditions: dict) -> None:
