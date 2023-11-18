@@ -11,7 +11,7 @@ from kohlrahbi.logger import logger
 
 
 @attrs.define(auto_attribs=True, kw_only=True)
-class AhbFileFinder:
+class DocxFileFinder:
     """
     This class is responsible for finding the AHB files in the input directory.
     """
@@ -51,8 +51,8 @@ class AhbFileFinder:
         groups: dict[str, list[Path]] = {  # the key is the first part of the file name, the values are matching files
             group_key: list(group)
             for group_key, group in groupby(
-                sorted(self.paths_to_docx_files, key=AhbFileFinder.get_first_part_of_ahb_docx_file_name),
-                key=AhbFileFinder.get_first_part_of_ahb_docx_file_name,
+                sorted(self.paths_to_docx_files, key=DocxFileFinder.get_first_part_of_ahb_docx_file_name),
+                key=DocxFileFinder.get_first_part_of_ahb_docx_file_name,
             )
         }
         # groups may now look like this:

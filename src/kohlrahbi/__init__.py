@@ -16,7 +16,7 @@ import tomlkit
 from maus.edifact import EdifactFormat
 
 from kohlrahbi.ahb.ahbtable import AhbTable
-from kohlrahbi.ahbfilefinder import AhbFileFinder
+from kohlrahbi.ahbfilefinder import DocxFileFinder
 from kohlrahbi.logger import logger
 from kohlrahbi.read_functions import get_ahb_table, get_change_history_table
 from kohlrahbi.unfoldedahb.unfoldedahbtable import UnfoldedAhb
@@ -109,7 +109,7 @@ def scrape_change_histories(input_path: Path):
     starts the scraping process of the change histories
     """
     logger.info("start looking for change histories")
-    ahb_file_finder = AhbFileFinder.from_input_path(input_path=input_path)
+    ahb_file_finder = DocxFileFinder.from_input_path(input_path=input_path)
     ahb_file_paths: list[Path] = ahb_file_finder.get_all_docx_files_which_contain_change_histories()
 
     for ahb_file_path in ahb_file_paths:
@@ -148,7 +148,7 @@ def scrape_pruefis(pruefis: list[str], input_path: Path, output_path: Path, file
     for pruefi in valid_pruefis:
         try:
             logger.info("start looking for pruefi '%s'", pruefi)
-            ahb_file_finder = AhbFileFinder.from_input_path(input_path=input_path)
+            ahb_file_finder = DocxFileFinder.from_input_path(input_path=input_path)
             ahb_file_paths: list[Path] = ahb_file_finder.get_docx_files_which_may_contain_searched_pruefi(
                 searched_pruefi=pruefi
             )

@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest  # type:ignore[import]
 from maus.edifact import EdifactFormat
 
-from kohlrahbi.ahbfilefinder import AhbFileFinder
+from kohlrahbi.ahbfilefinder import DocxFileFinder
 
 
 class TestAhbFileFinder:
@@ -30,7 +30,7 @@ class TestAhbFileFinder:
     def test_get_docx_files_which_may_contain_searched_pruefi(self, searched_pruefi, expected_docx_count):
         path_to_ahb_documents: Path = Path.cwd() / Path("unittests/docx_files")
 
-        ahb_file_finder = AhbFileFinder.from_input_path(input_path=path_to_ahb_documents)
+        ahb_file_finder = DocxFileFinder.from_input_path(input_path=path_to_ahb_documents)
 
         ahb_file_finder.get_docx_files_which_may_contain_searched_pruefi(searched_pruefi=searched_pruefi)
 
@@ -47,7 +47,7 @@ class TestAhbFileFinder:
         """
         path_to_ahb_documents: Path = Path.cwd() / Path("unittests/docx_files")
 
-        ahb_file_finder = AhbFileFinder.from_input_path(input_path=path_to_ahb_documents)
+        ahb_file_finder = DocxFileFinder.from_input_path(input_path=path_to_ahb_documents)
 
         ahb_file_finder.filter_docx_files_for_edifact_format(edifact_format=EdifactFormat.MSCONS)
 
@@ -61,7 +61,7 @@ class TestAhbFileFinder:
         """
         path_to_ahb_documents: Path = Path.cwd() / Path("unittests/docx_files")
 
-        ahb_file_finder = AhbFileFinder.from_input_path(input_path=path_to_ahb_documents)
+        ahb_file_finder = DocxFileFinder.from_input_path(input_path=path_to_ahb_documents)
 
         ahb_file_finder.filter_for_latest_ahb_docx_files()
 
