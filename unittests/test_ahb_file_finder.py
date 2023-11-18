@@ -1,15 +1,14 @@
-from itertools import groupby
 from pathlib import Path
 
 import pytest  # type:ignore[import]
 from maus.edifact import EdifactFormat
 
-from kohlrahbi.ahbfilefinder import DocxFileFinder
+from kohlrahbi.docxfilefinder import DocxFileFinder
 
 
-class TestAhbFileFinder:
+class TestDocxFileFinder:
     """
-    This class contains the unit tests for the AhbFileFinder class.
+    This class contains the unit tests for the DocxFileFinder class.
     """
 
     @pytest.mark.parametrize(

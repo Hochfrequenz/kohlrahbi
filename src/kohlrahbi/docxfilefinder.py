@@ -1,5 +1,5 @@
 """
-This module contains the AhbFileFinder class.
+This module contains the DocxFileFinder class.
 """
 from itertools import groupby
 from pathlib import Path
@@ -13,15 +13,16 @@ from kohlrahbi.logger import logger
 @attrs.define(auto_attribs=True, kw_only=True)
 class DocxFileFinder:
     """
-    This class is responsible for finding the AHB files in the input directory.
+    This class is responsible for finding the docx files in the input directory.
+    It can find MIG and AHB docx files.
     """
 
     paths_to_docx_files: list[Path]
 
     @classmethod
-    def from_input_path(cls, input_path: Path) -> "AhbFileFinder":
+    def from_input_path(cls, input_path: Path) -> "DocxFileFinder":
         """
-        Create an AhbFileFinder object from the input path.
+        Create an DocxFileFinder object from the input path.
         """
 
         ahb_file_paths: list[Path] = [
