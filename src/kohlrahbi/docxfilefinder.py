@@ -25,11 +25,9 @@ class DocxFileFinder:
         Create an DocxFileFinder object from the input path.
         """
 
-        ahb_file_paths: list[Path] = [
-            path for path in input_path.iterdir() if path.is_file() if path.suffix == ".docx" if "AHB" in path.name
-        ]
+        ahb_file_paths: list[Path] = [path for path in input_path.iterdir() if path.is_file() if path.suffix == ".docx"]
         if not any(ahb_file_paths):  # this is suspicious at least
-            logger.warning("The directory '%s' does not contain any AHB docx files.", input_path.absolute())
+            logger.warning("The directory '%s' does not contain any docx files.", input_path.absolute())
         return cls(paths_to_docx_files=ahb_file_paths)
 
     @staticmethod
@@ -47,6 +45,10 @@ class DocxFileFinder:
         The latest files contain `LesefassungmitFehlerkorrekturen` in their file names.
         This method is _not_ pure. It changes the state of the object.
         """
+
+        # filter for AHB docx files
+        self.paths_to_docx_files = [path for path in self.paths_to_docx_files if "AHB" in path.name]
+
         result: list[Path] = []
 
         groups: dict[str, list[Path]] = {  # the key is the first part of the file name, the values are matching files
