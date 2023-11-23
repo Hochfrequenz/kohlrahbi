@@ -212,18 +212,17 @@ class UnfoldedAhb:
                     )
                 )
 
-        name = None
-        richtung = None
+        metadata = [None, None]
         if len(ahb_table.metadata) > 0:
-            name = ahb_table.metadata[0].name
-            richtung = ahb_table.metadata[0].communication_direction
+            metadata[0] = ahb_table.metadata[0].name or None
+            metadata[1] = ahb_table.metadata[0].communication_direction or None
 
         return cls(
             unfolded_ahb_lines=unfolded_ahb_lines,
             meta_data=UnfoldedAhbTableMetaData(
                 pruefidentifikator=pruefi,
-                beschreibung=name,
-                kommunikation_von=richtung,
+                beschreibung=metadata[0],
+                kommunikation_von=metadata[1],
             ),
         )
 
