@@ -212,7 +212,7 @@ class UnfoldedAhb:
                     )
                 )
 
-        metadata = [None, None]
+        metadata = ["" or None, "" or None]
         if len(ahb_table.metadata) > 0:
             metadata[0] = ahb_table.metadata[0].name or None
             metadata[1] = ahb_table.metadata[0].communication_direction or None

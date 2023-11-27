@@ -11,6 +11,7 @@ from more_itertools import peekable
 
 from kohlrahbi.ahb.ahbsubtable import AhbSubTable
 from kohlrahbi.logger import logger
+from kohlrahbi.table_header import PruefiMetaData
 
 _column_letter_width_mapping: dict[str, Union[float, int]] = {
     "A": 3.5,
@@ -31,7 +32,7 @@ class AhbTable:
     """
 
     table: pd.DataFrame
-    metadata: list[str] = []
+    metadata: list[PruefiMetaData] = []
 
     def fill_segment_gruppe_segment_dataelement(self) -> None:
         """

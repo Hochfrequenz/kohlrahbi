@@ -13,5 +13,5 @@ class UnfoldedAhbTableMetaData:
     """
 
     pruefidentifikator: str
-    beschreibung: str
-    kommunikation_von: str
+    beschreibung: str | None
+    kommunikation_von: str | None

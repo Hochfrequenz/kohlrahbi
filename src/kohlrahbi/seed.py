@@ -6,7 +6,7 @@ from attrs import define
 from docx.table import Table  # type:ignore[import]
 
 from kohlrahbi.enums import RowType
-from kohlrahbi.table_header import TableHeader, get_tabstop_positions
+from kohlrahbi.table_header import PruefiMetaData, TableHeader, get_tabstop_positions
 
 
 # pylint: disable=too-few-public-methods
@@ -22,7 +22,7 @@ class Seed:
     middle_cell_left_indent_position: int = 0
     tabstop_positions: list[int] = []
     last_two_row_types: list[RowType] = []
-    metadata: list[str] = []
+    metadata: list[PruefiMetaData] = []
 
     # why this classmethod?
     # to decouple the data structure of Elixir from the input data
