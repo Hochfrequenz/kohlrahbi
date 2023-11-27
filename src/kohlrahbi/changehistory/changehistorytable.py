@@ -46,32 +46,34 @@ class ChangeHistoryTable:
         This function merges these rows.
         """
 
-        # Create a copy of the DataFrame to avoid modifying the original one
-        df = self.table.copy()
-
         def is_empty(val: str) -> bool:
+            """
+            Checks if the given value is considered empty for our case.
+            """
             return pd.isna(val) or val == ""
 
         # Define a function to check if a value is considered empty for our case
-        def are_the_first_two_columns_empty(row: pd.Series) -> bool:
+        def is_the_first_column_empty(row: pd.Series) -> bool:
             """
-            Checks if the first and second columns of the given row are empty.
-            Row is a row from a pandas DataFrame.
+            Checks if the first column of the given row is empty.
+            This is our indicator if the current row is a continuation of the upper row.
             """
-            return is_empty(row[0]) and is_empty(row[1])
+            return is_empty(row.iloc[0])
 
         # Iterate over the DataFrame rows in reverse (to avoid skipping rows after removing them)
-        for i in reversed(range(1, len(df))):
+        for i in reversed(range(1, len(self.table))):
             # Check if the first and second columns of the current row are empty
-            if are_the_first_two_columns_empty(df.iloc[i]):
+            if is_the_first_column_empty(self.table.iloc[i]):
                 # Merge with the upper row by concatenating the non-empty values
-                for col in range(len(df.columns)):
-                    if not is_empty(df.iloc[i, col]):
-                        df.iloc[i - 1, col] = str(df.iloc[i - 1, col]) + " " + str(df.iloc[i, col]).strip()
+                for col in range(len(self.table.columns)):
+                    if not is_empty(self.table.iloc[i, col]):
+                        self.table.iloc[i - 1, col] = (
+                            str(self.table.iloc[i - 1, col]) + " " + str(self.table.iloc[i, col]).strip()
+                        )
                 # Drop the current row since it has been merged
-                df.drop(i, inplace=True)
+                self.table.drop(i, inplace=True)
 
         # Reset index after dropping rows
-        df.reset_index(drop=True, inplace=True)
+        self.table.reset_index(drop=True, inplace=True)
 
-        return df
+        return self.table
