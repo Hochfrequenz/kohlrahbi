@@ -132,13 +132,14 @@ class TableHeader:
             splitted_text = paragraph.text.split("\t")
             text_prefix = first(splitted_text)
 
-            # the paragraph with the Prüfidentifikatoren has slightly different tabstop positions compared to the table content rows.
-            # So we skip this paragraph.
+            # the paragraph with the Prüfidentifikatoren has slightly different tabstop positions compared to
+            # the table content rows. So we skip this paragraph.
             does_paragraph_contain_pruefidentifikatoren = text_prefix == "Prüfidentifikator"
             if does_paragraph_contain_pruefidentifikatoren:
                 continue
 
-            # only the paragraphs with the Beschreibung and Kommunikation von have the same tabstop positions as the table content rows.
+            # only the paragraphs with the Beschreibung and Kommunikation von have the same tabstop positions as
+            # the table content rows.
             does_paragraph_contain_beschreibung_or_kommunikation_von = text_prefix in {
                 "Beschreibung",
                 "Kommunikation von",
