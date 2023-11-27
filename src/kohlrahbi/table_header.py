@@ -43,6 +43,9 @@ def create_mapping_of_tabstop_positions(
 ) -> Mapping[int, int]:
     """
     Create a mapping of the tabstop positions of the Prüfidentifikatoren columns.
+
+    Returns:
+        Dict[int, int]: All initial tabstop positions mapped to the current tabstop positions
     """
     # create a mapping of the tabstop positions
     mapping: Dict[int, int] = {}
