@@ -128,10 +128,15 @@ class TableHeader:
             splitted_text = paragraph.text.split("\t")
             text_prefix = first(splitted_text)
 
-            if text_prefix == "Prüfidentifikator":
+            does_paragraph_contain_pruefidentifikatoren = text_prefix == "Prüfidentifikator"
+            if does_paragraph_contain_pruefidentifikatoren:
                 continue
 
-            if text_prefix in {"Beschreibung", "Kommunikation von"}:
+            does_paragraph_contain_beschreibung_or_kommunikation_von = text_prefix in {
+                "Beschreibung",
+                "Kommunikation von",
+            }
+            if does_paragraph_contain_beschreibung_or_kommunikation_von:
                 initial_tabstop_positions = get_tabstop_positions(paragraph=paragraph)
                 tabstop_mapper = dict(zip(initial_tabstop_positions, collector.keys()))
                 section_type = HeaderSection[text_prefix.replace(" ", "_").upper()]
