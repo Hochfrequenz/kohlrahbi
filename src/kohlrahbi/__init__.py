@@ -129,7 +129,11 @@ def scrape_change_histories(input_path: Path, output_path: Path):
         change_history_collection[sheet_name] = change_history_table.table
 
     # add timestamp to file name
-    current_timestamp = datetime.now().isoformat(timespec="seconds")
+    # there are two timestamps: one with datetime and another one with just date information.
+    # It is handy during debugging to save different versions of the output files with the datetime information.
+    # But in production we only want to save one file per day.
+    # current_timestamp = datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
+    current_timestamp = datetime.now().strftime("%Y-%m-%d")
     path_to_change_history_excel_file = output_path / f"{current_timestamp}_change_histories.xlsx"
 
     logger.info("💾 Saving change histories xlsx file %s", path_to_change_history_excel_file)
