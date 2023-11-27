@@ -110,8 +110,8 @@ def scrape_change_histories(input_path: Path, output_path: Path):
     starts the scraping process of the change histories
     """
     logger.info("start looking for change histories")
-    ahb_file_finder = DocxFileFinder.from_input_path(input_path=input_path)
-    ahb_file_paths: list[Path] = ahb_file_finder.get_all_docx_files_which_contain_change_histories()
+    docx_file_finder = DocxFileFinder.from_input_path(input_path=input_path)
+    ahb_file_paths: list[Path] = docx_file_finder.get_all_docx_files_which_contain_change_histories()
 
     change_history_collection: dict[str, pd.DataFrame] = {}
 
@@ -134,8 +134,14 @@ def scrape_change_histories(input_path: Path, output_path: Path):
     column_widths = [6, 6, 46, 52, 52, 38, 10]  # Replace with your desired widths
 
     # Create a Pandas Excel writer using XlsxWriter as the engine
+    # https://github.com/PyCQA/pylint/issues/3060 pylint: disable=abstract-class-instantiated
     with pd.ExcelWriter(path_to_change_history_excel_file, engine="xlsxwriter") as writer:
         for sheet_name, df in change_history_collection.items():
+            if len(sheet_name) > 31:
+                # Excel only allows 31 characters for sheet names
+                # but REQOTEQUOTESORDERSORDRSPORDCHGAHB is 33 characters long
+                sheet_name = sheet_name.replace("HG", "")
+
             df.to_excel(writer, sheet_name=sheet_name)
 
             # Access the XlsxWriter workbook and worksheet objects

@@ -51,7 +51,17 @@ class DocxFileFinder:
 
     @staticmethod
     def filter_ahb_docx_files(paths_to_docx_files: list[Path]) -> list[Path]:
+        """
+        This function filters the docx files which contain the string "AHB" in their file name.
+        """
         return [path for path in paths_to_docx_files if "AHB" in path.name]
+
+    @staticmethod
+    def filter_mig_and_ahb_docx_files(paths_to_docx_files: list[Path]) -> list[Path]:
+        """
+        This function filters the docx files which contain the string "AHB" and "MIG" in their file name.
+        """
+        return [path for path in paths_to_docx_files if "AHB" in path.name or "MIG" in path.name]
 
     @staticmethod
     def group_files_by_name_prefix(paths_to_docx_files: list[Path]) -> dict[str, list[Path]]:
@@ -84,6 +94,9 @@ class DocxFileFinder:
 
     @staticmethod
     def filter_latest_version(groups: dict[str, list[Path]]) -> list[Path]:
+        """
+        This function filters the latest version of the AHB or MIG docx files.
+        """
         result = []
         for group_items in groups.values():
             if len(group_items) == 1:
@@ -99,8 +112,13 @@ class DocxFileFinder:
                         logger.debug("Ignoring file %s", path.name)
         return result
 
-    def filter_for_latest_mig_docx_files(self) -> None:
-        pass
+    def filter_for_latest_mig_and_ahb_docx_files(self) -> None:
+        """
+        Filter the list of MIG docx paths for the latest MIG docx files.
+        """
+        self.paths_to_docx_files = self.filter_mig_and_ahb_docx_files(self.paths_to_docx_files)
+        grouped_files = self.group_files_by_name_prefix(self.paths_to_docx_files)
+        self.paths_to_docx_files = self.filter_latest_version(grouped_files)
 
     def filter_docx_files_for_edifact_format(self, edifact_format: EdifactFormat) -> None:
         """
@@ -155,7 +173,7 @@ class DocxFileFinder:
         Only format documents like UTILMD, MSCONS etc. contain a change history.
         """
 
-        self.filter_for_latest_ahb_docx_files()
+        self.filter_for_latest_mig_and_ahb_docx_files()
         self.remove_temporary_files()
 
         return self.paths_to_docx_files
