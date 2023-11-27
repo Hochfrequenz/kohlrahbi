@@ -8,6 +8,7 @@ from typing import Dict, List, Mapping, cast
 from attrs import define
 from docx.table import _Cell  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
+from more_itertools import first, last
 
 
 class HeaderSection(StrEnum):
@@ -119,13 +120,13 @@ class TableHeader:
         if not row_cell.paragraphs[-1].text.startswith("Prüfidentifikator"):
             raise ValueError("The last paragraph should start with 'Prüfidentifikator'")
 
-        collector = initialize_collector(paragraph=row_cell.paragraphs[-1])
+        collector = initialize_collector(paragraph=last(row_cell.paragraphs))
 
         section_type: HeaderSection
 
         for paragraph in row_cell.paragraphs:
             splitted_text = paragraph.text.split("\t")
-            text_prefix = splitted_text[0]
+            text_prefix = first(splitted_text)
 
             if text_prefix == "Prüfidentifikator":
                 continue
