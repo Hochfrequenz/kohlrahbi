@@ -95,7 +95,7 @@ class TableHeader:
     @classmethod
     def from_header_cell(cls, row_cell: _Cell) -> "TableHeader":
         """
-        Create a TableHeader instance from a list of strings
+        Create a TableHeader instance from a list of strings.
         """
 
         def initialize_collector(paragraph) -> Dict[str, Dict[str, str | int]]:
@@ -124,14 +124,18 @@ class TableHeader:
 
         section_type: HeaderSection
 
+        # the main goal of this loop is to find the tabstop positions of each Prüfidentifikator.
         for paragraph in row_cell.paragraphs:
             splitted_text = paragraph.text.split("\t")
             text_prefix = first(splitted_text)
 
+            # the paragraph with the Prüfidentifikatoren has slightly different tabstop positions compared to the table content rows.
+            # So we skip this paragraph.
             does_paragraph_contain_pruefidentifikatoren = text_prefix == "Prüfidentifikator"
             if does_paragraph_contain_pruefidentifikatoren:
                 continue
 
+            # only the paragraphs with the Beschreibung and Kommunikation von have the same tabstop positions as the table content rows.
             does_paragraph_contain_beschreibung_or_kommunikation_von = text_prefix in {
                 "Beschreibung",
                 "Kommunikation von",
