@@ -6,6 +6,7 @@ import gc
 import json
 import re
 import sys
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional
 
@@ -126,7 +127,9 @@ def scrape_change_histories(input_path: Path, output_path: Path):
 
         change_history_collection[sheet_name] = change_history_table.table
 
-    path_to_change_history_excel_file = output_path / "change_histories.xlsx"
+    # add timestamp to file name
+    current_timestamp = datetime.now().isoformat(timespec="seconds")
+    path_to_change_history_excel_file = output_path / f"{current_timestamp}_change_histories.xlsx"
 
     logger.info("💾 Saving change histories xlsx file %s", path_to_change_history_excel_file)
 
