@@ -34,7 +34,7 @@ class TestUnfoldedAhbTable:
 
     def test_convert_to_flat_ahb(self) -> None:
         meta_data = UnfoldedAhbTableMetaData(
-            pruefidentifikator="11016", beschreibung="Nicht vorhanden", kommunikation_von="Nicht vorhanden"
+            pruefidentifikator="55016", beschreibung="Kündigung beim alten Lieferanten", kommunikation_von="LFN an LFA"
         )
 
         unfolded_ahb_lines = [
@@ -104,7 +104,9 @@ class TestUnfoldedAhbTable:
 
         expected_flat_ahb: FlatAnwendungshandbuch = FlatAnwendungshandbuch(
             meta=AhbMetaInformation(
-                pruefidentifikator="11016", description="Nicht vorhanden", direction="Nicht vorhanden"
+                pruefidentifikator="55016",
+                description="Kündigung beim alten Lieferanten",
+                direction="LFN an LFA",
             ),
             lines=[
                 AhbLine(
