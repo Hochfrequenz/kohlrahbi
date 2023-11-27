@@ -127,7 +127,7 @@ class TableHeader:
             if text_prefix == "Prüfidentifikator":
                 continue
 
-            if text_prefix in ("Beschreibung", "Kommunikation von"):
+            if text_prefix in {"Beschreibung", "Kommunikation von"}:
                 initial_tabstop_positions = get_tabstop_positions(paragraph=paragraph)
                 tabstop_mapper = dict(zip(initial_tabstop_positions, collector.keys()))
                 section_type = HeaderSection[text_prefix.replace(" ", "_").upper()]
