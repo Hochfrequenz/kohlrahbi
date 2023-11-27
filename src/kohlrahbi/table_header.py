@@ -167,6 +167,8 @@ class TableHeader:
 
     def get_pruefidentifikatoren(self) -> List[str]:
         """
-        Get all Prüfidentifikatoren
+        Get all Prüfidentifikatoren from the table header.
+        The order of the Prüfidentifikatoren is the same as in the docx table headers.
+        So there should be no duplicates.
         """
         return [pruefi.pruefidentifikator for pruefi in self.pruefi_meta_data]
