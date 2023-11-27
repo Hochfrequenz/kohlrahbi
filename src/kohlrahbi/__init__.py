@@ -122,7 +122,7 @@ def scrape_change_histories(input_path: Path, output_path: Path):
         sheet_name = ahb_file_path.name.split("-")[0]
 
         doc = docx.Document(ahb_file_path)  # Creating word reader object.
-        logger.info("start reading docx file '%s'", str(ahb_file_path))
+        logger.info("🤓 Start reading docx file '%s'", str(ahb_file_path))
         change_history_table: ChangeHistoryTable = get_change_history_table(document=doc)
         change_history_table.sanitize_table()
 
@@ -214,7 +214,7 @@ def scrape_pruefis(pruefis: list[str], input_path: Path, output_path: Path, file
                         logger.exception("There was an error opening the file '%s'", ahb_file_path, exc_info=True)
                         raise click.Abort() from ioe
 
-                logger.info("start reading docx file '%s'", str(ahb_file_path))
+                logger.info("🤓 Start reading docx file '%s'", str(ahb_file_path))
 
                 ahb_table: AhbTable | None = get_ahb_table(
                     document=doc,

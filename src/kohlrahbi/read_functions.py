@@ -92,7 +92,7 @@ def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
     searched_pruefi_is_found: bool = False
 
     # Iterate through the whole word document
-    logger.info("Start iterating through paragraphs and tables")
+    logger.info("🔁 Start iterating through paragraphs and tables")
     for item in get_all_paragraphs_and_tables(parent=document):
         style_name = item.style.name  # this is a bit expensive. we should only call it once per item
         # Check if we reached the end of the current AHB document and stop if it's true.
@@ -168,14 +168,14 @@ def get_change_history_table(document: Document) -> Optional[ChangeHistoryTable]
     """
 
     # Iterate through the whole word document
-    logger.info("Start iterating through paragraphs and tables")
+    logger.info("🔁 Start iterating through paragraphs and tables")
     for item in get_all_paragraphs_and_tables(parent=document):
         style_name = item.style.name  # this is a bit expensive. we should only call it once per item
         # Check if we reached the end of the current AHB document and stop if it's true.
         if isinstance(item, Paragraph) and "Änderungshistorie" in item.text and "Heading" in style_name:
             # checking the style is quite expensive for the CPU because it includes some xpath searches;
             # we should only check the style if the other (easier/cheap) checks returned True
-            logger.info("We reached the change history section of the document.")
+            logger.info("🔚 We reached the change history section of the document.")
 
         if isinstance(item, Table) and is_change_history_table(table=item):
             change_history_table = ChangeHistoryTable.from_docx_change_history_table(docx_table=item)
