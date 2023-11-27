@@ -139,7 +139,7 @@ def scrape_change_histories(input_path: Path, output_path: Path):
     logger.info("💾 Saving change histories xlsx file %s", path_to_change_history_excel_file)
 
     # Define column widths (example: 20, 15, 30, etc.)
-    column_widths = [6, 6, 46, 52, 52, 38, 10]  # Replace with your desired widths
+    column_widths = [6, 6, 46, 52, 52, 38, 15]  # Replace with your desired widths
 
     # Create a Pandas Excel writer using XlsxWriter as the engine
     # https://github.com/PyCQA/pylint/issues/3060 pylint: disable=abstract-class-instantiated
