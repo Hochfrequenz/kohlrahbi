@@ -20,8 +20,6 @@ class HeaderSection(StrEnum):
     PRUEFIDENTIFIKATOR = "pruefidentifikator"
 
 
-# TODO this function is also used in the seed.py module
-#  -> move it to a common module to avoid code duplication and circular imports
 def get_tabstop_positions(paragraph: Paragraph) -> List[int]:
     """Find all tabstop positions in a given paragraph.
 

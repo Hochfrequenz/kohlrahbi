@@ -4,27 +4,9 @@ This module provides a class to collect information which of need for all parsin
 
 from attrs import define
 from docx.table import Table  # type:ignore[import]
-from docx.text.paragraph import Paragraph  # type:ignore[import]
 
 from kohlrahbi.enums import RowType
-from kohlrahbi.table_header import TableHeader
-
-
-def get_tabstop_positions(paragraph: Paragraph) -> list[int]:
-    """Find all tabstop positions in a given paragraph.
-
-    Mainly the tabstop positions of cells from the middle column are determined
-
-    Args:
-        paragraph (Paragraph):
-
-    Returns:
-        List[int]: All tabstop positions in the given paragraph
-    """
-    tabstop_positions: list[int] = []
-    for tabstop in paragraph.paragraph_format.tab_stops:
-        tabstop_positions.append(tabstop.position)
-    return tabstop_positions
+from kohlrahbi.table_header import TableHeader, get_tabstop_positions
 
 
 # pylint: disable=too-few-public-methods
