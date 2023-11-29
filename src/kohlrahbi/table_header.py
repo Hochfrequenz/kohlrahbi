@@ -101,29 +101,10 @@ class TableHeader:
         Create a TableHeader instance from a list of strings.
         """
 
-        def initialize_collector(paragraph) -> Dict[str, Dict[str, str | int]]:
-            current_tabstop_positions = get_tabstop_positions(paragraph=paragraph)
-            splitted_text = paragraph.text.split("\t")
-            splitted_text.remove("Prüfidentifikator")
-
-            collector: Dict[str, Dict[str, str | int]] = {
-                pruefidentifikator: {
-                    HeaderSection.BESCHREIBUNG.value: "",
-                    HeaderSection.KOMMUNIKATION_VON.value: "",
-                    "tabstop_position": tab_stop,
-                }
-                for pruefidentifikator, tab_stop in zip(splitted_text, current_tabstop_positions)
-            }
-
-            if not collector:
-                raise ValueError("collector should not be empty")
-
-            return collector
-
         if not row_cell.paragraphs[-1].text.startswith("Prüfidentifikator"):
             raise ValueError("The last paragraph should start with 'Prüfidentifikator'")
 
-        collector = initialize_collector(paragraph=last(row_cell.paragraphs))
+        collector = cls.initialize_collector(cls, paragraph=last(row_cell.paragraphs))
 
         section_type: HeaderSection
 
@@ -159,24 +140,48 @@ class TableHeader:
                     pruefi = tabstop_mapper[tabstop_position]
                     collector[pruefi][section_type.value] += text + " "
 
-        def ensure_single_space_between_words(text: str) -> str:
-            return " ".join(text.split())
-
         pruefi_meta_data = [
             PruefiMetaData(
                 pruefidentifikator=pruefi,
-                communication_direction=ensure_single_space_between_words(
+                communication_direction=cls.ensure_single_space_between_words(
+                    TableHeader,
                     #  The cast function is a no-op at runtime and doesn't perform any actual type conversion;
                     #  it's only used for type checking purposes.
-                    cast(str, meta_data[HeaderSection.KOMMUNIKATION_VON.value])
+                    cast(str, meta_data[HeaderSection.KOMMUNIKATION_VON.value]),
                 ),
-                name=ensure_single_space_between_words(cast(str, meta_data[HeaderSection.BESCHREIBUNG.value])),
+                name=cls.ensure_single_space_between_words(
+                    TableHeader, cast(str, meta_data[HeaderSection.BESCHREIBUNG.value])
+                ),
             )
             for pruefi, meta_data in collector.items()
             if isinstance(meta_data[HeaderSection.KOMMUNIKATION_VON.value], str)
         ]
 
         return cls(pruefi_meta_data=pruefi_meta_data)
+
+    def initialize_collector(self, paragraph) -> Dict[str, Dict[str, str | int]]:
+        """Initialize the collector"""
+        current_tabstop_positions = get_tabstop_positions(paragraph=paragraph)
+        splitted_text = paragraph.text.split("\t")
+        splitted_text.remove("Prüfidentifikator")
+
+        collector: Dict[str, Dict[str, str | int]] = {
+            pruefidentifikator: {
+                HeaderSection.BESCHREIBUNG.value: "",
+                HeaderSection.KOMMUNIKATION_VON.value: "",
+                "tabstop_position": tab_stop,
+            }
+            for pruefidentifikator, tab_stop in zip(splitted_text, current_tabstop_positions)
+        }
+
+        if not collector:
+            raise ValueError("collector should not be empty")
+
+        return collector
+
+    def ensure_single_space_between_words(self, text: str) -> str:
+        """Inserts a single space between words"""
+        return " ".join(text.split())
 
     def get_pruefidentifikatoren(self) -> List[str]:
         """
