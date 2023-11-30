@@ -158,8 +158,12 @@ def is_change_history_table(table: Table) -> bool:
     """
     Checks if the given table is change history table.
     """
-
-    return table.cell(row_idx=0, col_idx=0).text.strip() == "Änd-ID"
+    # in the document 'Entscheidungsbaum-DiagrammeundCodelisten-informatorischeLesefassung3.5_99991231_20240401.docx'
+    # I got the error "IndexError: list index out of range", I am not sure which table caused the error
+    try:
+        return table.cell(row_idx=0, col_idx=0).text.strip() == "Änd-ID"
+    except IndexError:
+        return False
 
 
 def get_change_history_table(document: Document) -> Optional[ChangeHistoryTable]:

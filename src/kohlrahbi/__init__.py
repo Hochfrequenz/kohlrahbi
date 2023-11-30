@@ -106,6 +106,28 @@ def load_all_known_pruefis_from_file(
     return pruefis
 
 
+def create_sheet_name(filename: str):
+    """
+    Creates a sheet name from the filename.
+
+    We need to shorten the sheet name because Excel only allows 31 characters for sheet names.
+    This function replaces some words with acronyms and removes some words.
+    """
+    sheet_name = filename.split("-informatorischeLesefassung")[0]
+
+    if "Entscheidungsbaum-Diagramm" in sheet_name:
+        sheet_name = sheet_name.replace("Entscheidungsbaum", "EBDs")
+    if "Artikelnummern" in sheet_name:
+        sheet_name = sheet_name.replace("Artikelnummern", "Artikelnr")
+    if "Codeliste" in sheet_name:
+        sheet_name = sheet_name.replace("Codeliste", "CL")
+    if len(sheet_name) > 31:
+        # Excel only allows 31 characters for sheet names
+        # but REQOTEQUOTESORDERSORDRSPORDCHGAHB is 33 characters long
+        sheet_name = sheet_name.replace("HG", "")
+    return sheet_name
+
+
 def scrape_change_histories(input_path: Path, output_path: Path):
     """
     starts the scraping process of the change histories
@@ -119,11 +141,14 @@ def scrape_change_histories(input_path: Path, output_path: Path):
     for ahb_file_path in ahb_file_paths:
         # extract the sheet name from the file name
         # COMDISAHB-informatorischeLesefassung1.0e_99991231_20240401.docx -> COMDISAHB
-        sheet_name = ahb_file_path.name.split("-")[0]
+        sheet_name = create_sheet_name(ahb_file_path.name)
 
         doc = docx.Document(ahb_file_path)  # Creating word reader object.
         logger.info("🤓 Start reading docx file '%s'", str(ahb_file_path))
         change_history_table: ChangeHistoryTable = get_change_history_table(document=doc)
+
+        if change_history_table is None:
+            continue
         change_history_table.sanitize_table()
 
         change_history_collection[sheet_name] = change_history_table.table
@@ -145,11 +170,6 @@ def scrape_change_histories(input_path: Path, output_path: Path):
     # https://github.com/PyCQA/pylint/issues/3060 pylint: disable=abstract-class-instantiated
     with pd.ExcelWriter(path_to_change_history_excel_file, engine="xlsxwriter") as writer:
         for sheet_name, df in change_history_collection.items():
-            if len(sheet_name) > 31:
-                # Excel only allows 31 characters for sheet names
-                # but REQOTEQUOTESORDERSORDRSPORDCHGAHB is 33 characters long
-                sheet_name = sheet_name.replace("HG", "")
-
             df.to_excel(writer, sheet_name=sheet_name)
 
             # Access the XlsxWriter workbook and worksheet objects

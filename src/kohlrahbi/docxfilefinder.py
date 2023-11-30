@@ -57,11 +57,21 @@ class DocxFileFinder:
         return [path for path in paths_to_docx_files if "AHB" in path.name]
 
     @staticmethod
-    def filter_mig_and_ahb_docx_files(paths_to_docx_files: list[Path]) -> list[Path]:
+    def filter_for_docx_files_with_change_history(paths_to_docx_files: list[Path]) -> list[Path]:
         """
-        This function filters the docx files which contain the string "AHB" and "MIG" in their file name.
+        This function filters the docx files which contain a change history.
+        At this time it seems that all docx files have a change history.
+        But this may change in the future, so search for some keywords in the file name.
         """
-        return [path for path in paths_to_docx_files if "AHB" in path.name or "MIG" in path.name]
+        return [
+            path
+            for path in paths_to_docx_files
+            if "AHB" in path.name
+            or "MIG" in path.name
+            or "AllgemeineFestlegungen" in path.name
+            or "Codeliste" in path.name
+            or "Entscheidungsbaum" in path.name
+        ]
 
     @staticmethod
     def group_files_by_name_prefix(paths_to_docx_files: list[Path]) -> dict[str, list[Path]]:
@@ -116,7 +126,7 @@ class DocxFileFinder:
         """
         Filter the list of MIG docx paths for the latest MIG docx files.
         """
-        self.paths_to_docx_files = self.filter_mig_and_ahb_docx_files(self.paths_to_docx_files)
+        self.paths_to_docx_files = self.filter_for_docx_files_with_change_history(self.paths_to_docx_files)
         grouped_files = self.group_files_by_name_prefix(self.paths_to_docx_files)
         self.paths_to_docx_files = self.filter_latest_version(grouped_files)
 
