@@ -104,7 +104,7 @@ class TableHeader:
         if not row_cell.paragraphs[-1].text.startswith("Prüfidentifikator"):
             raise ValueError("The last paragraph should start with 'Prüfidentifikator'")
 
-        collector = cls.initialize_collector(cls, paragraph=last(row_cell.paragraphs))
+        collector = cls.initialize_collector(paragraph=last(row_cell.paragraphs))
 
         section_type: HeaderSection
 
@@ -144,14 +144,11 @@ class TableHeader:
             PruefiMetaData(
                 pruefidentifikator=pruefi,
                 communication_direction=cls.ensure_single_space_between_words(
-                    TableHeader,
                     #  The cast function is a no-op at runtime and doesn't perform any actual type conversion;
                     #  it's only used for type checking purposes.
                     cast(str, meta_data[HeaderSection.KOMMUNIKATION_VON.value]),
                 ),
-                name=cls.ensure_single_space_between_words(
-                    TableHeader, cast(str, meta_data[HeaderSection.BESCHREIBUNG.value])
-                ),
+                name=cls.ensure_single_space_between_words(cast(str, meta_data[HeaderSection.BESCHREIBUNG.value])),
             )
             for pruefi, meta_data in collector.items()
             if isinstance(meta_data[HeaderSection.KOMMUNIKATION_VON.value], str)
@@ -159,7 +156,8 @@ class TableHeader:
 
         return cls(pruefi_meta_data=pruefi_meta_data)
 
-    def initialize_collector(self, paragraph) -> Dict[str, Dict[str, str | int]]:
+    @staticmethod
+    def initialize_collector(paragraph) -> Dict[str, Dict[str, str | int]]:
         """Initialize the collector"""
         current_tabstop_positions = get_tabstop_positions(paragraph=paragraph)
         splitted_text = paragraph.text.split("\t")
@@ -179,7 +177,8 @@ class TableHeader:
 
         return collector
 
-    def ensure_single_space_between_words(self, text: str) -> str:
+    @staticmethod
+    def ensure_single_space_between_words(text: str) -> str:
         """Inserts a single space between words"""
         return " ".join(text.split())
 
