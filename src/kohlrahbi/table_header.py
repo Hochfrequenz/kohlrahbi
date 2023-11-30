@@ -144,12 +144,9 @@ class TableHeader:
             PruefiMetaData(
                 pruefidentifikator=pruefi,
                 communication_direction=cls.ensure_single_space_between_words(
-                    #  The cast function is a no-op at runtime and doesn't perform any actual type conversion;
-                    #  it's only used for type checking purposes.
-                    # cast(str, meta_data[HeaderSection.KOMMUNIKATION_VON.value]),
-                    HeaderSection.KOMMUNIKATION_VON.value,
+                    meta_data[HeaderSection.KOMMUNIKATION_VON.value] or ""
                 ),
-                name=cls.ensure_single_space_between_words(cast(str, meta_data[HeaderSection.BESCHREIBUNG.value])),
+                name=cls.ensure_single_space_between_words(meta_data[HeaderSection.BESCHREIBUNG.value] or ""),
             )
             for pruefi, meta_data in collector.items()
             if isinstance(meta_data[HeaderSection.KOMMUNIKATION_VON.value], str)
