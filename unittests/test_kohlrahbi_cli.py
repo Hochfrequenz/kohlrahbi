@@ -10,6 +10,10 @@ runner: CliRunner = CliRunner()
 
 
 class TestCli:
+    """
+    This class contains the unit tests for the CLI tool.
+    """
+
     @pytest.mark.parametrize(
         "pruefis, input_folder_name, output_folder_name, expected_response",
         [
@@ -39,6 +43,9 @@ class TestCli:
     def test_kohlrahbi_cli_with_invalid_arguments(
         self, datafiles, pruefis, input_folder_name: str, output_folder_name: str, expected_response
     ):
+        """
+        This test runs the CLI tool with invalid arguments and checks if the output is as expected.
+        """
         input_path: Path = Path(datafiles) / Path(input_folder_name)
         output_path: Path = Path(datafiles) / Path(output_folder_name)
 
