@@ -6,7 +6,7 @@ import pandas as pd
 from docx.table import _Cell  # type:ignore[import]
 from maus.reader.flat_ahb_reader import FlatAhbCsvReader
 
-from kohlrahbi.seed import get_tabstop_positions
+from kohlrahbi.table_header import get_tabstop_positions
 
 INDEX_OF_CODES_AND_QUALIFIER_COLUMN = 3
 
