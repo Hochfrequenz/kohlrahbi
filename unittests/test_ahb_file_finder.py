@@ -1,4 +1,3 @@
-from itertools import groupby
 from pathlib import Path
 
 import pytest  # type:ignore[import]
@@ -27,7 +26,10 @@ class TestAhbFileFinder:
             ),
         ],
     )
-    def test_get_docx_files_which_may_contain_searched_pruefi(self, searched_pruefi, expected_docx_count):
+    def test_get_docx_files_which_may_contain_searched_pruefi(self, searched_pruefi: str, expected_docx_count: int):
+        """
+        Test if the get_docx_files_which_may_contain_searched_pruefi method returns the correct number of docx files.
+        """
         path_to_ahb_documents: Path = Path.cwd() / Path("unittests/docx_files")
 
         ahb_file_finder = AhbFileFinder.from_input_path(input_path=path_to_ahb_documents)
