@@ -106,7 +106,7 @@ def load_all_known_pruefis_from_file(
     return pruefis
 
 
-def create_sheet_name(filename: str):
+def create_sheet_name(filename: str)->str:
     """
     Creates a sheet name from the filename.
 
