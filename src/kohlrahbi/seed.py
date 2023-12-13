@@ -4,26 +4,9 @@ This module provides a class to collect information which of need for all parsin
 
 from attrs import define
 from docx.table import Table  # type:ignore[import]
-from docx.text.paragraph import Paragraph  # type:ignore[import]
 
 from kohlrahbi.enums import RowType
-
-
-def get_tabstop_positions(paragraph: Paragraph) -> list[int]:
-    """Find all tabstop positions in a given paragraph.
-
-    Mainly the tabstop positions of cells from the middle column are determined
-
-    Args:
-        paragraph (Paragraph):
-
-    Returns:
-        List[int]: All tabstop positions in the given paragraph
-    """
-    tabstop_positions: list[int] = []
-    for tabstop in paragraph.paragraph_format.tab_stops:
-        tabstop_positions.append(tabstop.position)
-    return tabstop_positions
+from kohlrahbi.table_header import PruefiMetaData, TableHeader, get_tabstop_positions
 
 
 # pylint: disable=too-few-public-methods
@@ -39,6 +22,7 @@ class Seed:
     middle_cell_left_indent_position: int = 0
     tabstop_positions: list[int] = []
     last_two_row_types: list[RowType] = []
+    metadata: list[PruefiMetaData] = []
 
     # why this classmethod?
     # to decouple the data structure of Elixir from the input data
@@ -50,11 +34,16 @@ class Seed:
         Args:
             item (Union[Paragraph, Table]): A paragraph or table from the docx
         """
-        header_cells = [cell.text for cell in docx_table.row_cells(0)]
-        look_up_term = "Prüfidentifikator"
-        cutter_index = header_cells[-1].find(look_up_term) + 1
-        # +1 cause of \t after Prüfidentifikator
-        pruefidentifikatoren = header_cells[-1][cutter_index + len(look_up_term) :].split("\t")
+
+        # the header cell with all pruefi information is the last cell in the first row
+        # the first row contains the 'EDIFACT Struktur' column, which is not needed
+        # often there is a second row with the pruefidentifikatoren information but it is not reliable for all tables
+        # therefore we use the last cell in the first row which seems to be the most reliable
+        header_cell_with_all_pruefi_information = docx_table.row_cells(0)[-1]
+
+        table_header = TableHeader.from_header_cell(row_cell=header_cell_with_all_pruefi_information)
+
+        pruefidentifikatoren = table_header.get_pruefidentifikatoren()
 
         # edifact struktur cell
         edifact_struktur_indicator_paragraph = docx_table.cell(row_idx=4, col_idx=0).paragraphs[0]
@@ -64,6 +53,9 @@ class Seed:
         middle_cell_indicator_paragraph = docx_table.cell(row_idx=4, col_idx=1).paragraphs[0]
         middle_cell_left_indent_position = middle_cell_indicator_paragraph.paragraph_format.left_indent
         tabstop_positions = get_tabstop_positions(middle_cell_indicator_paragraph)
+
+        # metadata
+        metadata = table_header.pruefi_meta_data
 
         base_column_names: list = [
             "Segment Gruppe",
@@ -84,4 +76,5 @@ class Seed:
             middle_cell_left_indent_position=middle_cell_left_indent_position,
             tabstop_positions=tabstop_positions,
             last_two_row_types=last_two_row_types,
+            metadata=metadata,
         )

@@ -11,6 +11,7 @@ from more_itertools import peekable
 
 from kohlrahbi.ahb.ahbsubtable import AhbSubTable
 from kohlrahbi.logger import logger
+from kohlrahbi.table_header import PruefiMetaData
 
 _column_letter_width_mapping: dict[str, Union[float, int]] = {
     "A": 3.5,
@@ -31,6 +32,7 @@ class AhbTable:
     """
 
     table: pd.DataFrame
+    metadata: list[PruefiMetaData] = []
 
     def fill_segment_gruppe_segment_dataelement(self) -> None:
         """
@@ -75,7 +77,7 @@ class AhbTable:
         """
         Create an AHB table from an AHB sub table
         """
-        return cls(table=ahb_sub_table.table)
+        return cls(table=ahb_sub_table.table, metadata=ahb_sub_table.table_meta_data.metadata)
 
     def append_ahb_sub_table(self, ahb_sub_table: AhbSubTable) -> None:
         """
