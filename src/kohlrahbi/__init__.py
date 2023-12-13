@@ -8,7 +8,7 @@ import re
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 
 import click
 import docx  # type:ignore[import]
@@ -189,7 +189,9 @@ def scrape_change_histories(input_path: Path, output_path: Path) -> None:
                 worksheet.set_column(col_num, col_num, width, wrap_format)
 
 
-def scrape_pruefis(pruefis: list[str], input_path: Path, output_path: Path, file_type: list[str]) -> None:
+def scrape_pruefis(
+    pruefis: list[str], input_path: Path, output_path: Path, file_type: Literal["flatahb", "csv", "xlsx", "conditions"]
+) -> None:
     """
     starts the scraping process for provided pruefis
     """
