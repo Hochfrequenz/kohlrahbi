@@ -169,6 +169,7 @@ def is_change_history_table(table: Table) -> bool:
 def get_change_history_table(document: Document) -> Optional[ChangeHistoryTable]:
     """
     Reads a docx file and extracts the change history.
+    Returns None if no such table was found.
     """
 
     # Iterate through the whole word document
