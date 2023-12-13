@@ -128,7 +128,7 @@ def create_sheet_name(filename: str):
     return sheet_name
 
 
-def scrape_change_histories(input_path: Path, output_path: Path):
+def scrape_change_histories(input_path: Path, output_path: Path)->None:
     """
     starts the scraping process of the change histories
     """
@@ -189,7 +189,7 @@ def scrape_change_histories(input_path: Path, output_path: Path):
                 worksheet.set_column(col_num, col_num, width, wrap_format)
 
 
-def scrape_pruefis(pruefis: list[str], input_path: Path, output_path: Path, file_type: list[str]):
+def scrape_pruefis(pruefis: list[str], input_path: Path, output_path: Path, file_type: list[str])->None:
     """
     starts the scraping process for provided pruefis
     """
@@ -330,7 +330,7 @@ def scrape_pruefis(pruefis: list[str], input_path: Path, output_path: Path, file
     help="Confirm all prompts automatically.",
 )
 # pylint: disable=too-many-branches, too-many-statements, too-many-locals
-def main(flavour: str, pruefis: list[str], input_path: Path, output_path: Path, file_type: list[str], assume_yes: bool):
+def main(flavour: str, pruefis: list[str], input_path: Path, output_path: Path, file_type: list[str], assume_yes: bool)->None:
     """
     A program to get a machine readable version of the AHBs docx files published by edi@energy.
     """
