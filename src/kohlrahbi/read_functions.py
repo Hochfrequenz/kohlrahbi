@@ -185,3 +185,4 @@ def get_change_history_table(document: Document) -> Optional[ChangeHistoryTable]
         if isinstance(item, Table) and is_change_history_table(table=item):
             change_history_table = ChangeHistoryTable.from_docx_change_history_table(docx_table=item)
             return change_history_table
+        return None
