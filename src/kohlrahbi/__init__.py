@@ -329,7 +329,7 @@ def scrape_pruefis(pruefis: list[str], input_path: Path, output_path: Path, file
     is_flag=True,
     help="Confirm all prompts automatically.",
 )
-# pylint: disable=too-many-branches, too-many-statements, too-many-locals
+# pylint: disable=too-many-arguments
 def main(
     flavour: str, pruefis: list[str], input_path: Path, output_path: Path, file_type: list[str], assume_yes: bool
 ) -> None:
