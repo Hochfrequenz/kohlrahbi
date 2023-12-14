@@ -154,9 +154,6 @@ def save_change_histories_to_excel(change_history_collection: dict[str, pd.DataF
     """
     Save the collected change histories to an Excel file.
     """
-    current_timestamp = datetime.utcnow().strftime("%Y-%m-%d")
-    path_to_excel_file = output_path / f"{current_timestamp}_change_histories.xlsx"
-
     # add timestamp to file name
     # there are two timestamps: one with datetime and another one with just date information.
     # It is handy during debugging to save different versions of the output files with the datetime information.
