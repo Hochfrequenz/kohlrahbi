@@ -17,7 +17,7 @@ class ChangeHistoryTable:
     table: pd.DataFrame
 
     @classmethod
-    def from_docx_change_history_table(cls, docx_table: Table) -> "ChangeHistorySubTable":
+    def from_docx_change_history_table(cls, docx_table: Table) -> "ChangeHistoryTable":
         """
         Create a ChangeHistorySubTable object from a change history table.
         """
