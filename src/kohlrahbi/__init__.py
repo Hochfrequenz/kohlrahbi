@@ -128,30 +128,34 @@ def create_sheet_name(filename: str) -> str:
     return sheet_name
 
 
-def scrape_change_histories(input_path: Path, output_path: Path) -> None:
+def find_docx_files(input_path: Path) -> list[Path]:
     """
-    starts the scraping process of the change histories
+    Find all .docx files containing change histories.
     """
-    logger.info("start looking for change histories")
     docx_file_finder = DocxFileFinder.from_input_path(input_path=input_path)
-    ahb_file_paths: list[Path] = docx_file_finder.get_all_docx_files_which_contain_change_histories()
+    return docx_file_finder.get_all_docx_files_which_contain_change_histories()
 
-    change_history_collection: dict[str, pd.DataFrame] = {}
 
-    for ahb_file_path in ahb_file_paths:
-        # extract the sheet name from the file name
-        # COMDISAHB-informatorischeLesefassung1.0e_99991231_20240401.docx -> COMDISAHB
-        sheet_name = create_sheet_name(ahb_file_path.name)
+def process_docx_file(file_path: Path) -> pd.DataFrame:
+    """
+    Read and process change history from a .docx file.
+    """
+    doc = docx.Document(file_path)
+    logger.info("🤓 Start reading docx file '%s'", str(file_path))
+    change_history_table = get_change_history_table(document=doc)
 
-        doc = docx.Document(ahb_file_path)  # Creating word reader object.
-        logger.info("🤓 Start reading docx file '%s'", str(ahb_file_path))
-        change_history_table: ChangeHistoryTable = get_change_history_table(document=doc)
-
-        if change_history_table is None:
-            continue
+    if change_history_table is not None:
         change_history_table.sanitize_table()
+        return change_history_table.table
+    return None
 
-        change_history_collection[sheet_name] = change_history_table.table
+
+def save_change_histories_to_excel(change_history_collection: dict[str, pd.DataFrame], output_path: Path) -> None:
+    """
+    Save the collected change histories to an Excel file.
+    """
+    current_timestamp = datetime.utcnow().strftime("%Y-%m-%d")
+    path_to_excel_file = output_path / f"{current_timestamp}_change_histories.xlsx"
 
     # add timestamp to file name
     # there are two timestamps: one with datetime and another one with just date information.
@@ -176,17 +180,33 @@ def scrape_change_histories(input_path: Path, output_path: Path) -> None:
             workbook = writer.book
             worksheet = writer.sheets[sheet_name]
 
-            # Create a text wrap format
+            # Create a text wrap format, this is needed to avoid the text being cut off in the cells
             wrap_format = workbook.add_format({"text_wrap": True})
 
             # Get the dimensions of the DataFrame
-            (max_row, max_col) = df.shape
+            (_, max_col) = df.shape
 
             assert max_col + 1 == len(column_widths)  # +1 cause of index
 
             # Apply text wrap format to each cell
             for col_num, width in enumerate(column_widths):
                 worksheet.set_column(col_num, col_num, width, wrap_format)
+
+
+def scrape_change_histories(input_path: Path, output_path: Path) -> None:
+    """
+    starts the scraping process of the change histories
+    """
+    logger.info("👀 Start looking for change histories")
+    ahb_file_paths = find_docx_files(input_path)
+
+    change_history_collection = {}
+    for file_path in ahb_file_paths:
+        df = process_docx_file(file_path)
+        if df is not None:
+            change_history_collection[create_sheet_name(file_path.name)] = df
+
+    save_change_histories_to_excel(change_history_collection, output_path)
 
 
 def scrape_pruefis(
