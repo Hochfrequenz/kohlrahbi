@@ -206,104 +206,206 @@ def scrape_change_histories(input_path: Path, output_path: Path) -> None:
     save_change_histories_to_excel(change_history_collection, output_path)
 
 
+def load_pruefis_if_empty(pruefis: list[str]) -> list[str]:
+    """
+    If the user did not provide any pruefis we load all known pruefis from the toml file.
+    """
+    if not pruefis:
+        click.secho("☝️ No pruefis were given. I will parse all known pruefis.", fg="yellow")
+        return load_all_known_pruefis_from_file()
+    return pruefis
+
+
+def validate_file_type(file_type: str):
+    """
+    Validate the file type parameter.
+    """
+    if not file_type:
+        message = "ℹ You did not provide any value for the parameter --file-type. No files will be created."
+        click.secho(message, fg="yellow")
+        logger.warning(message)
+
+
+def validate_pruefis(pruefis: list[str]) -> list[str]:
+    """
+    Validate the pruefis parameter.
+    """
+    valid_pruefis = get_valid_pruefis(pruefis)
+    if not valid_pruefis:
+        click.secho("⚠️ There are no valid pruefidentifkatoren.", fg="red")
+        raise click.Abort()
+    return valid_pruefis
+
+
+def process_pruefi(
+    pruefi: str,
+    input_path: Path,
+    output_path: Path,
+    file_type: str,
+    path_to_document_mapping: dict,
+    collected_conditions: dict,
+):
+    """
+    Process one pruefi.
+    """
+    ahb_file_finder = DocxFileFinder.from_input_path(input_path=input_path)
+    ahb_file_paths = ahb_file_finder.get_docx_files_which_may_contain_searched_pruefi(pruefi)
+
+    if not ahb_file_paths:
+        logger.warning("No docx file was found for pruefi '%s'", pruefi)
+        return
+
+    for ahb_file_path in ahb_file_paths:
+        doc = get_or_cache_document(ahb_file_path, path_to_document_mapping)
+        if not doc:
+            continue
+
+        ahb_table = get_ahb_table(document=doc, pruefi=pruefi)
+        if not ahb_table:
+            continue
+
+        process_ahb_table(ahb_table, pruefi, output_path, file_type, collected_conditions)
+
+
+def get_or_cache_document(ahb_file_path: Path, path_to_document_mapping: dict) -> docx.Document:
+    """
+    Get the document from the cache or read it from the file system.
+    """
+    if ahb_file_path not in path_to_document_mapping:
+        try:
+            doc = docx.Document(ahb_file_path)
+            path_to_document_mapping[ahb_file_path] = doc
+            logger.debug("Saved %s document in cache", ahb_file_path)
+        except IOError as ioe:
+            logger.exception("There was an error opening the file '%s'", ahb_file_path, exc_info=True)
+            raise click.Abort() from ioe
+    return path_to_document_mapping[ahb_file_path]
+
+
+def process_ahb_table(ahb_table: AhbTable, pruefi: str, output_path: Path, file_type: str, collected_conditions: dict):
+    """
+    Process the ahb table.
+    """
+    unfolded_ahb = UnfoldedAhb.from_ahb_table(ahb_table=ahb_table, pruefi=pruefi)
+
+    if "xlsx" in file_type:
+        unfolded_ahb.dump_xlsx(output_path)
+    if "flatahb" in file_type:
+        unfolded_ahb.dump_flatahb_json(output_path)
+    if "csv" in file_type:
+        unfolded_ahb.dump_csv(output_path)
+    if "conditions" in file_type:
+        unfolded_ahb.collect_condition(collected_conditions)
+
+
 def scrape_pruefis(
     pruefis: list[str], input_path: Path, output_path: Path, file_type: Literal["flatahb", "csv", "xlsx", "conditions"]
 ) -> None:
     """
     starts the scraping process for provided pruefis
     """
+    pruefis = load_pruefis_if_empty(pruefis)
+    validate_file_type(file_type)
 
-    if not any(pruefis):
-        click.secho("☝️ No pruefis were given. I will parse all known pruefis.", fg="yellow")
-        pruefis = load_all_known_pruefis_from_file()
-    if not any(file_type):
-        message = "ℹ You did not provide any value for the parameter --file-type. No files will be created."
-        click.secho(message, fg="yellow")
-        logger.warning(message)
-
-    valid_pruefis: list[str] = get_valid_pruefis(list_of_pruefis=pruefis)
-    if not any(valid_pruefis):
-        click.secho("⚠️ There are no valid pruefidentifkatoren.", fg="red")
-        raise click.Abort()
-
-    if len(valid_pruefis) != len(pruefis):
-        click.secho("☝️ Not all given pruefidentifikatoren are valid.", fg="yellow")
-        click.secho(f"I will continue with the following valid pruefis: {valid_pruefis}.", fg="yellow")
-    path_to_document_mapping: dict[Path, docx.Document] = {}
-
-    if "conditions" in file_type:
-        # mapping of EdifactFormat to ConditionKeyConditionTextMapping for all given prufis
-        collected_conditions: dict[EdifactFormat, dict[str, str]] = {}
+    valid_pruefis = validate_pruefis(pruefis)
+    path_to_document_mapping = {}
+    collected_conditions = {} if "conditions" in file_type else None
 
     for pruefi in valid_pruefis:
         try:
             logger.info("start looking for pruefi '%s'", pruefi)
-            ahb_file_finder = DocxFileFinder.from_input_path(input_path=input_path)
-            ahb_file_paths: list[Path] = ahb_file_finder.get_docx_files_which_may_contain_searched_pruefi(
-                searched_pruefi=pruefi
-            )
+            process_pruefi(pruefi, input_path, output_path, file_type, path_to_document_mapping, collected_conditions)
+        except Exception as e:
+            logger.exception("Error processing pruefi '%s': %s", pruefi, str(e))
 
-            if not any(ahb_file_paths):
-                logger.warning("No docx file was found for pruefi '%s'", pruefi)
-                continue
+    if collected_conditions is not None:
+        dump_conditions_json(output_path, collected_conditions)
 
-            for ahb_file_path in ahb_file_paths:
-                if not (doc := path_to_document_mapping.get(ahb_file_path, None)):
-                    try:
-                        doc = docx.Document(ahb_file_path)  # Creating word reader object.
-                        path_to_document_mapping[ahb_file_path] = doc
-                        logger.debug("Saved %s document in cache", ahb_file_path)  # to not re-read it every time
-                    except IOError as ioe:
-                        logger.exception("There was an error opening the file '%s'", ahb_file_path, exc_info=True)
-                        raise click.Abort() from ioe
 
-                logger.info("🤓 Start reading docx file '%s'", str(ahb_file_path))
+# def scrape_pruefis(
+#     pruefis: list[str], input_path: Path, output_path: Path, file_type: Literal["flatahb", "csv", "xlsx", "conditions"]
+# ) -> None:
+#     """
+#     starts the scraping process for provided pruefis
+#     """
 
-                ahb_table: AhbTable | None = get_ahb_table(
-                    document=doc,
-                    pruefi=pruefi,
-                )
+#     validate_input(pruefis, file_type)
 
-                if ahb_table is None:
-                    continue
+#     path_to_document_mapping: dict[Path, docx.Document] = {}
 
-                if isinstance(ahb_table, AhbTable):
-                    unfolded_ahb = UnfoldedAhb.from_ahb_table(ahb_table=ahb_table, pruefi=pruefi)
+#     if "conditions" in file_type:
+#         # mapping of EdifactFormat to ConditionKeyConditionTextMapping for all given prufis
+#         collected_conditions: dict[EdifactFormat, dict[str, str]] = {}
 
-                    if "xlsx" in file_type:
-                        logger.info("💾 Saving xlsx file %s", pruefi)
-                        unfolded_ahb.dump_xlsx(path_to_output_directory=output_path)
+#     for pruefi in valid_pruefis:
+#         try:
+#             logger.info("start looking for pruefi '%s'", pruefi)
+#             ahb_file_finder = DocxFileFinder.from_input_path(input_path=input_path)
+#             ahb_file_paths: list[Path] = ahb_file_finder.get_docx_files_which_may_contain_searched_pruefi(
+#                 searched_pruefi=pruefi
+#             )
 
-                    if "flatahb" in file_type:
-                        logger.info("💾 Saving flatahb file %s", pruefi)
-                        unfolded_ahb.dump_flatahb_json(output_directory_path=output_path)
+#             if not any(ahb_file_paths):
+#                 logger.warning("No docx file was found for pruefi '%s'", pruefi)
+#                 continue
 
-                    if "csv" in file_type:
-                        logger.info("💾 Saving csv file %s", pruefi)
-                        unfolded_ahb.dump_csv(path_to_output_directory=output_path)
+#             for ahb_file_path in ahb_file_paths:
+#                 if not (doc := path_to_document_mapping.get(ahb_file_path, None)):
+#                     try:
+#                         doc = docx.Document(ahb_file_path)  # Creating word reader object.
+#                         path_to_document_mapping[ahb_file_path] = doc
+#                         logger.debug("Saved %s document in cache", ahb_file_path)  # to not re-read it every time
+#                     except IOError as ioe:
+#                         logger.exception("There was an error opening the file '%s'", ahb_file_path, exc_info=True)
+#                         raise click.Abort() from ioe
 
-                    if "conditions" in file_type:
-                        logger.info("🧺 Collecting conditions file %s", pruefi)
-                        unfolded_ahb.collect_condition(already_known_conditions=collected_conditions)
+#                 logger.info("🤓 Start reading docx file '%s'", str(ahb_file_path))
 
-                    break
-        except Exception as general_error:  # pylint:disable=broad-except
-            logger.exception(
-                "There was an uncaught error while processing the pruefi '%s': %s",
-                pruefi,
-                str(general_error),
-                exc_info=True,
-            )
-            continue
-        del ahb_table
-        del ahb_file_finder
-        if "unfolded_ahb" in locals():
-            del unfolded_ahb
-        gc.collect()
+#                 ahb_table: AhbTable | None = get_ahb_table(
+#                     document=doc,
+#                     pruefi=pruefi,
+#                 )
 
-    if "conditions" in file_type:
-        # store conditions in conditions.json files
-        dump_conditions_json(output_directory_path=output_path, already_known_conditions=collected_conditions)
+#                 if ahb_table is None:
+#                     continue
+
+#                 if isinstance(ahb_table, AhbTable):
+#                     unfolded_ahb = UnfoldedAhb.from_ahb_table(ahb_table=ahb_table, pruefi=pruefi)
+
+#                     if "xlsx" in file_type:
+#                         logger.info("💾 Saving xlsx file %s", pruefi)
+#                         unfolded_ahb.dump_xlsx(path_to_output_directory=output_path)
+
+#                     if "flatahb" in file_type:
+#                         logger.info("💾 Saving flatahb file %s", pruefi)
+#                         unfolded_ahb.dump_flatahb_json(output_directory_path=output_path)
+
+#                     if "csv" in file_type:
+#                         logger.info("💾 Saving csv file %s", pruefi)
+#                         unfolded_ahb.dump_csv(path_to_output_directory=output_path)
+
+#                     if "conditions" in file_type:
+#                         logger.info("🧺 Collecting conditions file %s", pruefi)
+#                         unfolded_ahb.collect_condition(already_known_conditions=collected_conditions)
+
+#                     break
+#         except Exception as general_error:  # pylint:disable=broad-except
+#             logger.exception(
+#                 "There was an uncaught error while processing the pruefi '%s': %s",
+#                 pruefi,
+#                 str(general_error),
+#                 exc_info=True,
+#             )
+#             continue
+#         del ahb_table
+#         del ahb_file_finder
+#         if "unfolded_ahb" in locals():
+#             del unfolded_ahb
+#         gc.collect()
+
+#     if "conditions" in file_type:
+#         # store conditions in conditions.json files
+#         dump_conditions_json(output_directory_path=output_path, already_known_conditions=collected_conditions)
 
 
 @click.command()
