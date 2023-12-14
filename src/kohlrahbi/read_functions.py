@@ -181,8 +181,9 @@ def get_change_history_table(document: Document) -> Optional[ChangeHistoryTable]
             # checking the style is quite expensive for the CPU because it includes some xpath searches;
             # we should only check the style if the other (easier/cheap) checks returned True
             logger.info("🔚 We reached the change history section of the document.")
+            return None
 
         if isinstance(item, Table) and is_change_history_table(table=item):
             change_history_table = ChangeHistoryTable.from_docx_change_history_table(docx_table=item)
             return change_history_table
-        return None
+    return None
