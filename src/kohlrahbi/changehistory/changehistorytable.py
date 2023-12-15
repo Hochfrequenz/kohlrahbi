@@ -66,7 +66,8 @@ class ChangeHistoryTable:
             if is_the_first_column_empty(self.table.iloc[i]):
                 # Merge with the upper row by concatenating the non-empty values
                 for col in range(len(self.table.columns)):
-                    if not is_empty(self.table.iloc[i, col]):
+                    cell_entry = self.table.iloc[i, col]
+                    if isinstance(cell_entry, str) and not is_empty(cell_entry):
                         self.table.iloc[i - 1, col] = (
                             str(self.table.iloc[i - 1, col]) + " " + str(self.table.iloc[i, col]).strip()
                         )
@@ -76,4 +77,4 @@ class ChangeHistoryTable:
         # Reset index after dropping rows
         self.table.reset_index(drop=True, inplace=True)
 
-        return self.table
+        return None

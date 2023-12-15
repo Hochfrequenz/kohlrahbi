@@ -136,7 +136,7 @@ def find_docx_files(input_path: Path) -> list[Path]:
     return docx_file_finder.get_all_docx_files_which_contain_change_histories()
 
 
-def process_docx_file(file_path: Path) -> pd.DataFrame:
+def process_docx_file(file_path: Path) -> Optional[pd.DataFrame]:
     """
     Read and process change history from a .docx file.
     """
@@ -237,13 +237,14 @@ def validate_pruefis(pruefis: list[str]) -> list[str]:
     return valid_pruefis
 
 
+# pylint: disable=too-many-arguments
 def process_pruefi(
     pruefi: str,
     input_path: Path,
     output_path: Path,
     file_type: str,
     path_to_document_mapping: dict,
-    collected_conditions: dict,
+    collected_conditions: Optional[dict[EdifactFormat, dict[str, str]]],
 ):
     """
     Process one pruefi.
@@ -282,7 +283,13 @@ def get_or_cache_document(ahb_file_path: Path, path_to_document_mapping: dict) -
     return path_to_document_mapping[ahb_file_path]
 
 
-def process_ahb_table(ahb_table: AhbTable, pruefi: str, output_path: Path, file_type: str, collected_conditions: dict):
+def process_ahb_table(
+    ahb_table: AhbTable,
+    pruefi: str,
+    output_path: Path,
+    file_type: str,
+    collected_conditions: Optional[dict[EdifactFormat, dict[str, str]]],
+):
     """
     Process the ahb table.
     """
@@ -308,14 +315,15 @@ def scrape_pruefis(
     validate_file_type(file_type)
 
     valid_pruefis = validate_pruefis(pruefis)
-    path_to_document_mapping = {}
-    collected_conditions = {} if "conditions" in file_type else None
+    path_to_document_mapping: dict[Path, docx.Document] = {}
+    collected_conditions: Optional[dict[EdifactFormat, dict[str, str]]] = {} if "conditions" in file_type else None
 
     for pruefi in valid_pruefis:
         try:
             logger.info("start looking for pruefi '%s'", pruefi)
             process_pruefi(pruefi, input_path, output_path, file_type, path_to_document_mapping, collected_conditions)
-        except Exception as e:
+        # sorry for the pokemon catch
+        except Exception as e:  # pylint: disable=broad-except
             logger.exception("Error processing pruefi '%s': %s", pruefi, str(e))
 
     if collected_conditions is not None:
@@ -366,7 +374,12 @@ def scrape_pruefis(
 )
 # pylint: disable=too-many-arguments
 def main(
-    flavour: str, pruefis: list[str], input_path: Path, output_path: Path, file_type: list[str], assume_yes: bool
+    flavour: str,
+    pruefis: list[str],
+    input_path: Path,
+    output_path: Path,
+    file_type: Literal["flatahb", "csv", "xlsx", "conditions"],
+    assume_yes: bool,
 ) -> None:
     """
     A program to get a machine readable version of the AHBs docx files published by edi@energy.
