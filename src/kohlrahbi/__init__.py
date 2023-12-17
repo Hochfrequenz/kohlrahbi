@@ -6,8 +6,9 @@ import gc
 import json
 import re
 import sys
+from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 
 import click
 import docx  # type:ignore[import]
@@ -16,9 +17,10 @@ import tomlkit
 from maus.edifact import EdifactFormat
 
 from kohlrahbi.ahb.ahbtable import AhbTable
-from kohlrahbi.ahbfilefinder import AhbFileFinder
+from kohlrahbi.changehistory.changehistorytable import ChangeHistoryTable
+from kohlrahbi.docxfilefinder import DocxFileFinder
 from kohlrahbi.logger import logger
-from kohlrahbi.read_functions import get_ahb_table
+from kohlrahbi.read_functions import get_ahb_table, get_change_history_table
 from kohlrahbi.unfoldedahb.unfoldedahbtable import UnfoldedAhb
 
 _pruefi_pattern = re.compile(r"^[1-9]\d{4}$")
@@ -104,7 +106,238 @@ def load_all_known_pruefis_from_file(
     return pruefis
 
 
+def create_sheet_name(filename: str) -> str:
+    """
+    Creates a sheet name from the filename.
+
+    We need to shorten the sheet name because Excel only allows 31 characters for sheet names.
+    This function replaces some words with acronyms and removes some words.
+    """
+    sheet_name = filename.split("-informatorischeLesefassung")[0]
+
+    if "Entscheidungsbaum-Diagramm" in sheet_name:
+        sheet_name = sheet_name.replace("Entscheidungsbaum", "EBDs")
+    if "Artikelnummern" in sheet_name:
+        sheet_name = sheet_name.replace("Artikelnummern", "Artikelnr")
+    if "Codeliste" in sheet_name:
+        sheet_name = sheet_name.replace("Codeliste", "CL")
+    if len(sheet_name) > 31:
+        # Excel only allows 31 characters for sheet names
+        # but REQOTEQUOTESORDERSORDRSPORDCHGAHB is 33 characters long
+        sheet_name = sheet_name.replace("HG", "")
+    return sheet_name
+
+
+def find_docx_files(input_path: Path) -> list[Path]:
+    """
+    Find all .docx files containing change histories.
+    """
+    docx_file_finder = DocxFileFinder.from_input_path(input_path=input_path)
+    return docx_file_finder.get_all_docx_files_which_contain_change_histories()
+
+
+def process_docx_file(file_path: Path) -> Optional[pd.DataFrame]:
+    """
+    Read and process change history from a .docx file.
+    """
+    doc = docx.Document(file_path)
+    logger.info("🤓 Start reading docx file '%s'", str(file_path))
+    change_history_table = get_change_history_table(document=doc)
+
+    if change_history_table is not None:
+        change_history_table.sanitize_table()
+        return change_history_table.table
+    return None
+
+
+def save_change_histories_to_excel(change_history_collection: dict[str, pd.DataFrame], output_path: Path) -> None:
+    """
+    Save the collected change histories to an Excel file.
+    """
+    # add timestamp to file name
+    # there are two timestamps: one with datetime and another one with just date information.
+    # It is handy during debugging to save different versions of the output files with the datetime information.
+    # But in production we only want to save one file per day.
+    # current_timestamp = datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
+    current_timestamp = datetime.utcnow().strftime("%Y-%m-%d")
+    path_to_change_history_excel_file = output_path / f"{current_timestamp}_change_histories.xlsx"
+
+    logger.info("💾 Saving change histories xlsx file %s", path_to_change_history_excel_file)
+
+    # Define column widths (example: 20, 15, 30, etc.)
+    column_widths = [6, 6, 46, 52, 52, 38, 15]  # Replace with your desired widths
+
+    # Create a Pandas Excel writer using XlsxWriter as the engine
+    # https://github.com/PyCQA/pylint/issues/3060 pylint: disable=abstract-class-instantiated
+    with pd.ExcelWriter(path_to_change_history_excel_file, engine="xlsxwriter") as writer:
+        for sheet_name, df in change_history_collection.items():
+            df.to_excel(writer, sheet_name=sheet_name)
+
+            # Access the XlsxWriter workbook and worksheet objects
+            workbook = writer.book
+            worksheet = writer.sheets[sheet_name]
+
+            # Create a text wrap format, this is needed to avoid the text being cut off in the cells
+            wrap_format = workbook.add_format({"text_wrap": True})
+
+            # Get the dimensions of the DataFrame
+            (_, max_col) = df.shape
+
+            assert max_col + 1 == len(column_widths)  # +1 cause of index
+
+            # Apply text wrap format to each cell
+            for col_num, width in enumerate(column_widths):
+                worksheet.set_column(col_num, col_num, width, wrap_format)
+
+
+def scrape_change_histories(input_path: Path, output_path: Path) -> None:
+    """
+    starts the scraping process of the change histories
+    """
+    logger.info("👀 Start looking for change histories")
+    ahb_file_paths = find_docx_files(input_path)
+
+    change_history_collection = {}
+    for file_path in ahb_file_paths:
+        df = process_docx_file(file_path)
+        if df is not None:
+            change_history_collection[create_sheet_name(file_path.name)] = df
+
+    save_change_histories_to_excel(change_history_collection, output_path)
+
+
+def load_pruefis_if_empty(pruefis: list[str]) -> list[str]:
+    """
+    If the user did not provide any pruefis we load all known pruefis from the toml file.
+    """
+    if not pruefis:
+        click.secho("☝️ No pruefis were given. I will parse all known pruefis.", fg="yellow")
+        return load_all_known_pruefis_from_file()
+    return pruefis
+
+
+def validate_file_type(file_type: str):
+    """
+    Validate the file type parameter.
+    """
+    if not file_type:
+        message = "ℹ You did not provide any value for the parameter --file-type. No files will be created."
+        click.secho(message, fg="yellow")
+        logger.warning(message)
+
+
+def validate_pruefis(pruefis: list[str]) -> list[str]:
+    """
+    Validate the pruefis parameter.
+    """
+    valid_pruefis = get_valid_pruefis(pruefis)
+    if not valid_pruefis:
+        click.secho("⚠️ There are no valid pruefidentifkatoren.", fg="red")
+        raise click.Abort()
+    return valid_pruefis
+
+
+# pylint: disable=too-many-arguments
+def process_pruefi(
+    pruefi: str,
+    input_path: Path,
+    output_path: Path,
+    file_type: str,
+    path_to_document_mapping: dict,
+    collected_conditions: Optional[dict[EdifactFormat, dict[str, str]]],
+):
+    """
+    Process one pruefi.
+    """
+    ahb_file_finder = DocxFileFinder.from_input_path(input_path=input_path)
+    ahb_file_paths = ahb_file_finder.get_docx_files_which_may_contain_searched_pruefi(pruefi)
+
+    if not ahb_file_paths:
+        logger.warning("No docx file was found for pruefi '%s'", pruefi)
+        return
+
+    for ahb_file_path in ahb_file_paths:
+        doc = get_or_cache_document(ahb_file_path, path_to_document_mapping)
+        if not doc:
+            continue
+
+        ahb_table = get_ahb_table(document=doc, pruefi=pruefi)
+        if not ahb_table:
+            continue
+
+        process_ahb_table(ahb_table, pruefi, output_path, file_type, collected_conditions)
+
+
+def get_or_cache_document(ahb_file_path: Path, path_to_document_mapping: dict) -> docx.Document:
+    """
+    Get the document from the cache or read it from the file system.
+    """
+    if ahb_file_path not in path_to_document_mapping:
+        try:
+            doc = docx.Document(ahb_file_path)
+            path_to_document_mapping[ahb_file_path] = doc
+            logger.debug("Saved %s document in cache", ahb_file_path)
+        except IOError as ioe:
+            logger.exception("There was an error opening the file '%s'", ahb_file_path, exc_info=True)
+            raise click.Abort() from ioe
+    return path_to_document_mapping[ahb_file_path]
+
+
+def process_ahb_table(
+    ahb_table: AhbTable,
+    pruefi: str,
+    output_path: Path,
+    file_type: str,
+    collected_conditions: Optional[dict[EdifactFormat, dict[str, str]]],
+):
+    """
+    Process the ahb table.
+    """
+    unfolded_ahb = UnfoldedAhb.from_ahb_table(ahb_table=ahb_table, pruefi=pruefi)
+
+    if "xlsx" in file_type:
+        unfolded_ahb.dump_xlsx(output_path)
+    if "flatahb" in file_type:
+        unfolded_ahb.dump_flatahb_json(output_path)
+    if "csv" in file_type:
+        unfolded_ahb.dump_csv(output_path)
+    if "conditions" in file_type:
+        unfolded_ahb.collect_condition(collected_conditions)
+
+
+def scrape_pruefis(
+    pruefis: list[str], input_path: Path, output_path: Path, file_type: Literal["flatahb", "csv", "xlsx", "conditions"]
+) -> None:
+    """
+    starts the scraping process for provided pruefis
+    """
+    pruefis = load_pruefis_if_empty(pruefis)
+    validate_file_type(file_type)
+
+    valid_pruefis = validate_pruefis(pruefis)
+    path_to_document_mapping: dict[Path, docx.Document] = {}
+    collected_conditions: Optional[dict[EdifactFormat, dict[str, str]]] = {} if "conditions" in file_type else None
+
+    for pruefi in valid_pruefis:
+        try:
+            logger.info("start looking for pruefi '%s'", pruefi)
+            process_pruefi(pruefi, input_path, output_path, file_type, path_to_document_mapping, collected_conditions)
+        # sorry for the pokemon catch
+        except Exception as e:  # pylint: disable=broad-except
+            logger.exception("Error processing pruefi '%s': %s", pruefi, str(e))
+
+    if collected_conditions is not None:
+        dump_conditions_json(output_path, collected_conditions)
+
+
 @click.command()
+@click.option(
+    "-f",
+    "--flavour",
+    type=click.Choice(["pruefi", "changehistory"], case_sensitive=False),
+    default="pruefi",
+    help='Choose between "pruefi" and "changehistory".',
+)
 @click.option(
     "-p",
     "--pruefis",
@@ -139,8 +372,15 @@ def load_all_known_pruefis_from_file(
     is_flag=True,
     help="Confirm all prompts automatically.",
 )
-# pylint: disable=too-many-branches, too-many-statements, too-many-locals
-def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: list[str], assume_yes: bool):
+# pylint: disable=too-many-arguments
+def main(
+    flavour: str,
+    pruefis: list[str],
+    input_path: Path,
+    output_path: Path,
+    file_type: Literal["flatahb", "csv", "xlsx", "conditions"],
+    assume_yes: bool,
+) -> None:
     """
     A program to get a machine readable version of the AHBs docx files published by edi@energy.
     """
@@ -155,97 +395,16 @@ def main(pruefis: list[str], input_path: Path, output_path: Path, file_type: lis
             output_path.mkdir(parents=True)
             click.secho(f"I created a new directory at {output_path}", fg="yellow")
 
-    if not any(pruefis):
-        click.secho("☝️ No pruefis were given. I will parse all known pruefis.", fg="yellow")
-        pruefis = load_all_known_pruefis_from_file()
-    if not any(file_type):
-        message = "ℹ You did not provide any value for the parameter --file-type. No files will be created."
-        click.secho(message, fg="yellow")
-        logger.warning(message)
-
-    valid_pruefis: list[str] = get_valid_pruefis(list_of_pruefis=pruefis)
-    if not any(valid_pruefis):
-        click.secho("⚠️ There are no valid pruefidentifkatoren.", fg="red")
-        raise click.Abort()
-
-    if len(valid_pruefis) != len(pruefis):
-        click.secho("☝️ Not all given pruefidentifikatoren are valid.", fg="yellow")
-        click.secho(f"I will continue with the following valid pruefis: {valid_pruefis}.", fg="yellow")
-    path_to_document_mapping: dict[Path, docx.Document] = {}
-
-    if "conditions" in file_type:
-        # mapping of EdifactFormat to ConditionKeyConditionTextMapping for all given prufis
-        collected_conditions: dict[EdifactFormat, dict[str, str]] = {}
-
-    for pruefi in valid_pruefis:
-        try:
-            logger.info("start looking for pruefi '%s'", pruefi)
-            ahb_file_finder = AhbFileFinder.from_input_path(input_path=input_path)
-            ahb_file_paths: list[Path] = ahb_file_finder.get_docx_files_which_may_contain_searched_pruefi(
-                searched_pruefi=pruefi
+    match flavour:
+        case "pruefi":
+            scrape_pruefis(
+                pruefis=pruefis,
+                input_path=input_path,
+                output_path=output_path,
+                file_type=file_type,
             )
-
-            if not any(ahb_file_paths):
-                logger.warning("No docx file was found for pruefi '%s'", pruefi)
-                continue
-
-            for ahb_file_path in ahb_file_paths:
-                if not (doc := path_to_document_mapping.get(ahb_file_path, None)):
-                    try:
-                        doc = docx.Document(ahb_file_path)  # Creating word reader object.
-                        path_to_document_mapping[ahb_file_path] = doc
-                        logger.debug("Saved %s document in cache", ahb_file_path)  # to not re-read it every time
-                    except IOError as ioe:
-                        logger.exception("There was an error opening the file '%s'", ahb_file_path, exc_info=True)
-                        raise click.Abort() from ioe
-
-                logger.info("start reading docx file '%s'", str(ahb_file_path))
-
-                ahb_table: AhbTable | None = get_ahb_table(
-                    document=doc,
-                    pruefi=pruefi,
-                )
-
-                if ahb_table is None:
-                    continue
-
-                if isinstance(ahb_table, AhbTable):
-                    unfolded_ahb = UnfoldedAhb.from_ahb_table(ahb_table=ahb_table, pruefi=pruefi)
-
-                    if "xlsx" in file_type:
-                        logger.info("💾 Saving xlsx file %s", pruefi)
-                        unfolded_ahb.dump_xlsx(path_to_output_directory=output_path)
-
-                    if "flatahb" in file_type:
-                        logger.info("💾 Saving flatahb file %s", pruefi)
-                        unfolded_ahb.dump_flatahb_json(output_directory_path=output_path)
-
-                    if "csv" in file_type:
-                        logger.info("💾 Saving csv file %s", pruefi)
-                        unfolded_ahb.dump_csv(path_to_output_directory=output_path)
-
-                    if "conditions" in file_type:
-                        logger.info("🧺 Collecting conditions file %s", pruefi)
-                        unfolded_ahb.collect_condition(already_known_conditions=collected_conditions)
-
-                    break
-        except Exception as general_error:  # pylint:disable=broad-except
-            logger.exception(
-                "There was an uncaught error while processing the pruefi '%s': %s",
-                pruefi,
-                str(general_error),
-                exc_info=True,
-            )
-            continue
-        del ahb_table
-        del ahb_file_finder
-        if "unfolded_ahb" in locals():
-            del unfolded_ahb
-        gc.collect()
-
-    if "conditions" in file_type:
-        # store conditions in conditions.json files
-        dump_conditions_json(output_directory_path=output_path, already_known_conditions=collected_conditions)
+        case "changehistory":
+            scrape_change_histories(input_path=input_path, output_path=output_path)
 
 
 def dump_conditions_json(output_directory_path: Path, already_known_conditions: dict) -> None:

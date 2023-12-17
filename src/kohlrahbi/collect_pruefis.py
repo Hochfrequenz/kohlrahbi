@@ -11,7 +11,7 @@ import tomlkit
 from docx.table import Table  # type:ignore[import]
 from maus.edifact import EdifactFormat
 
-from kohlrahbi.ahbfilefinder import AhbFileFinder
+from kohlrahbi.docxfilefinder import DocxFileFinder
 from kohlrahbi.logger import logger
 from kohlrahbi.read_functions import does_the_table_contain_pruefidentifikatoren, get_all_paragraphs_and_tables
 from kohlrahbi.seed import Seed
@@ -31,7 +31,7 @@ assert all(path.exists() for path in pathes_to_ahb_documents)
 
 for path_to_ahb_documents in pathes_to_ahb_documents:
     for edifact_format in EdifactFormat:
-        ahb_file_finder = AhbFileFinder.from_input_path(input_path=path_to_ahb_documents)
+        ahb_file_finder = DocxFileFinder.from_input_path(input_path=path_to_ahb_documents)
 
         ahb_file_finder.filter_for_latest_ahb_docx_files()
 
