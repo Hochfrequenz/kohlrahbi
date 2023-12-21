@@ -15,6 +15,7 @@ from maus.edifact import EdifactFormatVersion, get_edifact_format_version
 
 from kohlrahbi.ahb.ahbsubtable import AhbSubTable
 from kohlrahbi.ahb.ahbtable import AhbTable
+from kohlrahbi.changehistory.changehistorytable import ChangeHistoryTable
 from kohlrahbi.logger import logger
 from kohlrahbi.seed import Seed
 
@@ -91,7 +92,7 @@ def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
     searched_pruefi_is_found: bool = False
 
     # Iterate through the whole word document
-    logger.info("Start iterating through paragraphs and tables")
+    logger.info("🔁 Start iterating through paragraphs and tables")
     for item in get_all_paragraphs_and_tables(parent=document):
         style_name = item.style.name  # this is a bit expensive. we should only call it once per item
         # Check if we reached the end of the current AHB document and stop if it's true.
@@ -151,3 +152,31 @@ def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
     ahb_table.sanitize()
     del seed
     return ahb_table
+
+
+def is_change_history_table(table: Table) -> bool:
+    """
+    Checks if the given table is change history table.
+    """
+    # in the document 'Entscheidungsbaum-DiagrammeundCodelisten-informatorischeLesefassung3.5_99991231_20240401.docx'
+    # I got the error "IndexError: list index out of range", I am not sure which table caused the error
+    try:
+        return table.cell(row_idx=0, col_idx=0).text.strip() == "Änd-ID"
+    except IndexError:
+        return False
+
+
+def get_change_history_table(document: Document) -> Optional[ChangeHistoryTable]:
+    """
+    Reads a docx file and extracts the change history.
+    Returns None if no such table was found.
+    """
+
+    # Iterate through the whole word document
+    logger.info("🔁 Start iterating through paragraphs and tables")
+    for item in get_all_paragraphs_and_tables(parent=document):
+        if isinstance(item, Table) and is_change_history_table(table=item):
+            change_history_table = ChangeHistoryTable.from_docx_change_history_table(docx_table=item)
+            return change_history_table
+
+    return None
