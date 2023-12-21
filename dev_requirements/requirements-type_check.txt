@@ -4,8 +4,6 @@
 #
 #    pip-compile '.\requirements-type_check.in'
 #
-iniconfig==2.0.0
-    # via pytest
 mypy==1.5.1
     # via -r dev_requirements/requirements-type_check.in
 mypy-extensions==1.0.0
@@ -26,3 +24,7 @@ types-urllib3==1.26.25.14
     # via types-requests
 typing-extensions==4.8.0
     # via mypy
+pandas==2.1.4
+    # via -r dev_requirements/requirements-type_check.in
+pandas-stubs==2.0.1.230501
+    # via -r dev_requirements/requirements-type_check.in

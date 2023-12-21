@@ -3,3 +3,5 @@ mypy
 types-requests
 networkx-stubs
 pytest
+pandas
+pandas-stubs
