@@ -16,7 +16,7 @@ from kohlrahbi.logger import logger
 from kohlrahbi.read_functions import does_the_table_contain_pruefidentifikatoren, get_all_paragraphs_and_tables
 from kohlrahbi.seed import Seed
 
-all_pruefis: list[str] = []
+all_pruefis: dict[str, str] = {}
 
 # You have to clone the edi_energy_mirror repository and define the path to the current folder.
 # https://github.com/Hochfrequenz/edi_energy_mirror
@@ -42,7 +42,9 @@ for path_to_ahb_documents in pathes_to_ahb_documents:
                     # check which pruefis
                     seed = Seed.from_table(docx_table=item)
                     logger.info("Found a table with the following pruefis: %s", seed.pruefidentifikatoren)
-                    all_pruefis = all_pruefis + seed.pruefidentifikatoren
+                    for pruefi in seed.pruefidentifikatoren:
+                        all_pruefis.update({pruefi: ahb_file_path.name})
+                    # all_pruefis = all_pruefis + seed.pruefidentifikatoren
 
 all_pruefis = sorted(list(set(all_pruefis)))
 
