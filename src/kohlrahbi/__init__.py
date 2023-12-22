@@ -27,22 +27,23 @@ _pruefi_pattern = re.compile(r"^[1-9]\d{4}$")
 
 
 # pylint:disable=anomalous-backslash-in-string
-def get_valid_pruefis(list_of_pruefis: list[str], all_known_pruefis: Optional[list[str]] = None) -> list[str]:
+def get_valid_pruefis(list_of_pruefis: dict[str, str], all_known_pruefis: Optional[list[str]] = None) -> dict[str, str]:
     """
     This function returns a new list with only those pruefis which match the pruefi_pattern r"^[1-9]\d{4}$".
     It also supports unix wildcards like '*' and '?' iff a list of known pruefis is given.
     E.g. '11*' for all pruefis starting with '11' or '*01' for all pruefis ending with '01'.
     """
-    result: set[str] = set()
+    result: dict[str, str] = {}
 
     for pruefi in list_of_pruefis:
         if ("*" in pruefi or "?" in pruefi) and all_known_pruefis:
             filtered_pruefis = fnmatch.filter(all_known_pruefis, pruefi)
-            result = result.union(filtered_pruefis)
+            for filtered_pruefi in filtered_pruefis:
+                result.update({filtered_pruefi: list_of_pruefis.get(filtered_pruefi, "")})
         elif _pruefi_pattern.match(pruefi):
-            result.add(pruefi)
+            result.update({pruefi: list_of_pruefis.get(pruefi, "")})
 
-    return sorted(list(result))
+    return result
 
 
 def check_python_version():
@@ -83,7 +84,7 @@ def check_output_path(path: Path) -> None:
 
 def load_all_known_pruefis_from_file(
     path_to_all_known_pruefis: Path = Path(__file__).parent / Path("all_known_pruefis.toml"),
-) -> list[str]:
+) -> dict[str, str]:
     """
     Loads the file which contains all known Prüfidentifikatoren.
     The file may be manually updated with the script `collect_pruefis.py`.
@@ -102,7 +103,7 @@ def load_all_known_pruefis_from_file(
         click.secho(f"There is no 'content' section in the toml file: {path_to_all_known_pruefis}", fg="red")
         raise click.Abort()
 
-    pruefis: list[str] = content_section.get("pruefidentifikatoren")
+    pruefis: dict[str, str] = content_section.get("pruefidentifikatoren")
     return pruefis
 
 
@@ -206,7 +207,7 @@ def scrape_change_histories(input_path: Path, output_path: Path) -> None:
     save_change_histories_to_excel(change_history_collection, output_path)
 
 
-def load_pruefis_if_empty(pruefis: list[str]) -> list[str]:
+def load_pruefis_if_empty(pruefis: dict[str, str]) -> dict[str, str]:
     """
     If the user did not provide any pruefis we load all known pruefis from the toml file.
     """
@@ -226,7 +227,7 @@ def validate_file_type(file_type: str):
         logger.warning(message)
 
 
-def validate_pruefis(pruefis: list[str]) -> list[str]:
+def validate_pruefis(pruefis: dict[str, str]) -> dict[str, str]:
     """
     Validate the pruefis parameter.
     """
@@ -248,9 +249,14 @@ def process_pruefi(
 ):
     """
     Process one pruefi.
+    If the input path ends with .docx, we assume that the file containing the pruefi is given.
+    Therefore we only access that file.
     """
-    ahb_file_finder = DocxFileFinder.from_input_path(input_path=input_path)
-    ahb_file_paths = ahb_file_finder.get_docx_files_which_may_contain_searched_pruefi(pruefi)
+    if not input_path.suffix == ".docx":
+        ahb_file_finder = DocxFileFinder.from_input_path(input_path=input_path)
+        ahb_file_paths = ahb_file_finder.get_docx_files_which_may_contain_searched_pruefi(pruefi)
+    else:
+        ahb_file_paths = [input_path]
 
     if not ahb_file_paths:
         logger.warning("No docx file was found for pruefi '%s'", pruefi)
@@ -259,11 +265,11 @@ def process_pruefi(
     for ahb_file_path in ahb_file_paths:
         doc = get_or_cache_document(ahb_file_path, path_to_document_mapping)
         if not doc:
-            continue
+            return
 
         ahb_table = get_ahb_table(document=doc, pruefi=pruefi)
         if not ahb_table:
-            continue
+            return
 
         process_ahb_table(ahb_table, pruefi, output_path, file_type, collected_conditions)
 
@@ -306,7 +312,10 @@ def process_ahb_table(
 
 
 def scrape_pruefis(
-    pruefis: list[str], input_path: Path, output_path: Path, file_type: Literal["flatahb", "csv", "xlsx", "conditions"]
+    pruefis: dict[str, str],
+    input_path: Path,
+    output_path: Path,
+    file_type: Literal["flatahb", "csv", "xlsx", "conditions"],
 ) -> None:
     """
     starts the scraping process for provided pruefis
@@ -318,10 +327,15 @@ def scrape_pruefis(
     path_to_document_mapping: dict[Path, docx.Document] = {}
     collected_conditions: Optional[dict[EdifactFormat, dict[str, str]]] = {} if "conditions" in file_type else None
 
-    for pruefi in valid_pruefis:
+    for pruefi, filename in valid_pruefis.items():
         try:
             logger.info("start looking for pruefi '%s'", pruefi)
+            old_path = input_path
+            input_path = input_path.joinpath(
+                Path(filename)
+            )  # To add the name of the file containing the pruefi, if known
             process_pruefi(pruefi, input_path, output_path, file_type, path_to_document_mapping, collected_conditions)
+            input_path = old_path  # Otherwise the path grows when multiple pruefis are processed
         # sorry for the pokemon catch
         except Exception as e:  # pylint: disable=broad-except
             logger.exception("Error processing pruefi '%s': %s", pruefi, str(e))
@@ -394,11 +408,11 @@ def main(
         else:
             output_path.mkdir(parents=True)
             click.secho(f"I created a new directory at {output_path}", fg="yellow")
-
+    pruefis_dict = {key: "" for key in pruefis}  # We use dict to be able to also store filenames
     match flavour:
         case "pruefi":
             scrape_pruefis(
-                pruefis=pruefis,
+                pruefis=pruefis_dict,
                 input_path=input_path,
                 output_path=output_path,
                 file_type=file_type,

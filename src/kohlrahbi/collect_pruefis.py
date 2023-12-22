@@ -40,13 +40,14 @@ for path_to_ahb_documents in pathes_to_ahb_documents:
             for item in get_all_paragraphs_and_tables(parent=doc):
                 if isinstance(item, Table) and does_the_table_contain_pruefidentifikatoren(table=item):
                     # check which pruefis
+                    if not item.row_cells(0)[-1].paragraphs[-1].text.startswith("Prüfidentifikator"):
+                        continue
                     seed = Seed.from_table(docx_table=item)
                     logger.info("Found a table with the following pruefis: %s", seed.pruefidentifikatoren)
                     for pruefi in seed.pruefidentifikatoren:
                         all_pruefis.update({pruefi: ahb_file_path.name})
-                    # all_pruefis = all_pruefis + seed.pruefidentifikatoren
 
-all_pruefis = sorted(list(set(all_pruefis)))
+all_pruefis = dict(sorted(all_pruefis.items()))
 
 toml_data = {
     "meta_data": {"updated_on": date.today()},
