@@ -14,7 +14,7 @@ colorlog==6.8.0
     # via -r requirements.in
 et-xmlfile==1.1.0
     # via openpyxl
-lxml==4.9.2
+lxml==4.9.3
     # via python-docx
 marshmallow==3.19.0
     # via maus
@@ -22,7 +22,7 @@ maus==0.4.0
     # via -r requirements.in
 more-itertools==9.0.0
     # via maus
-numpy==1.24.1
+numpy==1.26.2
     # via pandas
 openpyxl==3.1.2
     # via -r requirements.in
