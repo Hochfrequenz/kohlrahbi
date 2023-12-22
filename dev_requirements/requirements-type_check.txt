@@ -4,7 +4,9 @@
 #
 #    pip-compile '.\requirements-type_check.in'
 #
-mypy==1.5.1
+iniconfig==2.0.0
+    # via pytest
+mypy==1.8.0
     # via -r dev_requirements/requirements-type_check.in
 mypy-extensions==1.0.0
     # via mypy
@@ -12,19 +14,33 @@ networkx==3.1
     # via networkx-stubs
 networkx-stubs==0.0.1
     # via -r dev_requirements/requirements-type_check.in
+numpy==1.26.2
+    # via
+    #   pandas
+    #   pandas-stubs
 packaging==22.0
     # via pytest
-pluggy==1.3.0
-    # via pytest
-pytest==7.4.2
-    # via -r dev_requirements/requirements-type_check.in
-types-requests==2.31.0.6
-    # via -r dev_requirements/requirements-type_check.in
-types-urllib3==1.26.25.14
-    # via types-requests
-typing-extensions==4.8.0
-    # via mypy
 pandas==2.1.4
     # via -r dev_requirements/requirements-type_check.in
-pandas-stubs==2.0.1.230501
+pandas-stubs==2.1.4.231218
     # via -r dev_requirements/requirements-type_check.in
+pluggy==1.3.0
+    # via pytest
+pytest==7.4.3
+    # via -r dev_requirements/requirements-type_check.in
+python-dateutil==2.8.2
+    # via pandas
+pytz==2023.3.post1
+    # via pandas
+six==1.16.0
+    # via python-dateutil
+types-pytz==2023.3.1.1
+    # via pandas-stubs
+types-requests==2.31.0.10
+    # via -r dev_requirements/requirements-type_check.in
+typing-extensions==4.8.0
+    # via mypy
+tzdata==2023.3
+    # via pandas
+urllib3==2.1.0
+    # via types-requests
