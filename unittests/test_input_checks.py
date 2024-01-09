@@ -1,3 +1,5 @@
+from typing import Union
+
 import pytest  # type:ignore[import]
 
 from kohlrahbi import get_valid_pruefis
@@ -7,38 +9,38 @@ from kohlrahbi import get_valid_pruefis
     "input_pruefis, expected_pruefis, known_pruefis",
     [
         pytest.param(
-            {"11042": "", "13007": ""},
-            {"11042": "", "13007": ""},
+            {"11042": None, "13007": None},
+            {"11042": None, "13007": None},
             None,
             id="only valid pruefis",
         ),
         pytest.param(
-            {"01042": "", "13007": ""},
-            {"13007": ""},
+            {"01042": None, "13007": None},
+            {"13007": None},
             None,
             id="invalid pruefi: leading zero",
         ),
         pytest.param(
-            {"1042": "", "13007": ""},
-            {"13007": ""},
+            {"1042": None, "13007": None},
+            {"13007": None},
             None,
             id="invalid pruefi: only four digits",
         ),
         pytest.param(
-            {"abc": "", "13007": ""},
-            {"13007": ""},
+            {"abc": None, "13007": None},
+            {"13007": None},
             None,
             id="invalid pruefi: characters",
         ),
         pytest.param(
-            {"abc": ""},
+            {"abc": None},
             {},
             None,
             id="invalid pruefi: empty result",
         ),
         pytest.param(
-            {"11*": ""},
-            {"11001": "", "11002": "", "11003": ""},
+            {"11*": None},
+            {"11001": None, "11002": None, "11003": None},
             [
                 "11001",
                 "11002",
@@ -53,8 +55,8 @@ from kohlrahbi import get_valid_pruefis
             id="wildcard `*` at end",
         ),
         pytest.param(
-            {"*1": ""},
-            {"11001": "", "12001": "", "13001": ""},
+            {"*1": None},
+            {"11001": None, "12001": None, "13001": None},
             [
                 "11001",
                 "11002",
@@ -69,8 +71,8 @@ from kohlrahbi import get_valid_pruefis
             id="wildcard `*` at begin",
         ),
         pytest.param(
-            {"11*1": ""},
-            {"11001": ""},
+            {"11*1": None},
+            {"11001": None},
             [
                 "11001",
                 "11002",
@@ -85,14 +87,14 @@ from kohlrahbi import get_valid_pruefis
             id="wildcard `*` in the middle",  # who should seriously want this?
         ),
         pytest.param(
-            {"?1001": ""},
-            {"11001": "", "21001": "", "31001": ""},
+            {"?1001": None},
+            {"11001": None, "21001": None, "31001": None},
             ["11001", "11002", "11003", "12002", "12003", "13003", "21001", "31001"],
             id="wildcard `?` at begin",
         ),
         pytest.param(
-            {"11?42": ""},
-            {"11042": "", "11142": ""},
+            {"11?42": None},
+            {"11042": None, "11142": None},
             [
                 "11001",
                 "11002",
@@ -109,17 +111,17 @@ from kohlrahbi import get_valid_pruefis
             id="wildcard `?` in the middle",
         ),
         pytest.param(
-            {"1100?": ""},
+            {"1100?": None},
             {
-                "11001": "",
-                "11002": "",
-                "11003": "",
-                "11004": "",
-                "11005": "",
-                "11006": "",
-                "11007": "",
-                "11008": "",
-                "11009": "",
+                "11001": None,
+                "11002": None,
+                "11003": None,
+                "11004": None,
+                "11005": None,
+                "11006": None,
+                "11007": None,
+                "11008": None,
+                "11009": None,
             },
             [
                 "11001",
@@ -143,19 +145,19 @@ from kohlrahbi import get_valid_pruefis
             id="wildcard `?` at the end",
         ),
         pytest.param(
-            {"110??": ""},
+            {"110??": None},
             {
-                "11001": "",
-                "11002": "",
-                "11003": "",
-                "11004": "",
-                "11005": "",
-                "11006": "",
-                "11007": "",
-                "11008": "",
-                "11009": "",
-                "11010": "",
-                "11042": "",
+                "11001": None,
+                "11002": None,
+                "11003": None,
+                "11004": None,
+                "11005": None,
+                "11006": None,
+                "11007": None,
+                "11008": None,
+                "11009": None,
+                "11010": None,
+                "11042": None,
             },
             [
                 "11001",
@@ -180,23 +182,23 @@ from kohlrahbi import get_valid_pruefis
             id="wildcard `??` at the end",
         ),
         pytest.param(
-            {"*00?": ""},
+            {"*00?": None},
             {
-                "11001": "",
-                "11002": "",
-                "11003": "",
-                "11004": "",
-                "11005": "",
-                "11006": "",
-                "11007": "",
-                "11008": "",
-                "11009": "",
-                "12001": "",
-                "12002": "",
-                "12003": "",
-                "13001": "",
-                "13002": "",
-                "13003": "",
+                "11001": None,
+                "11002": None,
+                "11003": None,
+                "11004": None,
+                "11005": None,
+                "11006": None,
+                "11007": None,
+                "11008": None,
+                "11009": None,
+                "12001": None,
+                "12002": None,
+                "12003": None,
+                "13001": None,
+                "13002": None,
+                "13003": None,
             },
             [
                 "11001",
@@ -223,7 +225,7 @@ from kohlrahbi import get_valid_pruefis
     ],
 )
 def test_get_only_valid_pruefis(
-    input_pruefis: dict[str, str], expected_pruefis: dict[str, str], known_pruefis: list[str] | None
+    input_pruefis: dict[str, Union[str, None]], expected_pruefis: dict[str, str], known_pruefis: list[str] | None
 ):
-    valid_pruefis = get_valid_pruefis(list_of_pruefis=input_pruefis, all_known_pruefis=known_pruefis)
+    valid_pruefis = get_valid_pruefis(pruefi_to_file_mapping=input_pruefis, all_known_pruefis=known_pruefis)
     assert valid_pruefis == expected_pruefis
