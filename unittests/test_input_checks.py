@@ -13,6 +13,12 @@ from kohlrahbi import get_valid_pruefis
             id="only valid pruefis",
         ),
         pytest.param(
+            {"11042": None, "13007": None},
+            {"11042": None, "13007": None},
+            None,
+            id="None as dict value",
+        ),
+        pytest.param(
             {"01042": "filename", "13007": "filename"},
             {"13007": "filename"},
             None,
