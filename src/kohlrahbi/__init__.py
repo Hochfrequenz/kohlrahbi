@@ -27,7 +27,7 @@ _pruefi_pattern = re.compile(r"^[1-9]\d{4}$")
 
 
 # pylint:disable=anomalous-backslash-in-string
-def get_valid_pruefis(
+def get_pruefi_to_file_map(
     pruefi_to_file_mapping: dict[str, str | None], all_known_pruefis: Optional[list[str]] = None
 ) -> dict[str, str | None]:
     """
@@ -237,7 +237,7 @@ def validate_pruefis(pruefi_to_file_mapping: dict[str, str | None]) -> dict[str,
     """
     Validate the pruefi_to_file_mapping parameter.
     """
-    valid_pruefi_to_file_mappings = get_valid_pruefis(pruefi_to_file_mapping)
+    valid_pruefi_to_file_mappings = get_pruefi_to_file_map(pruefi_to_file_mapping)
     if not valid_pruefi_to_file_mappings:
         click.secho("⚠️ There are no valid pruefidentifkatoren.", fg="red")
         raise click.Abort()
@@ -319,7 +319,7 @@ def process_ahb_table(
 
 def scrape_pruefis(
     pruefi_to_file_mapping: dict[str, str | None],
-    input_path: Path,
+    basic_input_path: Path,
     output_path: Path,
     file_type: Literal["flatahb", "csv", "xlsx", "conditions"],
 ) -> None:
@@ -336,13 +336,13 @@ def scrape_pruefis(
     for pruefi, filename in valid_pruefi_to_file_mappings.items():
         try:
             logger.info("start looking for pruefi '%s'", pruefi)
-            old_path = input_path
+            input_path = basic_input_path  # To prevent multiple adding of filenames
+            # that would happen if filenames are added but never removed
             if filename is not None:
                 input_path = input_path.joinpath(
                     Path(filename)
                 )  # To add the name of the file containing the pruefi, if known
             process_pruefi(pruefi, input_path, output_path, file_type, path_to_document_mapping, collected_conditions)
-            input_path = old_path  # Otherwise the path grows when multiple pruefis are processed
         # sorry for the pokemon catch
         except Exception as e:  # pylint: disable=broad-except
             logger.exception("Error processing pruefi '%s': %s", pruefi, str(e))
@@ -417,12 +417,12 @@ def main(
             click.secho(f"I created a new directory at {output_path}", fg="yellow")
     pruefi_to_file_mapping: dict[str, str | None] = {
         key: None for key in pruefis
-    }  # A mapping of a prufi (key) to the name (+ path) of the file containing the prufi
+    }  # A mapping of a pruefi (key) to the name (+ path) of the file containing the prufi
     match flavour:
         case "pruefi":
             scrape_pruefis(
                 pruefi_to_file_mapping=pruefi_to_file_mapping,
-                input_path=input_path,
+                basic_input_path=input_path,
                 output_path=output_path,
                 file_type=file_type,
             )

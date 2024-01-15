@@ -1,6 +1,6 @@
 import pytest  # type:ignore[import]
 
-from kohlrahbi import get_valid_pruefis
+from kohlrahbi import get_pruefi_to_file_map
 
 
 @pytest.mark.parametrize(
@@ -231,5 +231,5 @@ from kohlrahbi import get_valid_pruefis
 def test_get_only_valid_pruefis(
     input_pruefis: dict[str, str | None], expected_pruefis: dict[str, str], known_pruefis: list[str] | None
 ):
-    valid_pruefis = get_valid_pruefis(pruefi_to_file_mapping=input_pruefis, all_known_pruefis=known_pruefis)
+    valid_pruefis = get_pruefi_to_file_map(pruefi_to_file_mapping=input_pruefis, all_known_pruefis=known_pruefis)
     assert valid_pruefis == expected_pruefis
