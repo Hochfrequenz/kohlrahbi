@@ -8,7 +8,7 @@ import re
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Literal, Optional, Union
+from typing import Any, Literal, Optional
 
 import click
 import docx  # type:ignore[import]
@@ -28,15 +28,15 @@ _pruefi_pattern = re.compile(r"^[1-9]\d{4}$")
 
 # pylint:disable=anomalous-backslash-in-string
 def get_valid_pruefis(
-    pruefi_to_file_mapping: dict[str, Union[str, None]], all_known_pruefis: Optional[list[str]] = None
-) -> dict[str, Union[str, None]]:
+    pruefi_to_file_mapping: dict[str, str | None], all_known_pruefis: Optional[list[str]] = None
+) -> dict[str, str | None]:
     """
     This function returns a dictionary with only those pruefi/filename - combinations
     which match the pruefi_pattern r"^[1-9]\d{4}$".
     It also supports unix wildcards like '*' and '?' iff a list of known pruefis is given.
     E.g. '11*' for all pruefis starting with '11' or '*01' for all pruefis ending with '01'.
     """
-    result: dict[str, Union[str, None]] = {}
+    result: dict[str, str | None] = {}
 
     for pruefi in pruefi_to_file_mapping:
         if ("*" in pruefi or "?" in pruefi) and all_known_pruefis:
@@ -87,7 +87,7 @@ def check_output_path(path: Path) -> None:
 
 def load_all_known_pruefis_from_file(
     path_to_all_known_pruefis: Path = Path(__file__).parent / Path("all_known_pruefis.toml"),
-) -> dict[str, Union[str, None]]:
+) -> dict[str, str | None]:
     """
     Loads the file which contains all known Prüfidentifikatoren.
     The file may be manually updated with the script `collect_pruefis.py`.
@@ -106,7 +106,7 @@ def load_all_known_pruefis_from_file(
         click.secho(f"There is no 'content' section in the toml file: {path_to_all_known_pruefis}", fg="red")
         raise click.Abort()
 
-    pruefi_to_file_mapping: dict[str, Union[str, None]] = content_section.get("pruefidentifikatoren")
+    pruefi_to_file_mapping: dict[str, str | None] = content_section.get("pruefidentifikatoren")
     return pruefi_to_file_mapping
 
 
@@ -210,7 +210,7 @@ def scrape_change_histories(input_path: Path, output_path: Path) -> None:
     save_change_histories_to_excel(change_history_collection, output_path)
 
 
-def load_pruefis_if_empty(pruefi_to_file_mapping: dict[str, Union[str, None]]) -> dict[str, Union[str, None]]:
+def load_pruefis_if_empty(pruefi_to_file_mapping: dict[str, str | None]) -> dict[str, str | None]:
     """
     If the user did not provide any pruefis we load all known pruefis
     and the files containing them from the toml file.
@@ -231,7 +231,7 @@ def validate_file_type(file_type: str):
         logger.warning(message)
 
 
-def validate_pruefis(pruefi_to_file_mapping: dict[str, Union[str, None]]) -> dict[str, Union[str, None]]:
+def validate_pruefis(pruefi_to_file_mapping: dict[str, str | None]) -> dict[str, str | None]:
     """
     Validate the pruefi_to_file_mapping parameter.
     """
@@ -316,7 +316,7 @@ def process_ahb_table(
 
 
 def scrape_pruefis(
-    pruefi_to_file_mapping: dict[str, Union[str, None]],
+    pruefi_to_file_mapping: dict[str, str | None],
     input_path: Path,
     output_path: Path,
     file_type: Literal["flatahb", "csv", "xlsx", "conditions"],
@@ -413,7 +413,7 @@ def main(
         else:
             output_path.mkdir(parents=True)
             click.secho(f"I created a new directory at {output_path}", fg="yellow")
-    pruefi_to_file_mapping: dict[str, Union[str, None]] = {
+    pruefi_to_file_mapping: dict[str, str | None] = {
         key: None for key in pruefis
     }  # A mapping of a prufi (key) to the name (+ path) of the file containing the prufi
     match flavour:
