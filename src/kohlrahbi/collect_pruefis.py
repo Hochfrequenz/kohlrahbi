@@ -17,15 +17,16 @@ from kohlrahbi.logger import logger
 from kohlrahbi.read_functions import does_the_table_contain_pruefidentifikatoren, get_all_paragraphs_and_tables
 from kohlrahbi.seed import Seed
 
-all_pruefis: dict[str, str] = {}
+all_pruefis: dict[str, str] = {}  # Key: Pruefi, Value: Name of file containing Pruefi
+# I use Strings (and not Paths) here because paths can only be stored as strings in a toml file
 
 # You have to clone the edi_energy_mirror repository and define the path to the current folder.
 # https://github.com/Hochfrequenz/edi_energy_mirror
 # Just put it next to the kohlrahbi repository.
 edi_energy_mirror_repo_root_path = Path(__file__).parent.parent.parent.parent / "edi_energy_mirror"
 pathes_to_ahb_documents: list[Path] = [
-    edi_energy_mirror_repo_root_path / Path("edi_energy_de/current"),
-    edi_energy_mirror_repo_root_path / Path("edi_energy_de/future"),
+    edi_energy_mirror_repo_root_path
+    / Path("edi_energy_de/current"),  # If you are interested in coming changes, replace "current" with "future"
 ]
 assert all(path.exists() for path in pathes_to_ahb_documents)
 
