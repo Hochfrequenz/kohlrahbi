@@ -42,9 +42,11 @@ def get_valid_pruefis(
         if ("*" in pruefi or "?" in pruefi) and all_known_pruefis:
             filtered_pruefis = fnmatch.filter(all_known_pruefis, pruefi)
             for filtered_pruefi in filtered_pruefis:
-                result.update({filtered_pruefi: pruefi_to_file_mapping.get(filtered_pruefi, None)})
+                for mapped_pruefi, file in pruefi_to_file_mapping.items():
+                    if fnmatch.fnmatch(filtered_pruefi, mapped_pruefi):
+                        result.update({filtered_pruefi: file})
         elif _pruefi_pattern.match(pruefi):
-            result.update({pruefi: pruefi_to_file_mapping.get(pruefi, None)})
+            result.update({pruefi: pruefi_to_file_mapping[pruefi]})
 
     return result
 
