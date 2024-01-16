@@ -27,28 +27,23 @@ _pruefi_pattern = re.compile(r"^[1-9]\d{4}$")
 
 
 # pylint:disable=anomalous-backslash-in-string
-def get_pruefi_to_file_map(
-    pruefi_to_file_mapping: dict[str, str | None], all_known_pruefis: Optional[list[str]] = None
-) -> dict[str, str | None]:
+def get_valid_pruefis(pruefis: list[str], all_known_pruefis: Optional[list[str]] = None) -> list[str]:
     """
-    This function returns a dictionary with only those pruefi/filename - combinations
+    This function returns a list with only those pruefis
     which match the pruefi_pattern r"^[1-9]\d{4}$".
-    It also supports unix wildcards like '*' and '?' iff a list of known pruefis is given.
+    It also supports unix wildcards like '*' and '?' if a list of known pruefis is given.
     E.g. '11*' for all pruefis starting with '11' or '*01' for all pruefis ending with '01'.
     """
-    result: dict[str, str | None] = {}
+    result: set[str] = set()
 
-    for pruefi in pruefi_to_file_mapping:
+    for pruefi in pruefis:
         if ("*" in pruefi or "?" in pruefi) and all_known_pruefis:
             filtered_pruefis = fnmatch.filter(all_known_pruefis, pruefi)
-            for filtered_pruefi in filtered_pruefis:
-                for mapped_pruefi, file in pruefi_to_file_mapping.items():
-                    if fnmatch.fnmatch(filtered_pruefi, mapped_pruefi):
-                        result.update({filtered_pruefi: file})
+            result = result.union(filtered_pruefis)
         elif _pruefi_pattern.match(pruefi):
-            result.update({pruefi: pruefi_to_file_mapping[pruefi]})
+            result.add(pruefi)
 
-    return result
+    return sorted(list(result))
 
 
 def check_python_version():
@@ -233,15 +228,15 @@ def validate_file_type(file_type: str):
         logger.warning(message)
 
 
-def validate_pruefis(pruefi_to_file_mapping: dict[str, str | None]) -> dict[str, str | None]:
+def validate_pruefis(pruefis: list[str]) -> list[str]:
     """
     Validate the pruefi_to_file_mapping parameter.
     """
-    valid_pruefi_to_file_mappings = get_pruefi_to_file_map(pruefi_to_file_mapping)
-    if not valid_pruefi_to_file_mappings:
+    valid_pruefis = get_valid_pruefis(pruefis)
+    if not valid_pruefis:
         click.secho("⚠️ There are no valid pruefidentifkatoren.", fg="red")
         raise click.Abort()
-    return valid_pruefi_to_file_mappings
+    return valid_pruefis
 
 
 # pylint: disable=too-many-arguments
@@ -329,7 +324,10 @@ def scrape_pruefis(
     pruefi_to_file_mapping = load_pruefis_if_empty(pruefi_to_file_mapping)
     validate_file_type(file_type)
 
-    valid_pruefi_to_file_mappings = validate_pruefis(pruefi_to_file_mapping)
+    valid_pruefis = validate_pruefis(list(pruefi_to_file_mapping.keys()))
+    valid_pruefi_to_file_mappings: dict[str, str | None] = {}
+    for pruefi in valid_pruefis:
+        valid_pruefi_to_file_mappings.update({pruefi: pruefi_to_file_mapping.get(pruefi, None)})
     path_to_document_mapping: dict[Path, docx.Document] = {}
     collected_conditions: Optional[dict[EdifactFormat, dict[str, str]]] = {} if "conditions" in file_type else None
 

@@ -1,50 +1,44 @@
 import pytest  # type:ignore[import]
 
-from kohlrahbi import get_pruefi_to_file_map
+from kohlrahbi import get_valid_pruefis
 
 
 @pytest.mark.parametrize(
     "input_pruefis, expected_pruefis, known_pruefis",
     [
         pytest.param(
-            {"11042": "filename", "13007": "filename"},
-            {"11042": "filename", "13007": "filename"},
+            ["11042", "13007"],
+            ["11042", "13007"],
             None,
             id="only valid pruefis",
         ),
         pytest.param(
-            {"11042": None, "13007": None},
-            {"11042": None, "13007": None},
-            None,
-            id="None as dict value",
-        ),
-        pytest.param(
-            {"01042": "filename", "13007": "filename"},
-            {"13007": "filename"},
+            ["01042", "13007"],
+            ["13007"],
             None,
             id="invalid pruefi: leading zero",
         ),
         pytest.param(
-            {"1042": "filename", "13007": "filename"},
-            {"13007": "filename"},
+            ["1042", "13007"],
+            ["13007"],
             None,
             id="invalid pruefi: only four digits",
         ),
         pytest.param(
-            {"abc": "filename", "13007": "filename"},
-            {"13007": "filename"},
+            ["abc", "13007"],
+            ["13007"],
             None,
             id="invalid pruefi: characters",
         ),
         pytest.param(
-            {"abc": "filename"},
-            {},
+            ["abc"],
+            [],
             None,
             id="invalid pruefi: empty result",
         ),
         pytest.param(
-            {"11*": "filename"},
-            {"11001": "filename", "11002": "filename", "11003": "filename"},
+            ["11*"],
+            ["11001", "11002", "11003"],
             [
                 "11001",
                 "11002",
@@ -59,8 +53,8 @@ from kohlrahbi import get_pruefi_to_file_map
             id="wildcard `*` at end",
         ),
         pytest.param(
-            {"*1": "filename"},
-            {"11001": "filename", "12001": "filename", "13001": "filename"},
+            ["*1"],
+            ["11001", "12001", "13001"],
             [
                 "11001",
                 "11002",
@@ -75,8 +69,8 @@ from kohlrahbi import get_pruefi_to_file_map
             id="wildcard `*` at begin",
         ),
         pytest.param(
-            {"11*1": "filename"},
-            {"11001": "filename"},
+            ["11*1"],
+            ["11001"],
             [
                 "11001",
                 "11002",
@@ -91,14 +85,14 @@ from kohlrahbi import get_pruefi_to_file_map
             id="wildcard `*` in the middle",  # who should seriously want this?
         ),
         pytest.param(
-            {"?1001": "filename"},
-            {"11001": "filename", "21001": "filename", "31001": "filename"},
+            ["?1001"],
+            ["11001", "21001", "31001"],
             ["11001", "11002", "11003", "12002", "12003", "13003", "21001", "31001"],
             id="wildcard `?` at begin",
         ),
         pytest.param(
-            {"11?42": "filename"},
-            {"11042": "filename", "11142": "filename"},
+            ["11?42"],
+            ["11042", "11142"],
             [
                 "11001",
                 "11002",
@@ -115,18 +109,18 @@ from kohlrahbi import get_pruefi_to_file_map
             id="wildcard `?` in the middle",
         ),
         pytest.param(
-            {"1100?": "filename"},
-            {
-                "11001": "filename",
-                "11002": "filename",
-                "11003": "filename",
-                "11004": "filename",
-                "11005": "filename",
-                "11006": "filename",
-                "11007": "filename",
-                "11008": "filename",
-                "11009": "filename",
-            },
+            ["1100?"],
+            [
+                "11001",
+                "11002",
+                "11003",
+                "11004",
+                "11005",
+                "11006",
+                "11007",
+                "11008",
+                "11009",
+            ],
             [
                 "11001",
                 "11002",
@@ -149,20 +143,20 @@ from kohlrahbi import get_pruefi_to_file_map
             id="wildcard `?` at the end",
         ),
         pytest.param(
-            {"110??": "filename"},
-            {
-                "11001": "filename",
-                "11002": "filename",
-                "11003": "filename",
-                "11004": "filename",
-                "11005": "filename",
-                "11006": "filename",
-                "11007": "filename",
-                "11008": "filename",
-                "11009": "filename",
-                "11010": "filename",
-                "11042": "filename",
-            },
+            ["110??"],
+            [
+                "11001",
+                "11002",
+                "11003",
+                "11004",
+                "11005",
+                "11006",
+                "11007",
+                "11008",
+                "11009",
+                "11010",
+                "11042",
+            ],
             [
                 "11001",
                 "11002",
@@ -186,24 +180,24 @@ from kohlrahbi import get_pruefi_to_file_map
             id="wildcard `??` at the end",
         ),
         pytest.param(
-            {"*00?": "filename"},
-            {
-                "11001": "filename",
-                "11002": "filename",
-                "11003": "filename",
-                "11004": "filename",
-                "11005": "filename",
-                "11006": "filename",
-                "11007": "filename",
-                "11008": "filename",
-                "11009": "filename",
-                "12001": "filename",
-                "12002": "filename",
-                "12003": "filename",
-                "13001": "filename",
-                "13002": "filename",
-                "13003": "filename",
-            },
+            ["*00?"],
+            [
+                "11001",
+                "11002",
+                "11003",
+                "11004",
+                "11005",
+                "11006",
+                "11007",
+                "11008",
+                "11009",
+                "12001",
+                "12002",
+                "12003",
+                "13001",
+                "13002",
+                "13003",
+            ],
             [
                 "11001",
                 "11002",
@@ -228,8 +222,6 @@ from kohlrahbi import get_pruefi_to_file_map
         ),
     ],
 )
-def test_get_only_valid_pruefis(
-    input_pruefis: dict[str, str | None], expected_pruefis: dict[str, str], known_pruefis: list[str] | None
-):
-    valid_pruefis = get_pruefi_to_file_map(pruefi_to_file_mapping=input_pruefis, all_known_pruefis=known_pruefis)
+def test_get_only_valid_pruefis(input_pruefis: list[str], expected_pruefis: list[str], known_pruefis: list[str] | None):
+    valid_pruefis = get_valid_pruefis(pruefis=input_pruefis, all_known_pruefis=known_pruefis)
     assert valid_pruefis == expected_pruefis
