@@ -29,8 +29,8 @@ _pruefi_pattern = re.compile(r"^[1-9]\d{4}$")
 # pylint:disable=anomalous-backslash-in-string
 def get_valid_pruefis(list_of_pruefis: list[str], all_known_pruefis: Optional[list[str]] = None) -> list[str]:
     """
-    This function returns a new list with only those pruefis which match the pruefi_pattern r"^[1-9]\d{4}$".
-    It also supports unix wildcards like '*' and '?' iff a list of known pruefis is given.
+    This function returns a list with only those pruefis which match the pruefi_pattern r"^[1-9]\d{4}$".
+    It also supports unix wildcards like '*' and '?' if a list of known pruefis is given.
     E.g. '11*' for all pruefis starting with '11' or '*01' for all pruefis ending with '01'.
     """
     result: set[str] = set()
@@ -83,7 +83,7 @@ def check_output_path(path: Path) -> None:
 
 def load_all_known_pruefis_from_file(
     path_to_all_known_pruefis: Path = Path(__file__).parent / Path("all_known_pruefis.toml"),
-) -> list[str]:
+) -> dict[str, str | None]:
     """
     Loads the file which contains all known Prüfidentifikatoren.
     The file may be manually updated with the script `collect_pruefis.py`.
@@ -93,17 +93,18 @@ def load_all_known_pruefis_from_file(
         state_of_kohlrahbi: dict[str, Any] = tomlkit.load(file)
 
     meta_data_section = state_of_kohlrahbi.get("meta_data")
-    content_section = state_of_kohlrahbi.get("content")
+    pruefi_to_file_mapping: dict[str, str | None] | None = state_of_kohlrahbi.get("pruefidentifikatoren", None)
 
     if meta_data_section is None:
         click.secho(f"There is no 'meta_data' section in the provided toml file: {path_to_all_known_pruefis}", fg="red")
         raise click.Abort()
-    if content_section is None:
-        click.secho(f"There is no 'content' section in the toml file: {path_to_all_known_pruefis}", fg="red")
+    if pruefi_to_file_mapping is None:
+        click.secho(
+            f"There is no 'pruefidentifikatoren' section in the toml file: {path_to_all_known_pruefis}", fg="red"
+        )
         raise click.Abort()
 
-    pruefis: list[str] = content_section.get("pruefidentifikatoren")
-    return pruefis
+    return pruefi_to_file_mapping
 
 
 def create_sheet_name(filename: str) -> str:
@@ -206,14 +207,15 @@ def scrape_change_histories(input_path: Path, output_path: Path) -> None:
     save_change_histories_to_excel(change_history_collection, output_path)
 
 
-def load_pruefis_if_empty(pruefis: list[str]) -> list[str]:
+def load_pruefis_if_empty(pruefi_to_file_mapping: dict[str, str | None]) -> dict[str, str | None]:
     """
-    If the user did not provide any pruefis we load all known pruefis from the toml file.
+    If the user did not provide any pruefis we load all known pruefis
+    and the paths to the file containing them from the toml file.
     """
-    if not pruefis:
+    if not pruefi_to_file_mapping:
         click.secho("☝️ No pruefis were given. I will parse all known pruefis.", fg="yellow")
         return load_all_known_pruefis_from_file()
-    return pruefis
+    return pruefi_to_file_mapping
 
 
 def validate_file_type(file_type: str):
@@ -228,7 +230,7 @@ def validate_file_type(file_type: str):
 
 def validate_pruefis(pruefis: list[str]) -> list[str]:
     """
-    Validate the pruefis parameter.
+    Validate the pruefi_to_file_mapping parameter.
     """
     valid_pruefis = get_valid_pruefis(pruefis)
     if not valid_pruefis:
@@ -248,9 +250,14 @@ def process_pruefi(
 ):
     """
     Process one pruefi.
+    If the input path ends with .docx, we assume that the file containing the pruefi is given.
+    Therefore we only access that file.
     """
-    ahb_file_finder = DocxFileFinder.from_input_path(input_path=input_path)
-    ahb_file_paths = ahb_file_finder.get_docx_files_which_may_contain_searched_pruefi(pruefi)
+    if not input_path.suffix == ".docx":
+        ahb_file_finder = DocxFileFinder.from_input_path(input_path=input_path)
+        ahb_file_paths = ahb_file_finder.get_docx_files_which_may_contain_searched_pruefi(pruefi)
+    else:
+        ahb_file_paths = [input_path]
 
     if not ahb_file_paths:
         logger.warning("No docx file was found for pruefi '%s'", pruefi)
@@ -259,11 +266,11 @@ def process_pruefi(
     for ahb_file_path in ahb_file_paths:
         doc = get_or_cache_document(ahb_file_path, path_to_document_mapping)
         if not doc:
-            continue
+            return
 
         ahb_table = get_ahb_table(document=doc, pruefi=pruefi)
         if not ahb_table:
-            continue
+            return
 
         process_ahb_table(ahb_table, pruefi, output_path, file_type, collected_conditions)
 
@@ -306,21 +313,31 @@ def process_ahb_table(
 
 
 def scrape_pruefis(
-    pruefis: list[str], input_path: Path, output_path: Path, file_type: Literal["flatahb", "csv", "xlsx", "conditions"]
+    pruefi_to_file_mapping: dict[str, str | None],
+    basic_input_path: Path,
+    output_path: Path,
+    file_type: Literal["flatahb", "csv", "xlsx", "conditions"],
 ) -> None:
     """
-    starts the scraping process for provided pruefis
+    starts the scraping process for provided pruefi_to_file_mappings
     """
-    pruefis = load_pruefis_if_empty(pruefis)
+    pruefi_to_file_mapping = load_pruefis_if_empty(pruefi_to_file_mapping)
     validate_file_type(file_type)
 
-    valid_pruefis = validate_pruefis(pruefis)
+    valid_pruefis = validate_pruefis(list(pruefi_to_file_mapping.keys()))
+    valid_pruefi_to_file_mappings: dict[str, str | None] = {}
+    for pruefi in valid_pruefis:
+        valid_pruefi_to_file_mappings.update({pruefi: pruefi_to_file_mapping.get(pruefi, None)})
     path_to_document_mapping: dict[Path, docx.Document] = {}
     collected_conditions: Optional[dict[EdifactFormat, dict[str, str]]] = {} if "conditions" in file_type else None
 
-    for pruefi in valid_pruefis:
+    for pruefi, filename in valid_pruefi_to_file_mappings.items():
         try:
             logger.info("start looking for pruefi '%s'", pruefi)
+            input_path = basic_input_path  # To prevent multiple adding of filenames
+            # that would happen if filenames are added but never removed
+            if filename is not None:
+                input_path = basic_input_path / Path(filename)
             process_pruefi(pruefi, input_path, output_path, file_type, path_to_document_mapping, collected_conditions)
         # sorry for the pokemon catch
         except Exception as e:  # pylint: disable=broad-except
@@ -394,12 +411,14 @@ def main(
         else:
             output_path.mkdir(parents=True)
             click.secho(f"I created a new directory at {output_path}", fg="yellow")
-
+    pruefi_to_file_mapping: dict[str, str | None] = {
+        key: None for key in pruefis
+    }  # A mapping of a pruefi (key) to the name (+ path) of the file containing the prufi
     match flavour:
         case "pruefi":
             scrape_pruefis(
-                pruefis=pruefis,
-                input_path=input_path,
+                pruefi_to_file_mapping=pruefi_to_file_mapping,
+                basic_input_path=input_path,
                 output_path=output_path,
                 file_type=file_type,
             )
