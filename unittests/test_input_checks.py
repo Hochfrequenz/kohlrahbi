@@ -223,5 +223,5 @@ from kohlrahbi import get_valid_pruefis
     ],
 )
 def test_get_only_valid_pruefis(input_pruefis: list[str], expected_pruefis: list[str], known_pruefis: list[str] | None):
-    valid_pruefis = get_valid_pruefis(pruefis=input_pruefis, all_known_pruefis=known_pruefis)
+    valid_pruefis = get_valid_pruefis(list_of_pruefis=input_pruefis, all_known_pruefis=known_pruefis)
     assert valid_pruefis == expected_pruefis

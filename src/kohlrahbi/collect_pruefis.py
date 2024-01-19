@@ -53,7 +53,7 @@ all_pruefis = dict(sorted(all_pruefis.items()))
 
 toml_data = {
     "meta_data": {"updated_on": date.today()},
-    "content": {"pruefidentifikatoren": all_pruefis},
+    "pruefidentifikatoren": all_pruefis,
 }
 
 with open(Path(__file__).parent / Path("all_known_pruefis.toml"), "w", encoding="utf-8") as f:

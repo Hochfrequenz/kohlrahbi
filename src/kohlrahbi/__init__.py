@@ -27,16 +27,15 @@ _pruefi_pattern = re.compile(r"^[1-9]\d{4}$")
 
 
 # pylint:disable=anomalous-backslash-in-string
-def get_valid_pruefis(pruefis: list[str], all_known_pruefis: Optional[list[str]] = None) -> list[str]:
+def get_valid_pruefis(list_of_pruefis: list[str], all_known_pruefis: Optional[list[str]] = None) -> list[str]:
     """
-    This function returns a list with only those pruefis
-    which match the pruefi_pattern r"^[1-9]\d{4}$".
+    This function returns a list with only those pruefis which match the pruefi_pattern r"^[1-9]\d{4}$".
     It also supports unix wildcards like '*' and '?' if a list of known pruefis is given.
     E.g. '11*' for all pruefis starting with '11' or '*01' for all pruefis ending with '01'.
     """
     result: set[str] = set()
 
-    for pruefi in pruefis:
+    for pruefi in list_of_pruefis:
         if ("*" in pruefi or "?" in pruefi) and all_known_pruefis:
             filtered_pruefis = fnmatch.filter(all_known_pruefis, pruefi)
             result = result.union(filtered_pruefis)
@@ -94,16 +93,17 @@ def load_all_known_pruefis_from_file(
         state_of_kohlrahbi: dict[str, Any] = tomlkit.load(file)
 
     meta_data_section = state_of_kohlrahbi.get("meta_data")
-    content_section = state_of_kohlrahbi.get("content")
+    pruefi_to_file_mapping: dict[str, str | None] | None = state_of_kohlrahbi.get("pruefidentifikatoren", None)
 
     if meta_data_section is None:
         click.secho(f"There is no 'meta_data' section in the provided toml file: {path_to_all_known_pruefis}", fg="red")
         raise click.Abort()
-    if content_section is None:
-        click.secho(f"There is no 'content' section in the toml file: {path_to_all_known_pruefis}", fg="red")
+    if pruefi_to_file_mapping is None:
+        click.secho(
+            f"There is no 'pruefidentifikatoren' section in the toml file: {path_to_all_known_pruefis}", fg="red"
+        )
         raise click.Abort()
 
-    pruefi_to_file_mapping: dict[str, str | None] = content_section.get("pruefidentifikatoren")
     return pruefi_to_file_mapping
 
 
@@ -210,7 +210,7 @@ def scrape_change_histories(input_path: Path, output_path: Path) -> None:
 def load_pruefis_if_empty(pruefi_to_file_mapping: dict[str, str | None]) -> dict[str, str | None]:
     """
     If the user did not provide any pruefis we load all known pruefis
-    and the files containing them from the toml file.
+    and the paths to the file containing them from the toml file.
     """
     if not pruefi_to_file_mapping:
         click.secho("☝️ No pruefis were given. I will parse all known pruefis.", fg="yellow")
@@ -337,9 +337,7 @@ def scrape_pruefis(
             input_path = basic_input_path  # To prevent multiple adding of filenames
             # that would happen if filenames are added but never removed
             if filename is not None:
-                input_path = input_path.joinpath(
-                    Path(filename)
-                )  # To add the name of the file containing the pruefi, if known
+                input_path = basic_input_path / Path(filename)
             process_pruefi(pruefi, input_path, output_path, file_type, path_to_document_mapping, collected_conditions)
         # sorry for the pokemon catch
         except Exception as e:  # pylint: disable=broad-except
