@@ -1,6 +1,7 @@
 """
 This module contains all functions to define the type of a row of the tables in an AHB.
 """
+
 from docx.oxml.ns import qn  # type:ignore[import]
 from docx.oxml.parser import OxmlElement  # type:ignore[import]
 from docx.shared import RGBColor  # type:ignore[import]
