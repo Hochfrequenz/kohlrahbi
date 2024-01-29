@@ -10,7 +10,7 @@ attrs==23.2.0
     #   maus
 click==8.1.7
     # via -r requirements.in
-colorlog==6.8.0
+colorlog==6.8.2
     # via -r requirements.in
 et-xmlfile==1.1.0
     # via openpyxl
