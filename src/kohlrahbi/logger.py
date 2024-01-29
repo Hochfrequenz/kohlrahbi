@@ -1,6 +1,7 @@
 """
 This module provides a logger instance for kohlrahbi
 """
+
 import logging.config
 from pathlib import Path
 

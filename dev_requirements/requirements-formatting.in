@@ -1,0 +1,3 @@
+# specific requirements for the tox formatting environment
+black
+isort
