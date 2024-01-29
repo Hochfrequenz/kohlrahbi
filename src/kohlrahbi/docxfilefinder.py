@@ -1,6 +1,7 @@
 """
 This module contains the DocxFileFinder class.
 """
+
 from itertools import groupby
 from pathlib import Path
 

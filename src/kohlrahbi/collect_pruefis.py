@@ -4,6 +4,7 @@ You have to define a path where all AHB docx files are.
 Use this script to create an updated version of the all_known_pruefis.toml file.
 You should run it every time there is an update at edi-energy.de.
 """
+
 from datetime import date
 from pathlib import Path
 

@@ -1,6 +1,7 @@
 """
 This module contains the class BodyCell
 """
+
 import attrs
 import pandas as pd
 from docx.table import _Cell  # type:ignore[import]
