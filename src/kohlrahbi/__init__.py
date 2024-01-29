@@ -1,6 +1,7 @@
 """
 kohlrahbi is a package to scrape AHBs (in docx format)
 """
+
 import fnmatch
 import gc
 import json

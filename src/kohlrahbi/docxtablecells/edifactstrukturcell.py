@@ -1,6 +1,7 @@
 """
 This module contains the class EdifactStrukturCell
 """
+
 import re
 
 import attrs

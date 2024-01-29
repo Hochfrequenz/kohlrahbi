@@ -1,6 +1,7 @@
 """
 This module provides the AhbTable class
 """
+
 from pathlib import Path
 from typing import Union
 
