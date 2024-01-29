@@ -1,6 +1,7 @@
 """
 tests all the features the kohlrahbi package provides to process Docx files (by using the docx package)
 """
+
 import pytest  # type:ignore[import]
 from _pytest.fixtures import SubRequest  # type:ignore[import]
 from docx import Document  # type:ignore[import]
