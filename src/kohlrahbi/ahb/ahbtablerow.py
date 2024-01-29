@@ -1,6 +1,7 @@
 """
 This module contains the class AhbTableRow
 """
+
 from typing import Optional
 
 import pandas as pd

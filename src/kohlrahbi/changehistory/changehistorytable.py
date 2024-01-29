@@ -1,6 +1,7 @@
 """
 This module provides the ChangeHistoryTable class
 """
+
 import attrs
 import pandas as pd
 from docx.table import Table  # type:ignore[import]

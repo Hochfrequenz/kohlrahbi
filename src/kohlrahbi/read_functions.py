@@ -1,6 +1,7 @@
 """
 A collection of functions to get information from AHB tables.
 """
+
 import re
 from datetime import datetime
 from typing import Generator, Optional, Union
