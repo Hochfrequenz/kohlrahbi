@@ -1,3 +1,6 @@
+
+![kohlrahbi-logo](kohlrahbi-image.png)
+
 # KohlrAHBi
 ![Unittests status badge](https://github.com/Hochfrequenz/kohlrahbi/workflows/Unittests/badge.svg)
 ![Coverage status badge](https://github.com/Hochfrequenz/kohlrahbi/workflows/Coverage/badge.svg)
