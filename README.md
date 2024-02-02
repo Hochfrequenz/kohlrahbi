@@ -1,5 +1,6 @@
-
-![kohlrahbi-logo](kohlrahbi-image.png)
+<p align="center">
+  <img src="kohlrahbi-image.png" alt="kohlrahbi-logo" width="512" height="512">
+</p>
 
 # KohlrAHBi
 ![Unittests status badge](https://github.com/Hochfrequenz/kohlrahbi/workflows/Unittests/badge.svg)
