@@ -18,7 +18,7 @@ lxml==4.9.3
     # via python-docx
 marshmallow==3.19.0
     # via maus
-maus==0.4.1
+maus==0.4.2
     # via -r requirements.in
 more-itertools==9.0.0
     # via maus
@@ -34,7 +34,7 @@ python-dateutil==2.8.2
     # via pandas
 python-docx==1.1.0
     # via -r requirements.in
-pytz==2023.4
+pytz==2024.1
     # via pandas
 six==1.16.0
     # via python-dateutil
