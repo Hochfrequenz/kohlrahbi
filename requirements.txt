@@ -38,7 +38,7 @@ pytz==2024.1
     # via pandas
 six==1.16.0
     # via python-dateutil
-tomlkit==0.12.3
+tomlkit==0.12.4
     # via -r requirements.in
 typing-extensions==4.8.0
     # via python-docx
