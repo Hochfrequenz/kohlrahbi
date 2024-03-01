@@ -4,8 +4,8 @@
 #
 #    pip-compile '.\requirements-test_packaging.in'
 #
-build==1.0.3
-    # via -r requirements-test_packaging.in
+build==1.1.1
+    # via -r dev_requirements/requirements-test_packaging.in
 certifi==2023.11.17
     # via requests
 cffi==1.16.0
@@ -65,7 +65,7 @@ rich==13.7.0
 secretstorage==3.3.3
     # via keyring
 twine==5.0.0
-    # via -r requirements-test_packaging.in
+    # via -r dev_requirements/requirements-test_packaging.in
 urllib3==2.1.0
     # via
     #   requests
