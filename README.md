@@ -11,7 +11,7 @@
 
 
 Kohlrahbi generates machine-readable files from AHB documents.
-Its sister is [MIG_mose](https://github.com/Hochfrequenz/migmose).
+Kohlrahbi's sister is [MIG_mose](https://github.com/Hochfrequenz/migmose).
 
 ## Rationale
 German utilities exchange data using [EDIFACT](https://en.wikipedia.org/wiki/EDIFACT); This is called market communication (mako).
