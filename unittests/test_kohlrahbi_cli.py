@@ -53,9 +53,9 @@ class TestCli:
         argument_options: list[str] = [
             "--pruefis",
             pruefis,
-            "--input_path",
+            "--input-path",
             str(input_path),
-            "--output_path",
+            "--output-path",
             str(output_path),
         ]
 
@@ -113,7 +113,7 @@ class TestCli:
         input_path: Path = Path(datafiles) / Path(input_folder_name)
         output_path: Path = Path(datafiles) / Path(output_folder_name)
 
-        argument_options.extend(["--input_path", str(input_path), "--output_path", str(output_path)])
+        argument_options.extend(["--input-path", str(input_path), "--output-path", str(output_path)])
 
         # Call the CLI tool with the desired arguments
         response: Result = runner.invoke(main, argument_options)

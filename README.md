@@ -87,7 +87,7 @@ If you want to extract all prüfidentifikatoren, you can run the following comma
 For the following steps we assume that you cloned our [edi_energy_mirror](https://github.com/Hochfrequenz/edi_energy_mirror/) to a neighbouring directory.
 
 ```bash
-kohlrahbi --input_path ../edi_energy_mirror/edi_energy_de/current --output_path ./output/ --file-type flatahb
+kohlrahbi --input-path ../edi_energy_mirror/edi_energy_de/current --output-path ./output/ --file-type flatahb
 ```
 
 This will extract all prüfidentifikatoren listed in [all_known_pruefis.toml](src/kohlrahbi/all_known_pruefis.toml) and save them in the provided output path.
@@ -101,13 +101,13 @@ The easiest way to be compliant with this naming schema is to clone our [edi_ene
 If you want to extract a specific prüfidentifikator, you can run the following command.
 
 ```bash
-kohlrahbi --input_path ../edi_energy_mirror/edi_energy_de/current --output_path ./output/ --pruefis 13002 --file-type xlsx
+kohlrahbi --input-path ../edi_energy_mirror/edi_energy_de/current --output-path ./output/ --pruefis 13002 --file-type xlsx
 ```
 
 You can also provide multiple prüfidentifikatoren.
 
 ```bash
-kohlrahbi --input_path ../edi_energy_mirror/edi_energy_de/current --output_path ./output/ --pruefis 13002 --pruefis 13003 --pruefis 13005 --file-type csv
+kohlrahbi --input-path ../edi_energy_mirror/edi_energy_de/current --output-path ./output/ --pruefis 13002 --pruefis 13003 --pruefis 13005 --file-type csv
 ```
 ### Results
 There is a kohlrahbi based CI pipeline from the edi_energy_mirror mentioned above to the repository [machine-readable_anwendungshandbuecher](https://github.com/Hochfrequenz/machine-readable_anwendungshandbuecher) where you can find scraped AHBs as JSON, CSV or Excel files.
@@ -115,7 +115,7 @@ There is a kohlrahbi based CI pipeline from the edi_energy_mirror mentioned abov
 ### Export ConditionKeys and ConditionTexts
 For example to export condition.json files to [edi_energy_ahb_conditions_and_packages](https://github.com/Hochfrequenz/edi_energy_ahb_conditions_and_packages). Works best if no flags for "Prüfindentifikatoren" (--pruefis). In this case all known "Prüfidentifikatoren" are scanned. Thus all related conditions are gathered.
 ```bash
-kohlrahbi --file-type conditions --input_path ../edi_energy_mirror/edi_energy_de/current --output_path ./output/edi_energy_ahb_conditions_and_packages/aktuelleFV
+kohlrahbi --file-type conditions --input-path ../edi_energy_mirror/edi_energy_de/current --output-path ./output/edi_energy_ahb_conditions_and_packages/aktuelleFV
 ```
 
 ## Workflow
