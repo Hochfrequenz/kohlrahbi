@@ -15,7 +15,7 @@ import click
 import docx  # type:ignore[import]
 import pandas as pd
 import tomlkit
-from maus.edifact import EdifactFormat
+from maus.edifact import EdifactFormat, get_format_of_pruefidentifikator
 
 from kohlrahbi.ahb.ahbtable import AhbTable
 from kohlrahbi.changehistory.changehistorytable import ChangeHistoryTable
@@ -219,6 +219,17 @@ def load_pruefis_if_empty(pruefi_to_file_mapping: dict[str, str | None]) -> dict
     return pruefi_to_file_mapping
 
 
+def find_all_files_from_all_pruefis(pruefi_to_file_mapping: dict[str, str | None]) -> dict[EdifactFormat, list[str]]:
+    """takes list of all pruefis with according files and returns a dict edifactformat-> list(filepaths)"""
+    format_to_files_mapping: dict[EdifactFormat, list[Path]] = {}
+    for pruefi, filename in pruefi_to_file_mapping.items():
+        if format_to_files_mapping.get(get_format_of_pruefidentifikator(pruefi)) is None:
+            format_to_files_mapping[get_format_of_pruefidentifikator(pruefi)] = [filename]
+        elif filename not in format_to_files_mapping[get_format_of_pruefidentifikator(pruefi)]:
+            format_to_files_mapping[get_format_of_pruefidentifikator(pruefi)].append(filename)
+    return format_to_files_mapping
+
+
 def validate_file_type(file_type: str):
     """
     Validate the file type parameter.
@@ -279,6 +290,7 @@ def process_package_conditions(
     input_path: Path,
     path_to_document_mapping: dict,
     collected_conditions: Optional[dict[EdifactFormat, dict[str, str]]],
+    edifact_format: EdifactFormat,
 ):
     """
     Processes one docx document.
@@ -293,7 +305,7 @@ def process_package_conditions(
 
     package_table = get_package_table(document=doc)
     if package_table:
-        package_table.collect_conditions(collected_conditions, EdifactFormat.UTILMD)  # type: ignore[arg-type]
+        package_table.collect_conditions(collected_conditions, edifact_format)  # type: ignore[arg-type]
 
 
 def get_or_cache_document(ahb_file_path: Path, path_to_document_mapping: dict) -> docx.Document:
@@ -392,14 +404,14 @@ def scrape_conditions(
         # sorry for the pokemon catch
         except Exception as e:  # pylint: disable=broad-except
             logger.exception("Error processing pruefi '%s': %s", pruefi, str(e))
-    test_path = Path(
-        "C:\\GitRepos\\edi_energy_mirror\\edi_energy_de\\current"
-        "\\UTILMDAHBStrom-informatorischeLesefassung1.1"
-        "KonsolidierteLesefassungmitFehlerkorrekturenStand12.12.2023_20240402_20231212.docx"
-    )
-    # pylint: disable=too-many-function-args
-    # type: ignore[call-arg, arg-type]
-    process_package_conditions(test_path, path_to_document_mapping, collected_conditions)
+    all_format_files = find_all_files_from_all_pruefis(valid_pruefi_to_file_mappings)
+    for edifact_format, files in all_format_files.items():
+        for file in files:
+            # pylint: disable=too-many-function-args
+            # type: ignore[call-arg, arg-type]
+            process_package_conditions(
+                basic_input_path / Path(file), path_to_document_mapping, collected_conditions, edifact_format
+            )
     dump_conditions_json(output_path, collected_conditions)  # type: ignore[arg-type]
 
 
