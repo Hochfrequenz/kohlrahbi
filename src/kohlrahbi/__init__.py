@@ -21,7 +21,7 @@ from kohlrahbi.ahb.ahbtable import AhbTable
 from kohlrahbi.changehistory.changehistorytable import ChangeHistoryTable
 from kohlrahbi.docxfilefinder import DocxFileFinder
 from kohlrahbi.logger import logger
-from kohlrahbi.read_functions import get_ahb_table, get_change_history_table
+from kohlrahbi.read_functions import get_ahb_table, get_change_history_table, get_package_table
 from kohlrahbi.unfoldedahb.unfoldedahbtable import UnfoldedAhb
 
 _pruefi_pattern = re.compile(r"^[1-9]\d{4}$")
@@ -270,10 +270,32 @@ def process_pruefi(
             return
 
         ahb_table = get_ahb_table(document=doc, pruefi=pruefi)
-        if not ahb_table:
-            continue
+        if ahb_table:
+            return
 
         process_ahb_table(ahb_table, pruefi, output_path, file_type, collected_conditions)
+
+
+def process_package_conditions(
+    input_path: Path,
+    output_path: Path,
+    file_type: str,
+    path_to_document_mapping: dict,
+    collected_conditions: Optional[dict[EdifactFormat, dict[str, str]]] = None,
+):
+    """
+    Processes one docx document.
+    If the input path ends with .docx, we assume that the file containing the pruefi is given.
+    Therefore, we only access that file.
+    """
+    if not input_path.suffix == ".docx":
+        raise ValueError("The input path for scraping package conditions must be a docx file. Given was %s", input_path)
+    doc = get_or_cache_document(input_path, path_to_document_mapping)
+    if not doc:
+        return
+
+    package_table = get_package_table(document=doc)
+    package_table.collect_conditions(collected_conditions, EdifactFormat.UTILMD)
 
 
 def get_or_cache_document(ahb_file_path: Path, path_to_document_mapping: dict) -> docx.Document:
@@ -372,7 +394,10 @@ def scrape_conditions(
         # sorry for the pokemon catch
         except Exception as e:  # pylint: disable=broad-except
             logger.exception("Error processing pruefi '%s': %s", pruefi, str(e))
-
+    test_path = Path(
+        "C:\\GitRepos\\edi_energy_mirror\\edi_energy_de\\current\\UTILMDAHBStrom-informatorischeLesefassung1.1KonsolidierteLesefassungmitFehlerkorrekturenStand12.12.2023_20240402_20231212.docx"
+    )
+    process_package_conditions(test_path, output_path, "conditions", path_to_document_mapping, collected_conditions)
     dump_conditions_json(output_path, collected_conditions)
 
 
