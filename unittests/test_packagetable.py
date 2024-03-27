@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-import docx
+import docx  # type: ignore[import-untyped]
 import pandas as pd
 from maus.edifact import EdifactFormat
 

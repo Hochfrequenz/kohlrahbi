@@ -3,7 +3,6 @@ class which contains AHB package condition table
 """
 
 import re
-from typing import Optional
 
 import attrs
 import pandas as pd
@@ -41,9 +40,7 @@ class AhbPackageTable:
         df = pd.DataFrame(data, columns=headers)
         return cls(table=df)
 
-    def collect_conditions(
-        self, already_known_conditions: Optional[dict[EdifactFormat, dict[str, str]]], edifact_format: EdifactFormat
-    ) -> None:
+    def collect_conditions(self, already_known_conditions: dict, edifact_format: EdifactFormat) -> None:
         """collect conditions from package table and store them in already_known_conditions dict."""
         if already_known_conditions.get(edifact_format) is None:
             already_known_conditions[edifact_format] = {}

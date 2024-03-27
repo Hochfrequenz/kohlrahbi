@@ -272,14 +272,13 @@ def process_pruefi(
         ahb_table = get_ahb_table(document=doc, pruefi=pruefi)
         if not ahb_table:
             continue
-        else:
-            process_ahb_table(ahb_table, pruefi, output_path, file_type, collected_conditions)
+        process_ahb_table(ahb_table, pruefi, output_path, file_type, collected_conditions)
 
 
 def process_package_conditions(
     input_path: Path,
     path_to_document_mapping: dict,
-    collected_conditions: Optional[dict[EdifactFormat, dict[str, str]]] = None,
+    collected_conditions: Optional[dict[EdifactFormat, dict[str, str]]],
 ):
     """
     Processes one docx document.
@@ -294,7 +293,7 @@ def process_package_conditions(
 
     package_table = get_package_table(document=doc)
     if package_table:
-        package_table.collect_conditions(collected_conditions, EdifactFormat.UTILMD)
+        package_table.collect_conditions(collected_conditions, EdifactFormat.UTILMD)  # type: ignore[arg-type]
 
 
 def get_or_cache_document(ahb_file_path: Path, path_to_document_mapping: dict) -> docx.Document:
@@ -400,8 +399,8 @@ def scrape_conditions(
     )
     # pylint: disable=too-many-function-args
     # type: ignore[call-arg, arg-type]
-    process_package_conditions(test_path, "conditions", path_to_document_mapping, collected_conditions)
-    dump_conditions_json(output_path, collected_conditions)
+    process_package_conditions(test_path, path_to_document_mapping, collected_conditions)
+    dump_conditions_json(output_path, collected_conditions)  # type: ignore[arg-type]
 
 
 @click.command()
@@ -452,7 +451,7 @@ def main(
     pruefis: list[str],
     input_path: Path,
     output_path: Path,
-    file_type: Literal["flatahb", "csv", "xlsx", "conditions"],
+    file_type: Literal["flatahb", "csv", "xlsx"],
     assume_yes: bool,
 ) -> None:
     """
