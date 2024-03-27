@@ -271,7 +271,7 @@ def process_pruefi(
 
         ahb_table = get_ahb_table(document=doc, pruefi=pruefi)
         if not ahb_table:
-            return
+            continue
 
         process_ahb_table(ahb_table, pruefi, output_path, file_type, collected_conditions)
 
