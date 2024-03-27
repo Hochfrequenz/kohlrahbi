@@ -172,7 +172,7 @@ backup_documents/
 *.csv
 *.json
 *.7z
-
+!unittests/dataframes/*.json
 # Word temporary
 ~$*.doc*
 

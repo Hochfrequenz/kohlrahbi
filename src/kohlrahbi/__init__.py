@@ -30,7 +30,7 @@ _pruefi_pattern = re.compile(r"^[1-9]\d{4}$")
 # pylint:disable=anomalous-backslash-in-string
 def get_valid_pruefis(list_of_pruefis: list[str], all_known_pruefis: Optional[list[str]] = None) -> list[str]:
     """
-    This function returns a list with only those pruefis which match the pruefi_pattern r"^[1-9]\d{4}$".
+    This function returns a list with only those pruefis which match the pruefi_pattern r"^[1-9]\\d{4}$".
     It also supports unix wildcards like '*' and '?' if a list of known pruefis is given.
     E.g. '11*' for all pruefis starting with '11' or '*01' for all pruefis ending with '01'.
     """
@@ -270,10 +270,10 @@ def process_pruefi(
             return
 
         ahb_table = get_ahb_table(document=doc, pruefi=pruefi)
-        if ahb_table:
-            return
-
-        process_ahb_table(ahb_table, pruefi, output_path, file_type, collected_conditions)
+        if not ahb_table:
+            continue
+        else:
+            process_ahb_table(ahb_table, pruefi, output_path, file_type, collected_conditions)
 
 
 def process_package_conditions(
@@ -287,13 +287,14 @@ def process_package_conditions(
     Therefore, we only access that file.
     """
     if not input_path.suffix == ".docx":
-        raise ValueError("The input path for scraping package conditions must be a docx file. Given was %s", input_path)
+        raise ValueError(("The input path %s for scraping package conditions must be a docx file.", input_path))
     doc = get_or_cache_document(input_path, path_to_document_mapping)
     if not doc:
         return
 
     package_table = get_package_table(document=doc)
-    package_table.collect_conditions(collected_conditions, EdifactFormat.UTILMD)
+    if package_table:
+        package_table.collect_conditions(collected_conditions, EdifactFormat.UTILMD)
 
 
 def get_or_cache_document(ahb_file_path: Path, path_to_document_mapping: dict) -> docx.Document:
@@ -393,8 +394,12 @@ def scrape_conditions(
         except Exception as e:  # pylint: disable=broad-except
             logger.exception("Error processing pruefi '%s': %s", pruefi, str(e))
     test_path = Path(
-        "C:\\GitRepos\\edi_energy_mirror\\edi_energy_de\\current\\UTILMDAHBStrom-informatorischeLesefassung1.1KonsolidierteLesefassungmitFehlerkorrekturenStand12.12.2023_20240402_20231212.docx"
+        "C:\\GitRepos\\edi_energy_mirror\\edi_energy_de\\current"
+        "\\UTILMDAHBStrom-informatorischeLesefassung1.1"
+        "KonsolidierteLesefassungmitFehlerkorrekturenStand12.12.2023_20240402_20231212.docx"
     )
+    # pylint: disable=too-many-function-args
+    # type: ignore[call-arg, arg-type]
     process_package_conditions(test_path, "conditions", path_to_document_mapping, collected_conditions)
     dump_conditions_json(output_path, collected_conditions)
 
@@ -478,7 +483,10 @@ def main(
             scrape_change_histories(input_path=input_path, output_path=output_path)
         case "conditions":
             if file_type:
-                message = "ℹ You specified the parameter --file-type in combination with conditions flavour. I will ignore this."
+                message = (
+                    "ℹ You specified the parameter --file-type in combination with conditions flavour."
+                    "I will ignore this."
+                )
                 click.secho(message, fg="yellow")
                 logger.warning(message)
             scrape_conditions(

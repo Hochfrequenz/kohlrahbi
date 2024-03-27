@@ -16,7 +16,7 @@ from maus.edifact import EdifactFormatVersion, get_edifact_format_version
 
 from kohlrahbi.ahb.ahbsubtable import AhbSubTable
 from kohlrahbi.ahb.ahbtable import AhbTable
-from kohlrahbi.ahb.packagetable import AhbPackageTable, DocxTable
+from kohlrahbi.ahb.packagetable import AhbPackageTable
 from kohlrahbi.changehistory.changehistorytable import ChangeHistoryTable
 from kohlrahbi.logger import logger
 from kohlrahbi.seed import Seed
@@ -156,7 +156,7 @@ def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
     return ahb_table
 
 
-def get_package_table(document: Document) -> Optional[AhbTable]:
+def get_package_table(document: Document) -> Optional[AhbPackageTable]:
     """
     Reads a docx file and extracts all conditions from the package table.
     If it is not found or we reached the end of the AHB document

@@ -1,17 +1,25 @@
+"""
+class which contains AHB package condition table
+"""
+
 import re
+from typing import Optional
 
 import attrs
 import pandas as pd
-from docx.table import Table as DocxTable
+from docx.table import Table as DocxTable  # type: ignore[import-untyped]
 from maus.edifact import EdifactFormat
 
 from kohlrahbi.logger import logger
+
+# pylint: disable=duplicate-code
 
 
 @attrs.define(auto_attribs=True, kw_only=True)
 class AhbPackageTable:
     """
-    This class contains the AHB Package table as you see it in the beginning AHB documents, but in a machine readable format.
+    This class contains the AHB Package table as you see it in the beginning AHB documents,
+    but in a machine readable format.
     """
 
     table: pd.DataFrame
@@ -33,7 +41,10 @@ class AhbPackageTable:
         df = pd.DataFrame(data, columns=headers)
         return cls(table=df)
 
-    def collect_conditions(self, already_known_conditions: dict, edifact_format: EdifactFormat) -> None:
+    def collect_conditions(
+        self, already_known_conditions: Optional[dict[EdifactFormat, dict[str, str]]], edifact_format: EdifactFormat
+    ) -> None:
+        """collect conditions from package table and store them in already_known_conditions dict."""
         if already_known_conditions.get(edifact_format) is None:
             already_known_conditions[edifact_format] = {}
         df = self.table
