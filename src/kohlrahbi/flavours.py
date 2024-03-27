@@ -1,3 +1,7 @@
+"""
+This module contains the enum for the different kohlrahbi flavours.
+"""
+
 from enum import Enum
 
 
