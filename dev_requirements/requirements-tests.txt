@@ -8,7 +8,7 @@ dictdiffer==0.9.0
     # via -r dev_requirements/requirements-tests.in
 iniconfig==2.0.0
     # via pytest
-packaging==22.0
+packaging==23.2
     # via pytest
 pluggy==1.4.0
     # via pytest

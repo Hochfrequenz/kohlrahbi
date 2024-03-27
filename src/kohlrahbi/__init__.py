@@ -15,13 +15,13 @@ import click
 import docx  # type:ignore[import]
 import pandas as pd
 import tomlkit
-from maus.edifact import EdifactFormat
+from maus.edifact import EdifactFormat, get_format_of_pruefidentifikator
 
 from kohlrahbi.ahb.ahbtable import AhbTable
 from kohlrahbi.changehistory.changehistorytable import ChangeHistoryTable
 from kohlrahbi.docxfilefinder import DocxFileFinder
 from kohlrahbi.logger import logger
-from kohlrahbi.read_functions import get_ahb_table, get_change_history_table
+from kohlrahbi.read_functions import get_ahb_table, get_change_history_table, get_package_table
 from kohlrahbi.unfoldedahb.unfoldedahbtable import UnfoldedAhb
 
 _pruefi_pattern = re.compile(r"^[1-9]\d{4}$")
@@ -30,7 +30,7 @@ _pruefi_pattern = re.compile(r"^[1-9]\d{4}$")
 # pylint:disable=anomalous-backslash-in-string
 def get_valid_pruefis(list_of_pruefis: list[str], all_known_pruefis: Optional[list[str]] = None) -> list[str]:
     """
-    This function returns a list with only those pruefis which match the pruefi_pattern r"^[1-9]\d{4}$".
+    This function returns a list with only those pruefis which match the pruefi_pattern r"^[1-9]\\d{4}$".
     It also supports unix wildcards like '*' and '?' if a list of known pruefis is given.
     E.g. '11*' for all pruefis starting with '11' or '*01' for all pruefis ending with '01'.
     """
@@ -219,6 +219,17 @@ def load_pruefis_if_empty(pruefi_to_file_mapping: dict[str, str | None]) -> dict
     return pruefi_to_file_mapping
 
 
+def find_all_files_from_all_pruefis(pruefi_to_file_mapping: dict[str, str | None]) -> dict[EdifactFormat, list[str]]:
+    """takes list of all pruefis with according files and returns a dict edifactformat-> list(filepaths)"""
+    format_to_files_mapping: dict[EdifactFormat, list[Path]] = {}
+    for pruefi, filename in pruefi_to_file_mapping.items():
+        if format_to_files_mapping.get(get_format_of_pruefidentifikator(pruefi)) is None:
+            format_to_files_mapping[get_format_of_pruefidentifikator(pruefi)] = [filename]
+        elif filename not in format_to_files_mapping[get_format_of_pruefidentifikator(pruefi)]:
+            format_to_files_mapping[get_format_of_pruefidentifikator(pruefi)].append(filename)
+    return format_to_files_mapping
+
+
 def validate_file_type(file_type: str):
     """
     Validate the file type parameter.
@@ -247,7 +258,7 @@ def process_pruefi(
     output_path: Path,
     file_type: str,
     path_to_document_mapping: dict,
-    collected_conditions: Optional[dict[EdifactFormat, dict[str, str]]],
+    collected_conditions: Optional[dict[EdifactFormat, dict[str, str]]] = None,
 ):
     """
     Process one pruefi.
@@ -271,9 +282,30 @@ def process_pruefi(
 
         ahb_table = get_ahb_table(document=doc, pruefi=pruefi)
         if not ahb_table:
-            return
-
+            continue
         process_ahb_table(ahb_table, pruefi, output_path, file_type, collected_conditions)
+
+
+def process_package_conditions(
+    input_path: Path,
+    path_to_document_mapping: dict,
+    collected_conditions: Optional[dict[EdifactFormat, dict[str, str]]],
+    edifact_format: EdifactFormat,
+):
+    """
+    Processes one docx document.
+    If the input path ends with .docx, we assume that the file containing the pruefi is given.
+    Therefore, we only access that file.
+    """
+    if not input_path.suffix == ".docx":
+        raise ValueError(("The input path %s for scraping package conditions must be a docx file.", input_path))
+    doc = get_or_cache_document(input_path, path_to_document_mapping)
+    if not doc:
+        return
+
+    package_table = get_package_table(document=doc)
+    if package_table:
+        package_table.collect_conditions(collected_conditions, edifact_format)  # type: ignore[arg-type]
 
 
 def get_or_cache_document(ahb_file_path: Path, path_to_document_mapping: dict) -> docx.Document:
@@ -317,7 +349,7 @@ def scrape_pruefis(
     pruefi_to_file_mapping: dict[str, str | None],
     basic_input_path: Path,
     output_path: Path,
-    file_type: Literal["flatahb", "csv", "xlsx", "conditions"],
+    file_type: Literal["flatahb", "csv", "xlsx"],
 ) -> None:
     """
     starts the scraping process for provided pruefi_to_file_mappings
@@ -330,7 +362,6 @@ def scrape_pruefis(
     for pruefi in valid_pruefis:
         valid_pruefi_to_file_mappings.update({pruefi: pruefi_to_file_mapping.get(pruefi, None)})
     path_to_document_mapping: dict[Path, docx.Document] = {}
-    collected_conditions: Optional[dict[EdifactFormat, dict[str, str]]] = {} if "conditions" in file_type else None
 
     for pruefi, filename in valid_pruefi_to_file_mappings.items():
         try:
@@ -339,22 +370,58 @@ def scrape_pruefis(
             # that would happen if filenames are added but never removed
             if filename is not None:
                 input_path = basic_input_path / Path(filename)
-            process_pruefi(pruefi, input_path, output_path, file_type, path_to_document_mapping, collected_conditions)
+            process_pruefi(pruefi, input_path, output_path, file_type, path_to_document_mapping)
         # sorry for the pokemon catch
         except Exception as e:  # pylint: disable=broad-except
             logger.exception("Error processing pruefi '%s': %s", pruefi, str(e))
 
-    if collected_conditions is not None:
-        dump_conditions_json(output_path, collected_conditions)
+
+def scrape_conditions(
+    pruefi_to_file_mapping: dict[str, str | None],
+    basic_input_path: Path,
+    output_path: Path,
+) -> None:
+    """
+    starts the scraping process for conditions of all formats
+    """
+    pruefi_to_file_mapping = load_pruefis_if_empty(pruefi_to_file_mapping)
+    valid_pruefis = validate_pruefis(list(pruefi_to_file_mapping.keys()))
+    valid_pruefi_to_file_mappings: dict[str, str | None] = {}
+    for pruefi in valid_pruefis:
+        valid_pruefi_to_file_mappings.update({pruefi: pruefi_to_file_mapping.get(pruefi, None)})
+    path_to_document_mapping: dict[Path, docx.Document] = {}
+    collected_conditions: Optional[dict[EdifactFormat, dict[str, str]]] = {}
+    for pruefi, filename in valid_pruefi_to_file_mappings.items():
+        try:
+            logger.info("start looking for pruefi '%s'", pruefi)
+            input_path = basic_input_path  # To prevent multiple adding of filenames
+            # that would happen if filenames are added but never removed
+            if filename is not None:
+                input_path = basic_input_path / Path(filename)
+            process_pruefi(
+                pruefi, input_path, output_path, "conditions", path_to_document_mapping, collected_conditions
+            )
+        # sorry for the pokemon catch
+        except Exception as e:  # pylint: disable=broad-except
+            logger.exception("Error processing pruefi '%s': %s", pruefi, str(e))
+    all_format_files = find_all_files_from_all_pruefis(valid_pruefi_to_file_mappings)
+    for edifact_format, files in all_format_files.items():
+        for file in files:
+            # pylint: disable=too-many-function-args
+            # type: ignore[call-arg, arg-type]
+            process_package_conditions(
+                basic_input_path / Path(file), path_to_document_mapping, collected_conditions, edifact_format
+            )
+    dump_conditions_json(output_path, collected_conditions)  # type: ignore[arg-type]
 
 
 @click.command()
 @click.option(
     "-f",
     "--flavour",
-    type=click.Choice(["pruefi", "changehistory"], case_sensitive=False),
+    type=click.Choice(["pruefi", "changehistory", "conditions"], case_sensitive=False),
     default="pruefi",
-    help='Choose between "pruefi" and "changehistory".',
+    help='Choose between "pruefi", "changehistory" and "conditions".',
 )
 @click.option(
     "-p",
@@ -396,7 +463,7 @@ def main(
     pruefis: list[str],
     input_path: Path,
     output_path: Path,
-    file_type: Literal["flatahb", "csv", "xlsx", "conditions"],
+    file_type: Literal["flatahb", "csv", "xlsx"],
     assume_yes: bool,
 ) -> None:
     """
@@ -425,6 +492,19 @@ def main(
             )
         case "changehistory":
             scrape_change_histories(input_path=input_path, output_path=output_path)
+        case "conditions":
+            if file_type:
+                message = (
+                    "ℹ You specified the parameter --file-type in combination with conditions flavour."
+                    "I will ignore this."
+                )
+                click.secho(message, fg="yellow")
+                logger.warning(message)
+            scrape_conditions(
+                pruefi_to_file_mapping=pruefi_to_file_mapping,
+                basic_input_path=input_path,
+                output_path=output_path,
+            )
 
 
 def dump_conditions_json(output_directory_path: Path, already_known_conditions: dict) -> None:
