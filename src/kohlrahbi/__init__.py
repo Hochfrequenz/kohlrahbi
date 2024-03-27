@@ -278,8 +278,6 @@ def process_pruefi(
 
 def process_package_conditions(
     input_path: Path,
-    output_path: Path,
-    file_type: str,
     path_to_document_mapping: dict,
     collected_conditions: Optional[dict[EdifactFormat, dict[str, str]]] = None,
 ):
@@ -397,7 +395,7 @@ def scrape_conditions(
     test_path = Path(
         "C:\\GitRepos\\edi_energy_mirror\\edi_energy_de\\current\\UTILMDAHBStrom-informatorischeLesefassung1.1KonsolidierteLesefassungmitFehlerkorrekturenStand12.12.2023_20240402_20231212.docx"
     )
-    process_package_conditions(test_path, output_path, "conditions", path_to_document_mapping, collected_conditions)
+    process_package_conditions(test_path, "conditions", path_to_document_mapping, collected_conditions)
     dump_conditions_json(output_path, collected_conditions)
 
 
