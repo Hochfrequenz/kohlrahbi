@@ -20,6 +20,7 @@ from maus.edifact import EdifactFormat
 from kohlrahbi.ahb.ahbtable import AhbTable
 from kohlrahbi.changehistory.changehistorytable import ChangeHistoryTable
 from kohlrahbi.docxfilefinder import DocxFileFinder
+from kohlrahbi.flavours import Flavour
 from kohlrahbi.logger import logger
 from kohlrahbi.read_functions import get_ahb_table, get_change_history_table
 from kohlrahbi.unfoldedahb.unfoldedahbtable import UnfoldedAhb
@@ -208,6 +209,25 @@ def scrape_change_histories(input_path: Path, output_path: Path) -> None:
     save_change_histories_to_excel(change_history_collection, output_path)
 
 
+def scrape_conditions(input_path: Path, output_path: Path) -> None:
+    """
+    starts the scraping process of the conditions
+
+    goal is to have a json file with all conditions
+
+    """
+    logger.info("👀 Start looking for conditions")
+    ahb_file_paths = find_docx_files(input_path)
+
+    conditions_collection = {}
+    for file_path in ahb_file_paths:
+        df = process_docx_file(file_path)
+        if df is not None:
+            conditions_collection[create_sheet_name(file_path.name)] = df
+
+    save_conditions_to_excel(conditions_collection, output_path)
+
+
 def load_pruefis_if_empty(pruefi_to_file_mapping: dict[str, str | None]) -> dict[str, str | None]:
     """
     If the user did not provide any pruefis we load all known pruefis
@@ -352,9 +372,9 @@ def scrape_pruefis(
 @click.option(
     "-f",
     "--flavour",
-    type=click.Choice(["pruefi", "changehistory"], case_sensitive=False),
-    default="pruefi",
-    help='Choose between "pruefi" and "changehistory".',
+    type=click.Choice(list(map(lambda x: x.name, Flavour)), case_sensitive=False),
+    default=Flavour.PRUEFI.name,
+    help='Choose between "pruefi", "changehistory" or "conditions".',
 )
 @click.option(
     "-p",
@@ -415,16 +435,18 @@ def main(
     pruefi_to_file_mapping: dict[str, str | None] = {
         key: None for key in pruefis
     }  # A mapping of a pruefi (key) to the name (+ path) of the file containing the prufi
-    match flavour:
-        case "pruefi":
+    match flavour.upper():
+        case Flavour.PRUEFI.name:
             scrape_pruefis(
                 pruefi_to_file_mapping=pruefi_to_file_mapping,
                 basic_input_path=input_path,
                 output_path=output_path,
                 file_type=file_type,
             )
-        case "changehistory":
+        case Flavour.CHANGEHISTORY.name:
             scrape_change_histories(input_path=input_path, output_path=output_path)
+        case Flavour.CONDITIONS.name:
+            pass
 
 
 def dump_conditions_json(output_directory_path: Path, already_known_conditions: dict) -> None:
