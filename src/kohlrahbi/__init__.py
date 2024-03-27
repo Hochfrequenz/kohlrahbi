@@ -366,14 +366,14 @@ def scrape_pruefis(
 )
 @click.option(
     "-i",
-    "--input_path",
+    "--input-path",
     type=click.Path(exists=True, dir_okay=True, file_okay=False, path_type=Path),
     prompt="Input directory",
     help="Define the path to the folder with the docx AHBs.",
 )
 @click.option(
     "-o",
-    "--output_path",
+    "--output-path",
     type=click.Path(exists=False, dir_okay=True, file_okay=False, path_type=Path),
     default="output",
     prompt="Output directory",
