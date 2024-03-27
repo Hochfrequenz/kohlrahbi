@@ -22,7 +22,7 @@ from kohlrahbi.seed import Seed
     type=click.Choice([e.value for e in EdifactFormatVersion], case_sensitive=False),
     help="Format version(s) of the AHB documents. Default is all known format versions.",
 )
-def update_pruefis(format_version):
+def update_pruefis(format_version: list[EdifactFormatVersion]):
     """
     This CLI tool updates the all_known_pruefis.toml files with Prüfidentifikatoren from AHB documents.
     If no specific format version is provided, it processes all known format versions.
@@ -33,7 +33,7 @@ def update_pruefis(format_version):
         edi_energy_mirror_repo_root_path = Path(__file__).parents[4] / "edi_energy_mirror"
         path_to_ahb_documents = edi_energy_mirror_repo_root_path / Path(f"edi_energy_de/{version}")
 
-        assert path_to_ahb_documents.exists(), f"The specified path {path_to_ahb_documents} does not exist."
+        assert path_to_ahb_documents.exists(), f"The specified path {path_to_ahb_documents.absolute()} does not exist."
 
         output_filename = f"{version}_all_known_pruefis.toml"
         output_file_path = Path(__file__).parent.parent / "format_versions" / output_filename
@@ -56,7 +56,7 @@ def update_pruefis(format_version):
                         all_pruefis.update({pruefi: ahb_file_path.name})
 
         all_pruefis = dict(sorted(all_pruefis.items()))
-        if len(all_pruefis) == 0:
+        if not any(all_pruefis):
             logger.warning("No Prüfidentifikatoren found in the AHB documents for format version %s.", version)
             all_pruefis = {
                 "⚠️ No Prüfidentifikatoren found": f"No AHB documents found. Probably there are no AHB in the docx format in the provided path {path_to_ahb_documents}."
