@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 import pytest  # type:ignore[import]
@@ -20,8 +20,8 @@ class TestReadFunctions:
                 "COMDISAHB-informatorischeLesefassung1.0c_99991231_20221001.docx", EdifactFormatVersion.FV2210
             ),
             pytest.param("REQOTEQUOTESORDERSORDRSPORDCHGAHB2.1_99991231_20230401.docx", EdifactFormatVersion.FV2304),
-            pytest.param("foo", get_edifact_format_version(datetime.utcnow().astimezone(tz=pytz.UTC))),
-            pytest.param("bar", get_edifact_format_version(datetime.utcnow().astimezone(tz=pytz.UTC))),
+            pytest.param("foo", get_edifact_format_version(datetime.now(timezone.utc))),
+            pytest.param("bar", get_edifact_format_version(datetime.now(timezone.utc))),
         ],
     )
     def test_get_format_version_from_filename(self, filename: str, expected_result: Optional[EdifactFormatVersion]):
