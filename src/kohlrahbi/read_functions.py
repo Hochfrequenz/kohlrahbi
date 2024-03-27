@@ -3,7 +3,7 @@ A collection of functions to get information from AHB tables.
 """
 
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Generator, Optional, Union
 
 import pytz
@@ -63,7 +63,7 @@ def _get_format_version_from_ahbfile_name(ahb_docx_name: str) -> EdifactFormatVe
         local_date_str = match.groupdict()["germanLocalTimeStartDate"]
         berlin_local_time = datetime.strptime(local_date_str, "%Y%m%d").astimezone(berlin)
     else:
-        berlin_local_time = datetime.utcnow().astimezone(berlin)
+        berlin_local_time = datetime.now(timezone.utc).astimezone(berlin)
     edifact_format_version = get_edifact_format_version(berlin_local_time)
     return edifact_format_version
 
