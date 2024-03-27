@@ -348,13 +348,25 @@ def scrape_pruefis(
         dump_conditions_json(output_path, collected_conditions)
 
 
+def scrape_conditions(
+    pruefi_to_file_mapping: dict[str, str | None],
+    basic_input_path: Path,
+    output_path: Path,
+) -> None:
+    """
+    starts the scraping process for conditions of all formats
+    """
+    a = "will do something"
+    print(a)
+
+
 @click.command()
 @click.option(
     "-f",
     "--flavour",
-    type=click.Choice(["pruefi", "changehistory"], case_sensitive=False),
+    type=click.Choice(["pruefi", "changehistory", "conditions"], case_sensitive=False),
     default="pruefi",
-    help='Choose between "pruefi" and "changehistory".',
+    help='Choose between "pruefi", "changehistory" and "conditions".',
 )
 @click.option(
     "-p",
@@ -425,6 +437,12 @@ def main(
             )
         case "changehistory":
             scrape_change_histories(input_path=input_path, output_path=output_path)
+        case "conditions":
+            scrape_conditions(
+                pruefi_to_file_mapping=pruefi_to_file_mapping,
+                basic_input_path=input_path,
+                output_path=output_path,
+            )
 
 
 def dump_conditions_json(output_directory_path: Path, already_known_conditions: dict) -> None:
