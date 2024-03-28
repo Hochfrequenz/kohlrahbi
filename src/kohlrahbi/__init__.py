@@ -219,7 +219,7 @@ def load_pruefis_if_empty(
     If the user did not provide any pruefis we load all known pruefis
     and the paths to the file containing them from the toml file.
     """
-    if not pruefi_to_file_mapping or all(v is None for v in pruefi_to_file_mapping.values()):
+    if not pruefi_to_file_mapping:
         click.secho("☝️ No pruefis were given. I will parse all known pruefis.", fg="yellow")
         return load_all_known_pruefis_from_file(path_to_all_known_pruefis=None, format_version=format_version)
     return pruefi_to_file_mapping
