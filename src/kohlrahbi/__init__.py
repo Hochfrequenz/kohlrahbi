@@ -417,7 +417,7 @@ def main(
     A program to get a machine readable version of the AHBs docx files published by edi@energy.
     """
     check_python_version()
-    format_version: EdifactFormatVersion
+    format_version: EdifactFormatVersion # type:ignore[no-redef]
     if isinstance(format_version, str):
         format_version = EdifactFormatVersion(format_version)
     if not assume_yes:
@@ -438,7 +438,7 @@ def main(
                 basic_input_path=input_path,
                 output_path=output_path,
                 file_type=file_type,
-                format_version=format_version,  # woher kommt jetzt die format version?
+                format_version=format_version,
             )
         case "changehistory":
             scrape_change_histories(input_path=input_path, output_path=output_path)
