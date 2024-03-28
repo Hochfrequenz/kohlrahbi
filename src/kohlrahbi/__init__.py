@@ -91,7 +91,7 @@ def load_all_known_pruefis_from_file(
     """
     actual_path: Path
     if path_to_all_known_pruefis is None:
-        actual_path = Path(__file__).parent / Path(f"{format_version}_all_known_pruefis.toml")
+        actual_path = Path(__file__).parent / "format_versions" / Path(f"{format_version}_all_known_pruefis.toml")
     else:
         actual_path = path_to_all_known_pruefis
     with open(actual_path, "rb") as file:
@@ -219,9 +219,9 @@ def load_pruefis_if_empty(
     If the user did not provide any pruefis we load all known pruefis
     and the paths to the file containing them from the toml file.
     """
-    if not pruefi_to_file_mapping:
+    if not pruefi_to_file_mapping or all(v is None for v in pruefi_to_file_mapping.values()):
         click.secho("☝️ No pruefis were given. I will parse all known pruefis.", fg="yellow")
-        return load_all_known_pruefis_from_file(format_version)
+        return load_all_known_pruefis_from_file(path_to_all_known_pruefis=None, format_version=format_version)
     return pruefi_to_file_mapping
 
 
@@ -392,6 +392,12 @@ def scrape_pruefis(
     multiple=True,
 )
 @click.option(
+    "--format-version",
+    multiple=False,
+    type=click.Choice([e.value for e in EdifactFormatVersion], case_sensitive=False),
+    help="Format version(s) of the AHB documents, e.g. FV2310",
+)
+@click.option(
     "--assume-yes",
     "-y",
     is_flag=True,
@@ -404,13 +410,16 @@ def main(
     input_path: Path,
     output_path: Path,
     file_type: Literal["flatahb", "csv", "xlsx", "conditions"],
+    format_version: EdifactFormatVersion | str,
     assume_yes: bool,
 ) -> None:
     """
     A program to get a machine readable version of the AHBs docx files published by edi@energy.
     """
     check_python_version()
-
+    format_version: EdifactFormatVersion
+    if isinstance(format_version, str):
+        format_version = EdifactFormatVersion(format_version)
     if not assume_yes:
         check_output_path(path=output_path)
     else:
@@ -429,7 +438,7 @@ def main(
                 basic_input_path=input_path,
                 output_path=output_path,
                 file_type=file_type,
-                # woher kommt jetzt die format version?
+                format_version=format_version,  # woher kommt jetzt die format version?
             )
         case "changehistory":
             scrape_change_histories(input_path=input_path, output_path=output_path)
