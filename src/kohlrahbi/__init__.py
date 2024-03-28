@@ -15,7 +15,7 @@ import click
 import docx  # type:ignore[import]
 import pandas as pd
 import tomlkit
-from maus.edifact import EdifactFormat
+from maus.edifact import EdifactFormat, EdifactFormatVersion
 
 from kohlrahbi.ahb.ahbtable import AhbTable
 from kohlrahbi.changehistory.changehistorytable import ChangeHistoryTable
@@ -83,14 +83,18 @@ def check_output_path(path: Path) -> None:
 
 
 def load_all_known_pruefis_from_file(
-    path_to_all_known_pruefis: Path = Path(__file__).parent / Path("all_known_pruefis.toml"),
+    path_to_all_known_pruefis: Path | None, format_version: EdifactFormatVersion
 ) -> dict[str, str | None]:
     """
     Loads the file which contains all known Prüfidentifikatoren.
     The file may be manually updated with the script `collect_pruefis.py`.
     """
-
-    with open(path_to_all_known_pruefis, "rb") as file:
+    actual_path: Path
+    if path_to_all_known_pruefis is None:
+        actual_path = Path(__file__).parent / Path(f"{format_version}_all_known_pruefis.toml")
+    else:
+        actual_path = path_to_all_known_pruefis
+    with open(actual_path, "rb") as file:
         state_of_kohlrahbi: dict[str, Any] = tomlkit.load(file)
 
     meta_data_section = state_of_kohlrahbi.get("meta_data")
@@ -208,14 +212,16 @@ def scrape_change_histories(input_path: Path, output_path: Path) -> None:
     save_change_histories_to_excel(change_history_collection, output_path)
 
 
-def load_pruefis_if_empty(pruefi_to_file_mapping: dict[str, str | None]) -> dict[str, str | None]:
+def load_pruefis_if_empty(
+    pruefi_to_file_mapping: dict[str, str | None], format_version: EdifactFormatVersion
+) -> dict[str, str | None]:
     """
     If the user did not provide any pruefis we load all known pruefis
     and the paths to the file containing them from the toml file.
     """
     if not pruefi_to_file_mapping:
         click.secho("☝️ No pruefis were given. I will parse all known pruefis.", fg="yellow")
-        return load_all_known_pruefis_from_file()
+        return load_all_known_pruefis_from_file(format_version)
     return pruefi_to_file_mapping
 
 
@@ -318,11 +324,12 @@ def scrape_pruefis(
     basic_input_path: Path,
     output_path: Path,
     file_type: Literal["flatahb", "csv", "xlsx", "conditions"],
+    format_version: EdifactFormatVersion,
 ) -> None:
     """
     starts the scraping process for provided pruefi_to_file_mappings
     """
-    pruefi_to_file_mapping = load_pruefis_if_empty(pruefi_to_file_mapping)
+    pruefi_to_file_mapping = load_pruefis_if_empty(pruefi_to_file_mapping, format_version)
     validate_file_type(file_type)
 
     valid_pruefis = validate_pruefis(list(pruefi_to_file_mapping.keys()))
@@ -422,6 +429,7 @@ def main(
                 basic_input_path=input_path,
                 output_path=output_path,
                 file_type=file_type,
+                # woher kommt jetzt die format version?
             )
         case "changehistory":
             scrape_change_histories(input_path=input_path, output_path=output_path)
