@@ -29,7 +29,7 @@ class TestCli:
                 "11016",
                 "",
                 "/invalid/output/path",
-                {"exit_code": 1, "output_snippet": "The output directory does not exist"},
+                {"exit_code": 1, "output_snippet": "The path /invalid/output/path does not exist"},
                 id="invalid output path",
             ),
             pytest.param(
