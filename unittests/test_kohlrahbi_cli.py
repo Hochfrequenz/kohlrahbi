@@ -66,7 +66,7 @@ class TestCli:
         assert expected_response.get("output_snippet") in response.output
 
     @pytest.mark.datafiles(
-        "./unittests/docx_files/UTILMDAHBWiM-informatorischeLesefassung3.1eKonsolidierteLesefassungmitFehlerkorrekturenStand25.10.2022_20230930_20221025.docx"
+        "./unittests/test-files/docx_files/UTILMDAHBWiM-informatorischeLesefassung3.1eKonsolidierteLesefassungmitFehlerkorrekturenStand25.10.2022_20230930_20221025.docx"
     )
     @pytest.mark.parametrize(
         "argument_options, input_folder_name, output_folder_name, expected_response",

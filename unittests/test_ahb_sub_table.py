@@ -16,7 +16,7 @@ class TestAhbSubTable:
         """
         Test the instantiation of a AhbSubTable
         """
-        ahb_file_path: Path = Path.cwd() / Path("unittests/docx_files/UTILMD-11042-test.docx")
+        ahb_file_path: Path = Path.cwd() / Path("unittests/test-files/docx_files/UTILMD-11042-test.docx")
         doc = docx.Document(ahb_file_path)  # Creating word reader object.
         all_paragraphs_and_tables = list(get_all_paragraphs_and_tables(parent=doc))
 
