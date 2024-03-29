@@ -3,7 +3,6 @@ kohlrahbi is a package to scrape AHBs (in docx format)
 """
 
 import fnmatch
-import gc
 import json
 import re
 import sys
@@ -57,29 +56,21 @@ def check_python_version():
         )
 
 
-def check_output_path(path: Path) -> None:
+def validate_path(ctx, param, value):
     """
-    Checks if the given path exists and if not it asks the user if they want to create the given directory.
+    Ensure the path exists or offer to create it.
     """
+    path = Path(value)
     if not path.exists():
-        click.secho("⚠️ The output directory does not exist.", fg="red")
-
-        if click.confirm(f"Should I try to create the directory at '{path}'?", default=True):
-            try:
-                path.mkdir(exist_ok=True)
-                click.secho(f"📂 The output directory is created at {path.absolute()}.", fg="yellow")
-            except FileNotFoundError as fnfe:
-                click.secho(
-                    "😱 There was an path error. I can only create a new directory in an already existing directory.",
-                    fg="red",
-                )
-                click.secho(f"Your given path is '{path}'", fg="red")
-                click.secho(str(fnfe), fg="red")
-                raise click.Abort()
-
+        if ctx.params.get("assume_yes") or click.confirm(
+            f"The path {value} does not exist. Would you like to create it?"
+        ):
+            path.mkdir(parents=True)
+            click.secho(f"Created directory {path}.", fg="green")
         else:
             click.secho("👋 Alright I will end this program now. Have a nice day.", fg="green")
             raise click.Abort()
+    return path
 
 
 def load_all_known_pruefis_from_file(
@@ -225,6 +216,8 @@ def load_pruefis_if_empty(
     return pruefi_to_file_mapping
 
 
+# TODO remove this function when we have a better solution
+# use the required parameter in the click.option decorator
 def validate_file_type(file_type: str):
     """
     Validate the file type parameter.
@@ -287,6 +280,9 @@ def get_or_cache_document(ahb_file_path: Path, path_to_document_mapping: dict) -
     Get the document from the cache or read it from the file system.
     """
     if ahb_file_path not in path_to_document_mapping:
+        if not ahb_file_path.exists():
+            logger.warning("The file '%s' does not exist", ahb_file_path)
+            raise FileNotFoundError(f"The file '{ahb_file_path}' does not exist")
         try:
             doc = docx.Document(ahb_file_path)
             path_to_document_mapping[ahb_file_path] = doc
@@ -347,9 +343,12 @@ def scrape_pruefis(
             if filename is not None:
                 input_path = basic_input_path / Path(filename)
             process_pruefi(pruefi, input_path, output_path, file_type, path_to_document_mapping, collected_conditions)
+        except FileNotFoundError as fnfe:
+            # logger.exception("File not found for pruefi '%s': %s", pruefi, str(fnfe))
+            logger.exception("File not found for pruefi '%s'", pruefi)
         # sorry for the pokemon catch
-        except Exception as e:  # pylint: disable=broad-except
-            logger.exception("Error processing pruefi '%s': %s", pruefi, str(e))
+        # except Exception as e:  # pylint: disable=broad-except
+        #     logger.exception("Error processing pruefi '%s': %s", pruefi, str(e))
 
     if collected_conditions is not None:
         dump_conditions_json(output_path, collected_conditions)
@@ -381,7 +380,8 @@ def scrape_pruefis(
 @click.option(
     "-o",
     "--output-path",
-    type=click.Path(exists=False, dir_okay=True, file_okay=False, path_type=Path),
+    type=click.Path(exists=False, dir_okay=True, file_okay=False, resolve_path=True, path_type=Path),
+    callback=validate_path,
     default="output",
     prompt="Output directory",
     help="Define the path where you want to save the generated files.",
@@ -401,6 +401,7 @@ def scrape_pruefis(
     "--assume-yes",
     "-y",
     is_flag=True,
+    default=False,
     help="Confirm all prompts automatically.",
 )
 # pylint: disable=too-many-arguments
@@ -417,17 +418,9 @@ def main(
     A program to get a machine readable version of the AHBs docx files published by edi@energy.
     """
     check_python_version()
-    format_version: EdifactFormatVersion  # type:ignore[no-redef]
     if isinstance(format_version, str):
         format_version = EdifactFormatVersion(format_version)
-    if not assume_yes:
-        check_output_path(path=output_path)
-    else:
-        if output_path.exists():
-            click.secho(f"The output directory '{output_path}' exists already.", fg="yellow")
-        else:
-            output_path.mkdir(parents=True)
-            click.secho(f"I created a new directory at {output_path}", fg="yellow")
+
     pruefi_to_file_mapping: dict[str, str | None] = {
         key: None for key in pruefis
     }  # A mapping of a pruefi (key) to the name (+ path) of the file containing the prufi
