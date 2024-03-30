@@ -12,7 +12,7 @@ import pandas as pd
 import pytest  # type:ignore[import]
 from click.testing import CliRunner, Result
 
-from kohlrahbi import main
+from kohlrahbi import cli
 
 # Setup basic configuration for logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -101,6 +101,7 @@ class TestCli:
         [
             pytest.param(
                 [
+                    "pruefi",
                     "--format-version",
                     "FV2310",
                     "--file-type",
@@ -128,7 +129,7 @@ class TestCli:
         )
 
         # Call the CLI tool with the desired arguments
-        response: Result = runner.invoke(main, argument_options)
+        response: Result = runner.invoke(cli, argument_options)
 
         assert response.exit_code == expected_response.get("exit_code")
         expected_output_snippet = expected_response.get("output_snippet")
@@ -157,7 +158,6 @@ class TestCli:
         expected_output_dir = path_to_test_files_fv2310 / "expected-output"
 
         argument_options: list[str] = [
-            "--flavour",
             "changehistory",
             "--input-path",
             str(path_to_test_files_fv2310),
@@ -166,7 +166,7 @@ class TestCli:
         ]
 
         # Call the CLI tool with the desired arguments
-        response: Result = runner.invoke(main, argument_options)
+        response: Result = runner.invoke(cli, argument_options)
 
         assert response.exit_code == 0
         current_timestamp = datetime.now(UTC).strftime("%Y-%m-%d")

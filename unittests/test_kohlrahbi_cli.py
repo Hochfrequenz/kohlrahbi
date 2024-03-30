@@ -5,7 +5,7 @@ from typing import Union
 import pytest  # type:ignore[import]
 from click.testing import CliRunner, Result
 
-from kohlrahbi import cli, main
+from kohlrahbi import cli
 from unittests.test_current_state import path_to_test_files_fv2310
 
 runner: CliRunner = CliRunner()
@@ -69,34 +69,29 @@ class TestCli:
         assert response.exit_code == expected_response.get("exit_code")
         assert expected_response.get("output_snippet") in response.output
 
-    @pytest.mark.datafiles(
-        "./unittests/test-files/docx_files/UTILMDAHBWiM-informatorischeLesefassung3.1eKonsolidierteLesefassungmitFehlerkorrekturenStand25.10.2022_20230930_20221025.docx"
-    )
     @pytest.mark.parametrize(
-        "argument_options, input_folder_name, output_folder_name, expected_response",
+        "argument_options, expected_response",
         [
             pytest.param(
                 [
+                    "pruefi",
                     "-p",
-                    "11016",
+                    "17201",
                     "--file-type",
                     "csv",
                 ],
-                "",  # if the folder name is empty, the path will point on the temporary directory which is created by datafiles -> valid path
-                "",  # if the folder name is empty, the path will point on the temporary directory which is created by datafiles -> valid path
                 {"exit_code": 0, "output_snippet": ""},
                 id="proof of concept",
             ),
             pytest.param(
                 [
+                    "pruefi",
                     "-p",
-                    "11016",
+                    "17201",
                     "--file-type",
                     "csv",
                     "-y",
                 ],
-                "",  # if the folder name is empty, the path will point on the temporary directory which is created by datafiles -> valid path
-                "",  # if the folder name is empty, the path will point on the temporary directory which is created by datafiles -> valid path
                 {"exit_code": 0, "output_snippet": ""},
                 id="test assume yes",
             ),
@@ -104,9 +99,6 @@ class TestCli:
     )
     def test_kohlrahbi_cli_with_valid_arguments(
         self,
-        datafiles,
-        input_folder_name: str,
-        output_folder_name: str,
         argument_options: list[str],
         expected_response: dict[str, Union[str, int]],
     ):
@@ -114,13 +106,17 @@ class TestCli:
         This test runs the CLI tool with valid arguments and checks if the output is as expected.
         """
 
-        input_path: Path = Path(datafiles) / Path(input_folder_name)
-        output_path: Path = Path(datafiles) / Path(output_folder_name)
+        # "./unittests/test-files/docx_files/UTILMDAHBWiM-informatorischeLesefassung3.1eKonsolidierteLesefassungmitFehlerkorrekturenStand25.10.2022_20230930_20221025.docx"
 
-        argument_options.extend(["--input-path", str(input_path), "--output-path", str(output_path)])
+        actual_output_dir = path_to_test_files_fv2310 / "actual-output"
+        expected_output_dir = path_to_test_files_fv2310 / "expected-output"
+
+        argument_options.extend(
+            ["--input-path", str(path_to_test_files_fv2310), "--output-path", str(actual_output_dir)]
+        )
 
         # Call the CLI tool with the desired arguments
-        response: Result = runner.invoke(main, argument_options)
+        response: Result = runner.invoke(cli, argument_options)
 
         assert response.exit_code == expected_response.get("exit_code")
         expected_output_snippet = expected_response.get("output_snippet")
@@ -128,7 +124,3 @@ class TestCli:
             assert expected_output_snippet in response.output
         else:
             assert False  # break the test if the output_snippet is None
-
-        path_to_new_fancy_folder = Path("./output/new_and_fancy")
-        if path_to_new_fancy_folder.exists() and path_to_new_fancy_folder.is_dir():
-            shutil.rmtree(path_to_new_fancy_folder)
