@@ -8,9 +8,8 @@ from pydantic import BaseModel
 from kohlrahbi.enums import RowType
 from kohlrahbi.table_header import PruefiMetaData, TableHeader, get_tabstop_positions
 
+
 # pylint: disable=too-few-public-methods
-
-
 class Seed(BaseModel):
     """
     helper class to store all values to extract the AHB and the final AHB as dataframe

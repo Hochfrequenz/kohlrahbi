@@ -47,11 +47,52 @@ def does_the_table_contain_pruefidentifikatoren(table: Table) -> bool:
     return table.cell(row_idx=0, col_idx=0).text.strip() == "EDIFACT Struktur"
 
 
-def is_item_header_of_change_history_section(item, style_name: str) -> bool:
+def is_item_header_of_change_history_section(item: Paragraph | Table | None, style_name: str) -> bool:
     """
     Checks if the given item is a header of the change history section.
     """
+    # checking the style is quite expensive for the CPU because it includes some xpath searches;
+    # we should only check the style if the other (easier/cheap) checks returned True so it at least
     return isinstance(item, Paragraph) and "Änderungshistorie" in item.text and "Heading" in style_name
+
+
+def is_item_text_paragraph(item: Paragraph | Table | None, style_name: str) -> bool:
+    """
+    Checks if the given item is a text paragraph.
+    """
+    return isinstance(item, Paragraph) and "Heading" not in style_name
+
+
+def is_item_table_with_pruefidentifikatoren(item: Paragraph | Table | None) -> bool:
+    """
+    Check if the item is a Table and contains Pruefidentifikatoren.
+
+    Args:
+    item (Paragraph | Table | None): The item to check.
+
+    Returns:
+    bool: True if the item is a Table and contains Pruefidentifikatoren, False otherwise.
+    """
+    return isinstance(item, Table) and does_the_table_contain_pruefidentifikatoren(table=item)
+
+
+def is_item_headless_table(
+    item: Paragraph | Table | None,
+    seed: Seed | None,
+    ahb_table: AhbTable | None,
+) -> bool:
+    """
+    Checks if the given item is a headless table.
+
+    Args:
+        item (Paragraph | Table | None): The item to be checked.
+        seed (Seed): The seed object.
+        ahb_table (AhbTable): The AhbTable object.
+
+    Returns:
+        bool: True if the item is a headless table, False otherwise.
+    """
+    return isinstance(item, Table) and seed is not None and ahb_table is not None
 
 
 def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
@@ -78,8 +119,6 @@ def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
             style_name = "None"
         # Check if we reached the end of the current AHB document and stop if it's true.
         if is_item_header_of_change_history_section(item, style_name):
-            # checking the style is quite expensive for the CPU because it includes some xpath searches;
-            # we should only check the style if the other (easier/cheap) checks returned True
             logger.info(
                 "We reached the end of the document before any table containing the searched Prüfi %s was found", pruefi
             )
@@ -87,25 +126,25 @@ def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
             return None
 
         # Check if there is just a text paragraph,
-        if isinstance(item, Paragraph) and not "Heading" in style_name:
+        if is_item_text_paragraph(item, style_name):
             continue
 
-        if isinstance(item, Table) and does_the_table_contain_pruefidentifikatoren(table=item):
+        if is_item_table_with_pruefidentifikatoren(item):
             # check which pruefis
             seed = Seed.from_table(docx_table=item)
             logger.debug("Found a table with the following pruefis (A): %s", seed.pruefidentifikatoren)
 
-        we_reached_the_end_of_the_ahb_table_of_the_searched_pruefi: bool = (
+        is_end_of_searched_pruefi_table_reached: bool = (
             seed is not None and pruefi not in seed.pruefidentifikatoren and searched_pruefi_is_found
         )
 
-        if we_reached_the_end_of_the_ahb_table_of_the_searched_pruefi:
+        if is_end_of_searched_pruefi_table_reached:
             del seed
             seed = None
             logger.info("🏁 We reached the end of the AHB table of the Prüfidentifikator '%s'", pruefi)
             break
 
-        if isinstance(item, Table) and does_the_table_contain_pruefidentifikatoren(table=item):
+        if is_item_table_with_pruefidentifikatoren(item):
             # check which pruefis
             seed = Seed.from_table(docx_table=item)
             logger.debug("Found a table with the following pruefis (B): %s", seed.pruefidentifikatoren)
@@ -122,7 +161,7 @@ def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
 
                 is_ahb_table_initialized = True
                 continue
-        if isinstance(item, Table) and seed is not None and ahb_table is not None:
+        if is_item_headless_table(item, seed, ahb_table):
             ahb_sub_table = AhbSubTable.from_headless_table(docx_table=item, tmd=ahb_sub_table.table_meta_data)
             ahb_table.append_ahb_sub_table(ahb_sub_table=ahb_sub_table)
 
