@@ -15,6 +15,7 @@ from maus.edifact import EdifactFormat, EdifactFormatVersion
 from kohlrahbi.ahb.ahbtable import AhbTable
 from kohlrahbi.conditions import dump_conditions_json
 from kohlrahbi.docxfilefinder import DocxFileFinder
+from kohlrahbi.enums.ahbexportfileformat import AhbExportFileFormat
 from kohlrahbi.logger import logger
 from kohlrahbi.read_functions import get_ahb_table
 from kohlrahbi.unfoldedahb import UnfoldedAhb
@@ -63,18 +64,6 @@ def load_pruefis_if_empty(
         click.secho("☝️ No pruefis were given. I will parse all known pruefis.", fg="yellow")
         return load_all_known_pruefis_from_file(path_to_all_known_pruefis=None, format_version=format_version)
     return pruefi_to_file_mapping
-
-
-# TODO remove this function when we have a better solution
-# use the required parameter in the click.option decorator
-def validate_file_type(file_type: str):
-    """
-    Validate the file type parameter.
-    """
-    if not file_type:
-        message = "ℹ You did not provide any value for the parameter --file-type. No files will be created."
-        click.secho(message, fg="yellow")
-        logger.warning(message)
 
 
 def get_or_cache_document(ahb_file_path: Path, path_to_document_mapping: dict) -> docx.Document:
@@ -187,14 +176,13 @@ def scrape_pruefis(
     pruefi_to_file_mapping: dict[str, str | None],
     basic_input_path: Path,
     output_path: Path,
-    file_type: Literal["flatahb", "csv", "xlsx", "conditions"],
+    file_type: AhbExportFileFormat,
     format_version: EdifactFormatVersion,
 ) -> None:
     """
     starts the scraping process for provided pruefi_to_file_mappings
     """
     pruefi_to_file_mapping = load_pruefis_if_empty(pruefi_to_file_mapping, format_version)
-    validate_file_type(file_type)
 
     valid_pruefis = validate_pruefis(list(pruefi_to_file_mapping.keys()))
     valid_pruefi_to_file_mappings: dict[str, str | None] = {}
