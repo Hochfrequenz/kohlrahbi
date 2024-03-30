@@ -9,11 +9,9 @@ from typing import Literal
 import click
 from maus.edifact import EdifactFormatVersion
 
+from kohlrahbi.changehistory import scrape_change_histories
 from kohlrahbi.changehistory.command import changehistory
-from kohlrahbi.changehistory.functions import scrape_change_histories
 from kohlrahbi.conditions.command import conditions
-from kohlrahbi.logger import logger
-from kohlrahbi.pruefis import scrape_pruefis
 from kohlrahbi.pruefis.command import pruefi, validate_path
 
 
