@@ -1,8 +1,22 @@
+import sys
 from pathlib import Path
 from typing import Literal
 
 import click
 from maus.edifact import EdifactFormatVersion
+
+from kohlrahbi.pruefis import scrape_pruefis
+
+
+def check_python_version():
+    """
+    Check if the Python interpreter is greater or equal to 3.11
+    """
+    if sys.version_info.major != 3 or sys.version_info.minor < 11:
+        raise click.Abort(
+            f"""Python >=3.11 is required to run this script but you use Python
+{sys.version_info.major}.{sys.version_info.minor}"""
+        )
 
 
 def validate_path(ctx, param, value):
@@ -73,4 +87,18 @@ def pruefi(
     format_version: EdifactFormatVersion | str,
     assume_yes: bool,
 ):
-    pass
+    check_python_version()
+    if isinstance(format_version, str):
+        format_version = EdifactFormatVersion(format_version)
+
+    pruefi_to_file_mapping: dict[str, str | None] = {
+        key: None for key in pruefis
+    }  # A mapping of a pruefi (key) to the name (+ path) of the file containing the prufi
+
+    scrape_pruefis(
+        pruefi_to_file_mapping=pruefi_to_file_mapping,
+        basic_input_path=input_path,
+        output_path=output_path,
+        file_type=file_type,
+        format_version=format_version,
+    )

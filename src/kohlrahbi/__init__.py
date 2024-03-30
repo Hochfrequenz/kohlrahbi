@@ -2,7 +2,6 @@
 kohlrahbi is a package to scrape AHBs (in docx format)
 """
 
-import json
 import sys
 from pathlib import Path
 from typing import Literal
@@ -100,14 +99,6 @@ def main(
         key: None for key in pruefis
     }  # A mapping of a pruefi (key) to the name (+ path) of the file containing the prufi
     match flavour:
-        case "pruefi":
-            scrape_pruefis(
-                pruefi_to_file_mapping=pruefi_to_file_mapping,
-                basic_input_path=input_path,
-                output_path=output_path,
-                file_type=file_type,
-                format_version=format_version,
-            )
         case "changehistory":
             scrape_change_histories(input_path=input_path, output_path=output_path)
 
@@ -115,7 +106,6 @@ def main(
 @click.group()
 def cli():
     """Kohlrahbi CLI tool"""
-    pass
 
 
 # Add commands to the CLI group

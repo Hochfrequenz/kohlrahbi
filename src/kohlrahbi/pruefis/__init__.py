@@ -13,6 +13,7 @@ import tomlkit
 from maus.edifact import EdifactFormat, EdifactFormatVersion
 
 from kohlrahbi.ahb.ahbtable import AhbTable
+from kohlrahbi.conditions import dump_conditions_json
 from kohlrahbi.docxfilefinder import DocxFileFinder
 from kohlrahbi.logger import logger
 from kohlrahbi.read_functions import get_ahb_table
