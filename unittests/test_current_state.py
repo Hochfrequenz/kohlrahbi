@@ -164,7 +164,7 @@ class TestCli:
             "--input-path",
             str(path_to_test_files_fv2310),
             "--output-path",
-            str(path_to_test_files_fv2310),
+            str(actual_output_dir),
         ]
 
         # Call the CLI tool with the desired arguments
@@ -174,7 +174,7 @@ class TestCli:
         current_timestamp = datetime.now(UTC).strftime("%Y-%m-%d")
 
         change_history_file_name = f"{current_timestamp}_change_histories.xlsx"
-        assert Path(path_to_test_files_fv2310, change_history_file_name).exists(), "No matching file found"
+        assert Path(actual_output_dir, change_history_file_name).exists(), "No matching file found"
 
         path_to_actual_change_history_file = actual_output_dir / change_history_file_name
         path_to_expected_change_history_file = expected_output_dir / change_history_file_name
@@ -186,4 +186,3 @@ class TestCli:
 
         # Delete the change history files after the test
         path_to_actual_change_history_file.unlink(missing_ok=True)
-        path_to_expected_change_history_file.unlink(missing_ok=True)
