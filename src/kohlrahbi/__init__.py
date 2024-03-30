@@ -2,17 +2,11 @@
 kohlrahbi is a package to scrape AHBs (in docx format)
 """
 
-import sys
-from pathlib import Path
-from typing import Literal
-
 import click
-from maus.edifact import EdifactFormatVersion
 
-from kohlrahbi.changehistory import scrape_change_histories
 from kohlrahbi.changehistory.command import changehistory
 from kohlrahbi.conditions.command import conditions
-from kohlrahbi.pruefis.command import pruefi, validate_path
+from kohlrahbi.pruefis.command import pruefi
 
 
 @click.group()
