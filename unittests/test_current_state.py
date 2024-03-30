@@ -97,7 +97,7 @@ class TestCli:
     """
 
     @pytest.mark.parametrize(
-        "argument_options, input_path, output_path, expected_response",
+        "argument_options, expected_response",
         [
             pytest.param(
                 [
@@ -106,8 +106,6 @@ class TestCli:
                     "--file-type",
                     "csv",
                 ],
-                path_to_test_files_fv2310,
-                path_to_test_files_fv2310,
                 {"exit_code": 0, "output_snippet": ""},
                 id="proof of concept",
             )
@@ -115,8 +113,6 @@ class TestCli:
     )
     def test_kohlrahbi_cli_with_valid_arguments(
         self,
-        input_path: Path,
-        output_path: Path,
         argument_options: list[str],
         expected_response: dict[str, Union[str, int]],
     ):
@@ -124,10 +120,12 @@ class TestCli:
         This test runs the CLI tool with valid arguments and checks if the output is as expected.
         """
 
-        actual_output_dir = output_path / "actual-output"
-        expected_output_dir = output_path / "expected-output"
+        actual_output_dir = path_to_test_files_fv2310 / "actual-output"
+        expected_output_dir = path_to_test_files_fv2310 / "expected-output"
 
-        argument_options.extend(["--input-path", str(input_path), "--output-path", str(actual_output_dir)])
+        argument_options.extend(
+            ["--input-path", str(path_to_test_files_fv2310), "--output-path", str(actual_output_dir)]
+        )
 
         # Call the CLI tool with the desired arguments
         response: Result = runner.invoke(main, argument_options)
