@@ -2,17 +2,13 @@
 A collection of functions to get information from AHB tables.
 """
 
-import re
-from datetime import datetime, timezone
 from typing import Generator, Optional, Union
 
-import pytz
 from docx.document import Document  # type:ignore[import]
 from docx.oxml.table import CT_Tbl  # type:ignore[import]
 from docx.oxml.text.paragraph import CT_P  # type:ignore[import]
 from docx.table import Table, _Cell  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
-from maus.edifact import EdifactFormatVersion, get_edifact_format_version
 
 from kohlrahbi.ahb.ahbsubtable import AhbSubTable
 from kohlrahbi.ahb.ahbtable import AhbTable
@@ -41,31 +37,6 @@ def get_all_paragraphs_and_tables(parent: Union[Document, _Cell]) -> Generator[U
             yield Paragraph(child, parent)
         elif isinstance(child, CT_Tbl):
             yield Table(child, parent)
-
-
-_validity_start_date_from_ahbname_pattern = re.compile(r"^.*(?P<germanLocalTimeStartDate>\d{8})\.docx$")
-"""
-https://regex101.com/r/g4wWrT/1
-This pattern is strictly coupled to the edi_energy_scraper.
-https://github.com/Hochfrequenz/edi_energy_scraper/blob/9cc6552d0bf655f98a09f0d3500a5736c68c9c01/src/edi_energy_scraper/__init__.py#L261
-"""
-
-
-def _get_format_version_from_ahbfile_name(ahb_docx_name: str) -> EdifactFormatVersion:
-    """
-    We try to extract the validity period of the AHB from its filename.
-    The matching logic here is strictly coupled to the edi_energy_scraper.
-    """
-    match = _validity_start_date_from_ahbname_pattern.match(ahb_docx_name)
-    berlin_local_time: datetime
-    berlin = pytz.timezone("Europe/Berlin")
-    if match:
-        local_date_str = match.groupdict()["germanLocalTimeStartDate"]
-        berlin_local_time = datetime.strptime(local_date_str, "%Y%m%d").astimezone(berlin)
-    else:
-        berlin_local_time = datetime.now(timezone.utc).astimezone(berlin)
-    edifact_format_version = get_edifact_format_version(berlin_local_time)
-    return edifact_format_version
 
 
 def does_the_table_contain_pruefidentifikatoren(table: Table) -> bool:
