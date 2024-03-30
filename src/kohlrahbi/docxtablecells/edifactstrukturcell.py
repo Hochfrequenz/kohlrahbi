@@ -6,7 +6,7 @@ import re
 
 import pandas as pd
 from docx.table import _Cell  # type:ignore[import]
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 _segment_group_pattern = re.compile(r"^SG\d+$")
 _segment_pattern = re.compile(r"^[A-Z]{3}$")
@@ -22,8 +22,7 @@ class EdifactStrukturCell(BaseModel):
     table_cell: _Cell
     edifact_struktur_cell_left_indent_position: int
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def parse(self, ahb_row_dataframe: pd.DataFrame) -> pd.DataFrame:
         """Parses a paragraph in the edifact struktur column and puts the information into the appropriate columns

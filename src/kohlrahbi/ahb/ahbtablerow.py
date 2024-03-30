@@ -6,7 +6,7 @@ from typing import Optional
 
 import pandas as pd
 from docx.table import _Cell  # type:ignore[import]
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from kohlrahbi.docxtablecells import BedingungCell, BodyCell, EdifactStrukturCell
 from kohlrahbi.row_type_checker import RowType
@@ -25,8 +25,7 @@ class AhbTableRow(BaseModel):
     middle_cell: _Cell
     bedingung_cell: _Cell
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def parse(
         self,

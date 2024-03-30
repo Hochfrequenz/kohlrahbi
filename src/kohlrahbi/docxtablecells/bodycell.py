@@ -5,7 +5,7 @@ This module contains the class BodyCell
 import pandas as pd
 from docx.table import _Cell  # type:ignore[import]
 from maus.reader.flat_ahb_reader import FlatAhbCsvReader
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from kohlrahbi.table_header import get_tabstop_positions
 
@@ -23,8 +23,7 @@ class BodyCell(BaseModel):
     left_indent_position: int
     indicator_tabstop_positions: list[int]
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     # I see why pylint is not happy about this many branches, but at the moment I have no clue how to avoid them.
     # pylint: disable=too-many-branches

@@ -7,7 +7,7 @@ from typing import Generator
 import pandas as pd
 from docx.table import Table as DocxTable  # type:ignore[import]
 from docx.table import _Cell  # type:ignore[import]
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from kohlrahbi.ahb.ahbtablerow import AhbTableRow
 from kohlrahbi.row_type_checker import RowType, get_row_type
@@ -23,8 +23,7 @@ class AhbSubTable(BaseModel):
     table_meta_data: Seed
     table: pd.DataFrame
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @staticmethod
     def _parse_docx_table(

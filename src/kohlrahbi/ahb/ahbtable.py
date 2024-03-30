@@ -8,7 +8,7 @@ from typing import Union
 import pandas as pd
 from maus.edifact import get_format_of_pruefidentifikator
 from more_itertools import peekable
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from kohlrahbi.ahb.ahbsubtable import AhbSubTable
 from kohlrahbi.logger import logger
@@ -34,8 +34,7 @@ class AhbTable(BaseModel):
     table: pd.DataFrame
     metadata: list[PruefiMetaData] = []
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def fill_segment_gruppe_segment_dataelement(self) -> None:
         """

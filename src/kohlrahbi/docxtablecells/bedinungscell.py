@@ -6,7 +6,7 @@ import re
 
 import pandas as pd
 from docx.table import _Cell  # type:ignore[import]
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class BedingungCell(BaseModel):
@@ -17,8 +17,7 @@ class BedingungCell(BaseModel):
 
     table_cell: _Cell
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def parse(self, ahb_row_dataframe: pd.DataFrame) -> pd.DataFrame:
         """
