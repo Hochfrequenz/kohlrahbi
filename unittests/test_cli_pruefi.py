@@ -9,7 +9,7 @@ from unittests.test_current_state import path_to_test_files_fv2310
 runner: CliRunner = CliRunner()
 
 
-class TestCli:
+class TestCliPruefi:
     """
     This class contains the unit tests for the CLI tool.
     """
@@ -53,7 +53,7 @@ class TestCli:
             ),
         ],
     )
-    def test_kohlrahbi_cli_with_invalid_arguments(self, argument_options: list[str], expected_response):
+    def test_cli_pruefi_with_invalid_arguments(self, argument_options: list[str], expected_response):
         """
         This test runs the CLI tool with invalid arguments and checks if the output is as expected.
         """
@@ -90,7 +90,7 @@ class TestCli:
             ),
         ],
     )
-    def test_kohlrahbi_cli_with_valid_arguments(
+    def test_cli_pruefi_with_valid_arguments(
         self,
         argument_options: list[str],
         expected_response: dict[str, Union[str, int]],
@@ -98,8 +98,6 @@ class TestCli:
         """
         This test runs the CLI tool with valid arguments and checks if the output is as expected.
         """
-
-        # "./unittests/test-files/docx_files/UTILMDAHBWiM-informatorischeLesefassung3.1eKonsolidierteLesefassungmitFehlerkorrekturenStand25.10.2022_20230930_20221025.docx"
 
         actual_output_dir = path_to_test_files_fv2310 / "actual-output"
         expected_output_dir = path_to_test_files_fv2310 / "expected-output"
