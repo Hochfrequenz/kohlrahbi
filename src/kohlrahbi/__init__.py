@@ -6,21 +6,19 @@ import fnmatch
 import json
 import re
 import sys
-from datetime import datetime
 from pathlib import Path
 from typing import Any, Literal, Optional
 
 import click
 import docx  # type:ignore[import]
-import pandas as pd
 import tomlkit
 from maus.edifact import EdifactFormat, EdifactFormatVersion
 
 from kohlrahbi.ahb.ahbtable import AhbTable
-from kohlrahbi.changehistory.changehistorytable import ChangeHistoryTable
+from kohlrahbi.changehistory.functions import scrape_change_histories
 from kohlrahbi.docxfilefinder import DocxFileFinder
 from kohlrahbi.logger import logger
-from kohlrahbi.read_functions import get_ahb_table, get_change_history_table
+from kohlrahbi.read_functions import get_ahb_table
 from kohlrahbi.unfoldedahb.unfoldedahbtable import UnfoldedAhb
 
 _pruefi_pattern = re.compile(r"^[1-9]\d{4}$")
