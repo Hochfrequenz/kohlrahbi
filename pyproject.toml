@@ -28,7 +28,6 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-  "attrs>=22.2.0",
   "click>=8.0.0",
   "colorlog>=6.7.0",
   "maus>=0.3.43",
