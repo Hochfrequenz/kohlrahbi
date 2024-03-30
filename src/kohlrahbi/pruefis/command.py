@@ -83,9 +83,9 @@ def pruefi(
     pruefis: list[str],
     input_path: Path,
     output_path: Path,
-    file_type: Literal["flatahb", "csv", "xlsx", "conditions"],
+    file_type: Literal["flatahb", "csv", "xlsx"],
     format_version: EdifactFormatVersion | str,
-    assume_yes: bool,
+    assume_yes: bool,  # pylint: disable=unused-argument, it is used by the callback function of the output-path
 ):
     check_python_version()
     if isinstance(format_version, str):
@@ -93,7 +93,7 @@ def pruefi(
 
     pruefi_to_file_mapping: dict[str, str | None] = {
         key: None for key in pruefis
-    }  # A mapping of a pruefi (key) to the name (+ path) of the file containing the prufi
+    }  # A mapping of a pruefi (key) to the name (+ path) of the file containing the pruefi
 
     scrape_pruefis(
         pruefi_to_file_mapping=pruefi_to_file_mapping,
