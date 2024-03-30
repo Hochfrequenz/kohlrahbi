@@ -4,19 +4,21 @@ This module contains the class BedingungCell
 
 import re
 
-import attrs
 import pandas as pd
 from docx.table import _Cell  # type:ignore[import]
+from pydantic import BaseModel
 
 
-@attrs.define(auto_attribs=True, kw_only=True)
-class BedingungCell:
+class BedingungCell(BaseModel):
     """
     BedingungCell contains all information and a method
     to extract the Bedingungen of an AHB Bedingung cell.
     """
 
     table_cell: _Cell
+
+    class Config:
+        arbitrary_types_allowed = True
 
     def parse(self, ahb_row_dataframe: pd.DataFrame) -> pd.DataFrame:
         """

@@ -2,16 +2,16 @@
 This module provides a class to collect information which of need for all parsing functions
 """
 
-from attrs import define
 from docx.table import Table  # type:ignore[import]
+from pydantic import BaseModel
 
 from kohlrahbi.enums import RowType
 from kohlrahbi.table_header import PruefiMetaData, TableHeader, get_tabstop_positions
 
-
 # pylint: disable=too-few-public-methods
-@define
-class Seed:
+
+
+class Seed(BaseModel):
     """
     helper class to store all values to extract the AHB and the final AHB as dataframe
     """

@@ -2,18 +2,17 @@
 This module contains the class BodyCell
 """
 
-import attrs
 import pandas as pd
 from docx.table import _Cell  # type:ignore[import]
 from maus.reader.flat_ahb_reader import FlatAhbCsvReader
+from pydantic import BaseModel
 
 from kohlrahbi.table_header import get_tabstop_positions
 
 INDEX_OF_CODES_AND_QUALIFIER_COLUMN = 3
 
 
-@attrs.define(auto_attribs=True, kw_only=True)
-class BodyCell:
+class BodyCell(BaseModel):
     """
     BodyCell contains all information and a method
     to extract dataelement/qualifier, the name of the dataelement
@@ -23,6 +22,9 @@ class BodyCell:
     table_cell: _Cell
     left_indent_position: int
     indicator_tabstop_positions: list[int]
+
+    class Config:
+        arbitrary_types_allowed = True
 
     # I see why pylint is not happy about this many branches, but at the moment I have no clue how to avoid them.
     # pylint: disable=too-many-branches

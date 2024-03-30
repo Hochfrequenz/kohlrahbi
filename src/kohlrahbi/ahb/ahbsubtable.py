@@ -4,18 +4,17 @@ This module contains the AhbSubTable class.
 
 from typing import Generator
 
-import attrs
 import pandas as pd
 from docx.table import Table as DocxTable  # type:ignore[import]
 from docx.table import _Cell  # type:ignore[import]
+from pydantic import BaseModel
 
 from kohlrahbi.ahb.ahbtablerow import AhbTableRow
 from kohlrahbi.row_type_checker import RowType, get_row_type
 from kohlrahbi.seed import Seed
 
 
-@attrs.define(auto_attribs=True, kw_only=True)
-class AhbSubTable:
+class AhbSubTable(BaseModel):
     """
     The AHB table for one Pruefidentifikator is separated into small sub tables.
     This class contains the information from such a sub table.
@@ -23,6 +22,9 @@ class AhbSubTable:
 
     table_meta_data: Seed
     table: pd.DataFrame
+
+    class Config:
+        arbitrary_types_allowed = True
 
     @staticmethod
     def _parse_docx_table(

@@ -5,10 +5,10 @@ This module provides the AhbTable class
 from pathlib import Path
 from typing import Union
 
-import attrs
 import pandas as pd
 from maus.edifact import get_format_of_pruefidentifikator
 from more_itertools import peekable
+from pydantic import BaseModel
 
 from kohlrahbi.ahb.ahbsubtable import AhbSubTable
 from kohlrahbi.logger import logger
@@ -26,14 +26,16 @@ _column_letter_width_mapping: dict[str, Union[float, int]] = {
 }
 
 
-@attrs.define(auto_attribs=True, kw_only=True)
-class AhbTable:
+class AhbTable(BaseModel):
     """
     This class contains the AHB table as you see it in the AHB documents, but in a machine readable format.
     """
 
     table: pd.DataFrame
     metadata: list[PruefiMetaData] = []
+
+    class Config:
+        arbitrary_types_allowed = True
 
     def fill_segment_gruppe_segment_dataelement(self) -> None:
         """

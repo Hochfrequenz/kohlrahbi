@@ -5,8 +5,8 @@ This module contains the class AhbTableRow
 from typing import Optional
 
 import pandas as pd
-from attrs import define, field, validators
 from docx.table import _Cell  # type:ignore[import]
+from pydantic import BaseModel
 
 from kohlrahbi.docxtablecells import BedingungCell, BodyCell, EdifactStrukturCell
 from kohlrahbi.row_type_checker import RowType
@@ -14,17 +14,19 @@ from kohlrahbi.seed import Seed
 
 
 # pylint:disable=too-few-public-methods
-@define(auto_attribs=True, kw_only=True)
-class AhbTableRow:
+class AhbTableRow(BaseModel):
     """
     A AhbTableRow is a single row from an AHB table.
     It contains a seed and the three cells (columns).
     """
 
-    seed: Seed = field(validator=validators.instance_of(Seed))
-    edifact_struktur_cell: _Cell = field(validator=validators.instance_of(_Cell))
-    middle_cell: _Cell = field(validator=validators.instance_of(_Cell))
-    bedingung_cell: _Cell = field(validator=validators.instance_of(_Cell))
+    seed: Seed
+    edifact_struktur_cell: _Cell
+    middle_cell: _Cell
+    bedingung_cell: _Cell
+
+    class Config:
+        arbitrary_types_allowed = True
 
     def parse(
         self,
