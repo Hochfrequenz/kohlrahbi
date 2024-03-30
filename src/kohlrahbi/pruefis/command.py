@@ -85,7 +85,8 @@ def pruefi(
     output_path: Path,
     file_type: Literal["flatahb", "csv", "xlsx"],
     format_version: EdifactFormatVersion | str,
-    assume_yes: bool,  # pylint: disable=unused-argument, it is used by the callback function of the output-path
+    assume_yes: bool,  # pylint: disable=unused-argument
+    # it is used by the callback function of the output-path
 ):
     check_python_version()
     if isinstance(format_version, str):
