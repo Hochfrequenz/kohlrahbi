@@ -76,6 +76,13 @@ def does_the_table_contain_pruefidentifikatoren(table: Table) -> bool:
     return table.cell(row_idx=0, col_idx=0).text.strip() == "EDIFACT Struktur"
 
 
+def is_item_header_of_change_history_section(item, style_name: str) -> bool:
+    """
+    Checks if the given item is a header of the change history section.
+    """
+    return isinstance(item, Paragraph) and "Änderungshistorie" in item.text and "Heading" in style_name
+
+
 def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
     """
     Reads a docx file and extracts all information for each Prüfidentifikator.
@@ -96,8 +103,10 @@ def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
     logger.info("🔁 Start iterating through paragraphs and tables")
     for item in get_all_paragraphs_and_tables(parent=document):
         style_name = item.style.name  # this is a bit expensive. we should only call it once per item
+        if isinstance(style_name, type(None)):
+            style_name = "None"
         # Check if we reached the end of the current AHB document and stop if it's true.
-        if isinstance(item, Paragraph) and "Änderungshistorie" in item.text and "Heading" in style_name:
+        if is_item_header_of_change_history_section(item, style_name):
             # checking the style is quite expensive for the CPU because it includes some xpath searches;
             # we should only check the style if the other (easier/cheap) checks returned True
             logger.info(
