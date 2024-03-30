@@ -5,6 +5,7 @@ from typing import Literal
 import click
 from maus.edifact import EdifactFormatVersion
 
+from kohlrahbi.enums.ahbexportfileformat import AhbExportFileFormat
 from kohlrahbi.pruefis import scrape_pruefis
 
 
@@ -63,8 +64,10 @@ def validate_path(ctx, param, value):
 )
 @click.option(
     "--file-type",
-    type=click.Choice(["flatahb", "csv", "xlsx", "conditions"], case_sensitive=False),
+    type=click.Choice([aeff.value for aeff in AhbExportFileFormat], case_sensitive=False),
     multiple=True,
+    required=True,
+    help="File type(s) for the scraped AHB documents.",
 )
 @click.option(
     "--format-version",
@@ -83,7 +86,7 @@ def pruefi(
     pruefis: list[str],
     input_path: Path,
     output_path: Path,
-    file_type: Literal["flatahb", "csv", "xlsx"],
+    file_type: AhbExportFileFormat | str,
     format_version: EdifactFormatVersion | str,
     assume_yes: bool,  # pylint: disable=unused-argument
     # it is used by the callback function of the output-path
