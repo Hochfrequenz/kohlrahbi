@@ -1,11 +1,9 @@
-import shutil
-from pathlib import Path
 from typing import Union
 
 import pytest  # type:ignore[import]
 from click.testing import CliRunner, Result
 
-from kohlrahbi import cli
+from kohlrahbi.pruefis.command import pruefi
 from unittests.test_current_state import path_to_test_files_fv2310
 
 runner: CliRunner = CliRunner()
@@ -21,7 +19,6 @@ class TestCli:
         [
             pytest.param(
                 [
-                    "pruefi",
                     "--pruefis",
                     "11016",
                     "--input-path",
@@ -32,7 +29,6 @@ class TestCli:
             ),
             pytest.param(
                 [
-                    "pruefi",
                     "--pruefis",
                     "11016",
                     "--input-path",
@@ -45,7 +41,6 @@ class TestCli:
             ),
             pytest.param(
                 [
-                    "pruefi",
                     "--pruefis",
                     "abc",
                     "--input-path",
@@ -64,7 +59,7 @@ class TestCli:
         """
 
         # Call the CLI tool with the desired arguments
-        response = runner.invoke(cli, argument_options)
+        response = runner.invoke(pruefi, argument_options)
 
         assert response.exit_code == expected_response.get("exit_code")
         assert expected_response.get("output_snippet") in response.output
@@ -74,7 +69,6 @@ class TestCli:
         [
             pytest.param(
                 [
-                    "pruefi",
                     "-p",
                     "17201",
                     "--file-type",
@@ -85,7 +79,6 @@ class TestCli:
             ),
             pytest.param(
                 [
-                    "pruefi",
                     "-p",
                     "17201",
                     "--file-type",
@@ -116,7 +109,7 @@ class TestCli:
         )
 
         # Call the CLI tool with the desired arguments
-        response: Result = runner.invoke(cli, argument_options)
+        response: Result = runner.invoke(pruefi, argument_options)
 
         assert response.exit_code == expected_response.get("exit_code")
         expected_output_snippet = expected_response.get("output_snippet")
