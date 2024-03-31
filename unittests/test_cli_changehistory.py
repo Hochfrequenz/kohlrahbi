@@ -1,9 +1,9 @@
 import logging
-from datetime import UTC, datetime
 from pathlib import Path
 
 import pandas as pd
 from click.testing import CliRunner, Result
+from freezegun import freeze_time
 
 from kohlrahbi.changehistory.command import changehistory
 
@@ -49,6 +49,7 @@ class TestCliChangeHistory:
     Test the CLI tool changehistory.
     """
 
+    @freeze_time("2024-03-30")
     def test_cli_changehistory(self):
         """
         This test runs the CLI tool with valid arguments and checks if the output is as expected.
@@ -68,9 +69,9 @@ class TestCliChangeHistory:
         response: Result = runner.invoke(changehistory, argument_options)
 
         assert response.exit_code == 0
-        current_timestamp = datetime.now(UTC).strftime("%Y-%m-%d")
 
-        change_history_file_name = f"{current_timestamp}_change_histories.xlsx"
+        timestamp_of_expected_change_history_file = "2024-03-30"
+        change_history_file_name = f"{timestamp_of_expected_change_history_file}_change_histories.xlsx"
         assert Path(actual_output_dir, change_history_file_name).exists(), "No matching file found"
 
         path_to_actual_change_history_file = actual_output_dir / change_history_file_name
