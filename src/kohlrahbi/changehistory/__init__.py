@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -19,7 +19,7 @@ def save_change_histories_to_excel(change_history_collection: dict[str, pd.DataF
     # It is handy during debugging to save different versions of the output files with the datetime information.
     # But in production we only want to save one file per day.
     # current_timestamp = datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
-    current_timestamp = datetime.now(UTC).strftime("%Y-%m-%d")
+    current_timestamp = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d")
     path_to_change_history_excel_file = output_path / f"{current_timestamp}_change_histories.xlsx"
 
     logger.info("💾 Saving change histories xlsx file %s", path_to_change_history_excel_file)
