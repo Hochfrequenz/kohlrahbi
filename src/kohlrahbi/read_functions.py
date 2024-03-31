@@ -9,6 +9,7 @@ from docx.oxml.table import CT_Tbl  # type:ignore[import]
 from docx.oxml.text.paragraph import CT_P  # type:ignore[import]
 from docx.table import Table, _Cell  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
+from more_itertools import peekable
 
 from kohlrahbi.ahb.ahbsubtable import AhbSubTable
 from kohlrahbi.ahb.ahbtable import AhbTable
@@ -78,7 +79,7 @@ def is_item_table_with_pruefidentifikatoren(item: Paragraph | Table | None) -> b
 
 def is_item_headless_table(
     item: Paragraph | Table | None,
-    seed: Seed | None,
+    # seed: Seed | None,
     ahb_table: AhbTable | None,
 ) -> bool:
     """
@@ -92,86 +93,110 @@ def is_item_headless_table(
     Returns:
         bool: True if the item is a headless table, False otherwise.
     """
-    return isinstance(item, Table) and seed is not None and ahb_table is not None
+    # return isinstance(item, Table) and seed is not None and ahb_table is not None
+    return isinstance(item, Table) and ahb_table is not None
 
 
-def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
+def get_ahb_table(document, pruefi: str) -> Optional[AhbTable]:
     """
-    Reads a docx file and extracts all information for each Prüfidentifikator.
-    If the Prüfidentifikator is not found or we reached the end of the AHB document
+    Reads a docx file and extracts all information for a given Prüfidentifikator.
+    If the Prüfidentifikator is not found or we reach the end of the AHB document
     - indicated by the section 'Änderungshistorie' - it returns None.
 
     Args:
-        document (Document): AHB word document which is read by python-docx package
+        document: AHB word document which is read by python-docx package
+        pruefi (str): The Prüfidentifikator to search for
+
+    Returns:
+        AhbTable or None: The extracted AHB table or None if not found
     """
 
-    seed: Optional[Seed] = None
+    seed = None
+    searched_pruefi_is_found = False
+    ahb_table = None
 
-    ahb_table: Optional[AhbTable] = None
-    is_ahb_table_initialized: bool = False
-    searched_pruefi_is_found: bool = False
+    for item in peekable(get_all_paragraphs_and_tables(document)):
+        style_name = get_style_name(item)
 
-    # Iterate through the whole word document
-    logger.info("🔁 Start iterating through paragraphs and tables")
-    for item in get_all_paragraphs_and_tables(parent=document):
-        style_name = item.style.name  # this is a bit expensive. we should only call it once per item
-        if isinstance(style_name, type(None)):
-            style_name = "None"
-        # Check if we reached the end of the current AHB document and stop if it's true.
-        if is_item_header_of_change_history_section(item, style_name):
-            logger.info(
-                "We reached the end of the document before any table containing the searched Prüfi %s was found", pruefi
-            )
-            del seed
+        if reached_end_of_document(style_name, item):
+            log_end_of_document(pruefi)
             return None
 
-        # Check if there is just a text paragraph,
         if is_item_text_paragraph(item, style_name):
             continue
 
-        if is_item_table_with_pruefidentifikatoren(item):
-            # check which pruefis
-            seed = Seed.from_table(docx_table=item)
-            logger.debug("Found a table with the following pruefis (A): %s", seed.pruefidentifikatoren)
+        seed = update_seed(item, seed)
 
-        is_end_of_searched_pruefi_table_reached: bool = (
-            seed is not None and pruefi not in seed.pruefidentifikatoren and searched_pruefi_is_found
-        )
-
-        if is_end_of_searched_pruefi_table_reached:
-            del seed
-            seed = None
-            logger.info("🏁 We reached the end of the AHB table of the Prüfidentifikator '%s'", pruefi)
+        if should_end_search(pruefi, seed, searched_pruefi_is_found):
+            log_end_of_ahb_table(pruefi)
             break
 
-        if is_item_table_with_pruefidentifikatoren(item):
-            # check which pruefis
-            seed = Seed.from_table(docx_table=item)
-            logger.debug("Found a table with the following pruefis (B): %s", seed.pruefidentifikatoren)
+        searched_pruefi_is_found, ahb_table = process_table(item, pruefi, searched_pruefi_is_found, ahb_table, seed)
 
-            searched_pruefi_is_found = pruefi in seed.pruefidentifikatoren and not is_ahb_table_initialized
+    if ahb_table:
+        ahb_table.sanitize()
+        return ahb_table
 
-            if searched_pruefi_is_found:
-                logger.info("👀 Found the AHB table with the Prüfidentifkator you are looking for %s", pruefi)
-                logger.info("✨ Initializing new ahb table")
+    log_pruefi_not_found(pruefi)
+    return None
 
-                ahb_sub_table = AhbSubTable.from_table_with_header(docx_table=item)
 
-                ahb_table = AhbTable.from_ahb_sub_table(ahb_sub_table=ahb_sub_table)
+def get_style_name(item) -> str:
+    """Extracts and normalizes the style name of a document item."""
+    return item.style.name if item.style else "None"
 
-                is_ahb_table_initialized = True
-                continue
-        if is_item_headless_table(item, seed, ahb_table):
-            ahb_sub_table = AhbSubTable.from_headless_table(docx_table=item, tmd=ahb_sub_table.table_meta_data)
-            ahb_table.append_ahb_sub_table(ahb_sub_table=ahb_sub_table)
 
-    if ahb_table is None:
-        logger.warning("⛔️ Your searched pruefi '%s' was not found in the provided files.\n", pruefi)
-        return None
+def reached_end_of_document(style_name, item) -> bool:
+    """Checks if the current item marks the end of the document."""
+    return is_item_header_of_change_history_section(item, style_name)
 
-    ahb_table.sanitize()
-    del seed
-    return ahb_table
+
+def update_seed(item, seed):
+    """Updates the seed if the current item is a table with Prüfidentifikatoren."""
+    if is_item_table_with_pruefidentifikatoren(item):
+        return Seed.from_table(docx_table=item)
+    return seed
+
+
+def should_end_search(pruefi, seed, searched_pruefi_is_found):
+    """Determines if the search for the AHB table should end."""
+    return seed and pruefi not in seed.pruefidentifikatoren and searched_pruefi_is_found
+
+
+def process_table(item, pruefi, searched_pruefi_is_found, ahb_table, seed=None):
+    """Processes tables to find and build the AHB table."""
+    if is_item_table_with_pruefidentifikatoren(item):
+        seed = Seed.from_table(docx_table=item)
+
+        if pruefi in seed.pruefidentifikatoren and not searched_pruefi_is_found:
+            log_found_pruefi(pruefi)
+            ahb_sub_table = AhbSubTable.from_table_with_header(docx_table=item)
+            ahb_table = AhbTable.from_ahb_sub_table(ahb_sub_table=ahb_sub_table)
+            searched_pruefi_is_found = True
+
+    # elif is_item_headless_table(item, seed, ahb_table):
+    elif is_item_headless_table(item, ahb_table):
+        ahb_sub_table = AhbSubTable.from_headless_table(docx_table=item, tmd=seed)
+        ahb_table.append_ahb_sub_table(ahb_sub_table=ahb_sub_table)
+
+    return searched_pruefi_is_found, ahb_table
+
+
+# Logging functions
+def log_end_of_document(pruefi):
+    logger.info("Reached the end of the document before finding the table for Prüfi '%s'.", pruefi)
+
+
+def log_end_of_ahb_table(pruefi):
+    logger.info("Reached the end of the AHB table for Prüfi '%s'.", pruefi)
+
+
+def log_found_pruefi(pruefi):
+    logger.info("Found the AHB table for Prüfi '%s'.", pruefi)
+
+
+def log_pruefi_not_found(pruefi):
+    logger.warning("Prüfi '%s' was not found in the provided document.", pruefi)
 
 
 def is_change_history_table(table: Table) -> bool:
