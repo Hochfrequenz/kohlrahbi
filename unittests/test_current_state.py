@@ -3,7 +3,6 @@ This test will check if we get the same results during the refactoring process.
 """
 
 import logging
-from datetime import UTC, datetime
 from pathlib import Path
 from typing import Union
 
