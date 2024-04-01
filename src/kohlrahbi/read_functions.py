@@ -111,11 +111,11 @@ def get_ahb_table(document, pruefi: str) -> Optional[AhbTable]:
         AhbTable or None: The extracted AHB table or None if not found
     """
 
+    ahb_table = None
     seed = None
     searched_pruefi_is_found = False
-    ahb_table = None
 
-    for item in peekable(get_all_paragraphs_and_tables(document)):
+    for item in get_all_paragraphs_and_tables(document):
         style_name = get_style_name(item)
 
         if is_item_text_paragraph(item, style_name):
@@ -123,10 +123,7 @@ def get_ahb_table(document, pruefi: str) -> Optional[AhbTable]:
 
         if reached_end_of_document(style_name, item):
             log_end_of_document(pruefi)
-            if ahb_table:
-                ahb_table.sanitize()
-                return ahb_table
-            return None
+            break
 
         seed = update_seed(item, seed)
 
