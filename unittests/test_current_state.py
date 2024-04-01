@@ -47,10 +47,10 @@ def compare_csv_files(actual_output_dir: Path, expected_output_dir: Path):
 
     # combine the paths of the actual and expected files
     combined_paths = path_to_actual_csv_files + path_to_expected_csv_files
-    sorted_paths = sorted(combined_paths, key=lambda x: x.name)
 
     # group the paths by their filename
-    grouped_paths = groupby(sorted_paths, key=lambda x: x.name)
+    combined_paths = sorted(combined_paths, key=lambda x: x.name)
+    grouped_paths = groupby(combined_paths, key=lambda x: x.name)
 
     differences = {}
 
