@@ -118,12 +118,15 @@ def get_ahb_table(document, pruefi: str) -> Optional[AhbTable]:
     for item in peekable(get_all_paragraphs_and_tables(document)):
         style_name = get_style_name(item)
 
-        if reached_end_of_document(style_name, item):
-            log_end_of_document(pruefi)
-            return None
-
         if is_item_text_paragraph(item, style_name):
             continue
+
+        if reached_end_of_document(style_name, item):
+            log_end_of_document(pruefi)
+            if ahb_table:
+                ahb_table.sanitize()
+                return ahb_table
+            return None
 
         seed = update_seed(item, seed)
 
