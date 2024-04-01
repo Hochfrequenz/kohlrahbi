@@ -49,7 +49,7 @@ def compare_csv_files(actual_output_dir: Path, expected_output_dir: Path):
     combined_paths = path_to_actual_csv_files + path_to_expected_csv_files
 
     # group the paths by their filename
-    combined_paths = sorted(combined_paths, key=lambda x: x.name)
+    combined_paths.sort(key=lambda x: x.name)
     grouped_paths = groupby(combined_paths, key=lambda x: x.name)
 
     differences = {}
@@ -75,9 +75,6 @@ def compare_csv_files(actual_output_dir: Path, expected_output_dir: Path):
     else:
         logging.info("All files are the same.")
         assert True
-
-
-# Assume the directory structure and file naming are mirrored in expected-output and actual-output
 
 
 class TestCli:
