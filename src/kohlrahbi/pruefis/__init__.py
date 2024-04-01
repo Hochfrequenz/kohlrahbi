@@ -5,7 +5,7 @@ This module contains the functions to scrape the AHBs for Pruefidentifikatoren.
 import fnmatch
 import re
 from pathlib import Path
-from typing import Any, Literal, Optional
+from typing import Any, Optional
 
 import click
 import docx
