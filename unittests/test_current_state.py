@@ -3,6 +3,7 @@ This test will check if we get the same results during the refactoring process.
 """
 
 import logging
+from itertools import groupby
 from pathlib import Path
 from typing import Union
 
@@ -44,15 +45,32 @@ def compare_csv_files(actual_output_dir: Path, expected_output_dir: Path):
     path_to_actual_csv_files = get_csv_paths(actual_output_dir)
     path_to_expected_csv_files = get_csv_paths(expected_output_dir)
 
-    differences = []
-    for expected, actual in zip(path_to_expected_csv_files, path_to_actual_csv_files):
-        if not are_csv_files_equal(expected, actual):
-            differences.append((expected, actual))
+    # combine the paths of the actual and expected files
+    combined_paths = path_to_actual_csv_files + path_to_expected_csv_files
+    sorted_paths = sorted(combined_paths, key=lambda x: x.name)
+
+    # group the paths by their filename
+    grouped_paths = groupby(sorted_paths, key=lambda x: x.name)
+
+    differences = {}
+
+    for csv_file_name, paths in grouped_paths:
+        paths = list(paths)
+        if len(paths) == 2:
+            if not are_csv_files_equal(paths[0], paths[1]):
+                differences[csv_file_name] = [paths[0], paths[1]]
+        else:
+            differences[csv_file_name] = paths[0]
 
     # Report differences
     if differences:
-        for diff in differences:
-            logging.error("Files %s and %s are different.", diff[0], diff[1])
+        for csv_file_name, paths in differences.items():
+            if isinstance(paths, list):
+                logging.error("Files %s and %s are different.", paths[0], paths[1])
+            else:
+                logging.error(
+                    "The file '%s' does not have a corresponding comparison file in the expected directory.", paths
+                )
         assert False
     else:
         logging.info("All files are the same.")
