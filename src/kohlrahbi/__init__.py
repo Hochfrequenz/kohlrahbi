@@ -221,8 +221,10 @@ def load_pruefis_if_empty(pruefi_to_file_mapping: dict[str, str | None]) -> dict
 
 def find_all_files_from_all_pruefis(pruefi_to_file_mapping: dict[str, str | None]) -> dict[EdifactFormat, list[str]]:
     """takes list of all pruefis with according files and returns a dict edifactformat-> list(filepaths)"""
-    format_to_files_mapping: dict[EdifactFormat, list[Path]] = {}
+    format_to_files_mapping: dict[EdifactFormat, list[str]] = {}
     for pruefi, filename in pruefi_to_file_mapping.items():
+        if not filename:
+            raise ValueError(("No file provided for pruefi %s", pruefi))
         if format_to_files_mapping.get(get_format_of_pruefidentifikator(pruefi)) is None:
             format_to_files_mapping[get_format_of_pruefidentifikator(pruefi)] = [filename]
         elif filename not in format_to_files_mapping[get_format_of_pruefidentifikator(pruefi)]:
@@ -384,6 +386,7 @@ def scrape_conditions(
     """
     starts the scraping process for conditions of all formats
     """
+    are_pruefis_provided = bool(pruefi_to_file_mapping)
     pruefi_to_file_mapping = load_pruefis_if_empty(pruefi_to_file_mapping)
     valid_pruefis = validate_pruefis(list(pruefi_to_file_mapping.keys()))
     valid_pruefi_to_file_mappings: dict[str, str | None] = {}
@@ -405,13 +408,15 @@ def scrape_conditions(
         except Exception as e:  # pylint: disable=broad-except
             logger.exception("Error processing pruefi '%s': %s", pruefi, str(e))
     all_format_files = find_all_files_from_all_pruefis(valid_pruefi_to_file_mappings)
-    for edifact_format, files in all_format_files.items():
-        for file in files:
-            # pylint: disable=too-many-function-args
-            # type: ignore[call-arg, arg-type]
-            process_package_conditions(
-                basic_input_path / Path(file), path_to_document_mapping, collected_conditions, edifact_format
-            )
+    test = get_format_of_pruefidentifikator("17207")
+    if not are_pruefis_provided:
+        for edifact_format, files in all_format_files.items():
+            for file in files:
+                # pylint: disable=too-many-function-args
+                # type: ignore[call-arg, arg-type]
+                process_package_conditions(
+                    basic_input_path / Path(file), path_to_document_mapping, collected_conditions, edifact_format
+                )
     dump_conditions_json(output_path, collected_conditions)  # type: ignore[arg-type]
 
 
