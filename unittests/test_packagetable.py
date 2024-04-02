@@ -5,19 +5,20 @@ import docx  # type: ignore[import-untyped]
 import pandas as pd
 from maus.edifact import EdifactFormat
 
-from kohlrahbi import get_or_cache_document, get_package_table
+from kohlrahbi.pruefis import get_or_cache_document
+from kohlrahbi.read_functions import get_package_table
 
 
 class TestPackageTable:
     def test_from_docx_table(self):
         path_to_document_mapping: dict[Path, docx.Document] = {}
         input_path = Path.cwd() / Path(
-            "unittests/docx_files/PARTINAHB-informatorischeLesefassung1.0aKonsolidierteLesefassungmitFehlerkorrekturenStand15.08.2022_20230331_20221001.docx"
+            "test-files/docx_files/PARTINAHB-informatorischeLesefassung1.0aKonsolidierteLesefassungmitFehlerkorrekturenStand15.08.2022_20230331_20221001.docx"
         )
         doc = get_or_cache_document(input_path, path_to_document_mapping)
         package_table = get_package_table(document=doc)
         expected_path = Path.cwd() / Path(
-            "unittests/dataframes/PARTINAHB-informatorischeLesefassung1.0aKonsolidierteLesefassungmitFehlerkorrekturenStand15.08.2022_20230331_20221001.json"
+            "dataframes/PARTINAHB-informatorischeLesefassung1.0aKonsolidierteLesefassungmitFehlerkorrekturenStand15.08.2022_20230331_20221001.json"
         )
         with open(expected_path, "r") as file:
             expected = pd.read_json(file)
@@ -27,7 +28,7 @@ class TestPackageTable:
     def test_collect_conditions(self):
         path_to_document_mapping: dict[Path, docx.Document] = {}
         input_path = Path.cwd() / Path(
-            "unittests/docx_files/PARTINAHB-informatorischeLesefassung1.0aKonsolidierteLesefassungmitFehlerkorrekturenStand15.08.2022_20230331_20221001.docx"
+            "test-files/docx_files/PARTINAHB-informatorischeLesefassung1.0aKonsolidierteLesefassungmitFehlerkorrekturenStand15.08.2022_20230331_20221001.docx"
         )
         doc = get_or_cache_document(input_path, path_to_document_mapping)
         package_table = get_package_table(document=doc)

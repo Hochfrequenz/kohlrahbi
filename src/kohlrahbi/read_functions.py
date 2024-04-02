@@ -2,14 +2,16 @@
 A collection of functions to get information from AHB tables.
 """
 
-from typing import Generator, Optional, Union
+from typing import Generator, Optional, Tuple, Union
 
 from docx.document import Document  # type:ignore[import]
 from docx.oxml.table import CT_Tbl  # type:ignore[import]
 from docx.oxml.text.paragraph import CT_P  # type:ignore[import]
 from docx.table import Table, _Cell  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
+from maus.edifact import EdifactFormat
 
+from kohlrahbi.ahb.ahbcondtions import AhbConditions
 from kohlrahbi.ahb.ahbsubtable import AhbSubTable
 from kohlrahbi.ahb.ahbtable import AhbTable
 from kohlrahbi.ahb.packagetable import AhbPackageTable
@@ -95,6 +97,17 @@ def is_item_headless_table(
     """
     # return isinstance(item, Table) and seed is not None and ahb_table is not None
     return isinstance(item, Table) and ahb_table is not None
+
+
+def is_item_package_heading(item: Paragraph | Table | None, style_name: str, edifact_format: EdifactFormat) -> bool:
+    """
+    Checks if the given item is the heading of the package table.
+    """
+    return (
+        isinstance(item, Paragraph)
+        and style_name == "Heading 2"
+        and item.text == f"Übersicht der Pakete in der {edifact_format.name}"
+    )
 
 
 def get_ahb_table(document, pruefi: str) -> Optional[AhbTable]:
@@ -251,6 +264,41 @@ def get_package_table(document: Document) -> Optional[AhbPackageTable]:
 
     logger.warning("⛔️ No package table found in the provided file.\n")
     return None
+
+
+def get_all_conditions_from_doc(
+    document: Document, edifact_format: EdifactFormat
+) -> Tuple[Optional[AhbPackageTable], Optional[AhbConditions]]:
+    package_table: AhbPackageTable = None
+    conditions_table: AhbConditions = None
+    tables: list[Table] = []
+    # Iterate through the whole word document
+    logger.info("🔁 Start iterating through paragraphs and tables")
+    found_package_table = False
+    for item in get_all_paragraphs_and_tables(document):
+        style_name = get_style_name(item)
+
+        if is_item_text_paragraph(item, style_name):
+            continue
+        # prcoessing of package tables
+        if is_item_package_heading(item, style_name, edifact_format):
+            found_package_table = True
+            logger.info("🏁 Found Package Table for %s", edifact_format)
+        elif isinstance(item, Table) and found_package_table:
+            tables.append(item)
+        elif found_package_table and not isinstance(item, Table):
+            logger.info("We reached the end of the package table.")
+            found_package_table = False
+            break
+        # processing of conditions tables
+
+        if reached_end_of_document(style_name, item):
+            log_end_of_document(edifact_format)
+
+            break
+    if len(tables) > 0:
+        package_table = AhbPackageTable.from_docx_table(tables)
+    return package_table, conditions_table
 
 
 def is_change_history_table(table: Table) -> bool:

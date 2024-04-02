@@ -13,7 +13,6 @@ import tomlkit
 from maus.edifact import EdifactFormat, EdifactFormatVersion, get_format_of_pruefidentifikator
 
 from kohlrahbi.ahb.ahbtable import AhbTable
-from kohlrahbi.conditions import dump_conditions_json
 from kohlrahbi.docxfilefinder import DocxFileFinder
 from kohlrahbi.enums.ahbexportfileformat import AhbExportFileFormat
 from kohlrahbi.logger import logger
@@ -218,6 +217,3 @@ def scrape_pruefis(
         # sorry for the pokemon catch
         # except Exception as e:  # pylint: disable=broad-except
         #     logger.exception("Error processing pruefi '%s': %s", pruefi, str(e))
-
-    if collected_conditions is not None:
-        dump_conditions_json(output_path, collected_conditions)

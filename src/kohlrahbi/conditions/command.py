@@ -22,7 +22,8 @@ from pathlib import Path
 import click
 from maus.edifact import EdifactFormatVersion
 
-from kohlrahbi.pruefis.command import validate_path
+from kohlrahbi.conditions import scrape_conditions
+from kohlrahbi.pruefis.command import check_python_version, validate_path
 
 
 @click.command()
@@ -64,4 +65,12 @@ def conditions(
     """
     Scrape AHB documents for conditions.
     """
-    pass
+    check_python_version()
+    if isinstance(format_version, str):
+        format_version = EdifactFormatVersion(format_version)
+
+    scrape_conditions(
+        basic_input_path=input_path,
+        output_path=output_path / Path(format_version.value),
+        format_version=format_version,
+    )
