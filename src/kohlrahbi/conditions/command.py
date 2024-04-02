@@ -55,6 +55,7 @@ from kohlrahbi.pruefis.command import validate_path
     default=False,
     help="Confirm all prompts automatically.",
 )
+# pylint: disable=unused-argument
 def conditions(
     input_path: Path,
     output_path: Path,
@@ -64,4 +65,3 @@ def conditions(
     """
     Scrape AHB documents for conditions.
     """
-    pass

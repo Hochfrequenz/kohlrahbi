@@ -199,12 +199,11 @@ def scrape_pruefis(
             if filename is not None:
                 input_path = basic_input_path / Path(filename)
             process_pruefi(pruefi, input_path, output_path, file_type, path_to_document_mapping, collected_conditions)
-        except FileNotFoundError as fnfe:
-            # logger.exception("File not found for pruefi '%s': %s", pruefi, str(fnfe))
+        except FileNotFoundError:
             logger.exception("File not found for pruefi '%s'", pruefi)
         # sorry for the pokemon catch
-        # except Exception as e:  # pylint: disable=broad-except
-        #     logger.exception("Error processing pruefi '%s': %s", pruefi, str(e))
+        except Exception as e:  # pylint: disable=broad-except
+            logger.exception("Error processing pruefi '%s': %s", pruefi, str(e))
 
     if collected_conditions is not None:
         dump_conditions_json(output_path, collected_conditions)
