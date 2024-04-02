@@ -30,7 +30,7 @@ class AhbSubTable(BaseModel):
         table_meta_data: Seed, ahb_table_dataframe: pd.DataFrame, docx_table: DocxTable
     ) -> pd.DataFrame:
         for row in docx_table.rows:
-            sanitized_cells = list(AhbSubTable._iter_visible_cells(row=row))
+            sanitized_cells = list(AhbSubTable.iter_visible_cells(row=row))
 
             current_edifact_struktur_cell = sanitized_cells[0]
 
@@ -122,7 +122,7 @@ class AhbSubTable(BaseModel):
         return cls(table_meta_data=tmd, table=ahb_table_dataframe)
 
     @staticmethod
-    def _iter_visible_cells(row) -> Generator[_Cell, None, None]:
+    def iter_visible_cells(row) -> Generator[_Cell, None, None]:
         """
         This function makes sure that you will iterate over the cells you see in the word document.
         For more information go to https://github.com/python-openxml/python-docx/issues/970#issuecomment-877386927

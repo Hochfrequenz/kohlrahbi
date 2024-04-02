@@ -1,4 +1,7 @@
-import logging
+"""
+This module contains the tests for the CLI tool changehistory.
+"""
+
 from pathlib import Path
 
 import pandas as pd
@@ -6,10 +9,6 @@ from click.testing import CliRunner, Result
 from freezegun import freeze_time
 
 from kohlrahbi.changehistory.command import changehistory
-
-# Setup basic configuration for logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-
 
 runner: CliRunner = CliRunner()
 

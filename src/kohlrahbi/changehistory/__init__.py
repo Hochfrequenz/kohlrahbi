@@ -1,3 +1,14 @@
+"""
+This module provides functions for scraping change histories from .docx files and saving them to an Excel file.
+
+The main functions in this module are:
+- `scrape_change_histories`: Starts the scraping process of the change histories.
+- `find_docx_files`: Finds all .docx files containing change histories.
+- `process_docx_file`: Reads and processes change history from a .docx file.
+- `save_change_histories_to_excel`: Saves the collected change histories to an Excel file.
+- `create_sheet_name`: Creates a sheet name from the filename.
+"""
+
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional

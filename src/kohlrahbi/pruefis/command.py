@@ -1,6 +1,9 @@
+""""
+Command line interface for the pruefis module.
+"""
+
 import sys
 from pathlib import Path
-from typing import Literal
 
 import click
 from maus.edifact import EdifactFormatVersion
@@ -20,6 +23,7 @@ def check_python_version():
         )
 
 
+# pylint: disable=unused-argument
 def validate_path(ctx, param, value):
     """
     Ensure the path exists or offer to create it.
@@ -82,15 +86,20 @@ def validate_path(ctx, param, value):
     default=False,
     help="Confirm all prompts automatically.",
 )
+# pylint: disable=too-many-arguments
 def pruefi(
     pruefis: list[str],
     input_path: Path,
     output_path: Path,
-    file_type: AhbExportFileFormat | str,
+    file_type: AhbExportFileFormat,
     format_version: EdifactFormatVersion | str,
     assume_yes: bool,  # pylint: disable=unused-argument
     # it is used by the callback function of the output-path
 ):
+    """
+    Scrape AHB documents for pruefidentifikatoren.
+    This is a command line interface for the pruefis module.
+    """
     check_python_version()
     if isinstance(format_version, str):
         format_version = EdifactFormatVersion(format_version)

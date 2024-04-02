@@ -27,13 +27,12 @@ class ChangeHistoryTable(BaseModel):
         change_history_rows: list[list[str]] = []
 
         for row in docx_table.rows:
-            sanitized_cells = list(AhbSubTable._iter_visible_cells(row=row))
+            sanitized_cells = list(AhbSubTable.iter_visible_cells(row=row))
 
             is_header_row = sanitized_cells[0].text == "Änd-ID" or sanitized_cells[2].text == "Bisher"
             if is_header_row:
                 continue
-            else:
-                change_history_rows.append([cell.text for cell in sanitized_cells])
+            change_history_rows.append([cell.text for cell in sanitized_cells])
 
         headers = ["Änd-ID", "Ort", "Änderungen Bisher", "Änderungen Neu", "Grund der Anpassung", "Status"]
 

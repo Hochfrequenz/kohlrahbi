@@ -9,7 +9,6 @@ from docx.oxml.table import CT_Tbl  # type:ignore[import]
 from docx.oxml.text.paragraph import CT_P  # type:ignore[import]
 from docx.table import Table, _Cell  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
-from more_itertools import peekable
 
 from kohlrahbi.ahb.ahbsubtable import AhbSubTable
 from kohlrahbi.ahb.ahbtable import AhbTable
@@ -184,18 +183,30 @@ def process_table(item, pruefi, searched_pruefi_is_found, ahb_table, seed=None):
 
 # Logging functions
 def log_end_of_document(pruefi):
+    """
+    Logs that the end of the document was reached before finding the table for a given Prüfi.
+    """
     logger.info("Reached the end of the document before finding the table for Prüfi '%s'.", pruefi)
 
 
 def log_end_of_ahb_table(pruefi):
+    """
+    Logs that the end of the AHB table was reached for a given Prüfi.
+    """
     logger.info("Reached the end of the AHB table for Prüfi '%s'.", pruefi)
 
 
 def log_found_pruefi(pruefi):
+    """
+    Logs that the AHB table for a given Prüfi was found.
+    """
     logger.info("Found the AHB table for Prüfi '%s'.", pruefi)
 
 
 def log_pruefi_not_found(pruefi):
+    """
+    Logs that the Prüfi was not found in the provided document.
+    """
     logger.warning("Prüfi '%s' was not found in the provided document.", pruefi)
 
 
