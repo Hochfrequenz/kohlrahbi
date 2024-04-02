@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 import click
-import docx
+import docx  # type: ignore
 import tomlkit
 from maus.edifact import EdifactFormat, EdifactFormatVersion
 

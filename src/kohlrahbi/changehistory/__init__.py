@@ -13,7 +13,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
-import docx
+import docx  # type: ignore
 import pandas as pd
 
 from kohlrahbi.docxfilefinder import DocxFileFinder
