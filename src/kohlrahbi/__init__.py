@@ -378,6 +378,7 @@ def scrape_pruefis(
             logger.exception("Error processing pruefi '%s': %s", pruefi, str(e))
 
 
+# pylint: disable=too-many-locals
 def scrape_conditions(
     pruefi_to_file_mapping: dict[str, str | None],
     basic_input_path: Path,
@@ -408,7 +409,6 @@ def scrape_conditions(
         except Exception as e:  # pylint: disable=broad-except
             logger.exception("Error processing pruefi '%s': %s", pruefi, str(e))
     all_format_files = find_all_files_from_all_pruefis(valid_pruefi_to_file_mappings)
-    test = get_format_of_pruefidentifikator("17207")
     if not are_pruefis_provided:
         for edifact_format, files in all_format_files.items():
             for file in files:
