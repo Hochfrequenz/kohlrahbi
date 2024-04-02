@@ -10,6 +10,18 @@ requires = ["hatchling>=1.8.0", "hatch-vcs", "hatch-fancy-pypi-readme"]
 build-backend = "hatchling.build"
 
 [project]
+dependencies = [
+  "click>=8.0.0",
+  "colorlog>=6.7.0",
+  "maus>=0.3.43",
+  "openpyxl>=3.1.1",
+  "pandas>=1.5.3",
+  "python-docx>=1.0.0",
+  "pytz>=2022.7.1",
+  "pydantic>=2.6.0",
+  "tomlkit>=0.11.6",
+  "xlsxwriter>=3.0.8",
+]
 name = "kohlrahbi"
 description = "Tool to generate machine readable files from AHB documents"
 license = { text = "GPL" }
@@ -26,18 +38,6 @@ classifiers = [
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
-]
-dependencies = [
-  "attrs>=22.2.0",
-  "click>=8.0.0",
-  "colorlog>=6.7.0",
-  "maus>=0.3.43",
-  "openpyxl>=3.1.1",
-  "pandas>=1.5.3",
-  "python-docx>=1.0.0",
-  "pytz>=2022.7.1",
-  "tomlkit>=0.11.6",
-  "xlsxwriter>=3.0.8",
 ]
 dynamic = ["readme", "version"]
 

@@ -1,9 +1,0 @@
-attrs
-click
-colorlog
-openpyxl
-pandas
-python-docx>=1.0.0
-tomlkit
-XlsxWriter
-maus>=0.3.43

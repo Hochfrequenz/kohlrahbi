@@ -8,7 +8,6 @@ import re
 from pathlib import Path
 from uuid import uuid4
 
-import attrs
 import pandas as pd
 from maus.edifact import get_format_of_pruefidentifikator
 from maus.models.anwendungshandbuch import (
@@ -19,6 +18,7 @@ from maus.models.anwendungshandbuch import (
 )
 from maus.reader.flat_ahb_reader import FlatAhbCsvReader
 from more_itertools import first_true, peekable
+from pydantic import BaseModel
 
 from kohlrahbi.ahb.ahbtable import AhbTable, _column_letter_width_mapping
 from kohlrahbi.logger import logger
@@ -60,8 +60,7 @@ def _keep_guids_of_unchanged_lines_stable(
                 existing_ahb_search_start_index = existing_ahb.lines.index(existing_line_match) + 1
 
 
-@attrs.define(auto_attribs=True, kw_only=True)
-class UnfoldedAhb:
+class UnfoldedAhb(BaseModel):
     """
     The UnfoldedAhb contains one Prüfidentifikator.
     Some columns in the AHB documents contain multiple information in one column e.g. Segmentname and Segmentgruppe.
@@ -69,9 +68,7 @@ class UnfoldedAhb:
     """
 
     meta_data: UnfoldedAhbTableMetaData
-    unfolded_ahb_lines: list[UnfoldedAhbLine] = attrs.field(
-        validator=attrs.validators.deep_iterable(member_validator=attrs.validators.instance_of(UnfoldedAhbLine))
-    )
+    unfolded_ahb_lines: list[UnfoldedAhbLine]
 
     @classmethod
     def from_ahb_table(cls, ahb_table: AhbTable, pruefi: str):

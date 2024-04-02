@@ -4,18 +4,17 @@ This module contains the AhbSubTable class.
 
 from typing import Generator
 
-import attrs
 import pandas as pd
 from docx.table import Table as DocxTable  # type:ignore[import]
 from docx.table import _Cell  # type:ignore[import]
+from pydantic import BaseModel, ConfigDict
 
 from kohlrahbi.ahb.ahbtablerow import AhbTableRow
 from kohlrahbi.row_type_checker import RowType, get_row_type
 from kohlrahbi.seed import Seed
 
 
-@attrs.define(auto_attribs=True, kw_only=True)
-class AhbSubTable:
+class AhbSubTable(BaseModel):
     """
     The AHB table for one Pruefidentifikator is separated into small sub tables.
     This class contains the information from such a sub table.
@@ -24,12 +23,14 @@ class AhbSubTable:
     table_meta_data: Seed
     table: pd.DataFrame
 
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     @staticmethod
     def _parse_docx_table(
         table_meta_data: Seed, ahb_table_dataframe: pd.DataFrame, docx_table: DocxTable
     ) -> pd.DataFrame:
         for row in docx_table.rows:
-            sanitized_cells = list(AhbSubTable._iter_visible_cells(row=row))
+            sanitized_cells = list(AhbSubTable.iter_visible_cells(row=row))
 
             current_edifact_struktur_cell = sanitized_cells[0]
 
@@ -121,7 +122,7 @@ class AhbSubTable:
         return cls(table_meta_data=tmd, table=ahb_table_dataframe)
 
     @staticmethod
-    def _iter_visible_cells(row) -> Generator[_Cell, None, None]:
+    def iter_visible_cells(row) -> Generator[_Cell, None, None]:
         """
         This function makes sure that you will iterate over the cells you see in the word document.
         For more information go to https://github.com/python-openxml/python-docx/issues/970#issuecomment-877386927
