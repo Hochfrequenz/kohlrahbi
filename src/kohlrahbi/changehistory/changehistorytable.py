@@ -77,5 +77,3 @@ class ChangeHistoryTable(BaseModel):
 
         # Reset index after dropping rows
         self.table.reset_index(drop=True, inplace=True)
-
-        return None
