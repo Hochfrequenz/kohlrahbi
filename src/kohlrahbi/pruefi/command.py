@@ -53,7 +53,7 @@ def validate_path(ctx, param, value):
 @click.option(
     "-i",
     "--input-path",
-    type=click.Path(exists=True, dir_okay=True, file_okay=False, path_type=Path),
+    type=click.Path(exists=True, dir_okay=True, file_okay=False, resolve_path=True, path_type=Path),
     prompt="Input directory",
     help="Define the path to the folder with the docx AHBs.",
 )
