@@ -10,8 +10,8 @@ from docx.oxml.text.paragraph import CT_P  # type:ignore[import]
 from docx.table import Table, _Cell  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
 
-from kohlrahbi.ahb.ahbsubtable import AhbSubTable
-from kohlrahbi.ahb.ahbtable import AhbTable
+from kohlrahbi.ahbtable.ahbsubtable import AhbSubTable
+from kohlrahbi.ahbtable.ahbtable import AhbTable
 from kohlrahbi.changehistory.changehistorytable import ChangeHistoryTable
 from kohlrahbi.logger import logger
 from kohlrahbi.seed import Seed

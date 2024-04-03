@@ -7,7 +7,7 @@ from pathlib import Path
 import docx  # type:ignore[import]
 from docx.table import Table  # type:ignore[import]
 
-from kohlrahbi.ahb.ahbsubtable import AhbSubTable
+from kohlrahbi.ahbtable.ahbsubtable import AhbSubTable
 from kohlrahbi.read_functions import get_all_paragraphs_and_tables
 
 

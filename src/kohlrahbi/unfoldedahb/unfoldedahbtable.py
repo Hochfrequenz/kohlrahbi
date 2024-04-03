@@ -20,7 +20,7 @@ from maus.reader.flat_ahb_reader import FlatAhbCsvReader
 from more_itertools import first_true, peekable
 from pydantic import BaseModel
 
-from kohlrahbi.ahb.ahbtable import AhbTable, _column_letter_width_mapping
+from kohlrahbi.ahbtable.ahbtable import AhbTable, _column_letter_width_mapping
 from kohlrahbi.logger import logger
 from kohlrahbi.unfoldedahb.unfoldedahbline import UnfoldedAhbLine
 from kohlrahbi.unfoldedahb.unfoldedahbtablemetadata import UnfoldedAhbTableMetaData

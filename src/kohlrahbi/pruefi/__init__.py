@@ -12,7 +12,7 @@ import docx  # type: ignore
 import tomlkit
 from maus.edifact import EdifactFormat, EdifactFormatVersion
 
-from kohlrahbi.ahb.ahbtable import AhbTable
+from kohlrahbi.ahbtable.ahbtable import AhbTable
 from kohlrahbi.conditions import dump_conditions_json
 from kohlrahbi.docxfilefinder import DocxFileFinder
 from kohlrahbi.enums.ahbexportfileformat import AhbExportFileFormat
@@ -184,6 +184,7 @@ def scrape_pruefis(
     valid_pruefi_to_file_mappings: dict[str, str | None] = {}
     for pruefi in valid_pruefis:
         valid_pruefi_to_file_mappings.update({pruefi: pruefi_to_file_mapping.get(pruefi, None)})
+        # TODO add collect pruefis if any path does not exist
     path_to_document_mapping: dict[Path, docx.Document] = {}
 
     for pruefi, filename in valid_pruefi_to_file_mappings.items():
