@@ -4,9 +4,9 @@ kohlrahbi is a package to scrape AHBs (in docx format)
 
 import click
 
+from kohlrahbi.ahb.command import ahb
 from kohlrahbi.changehistory.command import changehistory
 from kohlrahbi.conditions.command import conditions
-from kohlrahbi.pruefi.command import pruefi
 
 
 @click.group()
@@ -15,7 +15,7 @@ def cli():
 
 
 # Add commands to the CLI group
-cli.add_command(pruefi)
+cli.add_command(ahb)
 cli.add_command(changehistory)
 cli.add_command(conditions)
 

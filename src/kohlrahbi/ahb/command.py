@@ -8,8 +8,8 @@ from pathlib import Path
 import click
 from maus.edifact import EdifactFormatVersion
 
+from kohlrahbi.ahb import scrape_pruefis
 from kohlrahbi.enums.ahbexportfileformat import AhbExportFileFormat
-from kohlrahbi.pruefi import scrape_pruefis
 
 
 def check_python_version():
@@ -88,7 +88,7 @@ you will be asked if you want to create it.""",
     help="Confirm all prompts automatically.",
 )
 # pylint: disable=too-many-arguments
-def pruefi(
+def ahb(
     pruefis: list[str],
     input_path: Path,
     output_path: Path,

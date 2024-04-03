@@ -3,7 +3,7 @@ from typing import Union
 import pytest  # type:ignore[import]
 from click.testing import CliRunner, Result
 
-from kohlrahbi.pruefi.command import pruefi
+from kohlrahbi.ahb.command import ahb
 from unittests.test_current_state import path_to_test_files_fv2310
 
 runner: CliRunner = CliRunner()
@@ -65,7 +65,7 @@ class TestCliPruefi:
         """
 
         # Call the CLI tool with the desired arguments
-        response = runner.invoke(pruefi, argument_options)
+        response = runner.invoke(ahb, argument_options)
 
         assert response.exit_code == expected_response.get("exit_code")
         assert expected_response.get("output_snippet") in response.output
@@ -113,7 +113,7 @@ class TestCliPruefi:
         )
 
         # Call the CLI tool with the desired arguments
-        response: Result = runner.invoke(pruefi, argument_options)
+        response: Result = runner.invoke(ahb, argument_options)
 
         assert response.exit_code == expected_response.get("exit_code")
         expected_output_snippet = expected_response.get("output_snippet")

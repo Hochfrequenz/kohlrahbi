@@ -22,7 +22,7 @@ from pathlib import Path
 import click
 from maus.edifact import EdifactFormatVersion
 
-from kohlrahbi.pruefi.command import validate_path
+from kohlrahbi.ahb.command import validate_path
 
 
 @click.command()

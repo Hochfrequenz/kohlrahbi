@@ -15,10 +15,41 @@ from typing import Optional
 
 import docx  # type: ignore
 import pandas as pd
+from docx.document import Document  # type:ignore[import]
+from docx.table import Table  # type: ignore
 
+from kohlrahbi.changehistory.changehistorytable import ChangeHistoryTable
 from kohlrahbi.docxfilefinder import DocxFileFinder
 from kohlrahbi.logger import logger
-from kohlrahbi.read_functions import get_change_history_table
+from kohlrahbi.read_functions import get_all_paragraphs_and_tables
+
+
+def is_change_history_table(table: Table) -> bool:
+    """
+    Checks if the given table is change history table.
+    """
+    # in the document 'Entscheidungsbaum-DiagrammeundCodelisten-informatorischeLesefassung3.5_99991231_20240401.docx'
+    # I got the error "IndexError: list index out of range", I am not sure which table caused the error
+    try:
+        return table.cell(row_idx=0, col_idx=0).text.strip() == "Änd-ID"
+    except IndexError:
+        return False
+
+
+def get_change_history_table(document: Document) -> Optional[ChangeHistoryTable]:
+    """
+    Reads a docx file and extracts the change history.
+    Returns None if no such table was found.
+    """
+
+    # Iterate through the whole word document
+    logger.info("🔁 Start iterating through paragraphs and tables")
+    for item in get_all_paragraphs_and_tables(parent=document):
+        if isinstance(item, Table) and is_change_history_table(table=item):
+            change_history_table = ChangeHistoryTable.from_docx_change_history_table(docx_table=item)
+            return change_history_table
+
+    return None
 
 
 def save_change_histories_to_excel(change_history_collection: dict[str, pd.DataFrame], output_path: Path) -> None:
@@ -95,7 +126,7 @@ def process_docx_file(file_path: Path) -> Optional[pd.DataFrame]:
     """
     Read and process change history from a .docx file.
     """
-    doc = docx.Document(file_path)
+    doc = docx.Document(file_path.__str__())
     logger.info("🤓 Start reading docx file '%s'", str(file_path))
     change_history_table = get_change_history_table(document=doc)
 

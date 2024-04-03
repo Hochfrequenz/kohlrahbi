@@ -88,7 +88,7 @@ class TestCli:
         [
             pytest.param(
                 [
-                    "pruefi",
+                    "ahb",
                     "--format-version",
                     "FV2310",
                     "--file-type",
