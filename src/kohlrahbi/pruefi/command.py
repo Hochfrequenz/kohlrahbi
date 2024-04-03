@@ -64,7 +64,8 @@ def validate_path(ctx, param, value):
     callback=validate_path,
     default="output",
     prompt="Output directory",
-    help="Define the path where you want to save the generated files.",
+    help="""Define the path where you want to save the generated files. If the path does not exist,
+you will be asked if you want to create it.""",
 )
 @click.option(
     "--file-type",
