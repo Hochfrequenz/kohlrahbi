@@ -9,7 +9,7 @@ from docx.oxml.table import CT_Tbl  # type:ignore[import]
 from docx.oxml.text.paragraph import CT_P  # type:ignore[import]
 from docx.table import Table, _Cell  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
-from maus.edifact import EdifactFormat
+from maus.edifact import EdifactFormat, get_format_of_pruefidentifikator
 
 from kohlrahbi.ahb.ahbcondtions import AhbConditions
 from kohlrahbi.ahb.ahbsubtable import AhbSubTable
@@ -269,36 +269,90 @@ def get_package_table(document: Document) -> Optional[AhbPackageTable]:
 def get_all_conditions_from_doc(
     document: Document, edifact_format: EdifactFormat
 ) -> Tuple[Optional[AhbPackageTable], Optional[AhbConditions]]:
+    """
+    Go through a given document and grasp all conditions and package tables. for a given format
+    """
     package_table: AhbPackageTable = None
     conditions_table: AhbConditions = None
-    tables: list[Table] = []
+    package_tables: list[Table] = []
+    conditions_tables: list[Table] = []
+    seed = None
+    pruefis = []
+    new_table = False
     # Iterate through the whole word document
     logger.info("🔁 Start iterating through paragraphs and tables")
     found_package_table = False
     for item in get_all_paragraphs_and_tables(document):
         style_name = get_style_name(item)
-
+        if isinstance(item, Paragraph) and "Änderungshistorie" in item.text and "Heading" in style_name:
+            logger.info(
+                "Reached the end of the document, i.e. the section 'Änderungshistorie'.",
+            )
         if is_item_text_paragraph(item, style_name):
             continue
-        # prcoessing of package tables
+        # processing of package tables
         if is_item_package_heading(item, style_name, edifact_format):
             found_package_table = True
             logger.info("🏁 Found Package Table for %s", edifact_format)
         elif isinstance(item, Table) and found_package_table:
-            tables.append(item)
+            package_tables.append(item)
         elif found_package_table and not isinstance(item, Table):
             logger.info("We reached the end of the package table.")
             found_package_table = False
-            break
-        # processing of conditions tables
 
         if reached_end_of_document(style_name, item):
             log_end_of_document(edifact_format)
 
             break
-    if len(tables) > 0:
-        package_table = AhbPackageTable.from_docx_table(tables)
+        # processing of conditions tables
+        seed = update_seed(item, seed)
+        if is_ahb_table(item):
+            pruefis, new_table = is_new_pruefi_table(seed, pruefis)
+            if is_pruefi_of_edifact_format(pruefis, edifact_format):
+                conditions_tables.append(item)
+        if is_last_row_UNT_0062(item):
+            seed = None
+    if len(conditions_tables) > 0:
+        conditions_table = AhbConditions.from_docx_table(conditions_tables)
+
+    if len(package_tables) > 0:
+        package_table = AhbPackageTable.from_docx_table(package_tables)
     return package_table, conditions_table
+
+
+def is_last_row_UNT_0062(item: Table | Paragraph) -> bool:
+    """
+    Checks if the given table contains UNT segment in last row.
+    """
+    return isinstance(item, Table) and "UNT\t0062" == item.cell(row_idx=-1, col_idx=0).text.strip()
+
+
+def is_ahb_table(item: Paragraph | Table) -> bool:
+    """
+    Checks if the given item is an AHB table.
+    """
+    return isinstance(item, Table) and item.cell(row_idx=0, col_idx=0).text.strip() == "EDIFACT Struktur"
+
+
+def is_relevant_pruefi_table(item: Paragraph | Table, seed: Seed, edifact_format) -> bool:
+    """compares new pruefis to last pruefi and thus checks whether new table"""
+    return isinstance(item, Table) and seed and is_pruefi_of_edifact_format(seed.pruefidentifikatoren, edifact_format)
+
+    is_new_table = (
+        seed is not None
+        and len(seed.pruefidentifikatoren) > 0
+        and (last_pruefi is None or seed.pruefidentifikatoren != last_pruefi)
+    )
+    if is_new_table:
+        return seed.pruefidentifikatoren, True
+    return last_pruefi, False
+
+
+def is_pruefi_of_edifact_format(last_pruefis: list[str], edifact_format: EdifactFormat) -> bool:
+    """Checks if the pruefi is of the given edifact format"""
+    return len(last_pruefis) > 0 and all(
+        get_format_of_pruefidentifikator(pruefi) is edifact_format for pruefi in last_pruefis
+    )
 
 
 def is_change_history_table(table: Table) -> bool:
