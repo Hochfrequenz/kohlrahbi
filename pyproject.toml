@@ -42,7 +42,7 @@ classifiers = [
 dynamic = ["readme", "version"]
 
 [project.scripts]
-kohlrahbi = "kohlrahbi:main"
+kohlrahbi = "kohlrahbi:cli"
 
 
 [project.urls]
