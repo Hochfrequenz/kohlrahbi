@@ -136,7 +136,32 @@ flowchart TB
     CT -- Yes --> Extract[Create Extract]
 ```
 
+## AHB page number per Format
 
+The following table shows the page number of the AHBs for each format of the format version FV2310.
+
+| Format       | Page number | Hint                                                |     |
+| ------------ | ----------- | --------------------------------------------------- | --- |
+| UTILMD Strom | 1064        |                                                     |     |
+| UTILMD Gas   | 345         |                                                     |     |
+| REQOTE       | 264         | together with QUOTES, ORDERS, ORDRSP, ORDCHG        |     |
+| QUOTES       | 264         | together with REQOTE, ORDERS, ORDRSP, ORDCHG        |     |
+| ORDRSP       | 264         | together with REQOTE, QUOTES, ORDERS, ORDCHG        |     |
+| ORDERS       | 264         | together with REQOTE, QUOTES, ORDRSP, ORDCHG        |     |
+| ORDCHG       | 264         | together with REQOTE, QUOTES, ORDERS, ORDRSP        |     |
+| MSCONS       | 164         |                                                     |     |
+| UTILMD MaBis | 133         |                                                     |     |
+| REMADV       | 91          | together with INVOIC                                |     |
+| INVOIC       | 91          | together with REMADV                                |     |
+| IFTSTA       | 82          |                                                     |     |
+| CONTRL       | 72          | together with APERAK, contains no Prüfis            |     |
+| APERAK       | 72          | together with CONTRL, contains no Prüfis            |     |
+| PARTIN       | 69          |                                                     |     |
+| UTILTS       | 34          |                                                     |     |
+| ORDRSP       | 30          | together with ORDERS                                |     |
+| ORDERS       | 30          | together with ORDRSP                                |     |
+| PRICAT       | 25          |                                                     |     |
+| COMDIS       | 10          | good test for tables which are above change history |     |
 
 ## Development
 
