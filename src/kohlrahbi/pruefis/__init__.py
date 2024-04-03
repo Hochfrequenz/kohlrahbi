@@ -89,7 +89,6 @@ def process_ahb_table(
     pruefi: str,
     output_path: Path,
     file_type: str,
-    collected_conditions: Optional[dict[EdifactFormat, dict[str, str]]],
 ):
     """
     Process the ahb table.
@@ -102,8 +101,6 @@ def process_ahb_table(
         unfolded_ahb.dump_flatahb_json(output_path)
     if "csv" in file_type:
         unfolded_ahb.dump_csv(output_path)
-    if "conditions" in file_type:
-        unfolded_ahb.collect_condition(collected_conditions)
 
 
 # pylint:disable=anomalous-backslash-in-string
@@ -143,7 +140,6 @@ def process_pruefi(
     output_path: Path,
     file_type: str,
     path_to_document_mapping: dict,
-    collected_conditions: Optional[dict[EdifactFormat, dict[str, str]]],
 ):
     """
     Process one pruefi.
@@ -169,7 +165,7 @@ def process_pruefi(
         if not ahb_table:
             return
 
-        process_ahb_table(ahb_table, pruefi, output_path, file_type, collected_conditions)
+        process_ahb_table(ahb_table, pruefi, output_path, file_type)
 
 
 def scrape_pruefis(
@@ -189,7 +185,6 @@ def scrape_pruefis(
     for pruefi in valid_pruefis:
         valid_pruefi_to_file_mappings.update({pruefi: pruefi_to_file_mapping.get(pruefi, None)})
     path_to_document_mapping: dict[Path, docx.Document] = {}
-    collected_conditions: Optional[dict[EdifactFormat, dict[str, str]]] = {} if "conditions" in file_type else None
 
     for pruefi, filename in valid_pruefi_to_file_mappings.items():
         try:
@@ -198,12 +193,9 @@ def scrape_pruefis(
             # that would happen if filenames are added but never removed
             if filename is not None:
                 input_path = basic_input_path / Path(filename)
-            process_pruefi(pruefi, input_path, output_path, file_type, path_to_document_mapping, collected_conditions)
+            process_pruefi(pruefi, input_path, output_path, file_type, path_to_document_mapping)
         except FileNotFoundError:
             logger.exception("File not found for pruefi '%s'", pruefi)
         # sorry for the pokemon catch
         except Exception as e:  # pylint: disable=broad-except
             logger.exception("Error processing pruefi '%s': %s", pruefi, str(e))
-
-    if collected_conditions is not None:
-        dump_conditions_json(output_path, collected_conditions)
