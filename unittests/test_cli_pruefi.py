@@ -21,7 +21,7 @@ class TestCliPruefi:
                 [
                     "--pruefis",
                     "11016",
-                    "--input-path",
+                    "--edi-energy-mirror-path",
                     "/invalid/input/path",
                     "--file-type",
                     "csv",
@@ -33,7 +33,7 @@ class TestCliPruefi:
                 [
                     "--pruefis",
                     "11016",
-                    "--input-path",
+                    "--edi-energy-mirror-path",
                     path_to_test_files_fv2310,
                     "--output-path",
                     "/invalid/output/path",
@@ -47,7 +47,7 @@ class TestCliPruefi:
                 [
                     "--pruefis",
                     "abc",
-                    "--input-path",
+                    "--edi-energy-mirror-path",
                     path_to_test_files_fv2310,
                     "--output-path",
                     path_to_test_files_fv2310,
@@ -109,7 +109,7 @@ class TestCliPruefi:
         expected_output_dir = path_to_test_files_fv2310 / "expected-output"
 
         argument_options.extend(
-            ["--input-path", str(path_to_test_files_fv2310), "--output-path", str(actual_output_dir)]
+            ["--edi-energy-mirror-path", str(path_to_test_files_fv2310), "--output-path", str(actual_output_dir)]
         )
 
         # Call the CLI tool with the desired arguments

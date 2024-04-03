@@ -51,11 +51,11 @@ def validate_path(ctx, param, value):
     multiple=True,
 )
 @click.option(
-    "-i",
-    "--input-path",
-    type=click.Path(exists=True, dir_okay=True, file_okay=False, resolve_path=True, path_type=Path),
-    prompt="Input directory",
-    help="Define the path to the folder with the docx AHBs.",
+    "-eemp",
+    "--edi-energy-mirror-path",
+    type=click.Path(exists=True, file_okay=False, dir_okay=True, resolve_path=True, path_type=Path),
+    help="The root path to the edi_energy_mirror repository.",
+    required=True,
 )
 @click.option(
     "-o",
@@ -90,7 +90,7 @@ you will be asked if you want to create it.""",
 # pylint: disable=too-many-arguments
 def ahb(
     pruefis: list[str],
-    input_path: Path,
+    edi_energy_mirror_path: Path,
     output_path: Path,
     file_type: AhbExportFileFormat,
     format_version: EdifactFormatVersion | str,
@@ -111,7 +111,7 @@ def ahb(
 
     scrape_pruefis(
         pruefi_to_file_mapping=pruefi_to_file_mapping,
-        basic_input_path=input_path,
+        basic_input_path=edi_energy_mirror_path,
         output_path=output_path,
         file_type=file_type,
         format_version=format_version,

@@ -58,7 +58,7 @@ class TestCliChangeHistory:
         expected_output_dir = path_to_test_files_fv2310 / "expected-output"
 
         argument_options: list[str] = [
-            "--input-path",
+            "--edi-energy-mirror-path",
             str(path_to_test_files_fv2310),
             "--output-path",
             str(actual_output_dir),
