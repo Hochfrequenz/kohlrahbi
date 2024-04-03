@@ -169,7 +169,6 @@ backup_documents/
 
 # output files
 output/
-unittests/test-files/FV2310/actual-output/
 *.xlsx
 *.csv
 *.json
