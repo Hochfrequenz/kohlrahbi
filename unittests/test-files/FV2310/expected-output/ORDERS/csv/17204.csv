@@ -13,7 +13,7 @@
 11,Beginn der Nachricht,,BGM,1004,,,Dokumentennummer,X,
 12,Nachrichtendatum,,,,,,,Muss,
 13,Nachrichtendatum,,DTM,2005,137,,Dokumenten-/Nachrichtendatum/-zeit,X,
-14,Nachrichtendatum,,DTM,2380,,,"Datum oder Uhrzeit oderZeitspanne, Wert",X [931][494],"[494] Das hier genannte Datum muss der Zeitpunkt sein, zu dem das Dokument erstellt wurde, oder ein Zeitpunkt, der davor liegt.
+14,Nachrichtendatum,,DTM,2380,,,"Datum oder Uhrzeit oderZeitspanne, Wert",X [931][494],"[494] Das hier genannte Datum muss der Zeitpunkt sein, zu dem das Dokument erstellt wurde, oder ein Zeitpunkt, der davor liegt. 
 [931] Format: ZZZ = +00"
 15,Nachrichtendatum,,DTM,2379,303,,CCYYMMDDHHMMZZZ,X,
 16,Ausführungsdatum,,,,,,,,
@@ -90,8 +90,8 @@
 87,Meldepunkt,SG38,,,,,,Muss,
 88,Meldepunkt,SG38,LOC,,,,,Muss,
 89,Meldepunkt,SG38,LOC,3227,172,,Meldepunkt,X,
-90,Meldepunkt,SG38,LOC,3225,,,Meldepunkt,X [951][500],"[500] Hinweis: Zählpunkt der BAS
-[501] Hinweis: Zählpunkt der DZR
+90,Meldepunkt,SG38,LOC,3225,,,Meldepunkt,X [951][500],"[500] Hinweis: Zählpunkt der BAS 
+[501] Hinweis: Zählpunkt der DZR 
 [951] Format: Zählpunktbezeichnu ng"
 91,Bilanzkreis für Strom,SG38,,,,,,,
 92,Bilanzkreis für Strom,SG38,,,,,,,

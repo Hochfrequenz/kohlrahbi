@@ -11,14 +11,14 @@
 9,Beginn der Nachricht,,BGM,1004,,,Dokumentennummer,X,
 10,Nachrichtendatum,,,,,,,Muss,
 11,Nachrichtendatum,,DTM,2005,137,,Dokumenten-/Nachrichtendatum/-zeit,X,
-12,Nachrichtendatum,,DTM,2380,,,"Datum oder Uhrzeit oderZeitspanne, Wert",X [931] [494],"[494] Das hier genannte Datum muss der Zeitpunkt sein, zu dem das Dokument erstellt wurde, oder ein Zeitpunkt, der davor liegt.
+12,Nachrichtendatum,,DTM,2380,,,"Datum oder Uhrzeit oderZeitspanne, Wert",X [931] [494],"[494] Das hier genannte Datum muss der Zeitpunkt sein, zu dem das Dokument erstellt wurde, oder ein Zeitpunkt, der davor liegt. 
 [931] Format: ZZZ = +00"
 13,Nachrichtendatum,,DTM,2379,303,,CCYYMMDDHHMMZZZ,X,
 14,Reklamation von normierten Profilen bzw. Profilscharen,,,,,,,Muss,
 15,Reklamation von normierten Profilen bzw. Profilscharen,,FTX,4451,,,,AFH,
 16,Reklamation von normierten Profilen bzw. Profilscharen,,FTX,4441,,,Code des Prüfschritts,X,
 17,Reklamation von normierten Profilen bzw. Profilscharen,,FTX,1131,E_0100,,EBD Nr. E_0100,X [6],
-18,Reklamation von normierten Profilen bzw. Profilscharen,,FTX,1131,E_0101,,EBD Nr. E_0101,X [26],"[6] Wenn MP-ID in SG2 NAD+MS mit Rolle LF vorhanden
+18,Reklamation von normierten Profilen bzw. Profilscharen,,FTX,1131,E_0101,,EBD Nr. E_0101,X [26],"[6] Wenn MP-ID in SG2 NAD+MS mit Rolle LF vorhanden 
 [26] Wenn MP-ID in SG2 NAD+MS mit Rolle ÜNB vorhanden"
 19,Referenz Nachrichtennummer,SG1,,,,,,Muss,
 20,Referenz Nachrichtennummer,SG1,,,,,,Muss,
