@@ -9,7 +9,7 @@ import click
 from maus.edifact import EdifactFormatVersion
 
 from kohlrahbi.enums.ahbexportfileformat import AhbExportFileFormat
-from kohlrahbi.pruefis import scrape_pruefis
+from kohlrahbi.pruefi import scrape_pruefis
 
 
 def check_python_version():

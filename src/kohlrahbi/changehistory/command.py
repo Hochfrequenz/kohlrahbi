@@ -8,7 +8,7 @@ import click
 from maus.edifact import EdifactFormatVersion
 
 from kohlrahbi.changehistory import scrape_change_histories
-from kohlrahbi.pruefis.command import check_python_version, validate_path
+from kohlrahbi.pruefi.command import check_python_version, validate_path
 
 
 @click.command()

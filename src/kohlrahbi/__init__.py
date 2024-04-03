@@ -6,7 +6,7 @@ import click
 
 from kohlrahbi.changehistory.command import changehistory
 from kohlrahbi.conditions.command import conditions
-from kohlrahbi.pruefis.command import pruefi
+from kohlrahbi.pruefi.command import pruefi
 
 
 @click.group()

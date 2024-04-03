@@ -3,7 +3,7 @@ from typing import Union
 import pytest  # type:ignore[import]
 from click.testing import CliRunner, Result
 
-from kohlrahbi.pruefis.command import pruefi
+from kohlrahbi.pruefi.command import pruefi
 from unittests.test_current_state import path_to_test_files_fv2310
 
 runner: CliRunner = CliRunner()
