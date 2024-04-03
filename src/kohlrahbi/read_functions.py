@@ -103,10 +103,13 @@ def is_item_package_heading(item: Paragraph | Table | None, style_name: str, edi
     """
     Checks if the given item is the heading of the package table.
     """
-    return (
-        isinstance(item, Paragraph)
-        and style_name == "Heading 2"
-        and item.text == f"Übersicht der Pakete in der {edifact_format.name}"
+    return isinstance(item, Paragraph) and (
+        (
+            (style_name == "Heading 1")
+            and f"Übersicht der Pakete in der" in item.text
+            and f"{edifact_format.name}" in item.text
+        )
+        or (((style_name == "Heading 2") and f"Übersicht der Pakete in der {edifact_format.name}" in item.text))
     )
 
 
@@ -224,48 +227,6 @@ def log_pruefi_not_found(pruefi):
     logger.warning("Prüfi '%s' was not found in the provided document.", pruefi)
 
 
-def get_package_table(document: Document) -> Optional[AhbPackageTable]:
-    """
-    Reads a docx file and extracts all conditions from the package table.
-    If it is not found or we reached the end of the AHB document
-    - indicated by the section 'Änderungshistorie' - it returns None.
-
-    Args:
-        document (Document): AHB word document which is read by python-docx package
-    """
-
-    package_table: Optional[AhbPackageTable] = None
-    package_table_started: bool = False
-    tables: list[Table] = []
-    # Iterate through the whole word document
-    logger.info("🔁 Start iterating through paragraphs and tables")
-    for item in get_all_paragraphs_and_tables(parent=document):
-        style_name = item.style.name  # this is a bit expensive. we should only call it once per item
-        # Check if we reached the end of the current AHB document and stop if it's true.
-        if isinstance(item, Paragraph) and "Änderungshistorie" in item.text and "Heading" in style_name:
-            # checking the style is quite expensive for the CPU because it includes some xpath searches;
-            # we should only check the style if the other (easier/cheap) checks returned True
-            logger.info(
-                "We reached the end of the document before any table containing the package conditions was found"
-            )
-            return None
-        if isinstance(item, Table) and not package_table_started:
-            package_table_started = item.cell(row_idx=0, col_idx=0).text.strip() == "Paket"
-            if package_table_started:
-                logger.info("🏁 Found Package Table")
-        if isinstance(item, Table) and package_table_started:
-            tables.append(item)
-        if package_table_started and not isinstance(item, Table):
-            logger.info("We reached the end of the package table.")
-            break
-    if len(tables) > 0:
-        package_table = AhbPackageTable.from_docx_table(tables)
-        return package_table
-
-    logger.warning("⛔️ No package table found in the provided file.\n")
-    return None
-
-
 def get_all_conditions_from_doc(
     document: Document, edifact_format: EdifactFormat
 ) -> Tuple[Optional[AhbPackageTable], Optional[AhbConditions]]:
@@ -277,8 +238,7 @@ def get_all_conditions_from_doc(
     package_tables: list[Table] = []
     conditions_tables: list[Table] = []
     seed = None
-    pruefis = []
-    new_table = False
+
     # Iterate through the whole word document
     logger.info("🔁 Start iterating through paragraphs and tables")
     found_package_table = False
@@ -306,17 +266,19 @@ def get_all_conditions_from_doc(
             break
         # processing of conditions tables
         seed = update_seed(item, seed)
-        if is_ahb_table(item):
-            pruefis, new_table = is_new_pruefi_table(seed, pruefis)
-            if is_pruefi_of_edifact_format(pruefis, edifact_format):
-                conditions_tables.append(item)
+        if is_relevant_pruefi_table(item, seed, edifact_format):
+            conditions_tables.append(item)
         if is_last_row_UNT_0062(item):
             seed = None
     if len(conditions_tables) > 0:
-        conditions_table = AhbConditions.from_docx_table(conditions_tables)
+        conditions_table = AhbConditions.from_docx_table(conditions_tables, edifact_format)
+    else:
+        logger.warning("⛔️ No conditions found in the provided file.\n")
 
     if len(package_tables) > 0:
         package_table = AhbPackageTable.from_docx_table(package_tables)
+    else:
+        logger.warning("⛔️ No package table found in the provided file.\n")
     return package_table, conditions_table
 
 
@@ -327,25 +289,9 @@ def is_last_row_UNT_0062(item: Table | Paragraph) -> bool:
     return isinstance(item, Table) and "UNT\t0062" == item.cell(row_idx=-1, col_idx=0).text.strip()
 
 
-def is_ahb_table(item: Paragraph | Table) -> bool:
-    """
-    Checks if the given item is an AHB table.
-    """
-    return isinstance(item, Table) and item.cell(row_idx=0, col_idx=0).text.strip() == "EDIFACT Struktur"
-
-
 def is_relevant_pruefi_table(item: Paragraph | Table, seed: Seed, edifact_format) -> bool:
     """compares new pruefis to last pruefi and thus checks whether new table"""
     return isinstance(item, Table) and seed and is_pruefi_of_edifact_format(seed.pruefidentifikatoren, edifact_format)
-
-    is_new_table = (
-        seed is not None
-        and len(seed.pruefidentifikatoren) > 0
-        and (last_pruefi is None or seed.pruefidentifikatoren != last_pruefi)
-    )
-    if is_new_table:
-        return seed.pruefidentifikatoren, True
-    return last_pruefi, False
 
 
 def is_pruefi_of_edifact_format(last_pruefis: list[str], edifact_format: EdifactFormat) -> bool:

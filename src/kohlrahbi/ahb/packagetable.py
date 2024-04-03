@@ -40,10 +40,10 @@ class AhbPackageTable:
         df = pd.DataFrame(data, columns=headers)
         return cls(table=df)
 
-    def collect_conditions(self, already_known_conditions: dict, edifact_format: EdifactFormat) -> None:
-        """collect conditions from package table and store them in already_known_conditions dict."""
-        if already_known_conditions.get(edifact_format) is None:
-            already_known_conditions[edifact_format] = {}
+    def provide_conditions(self, edifact_format: EdifactFormat) -> dict[EdifactFormat, dict[str, str]]:
+        """collect conditions from package table and store them in conditions dict."""
+        conditions_dict: dict[EdifactFormat, dict[str, str]] = {edifact_format: {}}
+
         df = self.table
         there_are_conditions = (df["Bedingungen"] != "").any()
         if there_are_conditions:
@@ -59,12 +59,11 @@ class AhbPackageTable:
                     text = match[1].strip()
                     text = re.sub(r"\s+", " ", text)
                     # check whether condition was already collected:
-                    condition_key_not_collected_yet = already_known_conditions[edifact_format].get(match[0]) is None
+                    condition_key_not_collected_yet = conditions_dict[edifact_format].get(match[0]) is None
                     if not condition_key_not_collected_yet:
-                        key_exits_but_shorter_text = len(text) > len(
-                            already_known_conditions[edifact_format].get(match[0])
-                        )
+                        key_exits_but_shorter_text = len(text) > len(conditions_dict[edifact_format].get(match[0]))
                     if condition_key_not_collected_yet or key_exits_but_shorter_text:
-                        already_known_conditions[edifact_format][match[0]] = text
+                        conditions_dict[edifact_format][match[0]] = text
 
         logger.info("The package conditions for %s were collected.", edifact_format)
+        return conditions_dict
