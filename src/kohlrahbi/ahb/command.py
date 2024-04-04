@@ -105,12 +105,8 @@ def ahb(
     if isinstance(format_version, str):
         format_version = EdifactFormatVersion(format_version)
 
-    pruefi_to_file_mapping: dict[str, str | None] = {
-        key: None for key in pruefis
-    }  # A mapping of a pruefi (key) to the name (+ path) of the file containing the pruefi
-
     scrape_pruefis(
-        pruefi_to_file_mapping=pruefi_to_file_mapping,
+        pruefis=list(pruefis),
         basic_input_path=edi_energy_mirror_path,
         output_path=output_path,
         file_type=file_type,

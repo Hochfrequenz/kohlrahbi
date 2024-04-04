@@ -38,11 +38,10 @@ def get_all_paragraphs_and_tables(parent: Union[Document, _Cell]) -> Generator[U
             yield Table(child, parent)
 
 
-def does_the_table_contain_pruefidentifikatoren(table: Table) -> bool:
+def table_header_starts_with_text_edifact_struktur(table: Table) -> bool:
     """
-    Checks if the given table is a AHB table with pruefidentifikatoren.
+    Check if the table header starts with the text "EDIFACT Struktur".
     """
-
     return table.cell(row_idx=0, col_idx=0).text.strip() == "EDIFACT Struktur"
 
 
@@ -72,7 +71,7 @@ def is_item_table_with_pruefidentifikatoren(item: Paragraph | Table | None) -> b
     Returns:
     bool: True if the item is a Table and contains Pruefidentifikatoren, False otherwise.
     """
-    return isinstance(item, Table) and does_the_table_contain_pruefidentifikatoren(table=item)
+    return isinstance(item, Table) and table_header_starts_with_text_edifact_struktur(table=item)
 
 
 def is_item_headless_table(

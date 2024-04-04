@@ -4,69 +4,46 @@ This module contains the functions to scrape the AHBs for Pruefidentifikatoren.
 
 import fnmatch
 import re
+from datetime import date
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 import click
 import docx  # type: ignore
 import tomlkit
-from maus.edifact import EdifactFormat, EdifactFormatVersion
+from docx.document import Document  # type:ignore[import]
+from docx.table import Table  # type:ignore[import]
+from maus.edifact import EdifactFormatVersion
 
 from kohlrahbi.ahbtable.ahbtable import AhbTable
-from kohlrahbi.conditions import dump_conditions_json
 from kohlrahbi.docxfilefinder import DocxFileFinder
 from kohlrahbi.enums.ahbexportfileformat import AhbExportFileFormat
 from kohlrahbi.logger import logger
-from kohlrahbi.read_functions import get_ahb_table
+from kohlrahbi.read_functions import (
+    get_ahb_table,
+    get_all_paragraphs_and_tables,
+    table_header_starts_with_text_edifact_struktur,
+)
+from kohlrahbi.seed import Seed
 from kohlrahbi.unfoldedahb import UnfoldedAhb
 
 _pruefi_pattern = re.compile(r"^[1-9]\d{4}$")
 
 
-def load_all_known_pruefis_from_file(
-    path_to_all_known_pruefis: Path | None, format_version: EdifactFormatVersion
-) -> dict[str, str | None]:
+def load_pruefi_docx_file_map_from_file(path_to_pruefi_docx_file_map_file: Path) -> dict[str, dict[str, str]]:
     """
     Loads the file which contains all known Prüfidentifikatoren.
     The file may be manually updated with the script `collect_pruefis.py`.
     """
-    actual_path: Path
-    if path_to_all_known_pruefis is None:
-        actual_path = Path(__file__).parents[1] / "format_versions" / Path(f"{format_version}_all_known_pruefis.toml")
-    else:
-        actual_path = path_to_all_known_pruefis
-    with open(actual_path, "rb") as file:
-        state_of_kohlrahbi: dict[str, Any] = tomlkit.load(file)
+    assert path_to_pruefi_docx_file_map_file.exists(), f"The file {path_to_pruefi_docx_file_map_file} does not exist."
 
-    meta_data_section = state_of_kohlrahbi.get("meta_data")
-    pruefi_to_file_mapping: dict[str, str | None] | None = state_of_kohlrahbi.get("pruefidentifikatoren", None)
+    with open(path_to_pruefi_docx_file_map_file, "rb") as file:
+        pruefi_docx_file_map: dict[str, str] = tomlkit.load(file)
 
-    if meta_data_section is None:
-        click.secho(f"There is no 'meta_data' section in the provided toml file: {path_to_all_known_pruefis}", fg="red")
-        raise click.Abort()
-    if pruefi_to_file_mapping is None:
-        click.secho(
-            f"There is no 'pruefidentifikatoren' section in the toml file: {path_to_all_known_pruefis}", fg="red"
-        )
-        raise click.Abort()
-
-    return pruefi_to_file_mapping
+    return pruefi_docx_file_map
 
 
-def load_pruefis_if_empty(
-    pruefi_to_file_mapping: dict[str, str | None], format_version: EdifactFormatVersion
-) -> dict[str, str | None]:
-    """
-    If the user did not provide any pruefis we load all known pruefis
-    and the paths to the file containing them from the toml file.
-    """
-    if not pruefi_to_file_mapping:
-        click.secho("☝️ No pruefis were given. I will parse all known pruefis.", fg="yellow")
-        return load_all_known_pruefis_from_file(path_to_all_known_pruefis=None, format_version=format_version)
-    return pruefi_to_file_mapping
-
-
-def get_or_cache_document(ahb_file_path: Path, path_to_document_mapping: dict) -> docx.Document:
+def get_or_cache_document(ahb_file_path: Path, path_to_document_mapping: dict) -> Document:
     """
     Get the document from the cache or read it from the file system.
     """
@@ -75,7 +52,7 @@ def get_or_cache_document(ahb_file_path: Path, path_to_document_mapping: dict) -
             logger.warning("The file '%s' does not exist", ahb_file_path)
             raise FileNotFoundError(f"The file '{ahb_file_path}' does not exist")
         try:
-            doc = docx.Document(ahb_file_path)
+            doc = docx.Document(str(ahb_file_path))
             path_to_document_mapping[ahb_file_path] = doc
             logger.debug("Saved %s document in cache", ahb_file_path)
         except IOError as ioe:
@@ -168,8 +145,106 @@ def process_pruefi(
         process_ahb_table(ahb_table, pruefi, output_path, file_type)
 
 
+def get_ahb_documents_path(base_path: Path, version: str) -> Path:
+    path = base_path / f"edi_energy_de/{version}"
+    if not path.exists():
+        raise FileNotFoundError(f"The specified path {path.absolute()} does not exist.")
+    return path
+
+
+def find_pruefidentifikatoren(path: Path) -> Dict[str, str]:
+    pruefis = {}
+
+    ahb_file_finder = DocxFileFinder.from_input_path(input_path=path)
+    ahb_file_finder.filter_for_latest_ahb_docx_files()
+
+    for docx_path in ahb_file_finder.paths_to_docx_files:
+        pruefis.update(extract_pruefis_from_docx(docx_path))
+    return dict(sorted(pruefis.items()))
+
+
+def extract_pruefis_from_docx(docx_path: Path) -> Dict[str, str]:
+    doc = docx.Document(str(docx_path))
+    pruefis: dict[str, str] = {}
+    for item in get_all_paragraphs_and_tables(doc):
+        if (
+            isinstance(item, Table)
+            and table_header_starts_with_text_edifact_struktur(item)
+            and table_header_contains_text_pruefidentifikator(item)
+        ):
+            pruefis.update({pruefi: docx_path.name for pruefi in extract_pruefis_from_table(item)})
+    return pruefis
+
+
+def save_pruefi_map_to_toml(pruefis: Dict[str, str], version: str) -> None:
+    output_filename = f"{version}_pruefi_docx_filename_map.toml"
+    output_file_path = Path(__file__).parents[1] / "cache" / output_filename
+    output_file_path.parent.mkdir(parents=True, exist_ok=True)
+
+    toml_data = {"meta_data": {"updated_on": date.today()}, "pruefidentifikatoren": pruefis}
+    with open(output_file_path, "w", encoding="utf-8") as f:
+        tomlkit.dump(toml_data, f)
+        logger.info(f"🎉 Successfully updated {output_filename} and saved it at {output_file_path}.")
+
+
+def log_no_pruefis_warning(version: str, path: Path) -> None:
+    logger.warning(f"No Prüfidentifikatoren found in the AHB documents for format version {version} at {path}.")
+
+
+def get_default_pruefi_map(path: Path) -> Dict[str, str]:
+    return {"⚠️ No Prüfidentifikatoren found": f"No AHB documents found in {path}."}
+
+
+def extract_pruefis_from_table(table: Table) -> list[str]:
+    seed = Seed.from_table(docx_table=table)
+    logger.info("Found a table with the following pruefis: %s", seed.pruefidentifikatoren)
+    return seed.pruefidentifikatoren
+
+
+def table_header_contains_text_pruefidentifikator(table: Table) -> bool:
+    return table.row_cells(0)[-1].paragraphs[-1].text.startswith("Prüfidentifikator")
+
+
+def create_pruefi_docx_filename_map(format_version: EdifactFormatVersion, edi_energy_mirror_path: Path):
+    """ """
+    all_pruefis: dict[str, str] = {}
+
+    ahb_documents_path = get_ahb_documents_path(edi_energy_mirror_path, format_version)
+
+    pruefis = find_pruefidentifikatoren(ahb_documents_path)
+
+    if not pruefis:
+        log_no_pruefis_warning(format_version.value, ahb_documents_path)
+        pruefis = get_default_pruefi_map(ahb_documents_path)
+
+    save_pruefi_map_to_toml(pruefis, format_version.value)
+
+
+def get_pruefi_to_file_mapping(basic_input_path: Path, format_version: EdifactFormatVersion) -> dict[str, str]:
+    default_path_to_cache_file = Path(__file__).parents[1] / "cache" / f"{format_version}_pruefi_docx_filename_map.toml"
+
+    if default_path_to_cache_file.exists():
+        pruefi_to_file_mapping_cache = load_pruefi_docx_file_map_from_file(default_path_to_cache_file)
+        pruefi_to_file_mapping = pruefi_to_file_mapping_cache.get("pruefidentifikatoren")
+        if isinstance(pruefi_to_file_mapping, type(None)):
+            raise ReferenceError(f"Could not find pruefidentifikatoren in {default_path_to_cache_file}")
+        return dict(pruefi_to_file_mapping)
+
+    path_to_docx_files = basic_input_path / Path(f"edi_energy_de/{format_version}")
+    pruefi_to_file_mapping = find_pruefidentifikatoren(path_to_docx_files)
+    save_pruefi_map_to_toml(pruefi_to_file_mapping, format_version.value)
+    return pruefi_to_file_mapping
+
+
+def reduce_pruefi_to_file_mapping(pruefi_to_file_mapping: dict[str, str], pruefis: list[str]) -> dict[str, str | None]:
+    """
+    If the user provided pruefis, we filter the pruefi_to_file_mapping for these pruefis.
+    """
+    return {pruefi: filename for pruefi, filename in pruefi_to_file_mapping.items() if pruefi in pruefis}
+
+
 def scrape_pruefis(
-    pruefi_to_file_mapping: dict[str, str | None],
+    pruefis: list[str],
     basic_input_path: Path,
     output_path: Path,
     file_type: AhbExportFileFormat,
@@ -178,22 +253,20 @@ def scrape_pruefis(
     """
     starts the scraping process for provided pruefi_to_file_mappings
     """
-    pruefi_to_file_mapping = load_pruefis_if_empty(pruefi_to_file_mapping, format_version)
 
-    valid_pruefis = validate_pruefis(list(pruefi_to_file_mapping.keys()))
-    valid_pruefi_to_file_mappings: dict[str, str | None] = {}
-    for pruefi in valid_pruefis:
-        valid_pruefi_to_file_mappings.update({pruefi: pruefi_to_file_mapping.get(pruefi, None)})
-        # TODO add collect pruefis if any path does not exist
-    path_to_document_mapping: dict[Path, docx.Document] = {}
+    pruefi_to_file_mapping = get_pruefi_to_file_mapping(
+        basic_input_path=basic_input_path, format_version=format_version
+    )
+    if len(pruefis) > 0:
+        validated_pruefis = validate_pruefis(pruefis)
+        pruefi_to_file_mapping = reduce_pruefi_to_file_mapping(pruefi_to_file_mapping, validated_pruefis)
 
-    for pruefi, filename in valid_pruefi_to_file_mappings.items():
+    path_to_document_mapping: dict[Path, Document] = {}
+
+    for pruefi, filename in pruefi_to_file_mapping.items():
         try:
             logger.info("start looking for pruefi '%s'", pruefi)
-            input_path = basic_input_path  # To prevent multiple adding of filenames
-            # that would happen if filenames are added but never removed
-            if filename is not None:
-                input_path = basic_input_path / Path(filename)
+            input_path = basic_input_path / Path("edi_energy_de") / Path(format_version.name)
             process_pruefi(pruefi, input_path, output_path, file_type, path_to_document_mapping)
         except FileNotFoundError:
             logger.exception("File not found for pruefi '%s'", pruefi)
