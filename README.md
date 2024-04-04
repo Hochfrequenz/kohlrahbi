@@ -87,52 +87,77 @@ pip install kohlrahbi
 
 ## Usage
 
-There are two ways to use kohlrahbi.
+Kohlrahbi is a command line tool.
+You can use it in three different ways:
 
-1. You can extract all prüfidentifikatoren listed in [all_known_pruefis.toml,](src/kohlrahbi/all_known_pruefis.toml)
-2. or you can extract a specific prüfidentifikator.
+1. Extract AHB tables for all prüfidentifikatoren or a specific prüfidentifikator of a provided format version.
+2. Extract all conditions for each format of a provided format version.
+3. Extract the change history of a provided format version.
 
-### Get all Prüfidentifikatoren
-
-If you want to extract all prüfidentifikatoren, you can run the following command.
-For the following steps we assume that you cloned our [edi_energy_mirror](https://github.com/Hochfrequenz/edi_energy_mirror/) to a neighbouring directory.
+You can run the following command to get an overview of all available commands and options.
 
 ```bash
-kohlrahbi --input-path ../edi_energy_mirror/edi_energy_de/current --output-path ./output/ --file-type flatahb
+kohlrahbi --help
 ```
 
-This will extract all prüfidentifikatoren listed in [all_known_pruefis.toml](src/kohlrahbi/all_known_pruefis.toml) and save them in the provided output path.
+> [!NOTE]
+> For the following steps we assume that you cloned our [edi_energy_mirror](https://github.com/Hochfrequenz/edi_energy_mirror/) to a neighbouring directory.
+> The `edi_energy_mirror` contains the `.docx` files of the AHBs.
+> The folder structure should look like this:
+> ```plaintext
+> .
+> ├── edi_energy_mirror
+> └── kohlrahbi
+> ```
 
-### `.docx` Data Sources
+### Extract AHB table
+
+To extract the all AHB tables for each pruefi of a specific format version , you can run the following command.
+
+```bash
+kohlrahbi pruefi --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --file-type csv --format-version FV2310
+```
+
+To extract the AHB tables for a specific pruefi of a specific format version, you can run the following command.
+
+```bash
+kohlrahbi pruefi --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --file-type csv --pruefis 13002 --format-version FV2310
+```
+
+You can also provide multiple pruefis.
+
+```bash
+kohlrahbi pruefi --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --file-type csv --pruefis 13002 --pruefis 13003 --pruefis 13005 --format-version FV2310
+```
+
+And you can also provide multiple file types.
+
+```bash
+kohlrahbi pruefi --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --file-type csv --file-type xlsx --file-type flatahb --pruefis 13002 --format-version FV2310
+```
+
+### Extract all conditions
+
+To extract all conditions for each format of a specific format version, you can run the following command.
+
+```bash
+kohlrahbi conditions --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --format-version FV2310
+```
+
+### Extract change history
+
+```bash
+kohlrahbi change-history --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --format-version FV2310
+```
+
+## `.docx` Data Sources
 
 kohlrahbi internally relies on a [specific naming schema](https://github.com/Hochfrequenz/kohlrahbi/blob/22a78dc076c7d5f9248cb9e8707b0cc14a2981d3/src/kohlrahbi/read_functions.py#L57) of the `.docx` files in which the file name holds information about the edifact format and validity period of the AHBs contained within the file.
 The easiest way to be compliant with this naming schema is to clone our [edi_energy_mirror](https://github.com/Hochfrequenz/edi_energy_mirror/) repository to your localhost.
 
-### Get a specific Prüfidentifikator
-
-If you want to extract a specific prüfidentifikator, you can run the following command.
-
-```bash
-kohlrahbi --input-path ../edi_energy_mirror/edi_energy_de/current --output-path ./output/ --pruefis 13002 --file-type xlsx
-```
-
-You can also provide multiple prüfidentifikatoren.
-
-```bash
-kohlrahbi --input-path ../edi_energy_mirror/edi_energy_de/current --output-path ./output/ --pruefis 13002 --pruefis 13003 --pruefis 13005 --file-type csv
-```
-
-### Results
+## Results
 
 There is a kohlrahbi based CI pipeline from the edi_energy_mirror mentioned above to the repository [machine-readable_anwendungshandbuecher](https://github.com/Hochfrequenz/machine-readable_anwendungshandbuecher) where you can find scraped AHBs as JSON, CSV or Excel files.
-
-### Export ConditionKeys and ConditionTexts
-
-For example to export condition.json files to [edi_energy_ahb_conditions_and_packages](https://github.com/Hochfrequenz/edi_energy_ahb_conditions_and_packages). Works best if no flags for "Prüfindentifikatoren" (--pruefis). In this case all known "Prüfidentifikatoren" are scanned. Thus all related conditions are gathered.
-
-```bash
-kohlrahbi --file-type conditions --input-path ../edi_energy_mirror/edi_energy_de/current --output-path ./output/edi_energy_ahb_conditions_and_packages/aktuelleFV
-```
 
 ## Workflow
 
