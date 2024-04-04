@@ -78,6 +78,7 @@ you will be asked if you want to create it.""",
     "--format-version",
     multiple=False,
     type=click.Choice([e.value for e in EdifactFormatVersion], case_sensitive=False),
+    required=True,
     help="Format version(s) of the AHB documents, e.g. FV2310",
 )
 @click.option(
