@@ -169,6 +169,7 @@ backup_documents/
 
 # output files
 output/
+src/kohlrahbi/cache/
 *.xlsx
 *.csv
 *.json
