@@ -23,6 +23,8 @@ class TestCliPruefi:
                     "11016",
                     "--edi-energy-mirror-path",
                     "/invalid/input/path",
+                    "--format-version",
+                    "FV2310",
                     "--file-type",
                     "csv",
                 ],
@@ -37,6 +39,8 @@ class TestCliPruefi:
                     path_to_test_files_fv2310,
                     "--output-path",
                     "/invalid/output/path",
+                    "--format-version",
+                    "FV2310",
                     "--file-type",
                     "csv",
                 ],
@@ -51,12 +55,16 @@ class TestCliPruefi:
                     path_to_test_files_fv2310,
                     "--output-path",
                     path_to_test_files_fv2310,
+                    "--format-version",
+                    "FV2310",
                     "--file-type",
                     "csv",
                 ],
                 {"exit_code": 1, "output_snippet": "There are no valid pruefidentifkatoren"},
                 id="invalid pruefidentifikator",
             ),
+            # TODO add test for invalid format version
+            # TODO add test for required arguments
         ],
     )
     def test_cli_pruefi_with_invalid_arguments(self, argument_options: list[str], expected_response):
@@ -77,6 +85,8 @@ class TestCliPruefi:
                 [
                     "-p",
                     "17201",
+                    "--format-version",
+                    "FV2310",
                     "--file-type",
                     "csv",
                 ],
@@ -87,6 +97,8 @@ class TestCliPruefi:
                 [
                     "-p",
                     "17201",
+                    "--format-version",
+                    "FV2310",
                     "--file-type",
                     "csv",
                     "-y",
