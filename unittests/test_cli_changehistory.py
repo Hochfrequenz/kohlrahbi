@@ -83,6 +83,3 @@ class TestCliChangeHistory:
             actual_change_history_file=path_to_actual_change_history_file,
             expected_change_history_file=path_to_expected_change_history_file,
         )
-
-        # Delete the change history files after the test
-        path_to_actual_change_history_file.unlink(missing_ok=True)

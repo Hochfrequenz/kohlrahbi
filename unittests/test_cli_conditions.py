@@ -8,11 +8,9 @@ from click.testing import CliRunner, Result
 from freezegun import freeze_time
 
 from kohlrahbi.conditions.command import conditions
+from unittests import path_to_test_files, path_to_test_files_fv2310
 
 runner: CliRunner = CliRunner()
-
-path_to_test_files: Path = Path(__file__).parent / "test-edi-energy-mirror-repo"
-path_to_test_files_fv2310 = path_to_test_files / Path("FV2310")
 
 
 class TestCliConditions:
@@ -31,7 +29,7 @@ class TestCliConditions:
 
         argument_options: list[str] = [
             "--edi-energy-mirror-path",
-            str(path_to_test_files_fv2310),
+            str(path_to_test_files),
             "--output-path",
             str(actual_output_dir),
         ]
