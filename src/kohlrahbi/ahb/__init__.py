@@ -113,36 +113,27 @@ def validate_pruefis(pruefis: list[str]) -> list[str]:
 # pylint: disable=too-many-arguments
 def process_pruefi(
     pruefi: str,
-    input_path: Path,
+    path_to_ahb_docx_file: Path,
     output_path: Path,
     file_type: str,
-    path_to_document_mapping: dict,
 ):
     """
     Process one pruefi.
     If the input path ends with .docx, we assume that the file containing the pruefi is given.
     Therefore we only access that file.
     """
-    if not input_path.suffix == ".docx":
-        ahb_file_finder = DocxFileFinder.from_input_path(input_path=input_path)
-        ahb_file_paths = ahb_file_finder.get_docx_files_which_may_contain_searched_pruefi(pruefi)
-    else:
-        ahb_file_paths = [input_path]
 
-    if not ahb_file_paths:
-        logger.warning("No docx file was found for pruefi '%s'", pruefi)
+    # TODO try to cache document objects cause it is slow to read them from disk
+    doc = docx.Document(str(path_to_ahb_docx_file))
+
+    if not doc:
         return
 
-    for ahb_file_path in ahb_file_paths:
-        doc = get_or_cache_document(ahb_file_path, path_to_document_mapping)
-        if not doc:
-            return
+    ahb_table = get_ahb_table(document=doc, pruefi=pruefi)
+    if not ahb_table:
+        return
 
-        ahb_table = get_ahb_table(document=doc, pruefi=pruefi)
-        if not ahb_table:
-            return
-
-        process_ahb_table(ahb_table, pruefi, output_path, file_type)
+    process_ahb_table(ahb_table, pruefi, output_path, file_type)
 
 
 def get_ahb_documents_path(base_path: Path, version: str) -> Path:
@@ -261,13 +252,16 @@ def scrape_pruefis(
         validated_pruefis = validate_pruefis(pruefis)
         pruefi_to_file_mapping = reduce_pruefi_to_file_mapping(pruefi_to_file_mapping, validated_pruefis)
 
-    path_to_document_mapping: dict[Path, Document] = {}
-
     for pruefi, filename in pruefi_to_file_mapping.items():
         try:
             logger.info("start looking for pruefi '%s'", pruefi)
-            input_path = basic_input_path / Path("edi_energy_de") / Path(format_version.name)
-            process_pruefi(pruefi, input_path, output_path, file_type, path_to_document_mapping)
+            if not filename:
+                logger.warning("No filename for pruefi '%s' provided", pruefi)
+                continue
+            path_to_ahb_docx_file = (
+                basic_input_path / Path("edi_energy_de") / Path(format_version.name) / Path(filename)
+            )
+            process_pruefi(pruefi, path_to_ahb_docx_file, output_path, file_type)
         except FileNotFoundError:
             logger.exception("File not found for pruefi '%s'", pruefi)
         # sorry for the pokemon catch
