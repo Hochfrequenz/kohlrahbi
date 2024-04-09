@@ -4,7 +4,7 @@ import pytest  # type:ignore[import]
 from click.testing import CliRunner, Result
 
 from kohlrahbi.ahb.command import ahb
-from unittests.test_current_state import path_to_test_files_fv2310
+from unittests import path_to_test_files, path_to_test_files_fv2310
 
 runner: CliRunner = CliRunner()
 
@@ -121,7 +121,7 @@ class TestCliPruefi:
         expected_output_dir = path_to_test_files_fv2310 / "expected-output"
 
         argument_options.extend(
-            ["--edi-energy-mirror-path", str(path_to_test_files_fv2310), "--output-path", str(actual_output_dir)]
+            ["--edi-energy-mirror-path", str(path_to_test_files), "--output-path", str(actual_output_dir)]
         )
 
         # Call the CLI tool with the desired arguments

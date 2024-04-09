@@ -26,7 +26,9 @@ class TestAhbSubTable:
         Raises:
             TypeError: If the input is not a docx table instance.
         """
-        ahb_file_path: Path = Path.cwd() / Path("unittests/test-files/docx_files/UTILMD-11042-test.docx")
+        ahb_file_path: Path = Path.cwd() / Path(
+            "unittests/test-edi-energy-mirror-repo/docx_files/UTILMD-11042-test.docx"
+        )
         doc = docx.Document(str(ahb_file_path))  # Creating word reader object.
         all_paragraphs_and_tables = list(get_all_paragraphs_and_tables(parent=doc))
 

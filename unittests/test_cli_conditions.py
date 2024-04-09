@@ -11,7 +11,7 @@ from kohlrahbi.conditions.command import conditions
 
 runner: CliRunner = CliRunner()
 
-path_to_test_files: Path = Path(__file__).parent / "test-files"
+path_to_test_files: Path = Path(__file__).parent / "test-edi-energy-mirror-repo"
 path_to_test_files_fv2310 = path_to_test_files / Path("FV2310")
 
 

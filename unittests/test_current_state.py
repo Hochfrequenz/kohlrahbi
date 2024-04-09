@@ -19,9 +19,6 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 
 runner: CliRunner = CliRunner()
 
-path_to_test_files: Path = Path(__file__).parent / "test-files"
-path_to_test_files_fv2310 = path_to_test_files / Path("FV2310")
-
 
 def get_csv_paths(root_dir) -> list[Path]:
     """Walk through root_dir and return paths of all CSV files."""
