@@ -1,0 +1,90 @@
+,Segmentname,Segmentgruppe,Segment,Datenelement,Code,Qualifier,Beschreibung,Bedingungsausdruck,Bedingung
+0,Nachrichten-Kopfsegment,,,,,,,Muss,
+1,Nachrichten-Kopfsegment,,UNH,0062,,,Nachrichten-Referenznummer,X,
+2,Nachrichten-Kopfsegment,,UNH,0065,PARTIN,,Partnerstammdaten,X,
+3,Nachrichten-Kopfsegment,,UNH,0052,D,,Entwurfs-Version,X,
+4,Nachrichten-Kopfsegment,,UNH,0054,20B,,Ausgabe 2020 - B,X,
+5,Nachrichten-Kopfsegment,,UNH,0051,UN,,UN/CEFACT,X,
+6,Nachrichten-Kopfsegment,,UNH,0057,1.0c,,Versionsnummer derzugrundeliegendenBDEW-Nachrichtenbeschreibung,X,
+7,Beginn der Nachricht,,,,,,,Muss,
+8,Beginn der Nachricht,,BGM,1001,Z75,,Kommunikationsparameter,X,
+9,Beginn der Nachricht,,BGM,1004,,,Dokumentennummer,X,
+10,Beginn der Nachricht,,BGM,1373,,,,11,[9] Wenn die Kommunikationsdaten vom Absender nicht mehr aktiv sind.
+11,Nachrichtendatum,,,,,,,Muss,
+12,Nachrichtendatum,,DTM,2005,137,,Dokumenten-/Nachrichtendatum/-zeit,X,
+13,Nachrichtendatum,,DTM,2380,,,"Datum oder Uhrzeit oderZeitspanne, Wert",X [931][494],"[494] Das hier genannte Datum muss der Zeitpunkt sein, zu dem das Dokument erstellt wurde, oder ein Zeitpunkt, der davor liegt.  
+[931] Format: ZZZ = +00"
+14,Nachrichtendatum,,DTM,2379,303,,CCYYMMDDHHMMZZZ,X,
+15,Prüfidentifikator,SG1,,,,,,Muss,
+16,Prüfidentifikator,SG1,,,,,,Muss,
+17,Prüfidentifikator,SG1,RFF,,,,,Muss,
+18,Prüfidentifikator,SG1,RFF,1153,Z13,,Prüfidentifikator,X,
+19,Prüfidentifikator,SG1,RFF,1154,37007,,ÜbermittlungKommunikationsparameter,X,
+20,Versionsnummer,SG1,,,,,,Muss,
+21,Versionsnummer,SG1,,,,,,Muss,
+22,Versionsnummer,SG1,RFF,,,,,Muss,
+23,Versionsnummer,SG1,RFF,1153,AGK,,Anwendungsreferenznummer,X,
+24,Versionsnummer,SG1,RFF,1056,,,Versionsnummer,X [908][505],"[505] Wenn eine Vorgängerversion (RFF+ACW) angegeben ist, so muss der Wert in diesem DE1056 mindestens um 1 höher sein, als der Wert aus DE1056 der Vorgängerversion (RFF+ACW).  
+[908] Format: Mögliche Werte: 1 bis n"
+25,Gültig Ab,SG1,,,,,,,
+26,Gültig Ab,SG1,,,,,,Soll [4],
+27,Gültig Ab,SG1,DTM,,,,,Soll [4],[4] Wenn Vorgängerversion vorhanden
+28,Gültig Ab,SG1,DTM,2005,157,,"Gültigkeit, Beginndatum",X,
+29,Gültig Ab,SG1,DTM,2380,,,"Datum oder Uhrzeit oderZeitspanne, Wert",X [UB1],
+30,Gültig Ab,SG1,DTM,2379,303,,CCYYMMDDHHMMZZZ,X,
+31,Vorgängerversion,SG1,,,,,,Soll [4],
+32,Vorgängerversion,SG1,,,,,,Soll [4],[4] Wenn Vorgängerversion vorhanden
+33,Vorgängerversion,SG1,RFF,,,,,Muss,
+34,Vorgängerversion,SG1,RFF,1153,ACW,,Referenznummer einervorangegangenenNachricht,X,
+35,Vorgängerversion,SG1,RFF,1056,,,Versionsnummer,X [908],[908] Format: Mögliche Werte: 1 bis n
+36,MP-ID Absender,SG2,,,,,,Muss,
+37,MP-ID Absender,SG2,,,,,,Muss,
+38,MP-ID Absender,SG2,NAD,,,,,Muss,
+39,MP-ID Absender,SG2,NAD,3035,Nachrichtenaussteller bzw.,,,MS,
+40,MP-ID Absender,SG2,NAD,3039,,,MP-ID,X [1],[1] Nur MP-ID aus Sparte Strom
+41,MP-ID Absender,SG2,NAD,3055,9,,GS1,X,
+42,MP-ID Absender,SG2,NAD,3055,293,,"DE, BDEW (Bundesverbandder Energie- undWasserwirtschaft e.V.)",X,
+43,Ansprechpartner,SG3,,,,,,Kann,
+44,Ansprechpartner,SG3,,,,,,Kann,
+45,Ansprechpartner,SG3,CTA,,,,,Muss,
+46,Ansprechpartner,SG3,CTA,3139,,,,IC,
+47,Ansprechpartner,SG3,CTA,3412,,,Name vom Ansprechpartner,X,
+48,Kommunikationsverbindung,SG3,,,,,,,
+49,Kommunikationsverbindung,SG3,,,,,,Muss,
+50,Kommunikationsverbindung,SG3,COM,,,,,Muss,
+51,Kommunikationsverbindung,SG3,COM,3148,,,Nummer / Adresse,X (([939][6]) ∨ ([940][7]))∧ [502],"[6] wenn im DE3155 im demselben COM der Code EM vorhanden ist  
+[7] wenn im DE3155 im demselben COM der Code TE / FX / AJ / AL vorhanden ist  
+[502] Hinweis: Es darf nur eine Information im DE3148 übermittelt werden  
+[939] Format: Die Zeichenkette muss die Zeichen @ und . enthalten  
+[940] Format: Die Zeichenkette muss mit dem Zeichen + beginnen und danach dürfen nur noch Ziffern folgen"
+52,Kommunikationsverbindung,SG3,COM,3155,EM,,Elektronische Post,X [1P0..1],
+53,Kommunikationsverbindung,SG3,COM,3155,FX,,Telefax,X [1P0..1],
+54,Kommunikationsverbindung,SG3,COM,3155,TE,,Telefon,X [1P0..1],
+55,Kommunikationsverbindung,SG3,COM,3155,AJ,,weiteres Telefon,X [1P0..1],
+56,Kommunikationsverbindung,SG3,COM,3155,AL,,Handy,X [1P0..1],
+57,MP-ID Empfänger,SG2,,,,,,Muss,
+58,MP-ID Empfänger,SG2,,,,,,Muss,
+59,MP-ID Empfänger,SG2,NAD,,,,,Muss,
+60,MP-ID Empfänger,SG2,NAD,3035,,,,MR,
+61,MP-ID Empfänger,SG2,NAD,3039,,,MP-ID,X [1],[1] Nur MP-ID aus Sparte Strom
+62,MP-ID Empfänger,SG2,NAD,3055,9,,GS1,X,
+63,MP-ID Empfänger,SG2,NAD,3055,293,,"DE, BDEW (Bundesverbandder Energie- undWasserwirtschaft e.V.)",X,
+64,Abschnitts-Kontrollsegment,,,,,,,Muss,
+65,Abschnitts-Kontrollsegment,,UNS,0081,Positionsteil,,,D,
+66,Name und Adresse des Unternehmens,SG4,,,,,,Muss [10],
+67,Name und Adresse des Unternehmens,SG4,,,,,,Muss [10],[10] Wenn BGM DE1373 = 11 (Dokument nicht verfügbar) nicht vorhanden
+68,Name und Adresse des Unternehmens,SG4,NAD,,,,,Muss,
+69,Name und Adresse des Unternehmens,SG4,NAD,3035,,,,SUDDMDEBZ31Z34Z35Z36,
+70,Zertifikatsaussteller (Issuer),SG4,,,,,,,
+71,Zertifikatsaussteller (Issuer),SG4,,,,,,Muss,
+72,Zertifikatsaussteller (Issuer),SG4,FTX,,,,,Muss,
+73,Zertifikatsaussteller (Issuer),SG4,FTX,4451,,,,Z24,
+74,Zertifikatsaussteller (Issuer),SG4,FTX,4440,,,Zertifikatsaussteller,X,
+75,Zertifikatsnutzer (Subject),SG4,,,,,,,
+76,Zertifikatsnutzer (Subject),SG4,,,,,,Muss,
+77,Zertifikatsnutzer (Subject),SG4,FTX,,,,,Muss,
+78,Zertifikatsnutzer (Subject),SG4,FTX,4451,,,,Z23,
+79,Zertifikatsnutzer (Subject),SG4,FTX,4440,,,Zertifikatsnutzer,X,
+80,Nachrichten-Endesegment,,,,,,,Muss,
+81,Nachrichten-Endesegment,,UNT,0074,,,Anzahl der Segmente in einerNachricht,X,
+82,Nachrichten-Endesegment,,UNT,0062,,,Nachrichten-Referenznummer,X,

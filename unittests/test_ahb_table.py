@@ -3,7 +3,7 @@ from pathlib import Path
 import pandas as pd
 import pytest  # type:ignore[import]
 
-from kohlrahbi.ahb.ahbtable import AhbTable
+from kohlrahbi.ahbtable.ahbtable import AhbTable
 from kohlrahbi.unfoldedahb import UnfoldedAhb
 
 

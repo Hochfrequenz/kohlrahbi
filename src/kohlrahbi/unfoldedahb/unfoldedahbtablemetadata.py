@@ -2,12 +2,11 @@
 This module contains the UnfoldedAhbTableMetaData class.
 """
 
-from attrs import define
+from pydantic import BaseModel
 
 
 # pylint: disable=too-few-public-methods
-@define(auto_attribs=True, kw_only=True)
-class UnfoldedAhbTableMetaData:
+class UnfoldedAhbTableMetaData(BaseModel):
     """
     This class represents the metadata of an unfolded AHB table.
     """

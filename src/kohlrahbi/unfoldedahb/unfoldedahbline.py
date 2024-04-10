@@ -2,12 +2,11 @@
 This module contains the UnfoldedAhbLine class.
 """
 
-from attrs import define
+from pydantic import BaseModel
 
 
 # pylint: disable=too-few-public-methods
-@define(auto_attribs=True, kw_only=True)
-class UnfoldedAhbLine:
+class UnfoldedAhbLine(BaseModel):
     """
     This class represents one unfolded line of the AHB.
     Unfolded means that we separate segment_name and segment_gruppe as well as code and qualifier

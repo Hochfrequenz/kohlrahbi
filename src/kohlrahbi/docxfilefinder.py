@@ -5,14 +5,13 @@ This module contains the DocxFileFinder class.
 from itertools import groupby
 from pathlib import Path
 
-import attrs
 from maus.edifact import EdifactFormat, get_format_of_pruefidentifikator
+from pydantic import BaseModel
 
 from kohlrahbi.logger import logger
 
 
-@attrs.define(auto_attribs=True, kw_only=True)
-class DocxFileFinder:
+class DocxFileFinder(BaseModel):
     """
     This class is responsible for finding the docx files in the input directory.
     It can find MIG and AHB docx files.

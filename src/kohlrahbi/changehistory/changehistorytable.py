@@ -2,20 +2,21 @@
 This module provides the ChangeHistoryTable class
 """
 
-import attrs
 import pandas as pd
 from docx.table import Table  # type:ignore[import]
+from pydantic import BaseModel, ConfigDict
 
-from kohlrahbi.ahb.ahbsubtable import AhbSubTable
+from kohlrahbi.ahbtable.ahbsubtable import AhbSubTable
 
 
-@attrs.define(auto_attribs=True, kw_only=True)
-class ChangeHistoryTable:
+class ChangeHistoryTable(BaseModel):
     """
     This class  contains the change history table.
     """
 
     table: pd.DataFrame
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @classmethod
     def from_docx_change_history_table(cls, docx_table: Table) -> "ChangeHistoryTable":
@@ -26,13 +27,12 @@ class ChangeHistoryTable:
         change_history_rows: list[list[str]] = []
 
         for row in docx_table.rows:
-            sanitized_cells = list(AhbSubTable._iter_visible_cells(row=row))
+            sanitized_cells = list(AhbSubTable.iter_visible_cells(row=row))
 
             is_header_row = sanitized_cells[0].text == "Änd-ID" or sanitized_cells[2].text == "Bisher"
             if is_header_row:
                 continue
-            else:
-                change_history_rows.append([cell.text for cell in sanitized_cells])
+            change_history_rows.append([cell.text for cell in sanitized_cells])
 
         headers = ["Änd-ID", "Ort", "Änderungen Bisher", "Änderungen Neu", "Grund der Anpassung", "Status"]
 
@@ -77,5 +77,3 @@ class ChangeHistoryTable:
 
         # Reset index after dropping rows
         self.table.reset_index(drop=True, inplace=True)
-
-        return None

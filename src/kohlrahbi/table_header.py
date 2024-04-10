@@ -5,10 +5,10 @@ This module contains the TableHeader class.
 from enum import StrEnum
 from typing import Dict, List, Mapping, cast
 
-from attrs import define
 from docx.table import _Cell  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
 from more_itertools import first, last
+from pydantic import BaseModel
 
 
 class HeaderSection(StrEnum):
@@ -75,8 +75,9 @@ def create_mapping_of_tabstop_positions(
 
 
 # pylint: disable=too-few-public-methods
-@define
-class PruefiMetaData:
+
+
+class PruefiMetaData(BaseModel):
     """
     This class contains the information about the Prüfidentifikatoren
     """
@@ -86,8 +87,7 @@ class PruefiMetaData:
     communication_direction: str
 
 
-@define
-class TableHeader:
+class TableHeader(BaseModel):
     """
     Class for the table header.
     It contains the information about the Prüfidentifikatoren.
