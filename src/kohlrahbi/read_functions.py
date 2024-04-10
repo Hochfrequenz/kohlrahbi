@@ -20,6 +20,13 @@ from kohlrahbi.logger import logger
 from kohlrahbi.seed import Seed
 
 
+def table_header_starts_with_text_edifact_struktur(table: Table) -> bool:
+    """
+    Check if the table header starts with the text "EDIFACT Struktur".
+    """
+    return table.cell(row_idx=0, col_idx=0).text.strip() == "EDIFACT Struktur"
+
+
 def get_all_paragraphs_and_tables(parent: Union[Document, _Cell]) -> Generator[Union[Paragraph, Table], None, None]:
     """
     Yield each paragraph and table child within *parent*, in document order.
