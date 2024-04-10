@@ -12,7 +12,7 @@ import docx
 import tomlkit
 from maus.edifact import EdifactFormat, EdifactFormatVersion, get_format_of_pruefidentifikator
 
-from kohlrahbi.ahb.ahbtable import AhbTable
+from kohlrahbi.ahbtable.ahbtable import AhbTable
 from kohlrahbi.docxfilefinder import DocxFileFinder
 from kohlrahbi.enums.ahbexportfileformat import AhbExportFileFormat
 from kohlrahbi.logger import logger
