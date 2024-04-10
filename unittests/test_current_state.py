@@ -12,6 +12,7 @@ import pytest  # type:ignore[import]
 from click.testing import CliRunner, Result
 
 from kohlrahbi import cli
+from unittests import path_to_test_files_fv2310
 
 # Setup basic configuration for logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
