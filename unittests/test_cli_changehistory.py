@@ -9,7 +9,7 @@ from click.testing import CliRunner, Result
 from freezegun import freeze_time
 
 from kohlrahbi.changehistory.command import changehistory
-from unittests import path_to_test_files, path_to_test_files_fv2310
+from unittests import path_to_test_edi_energy_mirror_repo, path_to_test_files_fv2310
 
 runner: CliRunner = CliRunner()
 
@@ -60,7 +60,7 @@ class TestCliChangeHistory:
 
         argument_options: list[str] = [
             "--edi-energy-mirror-path",
-            str(path_to_test_files),
+            str(path_to_test_edi_energy_mirror_repo),
             "--output-path",
             str(actual_output_dir),
             "--format-version",
