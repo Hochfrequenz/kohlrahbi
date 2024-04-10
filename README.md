@@ -112,28 +112,28 @@ kohlrahbi --help
 
 ### Extract AHB table
 
-To extract the all AHB tables for each pruefi of a specific format version , you can run the following command.
+To extract the all AHB tables for each pruefi of a specific format version, you can run the following command.
 
 ```bash
-kohlrahbi pruefi --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --file-type csv --format-version FV2310
+kohlrahbi ahb --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --file-type csv --format-version FV2310
 ```
 
 To extract the AHB tables for a specific pruefi of a specific format version, you can run the following command.
 
 ```bash
-kohlrahbi pruefi --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --file-type csv --pruefis 13002 --format-version FV2310
+kohlrahbi ahb --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --file-type csv --pruefis 13002 --format-version FV2310
 ```
 
 You can also provide multiple pruefis.
 
 ```bash
-kohlrahbi pruefi --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --file-type csv --pruefis 13002 --pruefis 13003 --pruefis 13005 --format-version FV2310
+kohlrahbi ahb --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --file-type csv --pruefis 13002 --pruefis 13003 --pruefis 13005 --format-version FV2310
 ```
 
 And you can also provide multiple file types.
 
 ```bash
-kohlrahbi pruefi --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --file-type csv --file-type xlsx --file-type flatahb --pruefis 13002 --format-version FV2310
+kohlrahbi ahb --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --file-type csv --file-type xlsx --file-type flatahb --pruefis 13002 --format-version FV2310
 ```
 
 ### Extract all conditions
@@ -147,7 +147,7 @@ kohlrahbi conditions --input-path ../edi_energy_mirror/edi_energy_de/ --output-p
 ### Extract change history
 
 ```bash
-kohlrahbi change-history --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --format-version FV2310
+kohlrahbi changehistory --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --format-version FV2310
 ```
 
 ## `.docx` Data Sources

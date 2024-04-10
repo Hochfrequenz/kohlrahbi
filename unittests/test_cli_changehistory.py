@@ -13,8 +13,6 @@ from unittests import path_to_test_edi_energy_mirror_repo, path_to_test_files_fv
 
 runner: CliRunner = CliRunner()
 
-# path_to_test_files: Path = Path(__file__).parent / "test-edi-energy-mirror-repo"
-# path_to_test_files_fv2310 = path_to_test_files / Path("FV2310")
 
 
 def are_excel_files_equal(actual_change_history_file, expected_change_history_file):
