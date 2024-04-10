@@ -12,10 +12,9 @@ from docx.text.paragraph import Paragraph  # type:ignore[import]
 from maus.edifact import EdifactFormat, get_format_of_pruefidentifikator
 
 from kohlrahbi.ahb.ahbcondtions import AhbConditions
-from kohlrahbi.ahb.ahbsubtable import AhbSubTable
-from kohlrahbi.ahb.ahbtable import AhbTable
 from kohlrahbi.ahb.packagetable import AhbPackageTable
-from kohlrahbi.changehistory.changehistorytable import ChangeHistoryTable
+from kohlrahbi.ahbtable.ahbsubtable import AhbSubTable
+from kohlrahbi.ahbtable.ahbtable import AhbTable
 from kohlrahbi.logger import logger
 from kohlrahbi.seed import Seed
 

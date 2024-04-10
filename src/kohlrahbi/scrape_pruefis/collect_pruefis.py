@@ -7,9 +7,9 @@ import tomlkit
 from docx.table import Table  # type:ignore[import]
 from maus.edifact import EdifactFormatVersion
 
+from kohlrahbi.ahb import get_all_paragraphs_and_tables, table_header_starts_with_text_edifact_struktur
 from kohlrahbi.docxfilefinder import DocxFileFinder
 from kohlrahbi.logger import logger
-from kohlrahbi.read_functions import get_all_paragraphs_and_tables, table_header_starts_with_text_edifact_struktur
 from kohlrahbi.seed import Seed
 
 
