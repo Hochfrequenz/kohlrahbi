@@ -38,7 +38,7 @@ def load_pruefi_docx_file_map_from_file(path_to_pruefi_docx_file_map_file: Path)
     assert path_to_pruefi_docx_file_map_file.exists(), f"The file {path_to_pruefi_docx_file_map_file} does not exist."
 
     with open(path_to_pruefi_docx_file_map_file, "rb") as file:
-        pruefi_docx_file_map: dict[str, str] = tomlkit.load(file)
+        pruefi_docx_file_map: dict[str, dict[str, str]] = tomlkit.load(file)
 
     return pruefi_docx_file_map
 
@@ -235,7 +235,7 @@ def get_pruefi_to_file_mapping(basic_input_path: Path, format_version: EdifactFo
     return pruefi_to_file_mapping
 
 
-def reduce_pruefi_to_file_mapping(pruefi_to_file_mapping: dict[str, str], pruefis: list[str]) -> dict[str, str | None]:
+def reduce_pruefi_to_file_mapping(pruefi_to_file_mapping: dict[str, str], pruefis: list[str]) -> dict[str, str]:
     """
     If the user provided pruefis, we filter the pruefi_to_file_mapping for these pruefis.
     """
