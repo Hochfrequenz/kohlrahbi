@@ -1,10 +1,11 @@
+from pathlib import Path
 from typing import Union
 
 import pytest  # type:ignore[import]
 from click.testing import CliRunner, Result
 
-from kohlrahbi.pruefis.command import pruefi
-from unittests.test_current_state import path_to_test_files_fv2310
+from kohlrahbi.ahb.command import ahb
+from unittests import path_to_test_edi_energy_mirror_repo, path_to_test_files_fv2310
 
 runner: CliRunner = CliRunner()
 
@@ -21,8 +22,10 @@ class TestCliPruefi:
                 [
                     "--pruefis",
                     "11016",
-                    "--input-path",
+                    "--edi-energy-mirror-path",
                     "/invalid/input/path",
+                    "--format-version",
+                    "FV2310",
                     "--file-type",
                     "csv",
                 ],
@@ -33,30 +36,36 @@ class TestCliPruefi:
                 [
                     "--pruefis",
                     "11016",
-                    "--input-path",
-                    path_to_test_files_fv2310,
+                    "--edi-energy-mirror-path",
+                    path_to_test_edi_energy_mirror_repo,
                     "--output-path",
                     "/invalid/output/path",
+                    "--format-version",
+                    "FV2310",
                     "--file-type",
                     "csv",
                 ],
-                {"exit_code": 1, "output_snippet": "The path /invalid/output/path does not exist"},
+                {"exit_code": 1, "output_snippet": f"{Path('invalid/output/path')} does not exist"},
                 id="invalid output path",
             ),
             pytest.param(
                 [
                     "--pruefis",
                     "abc",
-                    "--input-path",
-                    path_to_test_files_fv2310,
+                    "--edi-energy-mirror-path",
+                    path_to_test_edi_energy_mirror_repo,
                     "--output-path",
                     path_to_test_files_fv2310,
+                    "--format-version",
+                    "FV2310",
                     "--file-type",
                     "csv",
                 ],
                 {"exit_code": 1, "output_snippet": "There are no valid pruefidentifkatoren"},
                 id="invalid pruefidentifikator",
             ),
+            # TODO add test for invalid format version
+            # TODO add test for required arguments
         ],
     )
     def test_cli_pruefi_with_invalid_arguments(self, argument_options: list[str], expected_response):
@@ -65,7 +74,7 @@ class TestCliPruefi:
         """
 
         # Call the CLI tool with the desired arguments
-        response = runner.invoke(pruefi, argument_options)
+        response = runner.invoke(ahb, argument_options)
 
         assert response.exit_code == expected_response.get("exit_code")
         assert expected_response.get("output_snippet") in response.output
@@ -77,6 +86,8 @@ class TestCliPruefi:
                 [
                     "-p",
                     "17201",
+                    "--format-version",
+                    "FV2310",
                     "--file-type",
                     "csv",
                 ],
@@ -87,6 +98,8 @@ class TestCliPruefi:
                 [
                     "-p",
                     "17201",
+                    "--format-version",
+                    "FV2310",
                     "--file-type",
                     "csv",
                     "-y",
@@ -109,11 +122,16 @@ class TestCliPruefi:
         expected_output_dir = path_to_test_files_fv2310 / "expected-output"
 
         argument_options.extend(
-            ["--input-path", str(path_to_test_files_fv2310), "--output-path", str(actual_output_dir)]
+            [
+                "--edi-energy-mirror-path",
+                str(path_to_test_edi_energy_mirror_repo),
+                "--output-path",
+                str(actual_output_dir),
+            ]
         )
 
         # Call the CLI tool with the desired arguments
-        response: Result = runner.invoke(pruefi, argument_options)
+        response: Result = runner.invoke(ahb, argument_options)
 
         assert response.exit_code == expected_response.get("exit_code")
         expected_output_snippet = expected_response.get("output_snippet")

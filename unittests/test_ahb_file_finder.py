@@ -30,7 +30,7 @@ class TestDocxFileFinder:
         """
         Test if the get_docx_files_which_may_contain_searched_pruefi method returns the correct number of docx files.
         """
-        path_to_ahb_documents: Path = Path.cwd() / Path("unittests/test-files/docx_files")
+        path_to_ahb_documents: Path = Path.cwd() / Path("unittests/test-edi-energy-mirror-repo/docx_files")
 
         ahb_file_finder = DocxFileFinder.from_input_path(input_path=path_to_ahb_documents)
 
@@ -49,7 +49,7 @@ class TestDocxFileFinder:
         - MSCONSAHB-informatorischeLesefassung3.1a_20230331_20221001
         - MSCONSMIG-informatorischeLesefassung2.4aKonsolidierteLesefassungmitFehlerkorrekturenStand23.05.2022_99991231_20221001
         """
-        path_to_ahb_documents: Path = Path.cwd() / Path("unittests/test-files/docx_files")
+        path_to_ahb_documents: Path = Path.cwd() / Path("unittests/test-edi-energy-mirror-repo/docx_files")
 
         ahb_file_finder = DocxFileFinder.from_input_path(input_path=path_to_ahb_documents)
 
@@ -63,7 +63,7 @@ class TestDocxFileFinder:
         This method filters the list of AHB docx paths for the latest AHB docx files.
         The latest files contain `LesefassungmitFehlerkorrekturen` in their file names.
         """
-        path_to_ahb_documents: Path = Path.cwd() / Path("unittests/test-files/docx_files")
+        path_to_ahb_documents: Path = Path.cwd() / Path("unittests/test-edi-energy-mirror-repo/docx_files")
 
         ahb_file_finder = DocxFileFinder.from_input_path(input_path=path_to_ahb_documents)
 

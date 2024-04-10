@@ -9,7 +9,7 @@ from maus.edifact import EdifactFormatVersion
 
 from kohlrahbi.docxfilefinder import DocxFileFinder
 from kohlrahbi.logger import logger
-from kohlrahbi.read_functions import does_the_table_contain_pruefidentifikatoren, get_all_paragraphs_and_tables
+from kohlrahbi.read_functions import get_all_paragraphs_and_tables, table_header_starts_with_text_edifact_struktur
 from kohlrahbi.seed import Seed
 
 
@@ -61,7 +61,7 @@ def update_pruefis(format_version: list[EdifactFormatVersion], edi_energy_mirror
         for ahb_file_path in ahb_file_finder.paths_to_docx_files:
             doc = docx.Document(ahb_file_path)
             for item in get_all_paragraphs_and_tables(parent=doc):
-                if isinstance(item, Table) and does_the_table_contain_pruefidentifikatoren(table=item):
+                if isinstance(item, Table) and table_header_starts_with_text_edifact_struktur(table=item):
                     if not item.row_cells(0)[-1].paragraphs[-1].text.startswith("Prüfidentifikator"):
                         continue
                     seed = Seed.from_table(docx_table=item)

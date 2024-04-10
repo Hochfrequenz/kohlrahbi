@@ -7,17 +7,17 @@ from pathlib import Path
 import click
 from maus.edifact import EdifactFormatVersion
 
+from kohlrahbi.ahb.command import check_python_version, validate_path
 from kohlrahbi.changehistory import scrape_change_histories
-from kohlrahbi.pruefis.command import check_python_version, validate_path
 
 
 @click.command()
 @click.option(
-    "-i",
-    "--input-path",
-    type=click.Path(exists=True, dir_okay=True, file_okay=False, path_type=Path),
-    prompt="Input directory",
-    help="Define the path to the folder with the docx AHBs.",
+    "-eemp",
+    "--edi-energy-mirror-path",
+    type=click.Path(exists=True, file_okay=False, dir_okay=True, resolve_path=True, path_type=Path),
+    help="The root path to the edi_energy_mirror repository.",
+    required=True,
 )
 @click.option(
     "-o",
@@ -42,7 +42,7 @@ from kohlrahbi.pruefis.command import check_python_version, validate_path
     help="Confirm all prompts automatically.",
 )
 def changehistory(
-    input_path: Path,
+    edi_energy_mirror_path: Path,
     output_path: Path,
     format_version: EdifactFormatVersion | str,
     assume_yes: bool,  # pylint: disable=unused-argument
@@ -52,7 +52,7 @@ def changehistory(
     Scrape change histories from the input path and save them to the output path.
 
     Args:
-        input_path (Path): The path to the input file or directory containing change histories.
+        edi_energy_mirror_path (Path): The path to the input file or directory containing change histories.
         output_path (Path): The path to save the scraped change histories.
         format_version (EdifactFormatVersion | str): The version of the EDIFACT format to use for scraping.
             Can be either an instance of EdifactFormatVersion or a string representation of the version.
@@ -61,5 +61,5 @@ def changehistory(
     check_python_version()
     if isinstance(format_version, str):
         format_version = EdifactFormatVersion(format_version)
-
+    input_path = edi_energy_mirror_path / "edi_energy_de" / format_version.value
     scrape_change_histories(input_path=input_path, output_path=output_path)

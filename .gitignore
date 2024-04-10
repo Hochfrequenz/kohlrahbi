@@ -168,11 +168,17 @@ documents/
 backup_documents/
 
 # output files
+output/
+src/kohlrahbi/cache/
 *.xlsx
 *.csv
 *.json
 *.7z
-!unittests/dataframes/*.json
+
+#however include
+!unittests/test-edi-energy-mirror-repo/edi_energy_de/*/expected-output/**/*.xlsx
+!unittests/test-edi-energy-mirror-repo/edi_energy_de/*/expected-output/**/*.csv
+
 # Word temporary
 ~$*.doc*
 

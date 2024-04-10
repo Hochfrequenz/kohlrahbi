@@ -6,7 +6,7 @@ import pandas as pd
 from docx.table import Table  # type:ignore[import]
 from pydantic import BaseModel, ConfigDict
 
-from kohlrahbi.ahb.ahbsubtable import AhbSubTable
+from kohlrahbi.ahbtable.ahbsubtable import AhbSubTable
 
 
 class ChangeHistoryTable(BaseModel):

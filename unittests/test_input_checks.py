@@ -1,6 +1,6 @@
 import pytest  # type:ignore[import]
 
-from kohlrahbi.pruefis import get_valid_pruefis
+from kohlrahbi.ahb import get_valid_pruefis
 
 
 @pytest.mark.parametrize(

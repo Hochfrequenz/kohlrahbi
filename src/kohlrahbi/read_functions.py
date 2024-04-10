@@ -303,27 +303,27 @@ def is_pruefi_of_edifact_format(last_pruefis: list[str], edifact_format: Edifact
 
 def is_change_history_table(table: Table) -> bool:
     """
-    Checks if the given table is change history table.
+    Logs that the end of the document was reached before finding the table for a given Prüfi.
     """
-    # in the document 'Entscheidungsbaum-DiagrammeundCodelisten-informatorischeLesefassung3.5_99991231_20240401.docx'
-    # I got the error "IndexError: list index out of range", I am not sure which table caused the error
-    try:
-        return table.cell(row_idx=0, col_idx=0).text.strip() == "Änd-ID"
-    except IndexError:
-        return False
+    logger.info("Reached the end of the document before finding the table for Prüfi '%s'.", pruefi)
 
 
-def get_change_history_table(document: Document) -> Optional[ChangeHistoryTable]:
+def log_end_of_ahb_table(pruefi):
     """
-    Reads a docx file and extracts the change history.
-    Returns None if no such table was found.
+    Logs that the end of the AHB table was reached for a given Prüfi.
     """
+    logger.info("Reached the end of the AHB table for Prüfi '%s'.", pruefi)
 
-    # Iterate through the whole word document
-    logger.info("🔁 Start iterating through paragraphs and tables")
-    for item in get_all_paragraphs_and_tables(parent=document):
-        if isinstance(item, Table) and is_change_history_table(table=item):
-            change_history_table = ChangeHistoryTable.from_docx_change_history_table(docx_table=item)
-            return change_history_table
 
-    return None
+def log_found_pruefi(pruefi):
+    """
+    Logs that the AHB table for a given Prüfi was found.
+    """
+    logger.info("Found the AHB table for Prüfi '%s'.", pruefi)
+
+
+def log_pruefi_not_found(pruefi):
+    """
+    Logs that the Prüfi was not found in the provided document.
+    """
+    logger.warning("Prüfi '%s' was not found in the provided document.", pruefi)

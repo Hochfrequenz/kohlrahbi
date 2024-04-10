@@ -1,19 +1,20 @@
+# KohlrAHBi
+
 <p align="center">
   <img src="kohlrahbi-image.png" alt="kohlrahbi-logo" width="512" height="512">
 </p>
 
-# KohlrAHBi
 ![Unittests status badge](https://github.com/Hochfrequenz/kohlrahbi/workflows/Unittests/badge.svg)
 ![Coverage status badge](https://github.com/Hochfrequenz/kohlrahbi/workflows/Coverage/badge.svg)
 ![Linting status badge](https://github.com/Hochfrequenz/kohlrahbi/workflows/Linting/badge.svg)
 ![Black status badge](https://github.com/Hochfrequenz/kohlrahbi/workflows/Black/badge.svg)
 ![PyPI](https://img.shields.io/pypi/v/kohlrahbi)
 
-
 Kohlrahbi generates machine-readable files from AHB documents.
 Kohlrahbi's sister is [MIG_mose](https://github.com/Hochfrequenz/migmose).
 
 ## Rationale
+
 German utilities exchange data using [EDIFACT](https://en.wikipedia.org/wiki/EDIFACT); This is called market communication (mako).
 The _Forum Datenformate_ of the BDEW publishes the technical regulations of the EDIFACT based market communication on [`edi-energy.de`](https://www.edi-energy.de/).
 These rules are not stable but change twice a year (in theory) or few times per year (in reality).
@@ -26,12 +27,14 @@ In total the regulations from these Anwendungshandbücher span several thousand 
 And by pages, we really _mean_ pages.
 EDIFACT communication is basically the API between German utilities for most of their B2B processes.
 However, the technical specifications of this API are
+
 * prose
 * on DIN A4 pages.
 
 The Anwendungshandbücher are the epitome of digitization with some good intentions.
 
 Although the AHBs are publicly available as PDF or Word files on `edi-energy.de`, they are hardly accessible in a technical sense:
+
 * You cannot automatically extract information from the AHBs.
 * You cannot run automatic comparisons between different versions.
 * You cannot automatically test your own API against the set of rules, described in the AHBs (as prose).
@@ -50,26 +53,32 @@ Hence, KohlrAHBi is the key for unlocking any automation potential that is relia
 We're all hoping for the day of true digitization on which this repository will become obsolete.
 
 ## Installation
+
 Kohlrahbi is a Python based tool.
 Therefor you have to make sure, that Python is running on your machine.
 
 We recommend to use virtual environments to keep your system clean.
 
 Create a new virtual environment with
+
 ```bash
 python -m venv .venv
 ```
 
 The activation of the virtual environment depends on your used OS.
 
-**Windows**
-```
+### Windows
+
+```powershell
 .venv\Scripts\activate
 ```
-**MacOS/Linux**
-```
+
+### MacOS/Linux
+
+```zsh
 source .venv/bin/activate
 ```
+
 Finally, install the package with
 
 ```bash
@@ -78,45 +87,77 @@ pip install kohlrahbi
 
 ## Usage
 
-There are two ways to use kohlrahbi.
-1. You can extract all prüfidentifikatoren listed in [all_known_pruefis.toml,](src/kohlrahbi/all_known_pruefis.toml)
-2. or you can extract a specific prüfidentifikator.
+Kohlrahbi is a command line tool.
+You can use it in three different ways:
 
-### Get all Prüfidentifikatoren
-If you want to extract all prüfidentifikatoren, you can run the following command.
-For the following steps we assume that you cloned our [edi_energy_mirror](https://github.com/Hochfrequenz/edi_energy_mirror/) to a neighbouring directory.
+1. Extract AHB tables for all prüfidentifikatoren or a specific prüfidentifikator of a provided format version.
+2. Extract all conditions for each format of a provided format version.
+3. Extract the change history of a provided format version.
+
+You can run the following command to get an overview of all available commands and options.
 
 ```bash
-kohlrahbi --input-path ../edi_energy_mirror/edi_energy_de/current --output-path ./output/ --file-type flatahb
+kohlrahbi --help
 ```
 
-This will extract all prüfidentifikatoren listed in [all_known_pruefis.toml](src/kohlrahbi/all_known_pruefis.toml) and save them in the provided output path.
+> [!NOTE]
+> For the following steps we assume that you cloned our [edi_energy_mirror](https://github.com/Hochfrequenz/edi_energy_mirror/) to a neighbouring directory.
+> The `edi_energy_mirror` contains the `.docx` files of the AHBs.
+> The folder structure should look like this:
+> ```plaintext
+> .
+> ├── edi_energy_mirror
+> └── kohlrahbi
+> ```
 
-### `.docx` Data Sources
+### Extract AHB table
+
+To extract the all AHB tables for each pruefi of a specific format version, you can run the following command.
+
+```bash
+kohlrahbi ahb --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --file-type csv --format-version FV2310
+```
+
+To extract the AHB tables for a specific pruefi of a specific format version, you can run the following command.
+
+```bash
+kohlrahbi ahb --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --file-type csv --pruefis 13002 --format-version FV2310
+```
+
+You can also provide multiple pruefis.
+
+```bash
+kohlrahbi ahb --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --file-type csv --pruefis 13002 --pruefis 13003 --pruefis 13005 --format-version FV2310
+```
+
+And you can also provide multiple file types.
+
+```bash
+kohlrahbi ahb --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --file-type csv --file-type xlsx --file-type flatahb --pruefis 13002 --format-version FV2310
+```
+
+### Extract all conditions
+
+To extract all conditions for each format of a specific format version, you can run the following command.
+
+```bash
+kohlrahbi conditions --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --format-version FV2310
+```
+
+### Extract change history
+
+```bash
+kohlrahbi changehistory --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --format-version FV2310
+```
+
+## `.docx` Data Sources
+
 kohlrahbi internally relies on a [specific naming schema](https://github.com/Hochfrequenz/kohlrahbi/blob/22a78dc076c7d5f9248cb9e8707b0cc14a2981d3/src/kohlrahbi/read_functions.py#L57) of the `.docx` files in which the file name holds information about the edifact format and validity period of the AHBs contained within the file.
 The easiest way to be compliant with this naming schema is to clone our [edi_energy_mirror](https://github.com/Hochfrequenz/edi_energy_mirror/) repository to your localhost.
 
-### Get a specific Prüfidentifikator
+## Results
 
-If you want to extract a specific prüfidentifikator, you can run the following command.
-
-```bash
-kohlrahbi --input-path ../edi_energy_mirror/edi_energy_de/current --output-path ./output/ --pruefis 13002 --file-type xlsx
-```
-
-You can also provide multiple prüfidentifikatoren.
-
-```bash
-kohlrahbi --input-path ../edi_energy_mirror/edi_energy_de/current --output-path ./output/ --pruefis 13002 --pruefis 13003 --pruefis 13005 --file-type csv
-```
-### Results
 There is a kohlrahbi based CI pipeline from the edi_energy_mirror mentioned above to the repository [machine-readable_anwendungshandbuecher](https://github.com/Hochfrequenz/machine-readable_anwendungshandbuecher) where you can find scraped AHBs as JSON, CSV or Excel files.
-
-### Export ConditionKeys and ConditionTexts
-For example to export condition.json files to [edi_energy_ahb_conditions_and_packages](https://github.com/Hochfrequenz/edi_energy_ahb_conditions_and_packages). Works best if no flags for "Prüfindentifikatoren" (--pruefis). In this case all known "Prüfidentifikatoren" are scanned. Thus all related conditions are gathered.
-```bash
-kohlrahbi --file-type conditions --input-path ../edi_energy_mirror/edi_energy_de/current --output-path ./output/edi_energy_ahb_conditions_and_packages/aktuelleFV
-```
 
 ## Workflow
 
@@ -136,7 +177,32 @@ flowchart TB
     CT -- Yes --> Extract[Create Extract]
 ```
 
+## AHB page number per Format
 
+The following table shows the page number of the AHBs for each format of the format version FV2310.
+
+| Format       | Page number | Hint                                                |     |
+| ------------ | ----------- | --------------------------------------------------- | --- |
+| UTILMD Strom | 1064        |                                                     |     |
+| UTILMD Gas   | 345         |                                                     |     |
+| REQOTE       | 264         | together with QUOTES, ORDERS, ORDRSP, ORDCHG        |     |
+| QUOTES       | 264         | together with REQOTE, ORDERS, ORDRSP, ORDCHG        |     |
+| ORDRSP       | 264         | together with REQOTE, QUOTES, ORDERS, ORDCHG        |     |
+| ORDERS       | 264         | together with REQOTE, QUOTES, ORDRSP, ORDCHG        |     |
+| ORDCHG       | 264         | together with REQOTE, QUOTES, ORDERS, ORDRSP        |     |
+| MSCONS       | 164         |                                                     |     |
+| UTILMD MaBis | 133         |                                                     |     |
+| REMADV       | 91          | together with INVOIC                                |     |
+| INVOIC       | 91          | together with REMADV                                |     |
+| IFTSTA       | 82          |                                                     |     |
+| CONTRL       | 72          | together with APERAK, contains no Prüfis            |     |
+| APERAK       | 72          | together with CONTRL, contains no Prüfis            |     |
+| PARTIN       | 69          |                                                     |     |
+| UTILTS       | 34          |                                                     |     |
+| ORDRSP       | 30          | together with ORDERS                                |     |
+| ORDERS       | 30          | together with ORDRSP                                |     |
+| PRICAT       | 25          |                                                     |     |
+| COMDIS       | 10          | good test for tables which are above change history |     |
 
 ## Development
 
@@ -155,6 +221,7 @@ To run the tests, you can use tox.
 ```bash
 tox
 ```
+
 See our [Python Template Repository](https://github.com/Hochfrequenz/python_template_repository#how-to-use-this-repository-on-your-machine) for detailed explanations.
 
 ## Contribute

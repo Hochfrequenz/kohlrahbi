@@ -9,11 +9,9 @@ from click.testing import CliRunner, Result
 from freezegun import freeze_time
 
 from kohlrahbi.changehistory.command import changehistory
+from unittests import path_to_test_edi_energy_mirror_repo, path_to_test_files_fv2310
 
 runner: CliRunner = CliRunner()
-
-path_to_test_files: Path = Path(__file__).parent / "test-files"
-path_to_test_files_fv2310 = path_to_test_files / Path("FV2310")
 
 
 def are_excel_files_equal(actual_change_history_file, expected_change_history_file):
@@ -58,10 +56,12 @@ class TestCliChangeHistory:
         expected_output_dir = path_to_test_files_fv2310 / "expected-output"
 
         argument_options: list[str] = [
-            "--input-path",
-            str(path_to_test_files_fv2310),
+            "--edi-energy-mirror-path",
+            str(path_to_test_edi_energy_mirror_repo),
             "--output-path",
             str(actual_output_dir),
+            "--format-version",
+            "FV2310",
         ]
 
         # Call the CLI tool with the desired arguments
@@ -80,6 +80,3 @@ class TestCliChangeHistory:
             actual_change_history_file=path_to_actual_change_history_file,
             expected_change_history_file=path_to_expected_change_history_file,
         )
-
-        # Delete the change history files after the test
-        path_to_actual_change_history_file.unlink(missing_ok=True)

@@ -12,15 +12,13 @@ import pytest  # type:ignore[import]
 from click.testing import CliRunner, Result
 
 from kohlrahbi import cli
+from unittests import path_to_test_edi_energy_mirror_repo, path_to_test_files_fv2310
 
 # Setup basic configuration for logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 
 runner: CliRunner = CliRunner()
-
-path_to_test_files: Path = Path(__file__).parent / "test-files"
-path_to_test_files_fv2310 = path_to_test_files / Path("FV2310")
 
 
 def get_csv_paths(root_dir) -> list[Path]:
@@ -52,24 +50,25 @@ def compare_csv_files(actual_output_dir: Path, expected_output_dir: Path):
     combined_paths.sort(key=lambda x: x.name)
     grouped_paths = groupby(combined_paths, key=lambda x: x.name)
 
-    differences = {}
+    differences: dict[str, list[Path] | Path] = {}
 
     for csv_file_name, paths in grouped_paths:
-        paths = list(paths)
-        if len(paths) == 2:
-            if not are_csv_files_equal(paths[0], paths[1]):
-                differences[csv_file_name] = [paths[0], paths[1]]
+        paths_as_list = list(paths)
+        if len(paths_as_list) == 2:
+            if not are_csv_files_equal(paths_as_list[0], paths_as_list[1]):
+                differences[csv_file_name] = [paths_as_list[0], paths_as_list[1]]
         else:
-            differences[csv_file_name] = paths[0]
+            differences[csv_file_name] = paths_as_list[0]
 
     # Report differences
     if differences:
-        for csv_file_name, paths in differences.items():
-            if isinstance(paths, list):
-                logging.error("Files %s and %s are different.", paths[0], paths[1])
+        for csv_file_name, paths_to_csv_files in differences.items():
+            if isinstance(paths_to_csv_files, list):
+                logging.error("Files %s and %s are different.", paths_to_csv_files[0], paths_to_csv_files[1])
             else:
                 logging.error(
-                    "The file '%s' does not have a corresponding comparison file in the expected directory.", paths
+                    "The file '%s' does not have a corresponding comparison file in the expected directory.",
+                    paths_to_csv_files,
                 )
         assert False
     else:
@@ -87,7 +86,7 @@ class TestCli:
         [
             pytest.param(
                 [
-                    "pruefi",
+                    "ahb",
                     "--format-version",
                     "FV2310",
                     "--file-type",
@@ -111,7 +110,12 @@ class TestCli:
         expected_output_dir = path_to_test_files_fv2310 / "expected-output"
 
         argument_options.extend(
-            ["--input-path", str(path_to_test_files_fv2310), "--output-path", str(actual_output_dir)]
+            [
+                "--edi-energy-mirror-path",
+                str(path_to_test_edi_energy_mirror_repo),
+                "--output-path",
+                str(actual_output_dir),
+            ]
         )
 
         # Call the CLI tool with the desired arguments
