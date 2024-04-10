@@ -126,7 +126,7 @@ def process_docx_file(file_path: Path) -> Optional[pd.DataFrame]:
     """
     Read and process change history from a .docx file.
     """
-    doc = docx.Document(file_path.__str__())
+    doc = docx.Document(str(file_path))
     logger.info("🤓 Start reading docx file '%s'", str(file_path))
     change_history_table = get_change_history_table(document=doc)
 

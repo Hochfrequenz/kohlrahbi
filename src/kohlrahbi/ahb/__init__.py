@@ -123,7 +123,7 @@ def process_pruefi(
     Therefore we only access that file.
     """
 
-    # TODO try to cache document objects cause it is slow to read them from disk
+    # TODO try to cache document objects cause it is slow to read them from disk # pylint: disable=fixme
     doc = docx.Document(str(path_to_ahb_docx_file))
 
     if not doc:
@@ -137,6 +137,7 @@ def process_pruefi(
 
 
 def get_ahb_documents_path(base_path: Path, version: str) -> Path:
+    """Returns the path to the AHB documents for the specified format version."""
     path = base_path / f"edi_energy_de/{version}"
     if not path.exists():
         raise FileNotFoundError(f"The specified path {path.absolute()} does not exist.")
@@ -144,6 +145,7 @@ def get_ahb_documents_path(base_path: Path, version: str) -> Path:
 
 
 def find_pruefidentifikatoren(path: Path) -> Dict[str, str]:
+    """finds pruefis in given dir"""
     pruefis = {}
 
     ahb_file_finder = DocxFileFinder.from_input_path(input_path=path)
@@ -155,6 +157,7 @@ def find_pruefidentifikatoren(path: Path) -> Dict[str, str]:
 
 
 def extract_pruefis_from_docx(docx_path: Path) -> Dict[str, str]:
+    """Extracts the Prüfidentifikatoren from the given docx file."""
     doc = docx.Document(str(docx_path))
     pruefis: dict[str, str] = {}
     for item in get_all_paragraphs_and_tables(doc):
@@ -168,6 +171,7 @@ def extract_pruefis_from_docx(docx_path: Path) -> Dict[str, str]:
 
 
 def save_pruefi_map_to_toml(pruefis: Dict[str, str], version: str) -> None:
+    """Saves the pruefis to file mapping to a toml file."""
     output_filename = f"{version}_pruefi_docx_filename_map.toml"
     output_file_path = Path(__file__).parents[1] / "cache" / output_filename
     output_file_path.parent.mkdir(parents=True, exist_ok=True)
@@ -175,30 +179,33 @@ def save_pruefi_map_to_toml(pruefis: Dict[str, str], version: str) -> None:
     toml_data = {"meta_data": {"updated_on": date.today()}, "pruefidentifikatoren": pruefis}
     with open(output_file_path, "w", encoding="utf-8") as f:
         tomlkit.dump(toml_data, f)
-        logger.info(f"🎉 Successfully updated {output_filename} and saved it at {output_file_path}.")
+        logger.info("🎉 Successfully updated %s and saved it at %s.", output_filename, output_file_path)
 
 
 def log_no_pruefis_warning(version: str, path: Path) -> None:
-    logger.warning(f"No Prüfidentifikatoren found in the AHB documents for format version {version} at {path}.")
+    """Logs a warning if no Prüfidentifikatoren were found."""
+    logger.warning("No Prüfidentifikatoren found in the AHB documents for format version %s at %s.", version, path)
 
 
 def get_default_pruefi_map(path: Path) -> Dict[str, str]:
+    """Returns a default pruefi map if no pruefis were found."""
     return {"⚠️ No Prüfidentifikatoren found": f"No AHB documents found in {path}."}
 
 
 def extract_pruefis_from_table(table: Table) -> list[str]:
+    """Extracts the Prüfidentifikatoren from given table."""
     seed = Seed.from_table(docx_table=table)
     logger.info("Found a table with the following pruefis: %s", seed.pruefidentifikatoren)
     return seed.pruefidentifikatoren
 
 
 def table_header_contains_text_pruefidentifikator(table: Table) -> bool:
+    """Checks if the table header contains the text 'Prüfidentifikator'."""
     return table.row_cells(0)[-1].paragraphs[-1].text.startswith("Prüfidentifikator")
 
 
 def create_pruefi_docx_filename_map(format_version: EdifactFormatVersion, edi_energy_mirror_path: Path):
-    """ """
-    all_pruefis: dict[str, str] = {}
+    """Creates a mapping of pruefis to their corresponding docx files."""
 
     ahb_documents_path = get_ahb_documents_path(edi_energy_mirror_path, format_version)
 
@@ -212,6 +219,7 @@ def create_pruefi_docx_filename_map(format_version: EdifactFormatVersion, edi_en
 
 
 def get_pruefi_to_file_mapping(basic_input_path: Path, format_version: EdifactFormatVersion) -> dict[str, str]:
+    """Returns the pruefi to file mapping. If the cache file does not exist, it creates it."""
     default_path_to_cache_file = Path(__file__).parents[1] / "cache" / f"{format_version}_pruefi_docx_filename_map.toml"
 
     if default_path_to_cache_file.exists():
@@ -244,7 +252,6 @@ def scrape_pruefis(
     """
     starts the scraping process for provided pruefi_to_file_mappings
     """
-
     pruefi_to_file_mapping = get_pruefi_to_file_mapping(
         basic_input_path=basic_input_path, format_version=format_version
     )

@@ -14,7 +14,8 @@ Usage:
 To use this command-line interface, run the script and provide the necessary options as command-line arguments.
 
 Example:
-$ python command.py --edi-energy-mirror-path /path/to/edi_energy_mirror/repo --output-path /path/to/output --format-version FV2310 --assume-yes
+$ python command.py --edi-energy-mirror-path /path/to/edi_energy_mirror/repo
+ --output-path /path/to/output --format-version FV2310 --assume-yes
 """
 
 from pathlib import Path
