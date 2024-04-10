@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Union
 
 import pytest  # type:ignore[import]
@@ -44,7 +45,7 @@ class TestCliPruefi:
                     "--file-type",
                     "csv",
                 ],
-                {"exit_code": 1, "output_snippet": "The path /invalid/output/path does not exist"},
+                {"exit_code": 1, "output_snippet": f"{Path('invalid/output/path')} does not exist"},
                 id="invalid output path",
             ),
             pytest.param(
