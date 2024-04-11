@@ -18,7 +18,7 @@ colorlog==6.8.2
     # via kohlrahbi (pyproject.toml)
 et-xmlfile==1.1.0
     # via openpyxl
-lxml==5.1.1
+lxml==5.2.1
     # via python-docx
 marshmallow==3.21.1
     # via maus
