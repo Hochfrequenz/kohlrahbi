@@ -36,7 +36,7 @@ pandas==2.2.1
     # via kohlrahbi (pyproject.toml)
 pydantic==2.6.4
     # via kohlrahbi (pyproject.toml)
-pydantic-core==2.16.3
+pydantic-core==2.18.0
     # via pydantic
 python-dateutil==2.9.0.post0
     # via pandas
