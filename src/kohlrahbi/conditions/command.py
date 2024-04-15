@@ -17,22 +17,52 @@ Example:
 $ python command.py --input-path /path/to/input --output-path /path/to/output --format-version FV2310 --assume-yes
 """
 
+# pylint: disable=duplicate-code
+import sys
 from pathlib import Path
 
 import click
 from maus.edifact import EdifactFormatVersion
 
 from kohlrahbi.conditions import scrape_conditions
-from kohlrahbi.pruefis.command import check_python_version, validate_path
+
+
+def check_python_version():
+    """
+    Check if the Python interpreter is greater or equal to 3.11
+    """
+    if sys.version_info.major != 3 or sys.version_info.minor < 11:
+        raise click.Abort(
+            f"""Python >=3.11 is required to run this script but you use Python
+{sys.version_info.major}.{sys.version_info.minor}"""
+        )
+
+
+# pylint: disable=unused-argument
+def validate_path(ctx, param, value):
+    """
+    Ensure the path exists or offer to create it.
+    """
+    path = Path(value)
+    if not path.exists():
+        if ctx.params.get("assume_yes") or click.confirm(
+            f"The path {value} does not exist. Would you like to create it?"
+        ):
+            path.mkdir(parents=True)
+            click.secho(f"Created directory {path}.", fg="green")
+        else:
+            click.secho("👋 Alright I will end this program now. Have a nice day.", fg="green")
+            raise click.Abort()
+    return path
 
 
 @click.command()
 @click.option(
-    "-i",
-    "--input-path",
-    type=click.Path(exists=True, dir_okay=True, file_okay=False, path_type=Path),
-    prompt="Input directory",
-    help="Define the path to the folder with the docx AHBs.",
+    "-eemp",
+    "--edi-energy-mirror-path",
+    type=click.Path(exists=True, file_okay=False, dir_okay=True, resolve_path=True, path_type=Path),
+    help="The root path to the edi_energy_mirror repository.",
+    required=True,
 )
 @click.option(
     "-o",
@@ -41,26 +71,20 @@ from kohlrahbi.pruefis.command import check_python_version, validate_path
     callback=validate_path,
     default="output",
     prompt="Output directory",
-    help="Define the path where you want to save the generated files.",
+    help="""Define the path where you want to save the generated files. If the path does not exist,
+you will be asked if you want to create it.""",
 )
 @click.option(
     "--format-version",
     multiple=False,
     type=click.Choice([e.value for e in EdifactFormatVersion], case_sensitive=False),
+    required=True,
     help="Format version(s) of the AHB documents, e.g. FV2310",
 )
-@click.option(
-    "--assume-yes",
-    "-y",
-    is_flag=True,
-    default=False,
-    help="Confirm all prompts automatically.",
-)
 def conditions(
-    input_path: Path,
+    edi_energy_mirror_path: Path,
     output_path: Path,
     format_version: EdifactFormatVersion | str,
-    assume_yes: bool,
 ):
     """
     Scrape AHB documents for conditions.
@@ -70,7 +94,7 @@ def conditions(
         format_version = EdifactFormatVersion(format_version)
 
     scrape_conditions(
-        basic_input_path=input_path,
+        basic_input_path=edi_energy_mirror_path,
         output_path=output_path / Path(format_version.value),
         format_version=format_version,
     )

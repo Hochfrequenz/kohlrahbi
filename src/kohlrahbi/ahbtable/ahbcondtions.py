@@ -88,7 +88,7 @@ class AhbConditions(BaseModel):
                 else:
                     self.conditions_dict[edifact_format] = {condition_key: condition_text}
 
-        logger.info("Conditions was updated.")
+        logger.info("Conditions were updated.")
 
     def dump_as_json(self, output_directory_path: Path) -> None:
         """
@@ -96,13 +96,14 @@ class AhbConditions(BaseModel):
         The file will be stored in the directory:
             'output_directory_path/<edifact_format>/conditions.json'
         """
-        for edifact_format, format_condition_dict in self.conditions_dict.items():
+        for edifact_format in self.conditions_dict.keys():
             condition_json_output_directory_path = output_directory_path / str(edifact_format)
             condition_json_output_directory_path.mkdir(parents=True, exist_ok=True)
             file_path = condition_json_output_directory_path / "conditions.json"
             # resort  ConditionKeyConditionTextMappings for output
             sorted_condition_dict = {
-                k: self.format_condition_dict[k] for k in sorted(self.format_condition_dict, key=int)
+                k: self.conditions_dict[edifact_format][k]
+                for k in sorted(self.conditions_dict[edifact_format], key=int)
             }
             array = [
                 {"condition_key": i, "condition_text": sorted_condition_dict[i], "edifact_format": edifact_format}

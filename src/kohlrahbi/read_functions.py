@@ -16,7 +16,6 @@ from kohlrahbi.ahbtable.ahbpackagetable import AhbPackageTable
 from kohlrahbi.ahbtable.ahbsubtable import AhbSubTable
 from kohlrahbi.ahbtable.ahbtable import AhbTable
 from kohlrahbi.logger import logger
-from kohlrahbi.read_functions import is_item_package_heading
 from kohlrahbi.seed import Seed
 
 
@@ -219,8 +218,8 @@ def get_all_conditions_from_doc(
     """
     Go through a given document and grasp all conditions and package tables. for a given format
     """
-    package_table: AhbPackageTable = None
-    conditions_table: AhbConditions = None
+    package_table: AhbPackageTable
+    conditions_table: AhbConditions
     package_tables: list[Table] = []
     conditions_tables: list[Table] = []
     seed = None
@@ -263,6 +262,7 @@ def get_all_conditions_from_doc(
 
     if len(package_tables) > 0:
         package_table = AhbPackageTable.from_docx_table(package_tables)
+        package_table.provide_packages(edifact_format)
     else:
         logger.warning("⛔️ No package table found in the provided file.\n")
     return package_table, conditions_table
@@ -277,11 +277,29 @@ def is_last_row_unt_0062(item: Table | Paragraph) -> bool:
 
 def is_relevant_pruefi_table(item: Paragraph | Table, seed: Seed, edifact_format) -> bool:
     """compares new pruefis to last pruefi and thus checks whether new table"""
-    return isinstance(item, Table) and seed and is_pruefi_of_edifact_format(seed.pruefidentifikatoren, edifact_format)
+    return (
+        isinstance(item, Table)
+        and seed is not None
+        and is_pruefi_of_edifact_format(seed.pruefidentifikatoren, edifact_format)
+    )
 
 
 def is_pruefi_of_edifact_format(last_pruefis: list[str], edifact_format: EdifactFormat) -> bool:
     """Checks if the pruefi is of the given edifact format"""
     return len(last_pruefis) > 0 and all(
         get_format_of_pruefidentifikator(pruefi) is edifact_format for pruefi in last_pruefis
+    )
+
+
+def is_item_package_heading(item: Paragraph | Table | None, style_name: str, edifact_format: EdifactFormat) -> bool:
+    """
+    Checks if the given item is the heading of the package table.
+    """
+    return isinstance(item, Paragraph) and (
+        (
+            (style_name == "Heading 1")
+            and f"Übersicht der Pakete in der" in item.text
+            and f"{edifact_format.name}" in item.text
+        )
+        or (((style_name == "Heading 2") and f"Übersicht der Pakete in der {edifact_format.name}" in item.text))
     )
