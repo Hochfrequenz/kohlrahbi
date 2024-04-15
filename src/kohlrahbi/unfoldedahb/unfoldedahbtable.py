@@ -413,7 +413,7 @@ class UnfoldedAhb(BaseModel):
         csv_output_directory_path = path_to_output_directory / str(edifact_format) / "csv"
         csv_output_directory_path.mkdir(parents=True, exist_ok=True)
 
-        df.to_csv(csv_output_directory_path / f"{self.meta_data.pruefidentifikator}.csv")
+        df.to_csv(csv_output_directory_path / f"{self.meta_data.pruefidentifikator}.csv", encoding="utf-8")
         logger.info(
             "The csv file for %s is saved at %s",
             self.meta_data.pruefidentifikator,

@@ -171,7 +171,7 @@ class AhbTable(BaseModel):
         columns_to_export.append("Bedingung")
         df_to_export = self.table[columns_to_export]
 
-        df_to_export.to_csv(csv_output_directory_path / f"{pruefi}.csv")
+        df_to_export.to_csv(csv_output_directory_path / f"{pruefi}.csv", encoding="utf-8")
         logger.info("The csv file for %s is saved at %s", pruefi, csv_output_directory_path / f"{pruefi}.csv")
 
     # pylint: disable=too-many-locals
