@@ -11,19 +11,13 @@ from docx.table import Table, _Cell  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
 from maus.edifact import EdifactFormat, get_format_of_pruefidentifikator
 
-from kohlrahbi.ahb.ahbcondtions import AhbConditions
-from kohlrahbi.ahb.packagetable import AhbPackageTable
+from kohlrahbi.ahbtable.ahbcondtions import AhbConditions
+from kohlrahbi.ahbtable.ahbpackagetable import AhbPackageTable
 from kohlrahbi.ahbtable.ahbsubtable import AhbSubTable
 from kohlrahbi.ahbtable.ahbtable import AhbTable
 from kohlrahbi.logger import logger
+from kohlrahbi.read_functions import is_item_package_heading
 from kohlrahbi.seed import Seed
-
-
-def table_header_starts_with_text_edifact_struktur(table: Table) -> bool:
-    """
-    Check if the table header starts with the text "EDIFACT Struktur".
-    """
-    return table.cell(row_idx=0, col_idx=0).text.strip() == "EDIFACT Struktur"
 
 
 def get_all_paragraphs_and_tables(parent: Union[Document, _Cell]) -> Generator[Union[Paragraph, Table], None, None]:
@@ -48,11 +42,10 @@ def get_all_paragraphs_and_tables(parent: Union[Document, _Cell]) -> Generator[U
             yield Table(child, parent)
 
 
-def does_the_table_contain_pruefidentifikatoren(table: Table) -> bool:
+def table_header_starts_with_text_edifact_struktur(table: Table) -> bool:
     """
-    Checks if the given table is a AHB table with pruefidentifikatoren.
+    Check if the table header starts with the text "EDIFACT Struktur".
     """
-
     return table.cell(row_idx=0, col_idx=0).text.strip() == "EDIFACT Struktur"
 
 
@@ -82,7 +75,7 @@ def is_item_table_with_pruefidentifikatoren(item: Paragraph | Table | None) -> b
     Returns:
     bool: True if the item is a Table and contains Pruefidentifikatoren, False otherwise.
     """
-    return isinstance(item, Table) and does_the_table_contain_pruefidentifikatoren(table=item)
+    return isinstance(item, Table) and table_header_starts_with_text_edifact_struktur(table=item)
 
 
 def is_item_headless_table(
@@ -103,20 +96,6 @@ def is_item_headless_table(
     """
     # return isinstance(item, Table) and seed is not None and ahb_table is not None
     return isinstance(item, Table) and ahb_table is not None
-
-
-def is_item_package_heading(item: Paragraph | Table | None, style_name: str, edifact_format: EdifactFormat) -> bool:
-    """
-    Checks if the given item is the heading of the package table.
-    """
-    return isinstance(item, Paragraph) and (
-        (
-            (style_name == "Heading 1")
-            and f"Übersicht der Pakete in der" in item.text
-            and f"{edifact_format.name}" in item.text
-        )
-        or (((style_name == "Heading 2") and f"Übersicht der Pakete in der {edifact_format.name}" in item.text))
-    )
 
 
 def get_ahb_table(document, pruefi: str) -> Optional[AhbTable]:
@@ -233,6 +212,7 @@ def log_pruefi_not_found(pruefi):
     logger.warning("Prüfi '%s' was not found in the provided document.", pruefi)
 
 
+# pylint: disable=too-many-branches
 def get_all_conditions_from_doc(
     document: Document, edifact_format: EdifactFormat
 ) -> Tuple[Optional[AhbPackageTable], Optional[AhbConditions]]:
@@ -274,7 +254,7 @@ def get_all_conditions_from_doc(
         seed = update_seed(item, seed)
         if is_relevant_pruefi_table(item, seed, edifact_format):
             conditions_tables.append(item)
-        if is_last_row_UNT_0062(item):
+        if is_last_row_unt_0062(item):
             seed = None
     if len(conditions_tables) > 0:
         conditions_table = AhbConditions.from_docx_table(conditions_tables, edifact_format)
@@ -288,7 +268,7 @@ def get_all_conditions_from_doc(
     return package_table, conditions_table
 
 
-def is_last_row_UNT_0062(item: Table | Paragraph) -> bool:
+def is_last_row_unt_0062(item: Table | Paragraph) -> bool:
     """
     Checks if the given table contains UNT segment in last row.
     """
@@ -305,31 +285,3 @@ def is_pruefi_of_edifact_format(last_pruefis: list[str], edifact_format: Edifact
     return len(last_pruefis) > 0 and all(
         get_format_of_pruefidentifikator(pruefi) is edifact_format for pruefi in last_pruefis
     )
-
-
-def is_change_history_table(table: Table) -> bool:
-    """
-    Logs that the end of the document was reached before finding the table for a given Prüfi.
-    """
-    logger.info("Reached the end of the document before finding the table for Prüfi '%s'.", pruefi)
-
-
-def log_end_of_ahb_table(pruefi):
-    """
-    Logs that the end of the AHB table was reached for a given Prüfi.
-    """
-    logger.info("Reached the end of the AHB table for Prüfi '%s'.", pruefi)
-
-
-def log_found_pruefi(pruefi):
-    """
-    Logs that the AHB table for a given Prüfi was found.
-    """
-    logger.info("Found the AHB table for Prüfi '%s'.", pruefi)
-
-
-def log_pruefi_not_found(pruefi):
-    """
-    Logs that the Prüfi was not found in the provided document.
-    """
-    logger.warning("Prüfi '%s' was not found in the provided document.", pruefi)

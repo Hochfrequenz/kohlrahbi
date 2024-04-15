@@ -1,3 +1,5 @@
+"""This module contains the ahbconditions class."""
+
 import json
 import re
 from pathlib import Path
@@ -10,6 +12,10 @@ from kohlrahbi.logger import logger
 
 
 class AhbConditions(BaseModel):
+    """
+    Class which contains a dict of conditions for each edifact format
+    """
+
     conditions_dict: dict[EdifactFormat, dict[str, str]] = {}
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -90,14 +96,13 @@ class AhbConditions(BaseModel):
         The file will be stored in the directory:
             'output_directory_path/<edifact_format>/conditions.json'
         """
-        for edifact_format in self.conditions_dict.keys():
+        for edifact_format, format_condition_dict in self.conditions_dict.items():
             condition_json_output_directory_path = output_directory_path / str(edifact_format)
             condition_json_output_directory_path.mkdir(parents=True, exist_ok=True)
             file_path = condition_json_output_directory_path / "conditions.json"
             # resort  ConditionKeyConditionTextMappings for output
             sorted_condition_dict = {
-                k: self.conditions_dict[edifact_format][k]
-                for k in sorted(self.conditions_dict[edifact_format], key=int)
+                k: self.format_condition_dict[k] for k in sorted(self.format_condition_dict, key=int)
             }
             array = [
                 {"condition_key": i, "condition_text": sorted_condition_dict[i], "edifact_format": edifact_format}

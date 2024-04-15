@@ -2,14 +2,12 @@
 This module contains the function to write the collected conditions to a json file.
 """
 
-import json
 from pathlib import Path
-from typing import Optional
 
 import docx
-from maus.edifact import EdifactFormat, EdifactFormatVersion
+from maus.edifact import EdifactFormatVersion
 
-from kohlrahbi.ahb.ahbcondtions import AhbConditions
+from kohlrahbi.ahbtable.ahbcondtions import AhbConditions
 from kohlrahbi.logger import logger
 from kohlrahbi.pruefis import find_all_files_from_all_pruefis, load_pruefis_if_empty, validate_pruefis
 from kohlrahbi.read_functions import get_all_conditions_from_doc
