@@ -95,6 +95,6 @@ def conditions(
 
     scrape_conditions(
         basic_input_path=edi_energy_mirror_path,
-        output_path=output_path / Path(format_version.value),
+        output_path=output_path,
         format_version=format_version,
     )

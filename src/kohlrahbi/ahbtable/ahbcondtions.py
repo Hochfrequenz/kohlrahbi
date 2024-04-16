@@ -79,9 +79,7 @@ class AhbConditions(BaseModel):
             for condition_key, condition_text in edi_cond_dict.items():
                 if edifact_format in self.conditions_dict:
                     if condition_key in self.conditions_dict[edifact_format]:
-                        if len(condition_text) > len(
-                            self.conditions_dict[edifact_format][condition_key]
-                        ):  # +1 to avoid simple line breaks
+                        if len(condition_text) > len(self.conditions_dict[edifact_format][condition_key]):
                             self.conditions_dict[edifact_format][condition_key] = condition_text
                     else:
                         self.conditions_dict[edifact_format][condition_key] = condition_text

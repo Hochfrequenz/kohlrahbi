@@ -83,15 +83,22 @@ class AhbPackageTable(BaseModel):
         if there_are_packages:
             for index, row in df.iterrows():
                 package = row["Paket"]
-                package_conditions = row["Paketvoraussetzung(en)"]
-                # check whether package was already collected:
-                package_key_not_collected_yet = package_dict[edifact_format].get(package) is None
-                if not package_key_not_collected_yet:
-                    key_exits_but_shorter_text = len(package_conditions) > len(
-                        package_dict[edifact_format].get(package)
-                    )
-                if package_key_not_collected_yet or key_exits_but_shorter_text:
-                    package_dict[edifact_format][package] = package_conditions
+                # Use re.search to find the first match
+                match = re.search(r"\[(\d+)P\]", package)
+                if not match:
+                    raise ValueError("No valid package key found in the package column.")
+                    # Extract the matched digits
+                package = match.group(1)
+                if package != "1":
+                    package_conditions = row["Paketvoraussetzung(en)"].strip()
+                    # check whether package was already collected:
+                    package_key_not_collected_yet = package_dict[edifact_format].get(package) is None
+                    if not package_key_not_collected_yet:
+                        key_exits_but_shorter_text = len(package_conditions) > len(
+                            package_dict[edifact_format].get(package)
+                        )
+                    if package_key_not_collected_yet or key_exits_but_shorter_text:
+                        package_dict[edifact_format][package] = package_conditions
 
         logger.info("Packages for %s were collected.", edifact_format)
         self.package_dict = package_dict
@@ -113,11 +120,11 @@ class AhbPackageTable(BaseModel):
                 else:
                     self.package_dict[edifact_format] = {package_key: package_conditions}
 
-        logger.info("Conditions were updated.")
+        logger.info("Packages were updated.")
 
     def dump_as_json(self, output_directory_path: Path) -> None:
         """
-        Writes all collected conditions to a json file.
+        Writes all collected packages to a json file.
         The file will be stored in the directory:
             'output_directory_path/<edifact_format>/conditions.json'
         """
@@ -130,7 +137,7 @@ class AhbPackageTable(BaseModel):
                 k: self.package_dict[edifact_format][k] for k in sorted(self.package_dict[edifact_format], key=int)
             }
             array = [
-                {"condition_key": i, "condition_text": sorted_package_dict[i], "edifact_format": edifact_format}
+                {"package_key": i + "P", "package_expression": sorted_package_dict[i], "edifact_format": edifact_format}
                 for i in sorted_package_dict
             ]
             with open(file_path, "w", encoding="utf-8") as file:
