@@ -4,8 +4,6 @@ import docx  # type: ignore[import-untyped]
 import pandas as pd
 from maus.edifact import EdifactFormat
 
-from kohlrahbi.pruefis import get_or_cache_document
-
 # class TestPackageTable:
 # def test_from_docx_table(self):
 #     path_to_document_mapping: dict[Path, docx.Document] = {}

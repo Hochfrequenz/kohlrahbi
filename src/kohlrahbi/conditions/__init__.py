@@ -21,7 +21,7 @@ def find_all_files_from_all_pruefis(
     format_to_files_mapping: dict[EdifactFormat, list[str]] = {}
     for pruefi, filename in pruefi_to_file_mapping.items():
         if not filename:
-            raise ValueError(("No file provided for pruefi %s", pruefi))
+            raise ValueError(f"No file provided for pruefi {pruefi}")
         if format_to_files_mapping.get(get_format_of_pruefidentifikator(pruefi)) is None:
             format_to_files_mapping[get_format_of_pruefidentifikator(pruefi)] = [filename]
         elif filename not in format_to_files_mapping[get_format_of_pruefidentifikator(pruefi)]:
