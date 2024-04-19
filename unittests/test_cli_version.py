@@ -5,7 +5,7 @@ from kohlrahbi import cli
 
 def test_version_flag():
     """
-    Test the version command.
+    Test the version flag.
     """
     runner = click.testing.CliRunner()
     result = runner.invoke(cli, ["--version"])
