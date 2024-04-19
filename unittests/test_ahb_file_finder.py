@@ -38,7 +38,7 @@ class TestDocxFileFinder:
 
         assert len(ahb_file_finder.paths_to_docx_files) == expected_docx_count
 
-    def test_filter_docx_files_for_edifact_format(self):
+    def test_filter_docx_files_for_edifact_format(self) -> None:
         """
         Test the filter_docx_files_for_edifact_format method.
         This method filters the list of docx paths for the given EDIFACT format.
@@ -57,7 +57,7 @@ class TestDocxFileFinder:
 
         assert len(ahb_file_finder.paths_to_docx_files) == 4
 
-    def test_filter_for_latest_ahb_docx_files(self):
+    def test_filter_for_latest_ahb_docx_files(self) -> None:
         """
         Test the filter_for_latest_ahb_docx_files method.
         This method filters the list of AHB docx paths for the latest AHB docx files.
