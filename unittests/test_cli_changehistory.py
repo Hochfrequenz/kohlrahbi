@@ -47,7 +47,7 @@ class TestCliChangeHistory:
     """
 
     @freeze_time("2024-03-30")
-    def test_cli_changehistory(self):
+    def test_cli_changehistory(self) -> None:
         """
         This test runs the CLI tool with valid arguments and checks if the output is as expected.
         """
