@@ -34,7 +34,7 @@ packaging==24.0
     # via marshmallow
 pandas==2.2.1
     # via kohlrahbi (pyproject.toml)
-pydantic==2.6.4
+pydantic==2.7.0
     # via kohlrahbi (pyproject.toml)
 pydantic-core==2.16.3
     # via pydantic
