@@ -57,10 +57,7 @@ fragments = [{ path = "README.md" }]
 source = "vcs"
 
 [tool.hatch.build.hooks.vcs]
-version-file = "src/_kohlrahbi_version.py"
-template = '''
-version = "{version}"
-'''
+version-file = "src/kohlrahbi/version.py"
 
 [tool.hatch.build.targets.sdist]
 exclude = ["/unittests"]

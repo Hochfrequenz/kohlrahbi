@@ -187,4 +187,4 @@ Backup of *.doc*
 
 # version number for kohlrahbi; gets auto-generated during the command
 # python -m build
-_kohlrahbi_version.py
+src/kohlrahbi/version.py
