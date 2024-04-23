@@ -14,9 +14,7 @@ from kohlrahbi.logger import logger
 from kohlrahbi.read_functions import get_all_conditions_from_doc
 
 
-def find_all_files_from_all_pruefis(
-    pruefi_to_file_mapping: dict[str, str | None]
-) -> dict[EdifactFormat, list[str]] | None:
+def find_all_files_from_all_pruefis(pruefi_to_file_mapping: dict[str, str]) -> dict[EdifactFormat, list[str]]:
     """takes list of all pruefis with according files and returns a dict edifactformat-> list(filepaths)"""
     format_to_files_mapping: dict[EdifactFormat, list[str]] = {}
     for pruefi, filename in pruefi_to_file_mapping.items():
@@ -52,9 +50,9 @@ def scrape_conditions(
             if not doc:
                 logger.error("Could not open file %s as docx", Path(file))
             packages, cond_table = get_all_conditions_from_doc(doc, edifact_format)
-            if packages.table is not None:
+            if packages and packages.table is not None:
                 collected_conditions.include_condition_dict(packages.provide_conditions(edifact_format))
+                collected_packages.include_package_dict(packages.package_dict)
             collected_conditions.include_condition_dict(cond_table.conditions_dict)
-            collected_packages.include_package_dict(packages.package_dict)
     collected_conditions.dump_as_json(output_path / Path(str(format_version)))
     collected_packages.dump_as_json(output_path / Path(str(format_version)))

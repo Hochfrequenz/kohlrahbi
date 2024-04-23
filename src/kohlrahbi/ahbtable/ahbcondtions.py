@@ -62,10 +62,11 @@ class AhbConditions(BaseModel):
             text = match[1].strip()
             text = re.sub(r"\s+", " ", text)
             # check whether condition was already collected:
-            condition_key_not_collected_yet = conditions_dict[edifact_format].get(match[0]) is None
-            if not condition_key_not_collected_yet:
-                key_exits_but_shorter_text = len(text) > len(conditions_dict[edifact_format].get(match[0]))
-            if condition_key_not_collected_yet or key_exits_but_shorter_text:
+            existing_text = conditions_dict[edifact_format].get(match[0])
+            is_condition_key_collected_yet = existing_text is not None
+            if is_condition_key_collected_yet:
+                key_exits_but_shorter_text = len(text) > len(existing_text)  # type: ignore[arg-type]
+            if not is_condition_key_collected_yet or key_exits_but_shorter_text:
                 conditions_dict[edifact_format][match[0]] = text
 
         logger.info("The package conditions for %s were collected.", edifact_format)
@@ -94,15 +95,12 @@ class AhbConditions(BaseModel):
         The file will be stored in the directory:
             'output_directory_path/<edifact_format>/conditions.json'
         """
-        for edifact_format in self.conditions_dict.keys():
+        for edifact_format, format_cond_dict in self.conditions_dict.items():
             condition_json_output_directory_path = output_directory_path / str(edifact_format)
             condition_json_output_directory_path.mkdir(parents=True, exist_ok=True)
             file_path = condition_json_output_directory_path / "conditions.json"
             # resort  ConditionKeyConditionTextMappings for output
-            sorted_condition_dict = {
-                k: self.conditions_dict[edifact_format][k]
-                for k in sorted(self.conditions_dict[edifact_format], key=int)
-            }
+            sorted_condition_dict = {k: format_cond_dict[k] for k in sorted(format_cond_dict, key=int)}
             array = [
                 {"condition_key": i, "condition_text": sorted_condition_dict[i], "edifact_format": edifact_format}
                 for i in sorted_condition_dict

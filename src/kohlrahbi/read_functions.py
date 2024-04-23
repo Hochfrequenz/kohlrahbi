@@ -214,7 +214,7 @@ def log_pruefi_not_found(pruefi):
 # pylint: disable=too-many-branches
 def get_all_conditions_from_doc(
     document: Document, edifact_format: EdifactFormat
-) -> Tuple[Optional[AhbPackageTable], Optional[AhbConditions]]:
+) -> Tuple[Optional[AhbPackageTable], AhbConditions]:
     """
     Go through a given document and grasp all conditions and package tables. for a given format
     """
@@ -298,7 +298,7 @@ def is_item_package_heading(item: Paragraph | Table | None, style_name: str, edi
     return isinstance(item, Paragraph) and (
         (
             (style_name == "Heading 1")
-            and f"Übersicht der Pakete in der" in item.text
+            and "Übersicht der Pakete in der" in item.text
             and f"{edifact_format.name}" in item.text
         )
         or (((style_name == "Heading 2") and f"Übersicht der Pakete in der {edifact_format.name}" in item.text))

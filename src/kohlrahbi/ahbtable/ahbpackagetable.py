@@ -6,7 +6,6 @@ import json
 import re
 from pathlib import Path
 
-import attrs
 import pandas as pd
 from docx.table import Table as DocxTable  # type: ignore[import-untyped]
 from maus.edifact import EdifactFormat
@@ -23,7 +22,7 @@ class AhbPackageTable(BaseModel):
     but in a machine readable format.
     """
 
-    table: pd.DataFrame = None
+    table: pd.DataFrame = pd.DataFrame()
     package_dict: dict[EdifactFormat, dict[str, str]] = {}
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -58,17 +57,17 @@ class AhbPackageTable(BaseModel):
                     conditions_text,
                     re.DOTALL,
                 )
-                assert all([match[1] is not None for match in matches])
                 for match in matches:
                     # make text prettier:
                     text = match[1].strip()
                     text = re.sub(r"\s+", " ", text)
 
                     # check whether condition was already collected:
-                    condition_key_not_collected_yet = conditions_dict[edifact_format].get(match[0]) is None
-                    if not condition_key_not_collected_yet:
-                        key_exits_but_shorter_text = len(text) > len(conditions_dict[edifact_format].get(match[0]))
-                    if condition_key_not_collected_yet or key_exits_but_shorter_text:
+                    existing_text = conditions_dict[edifact_format].get(match[0])
+                    is_condition_key_collected_yet = existing_text is not None
+                    if is_condition_key_collected_yet:
+                        key_exits_but_shorter_text = len(text) > len(edifact_format)
+                    if not is_condition_key_collected_yet or key_exits_but_shorter_text:
                         conditions_dict[edifact_format][match[0]] = text
 
         logger.info("The package conditions for %s were collected.", edifact_format)
@@ -81,7 +80,7 @@ class AhbPackageTable(BaseModel):
         df = self.table
         there_are_packages = (df["Paket"] != "").any()
         if there_are_packages:
-            for index, row in df.iterrows():
+            for _, row in df.iterrows():
                 package = row["Paket"]
                 # Use re.search to find the first match
                 match = re.search(r"\[(\d+)P\]", package)
@@ -92,12 +91,13 @@ class AhbPackageTable(BaseModel):
                 if package != "1":
                     package_conditions = row["Paketvoraussetzung(en)"].strip()
                     # check whether package was already collected:
-                    package_key_not_collected_yet = package_dict[edifact_format].get(package) is None
-                    if not package_key_not_collected_yet:
+                    existing_text = package_dict[edifact_format].get(package)
+                    is_package_key_collected_yet = existing_text is not None
+                    if is_package_key_collected_yet:
                         key_exits_but_shorter_text = len(package_conditions) > len(
-                            package_dict[edifact_format].get(package)
-                        )
-                    if package_key_not_collected_yet or key_exits_but_shorter_text:
+                            existing_text  # type: ignore[arg-type]
+                        )  # type: ignore[arg-type]
+                    if not is_package_key_collected_yet or key_exits_but_shorter_text:
                         package_dict[edifact_format][package] = package_conditions
 
         logger.info("Packages for %s were collected.", edifact_format)
@@ -128,14 +128,12 @@ class AhbPackageTable(BaseModel):
         The file will be stored in the directory:
             'output_directory_path/<edifact_format>/conditions.json'
         """
-        for edifact_format in self.package_dict.keys():
+        for edifact_format, format_pkg_dict in self.package_dict.items():
             package_json_output_directory_path = output_directory_path / str(edifact_format)
             package_json_output_directory_path.mkdir(parents=True, exist_ok=True)
             file_path = package_json_output_directory_path / "packages.json"
             # resort  PackageKeyConditionTextMappings for output
-            sorted_package_dict = {
-                k: self.package_dict[edifact_format][k] for k in sorted(self.package_dict[edifact_format], key=int)
-            }
+            sorted_package_dict = {k: format_pkg_dict[k] for k in sorted(format_pkg_dict, key=int)}
             array = [
                 {"package_key": i + "P", "package_expression": sorted_package_dict[i], "edifact_format": edifact_format}
                 for i in sorted_package_dict
