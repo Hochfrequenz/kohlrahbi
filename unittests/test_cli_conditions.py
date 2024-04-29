@@ -53,13 +53,10 @@ class TestCliConditions:
 
         for edifact_format in edifact_formats:
             # asssert that all files which should be generated do really exist
-            assert Path(
-                actual_output_dir, Path(str(edifact_format)) / Path("conditions.json")
-            ).exists(), "No matching file found"
-            assert (
-                Path(expected_output_dir, Path(str(edifact_format)) / Path("packages.json")).exists()
-                == Path(actual_output_dir, Path(str(edifact_format)) / Path("packages.json")).exists()
-            )
+            assert (actual_output_dir / str(edifact_format) / "conditions.json").exists(), "No matching file found"
+            assert (expected_output_dir / str(edifact_format) / "packages.json").exists() == (
+                actual_output_dir / str(edifact_format) / "packages.json"
+            ).exists()
             # compare the generated files with the expected files
             with open(
                 expected_output_dir / Path(str(edifact_format)) / Path("conditions.json"), "r", encoding="utf-8"

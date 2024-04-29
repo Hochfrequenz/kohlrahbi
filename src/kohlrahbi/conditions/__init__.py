@@ -54,5 +54,5 @@ def scrape_conditions(
                 collected_conditions.include_condition_dict(packages.provide_conditions(edifact_format))
                 collected_packages.include_package_dict(packages.package_dict)
             collected_conditions.include_condition_dict(cond_table.conditions_dict)
-    collected_conditions.dump_as_json(output_path / Path(str(format_version)))
-    collected_packages.dump_as_json(output_path / Path(str(format_version)))
+    collected_conditions.dump_as_json(output_path)
+    collected_packages.dump_as_json(output_path)
