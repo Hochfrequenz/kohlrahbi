@@ -82,15 +82,15 @@ class TestReadFunctions:
                 collected_conditions.include_condition_dict(cond_table.conditions_dict)
                 collected_packages.include_package_dict(packages.package_dict)
 
-                expected_output_dict_path = expected_output_dir / Path(str(edifact_format))
-                with open(expected_output_dict_path / Path("conditions.json"), "r", encoding="utf-8") as file:
-                    expected_cond_dict = json.load(file)
-                expected_cond_dict = {item["condition_key"]: item["condition_text"] for item in expected_cond_dict}
-                assert collected_conditions.conditions_dict[edifact_format] == expected_cond_dict
-                if edifact_format in collected_packages.package_dict.keys():
-                    with open(expected_output_dict_path / Path("packages.json"), "r", encoding="utf-8") as file:
-                        expected_package_dict = json.load(file)
-                    expected_package_dict = {
-                        item["package_key"][:-1]: item["package_expression"] for item in expected_package_dict
-                    }
-                    assert collected_packages.package_dict[edifact_format] == expected_package_dict
+            expected_output_dict_path = expected_output_dir / Path(str(edifact_format))
+            with open(expected_output_dict_path / Path("conditions.json"), "r", encoding="utf-8") as file:
+                expected_cond_dict = json.load(file)
+            expected_cond_dict = {item["condition_key"]: item["condition_text"] for item in expected_cond_dict}
+            assert collected_conditions.conditions_dict[edifact_format] == expected_cond_dict
+            if edifact_format in collected_packages.package_dict.keys():
+                with open(expected_output_dict_path / Path("packages.json"), "r", encoding="utf-8") as file:
+                    expected_package_dict = json.load(file)
+                expected_package_dict = {
+                    item["package_key"][:-1]: item["package_expression"] for item in expected_package_dict
+                }
+                assert collected_packages.package_dict[edifact_format] == expected_package_dict

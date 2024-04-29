@@ -43,24 +43,6 @@ def load_pruefi_docx_file_map_from_file(path_to_pruefi_docx_file_map_file: Path)
     return pruefi_docx_file_map
 
 
-def get_or_cache_document(ahb_file_path: Path, path_to_document_mapping: dict) -> Document:
-    """
-    Get the document from the cache or read it from the file system.
-    """
-    if ahb_file_path not in path_to_document_mapping:
-        if not ahb_file_path.exists():
-            logger.warning("The file '%s' does not exist", ahb_file_path)
-            raise FileNotFoundError(f"The file '{ahb_file_path}' does not exist")
-        try:
-            doc = docx.Document(str(ahb_file_path))
-            path_to_document_mapping[ahb_file_path] = doc
-            logger.debug("Saved %s document in cache", ahb_file_path)
-        except IOError as ioe:
-            logger.exception("There was an error opening the file '%s'", ahb_file_path, exc_info=True)
-            raise click.Abort() from ioe
-    return path_to_document_mapping[ahb_file_path]
-
-
 def process_ahb_table(
     ahb_table: AhbTable,
     pruefi: str,
