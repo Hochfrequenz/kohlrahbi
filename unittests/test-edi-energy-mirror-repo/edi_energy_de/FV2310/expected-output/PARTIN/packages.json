@@ -1,0 +1,12 @@
+[
+  {
+    "package_key": "2P",
+    "package_expression": "[11] ⊻ [12] ⊻ [13] ⊻ [27] ⊻ [28] ⊻ [29] ⊻ [30]",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "package_key": "3P",
+    "package_expression": "[14] ⊻ [15] ⊻ [16] ⊻ [31] ⊻ [32] ⊻ [33] ⊻ [34]",
+    "edifact_format": "PARTIN"
+  }
+]

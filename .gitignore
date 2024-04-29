@@ -178,6 +178,7 @@ src/kohlrahbi/cache/
 #however include
 !unittests/test-edi-energy-mirror-repo/edi_energy_de/*/expected-output/**/*.xlsx
 !unittests/test-edi-energy-mirror-repo/edi_energy_de/*/expected-output/**/*.csv
+!unittests/test-edi-energy-mirror-repo/edi_energy_de/*/expected-output/**/*.json
 
 # Word temporary
 ~$*.doc*

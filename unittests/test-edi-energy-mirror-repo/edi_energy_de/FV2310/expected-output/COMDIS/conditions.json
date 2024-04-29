@@ -1,0 +1,137 @@
+[
+  {
+    "condition_key": "1",
+    "condition_text": "wenn SG3 AJT+Z61+S_0109 oder SG3 AJT+Z62+S_0109 vorhanden.",
+    "edifact_format": "COMDIS"
+  },
+  {
+    "condition_key": "2",
+    "condition_text": "wenn SG3 AJT+Z58+S_0109 oder SG3 AJT+Z59+S_0109 oder SG3 AJT+Z60+S_0109 vorhanden.",
+    "edifact_format": "COMDIS"
+  },
+  {
+    "condition_key": "3",
+    "condition_text": "Nur MP-ID aus Sparte Strom",
+    "edifact_format": "COMDIS"
+  },
+  {
+    "condition_key": "4",
+    "condition_text": "wenn SG3 AJT+Z58/Z59/ Z60/Z61/Z62+S_0109 vorhanden",
+    "edifact_format": "COMDIS"
+  },
+  {
+    "condition_key": "5",
+    "condition_text": "wenn SG3 AJT+A01/A02/ A03/A04/A06/A07/A09/A12/ A15+E_0504 vorhanden",
+    "edifact_format": "COMDIS"
+  },
+  {
+    "condition_key": "6",
+    "condition_text": "wenn SG3 AJT+A07+E_0504 vorhanden",
+    "edifact_format": "COMDIS"
+  },
+  {
+    "condition_key": "7",
+    "condition_text": "wenn SG3 AJT+A02+E_0504 vorhanden",
+    "edifact_format": "COMDIS"
+  },
+  {
+    "condition_key": "8",
+    "condition_text": "wenn SG3 AJT+A01/A04/ A06/A09/A12+E_0504 vorhanden",
+    "edifact_format": "COMDIS"
+  },
+  {
+    "condition_key": "9",
+    "condition_text": "wenn SG3 AJT+A05/A10/ A11/A14+E_0504 vorhanden",
+    "edifact_format": "COMDIS"
+  },
+  {
+    "condition_key": "10",
+    "condition_text": "wenn SG3 AJT+A03+E_0504 vorhanden",
+    "edifact_format": "COMDIS"
+  },
+  {
+    "condition_key": "11",
+    "condition_text": "wenn SG3 AJT+A15+E_0504 vorhanden",
+    "edifact_format": "COMDIS"
+  },
+  {
+    "condition_key": "12",
+    "condition_text": "wenn SG3 AJT+A99+S_0109 vorhanden",
+    "edifact_format": "COMDIS"
+  },
+  {
+    "condition_key": "13",
+    "condition_text": "wenn SG3 AJT+A07+E_1008 vorhanden",
+    "edifact_format": "COMDIS"
+  },
+  {
+    "condition_key": "14",
+    "condition_text": "wenn SG3 AJT+A02+E_1008 vorhanden",
+    "edifact_format": "COMDIS"
+  },
+  {
+    "condition_key": "15",
+    "condition_text": "wenn SG3 AJT+A01/A04/A06/A09+E_1008 vorhanden",
+    "edifact_format": "COMDIS"
+  },
+  {
+    "condition_key": "16",
+    "condition_text": "wenn SG3 AJT+A03+E_1008 vorhanden",
+    "edifact_format": "COMDIS"
+  },
+  {
+    "condition_key": "17",
+    "condition_text": "wenn SG3 AJT+A15+E_1008 vorhanden",
+    "edifact_format": "COMDIS"
+  },
+  {
+    "condition_key": "18",
+    "condition_text": "wenn SG3 AJT+A05/ A10/A11+E_1008 vorhanden",
+    "edifact_format": "COMDIS"
+  },
+  {
+    "condition_key": "19",
+    "condition_text": "wenn SG3 AJT+A99+E_0265/E_0516/ E_0520 vorhanden",
+    "edifact_format": "COMDIS"
+  },
+  {
+    "condition_key": "20",
+    "condition_text": "wenn SG3 AJT+A01/ A02/A03/A04/A06/A07/A09/ A15+E_1008 vorhanden",
+    "edifact_format": "COMDIS"
+  },
+  {
+    "condition_key": "492",
+    "condition_text": "Wenn MP-ID in NAD+MR (Nachrichtenempfänger) aus Sparte Strom",
+    "edifact_format": "COMDIS"
+  },
+  {
+    "condition_key": "493",
+    "condition_text": "Wenn MP-ID in NAD+MR (Nachrichtenempfänger) aus Sparte Gas",
+    "edifact_format": "COMDIS"
+  },
+  {
+    "condition_key": "505",
+    "condition_text": "Hinweis: BGM DE1004 aus der vorher per REMADV abgelehnten INVOIC-Nachricht",
+    "edifact_format": "COMDIS"
+  },
+  {
+    "condition_key": "506",
+    "condition_text": "Hinweis: BGM DE1004 aus der vorher per IFTSTA abgelehnten MSCONS- Nachricht",
+    "edifact_format": "COMDIS"
+  },
+  {
+    "condition_key": "507",
+    "condition_text": "Hinweis: Der Code 270 ist nur zu nutzen, wenn ein Lieferschein, der vor dem 1. 4.2021 erstellt wurde, storniert wird.",
+    "edifact_format": "COMDIS"
+  },
+  {
+    "condition_key": "930",
+    "condition_text": "Format: max. 2 Nachkommastellen",
+    "edifact_format": "COMDIS"
+  },
+  {
+    "condition_key": "931",
+    "condition_text": "Format: ZZZ = +00",
+    "edifact_format": "COMDIS"
+  }
+]

@@ -1,0 +1,92 @@
+[
+  {
+    "condition_key": "1",
+    "condition_text": "Wenn IMD+Z03 vorhanden",
+    "edifact_format": "ORDERS"
+  },
+  {
+    "condition_key": "6",
+    "condition_text": "Wenn MP-ID in SG2 NAD+MS mit Rolle LF vorhanden",
+    "edifact_format": "ORDERS"
+  },
+  {
+    "condition_key": "26",
+    "condition_text": "Wenn MP-ID in SG2 NAD+MS mit Rolle ÜNB vorhanden",
+    "edifact_format": "ORDERS"
+  },
+  {
+    "condition_key": "33",
+    "condition_text": "Wenn IMD+Z01 vorhanden",
+    "edifact_format": "ORDERS"
+  },
+  {
+    "condition_key": "34",
+    "condition_text": "Wenn IMD+Z02 vorhanden",
+    "edifact_format": "ORDERS"
+  },
+  {
+    "condition_key": "36",
+    "condition_text": "Wenn MP-ID in SG2 NAD+MR mit Rolle NB nicht vorhanden",
+    "edifact_format": "ORDERS"
+  },
+  {
+    "condition_key": "61",
+    "condition_text": "MP-ID nur aus Sparte Strom",
+    "edifact_format": "ORDERS"
+  },
+  {
+    "condition_key": "494",
+    "condition_text": "Das hier genannte Datum muss der Zeitpunkt sein, zu dem das Dokument erstellt wurde, oder ein Zeitpunkt, der davor liegt.",
+    "edifact_format": "ORDERS"
+  },
+  {
+    "condition_key": "500",
+    "condition_text": "Hinweis: Zählpunkt der BAS",
+    "edifact_format": "ORDERS"
+  },
+  {
+    "condition_key": "501",
+    "condition_text": "Hinweis: Zählpunkt der DZR",
+    "edifact_format": "ORDERS"
+  },
+  {
+    "condition_key": "517",
+    "condition_text": "Hinweis: Zählpunkt der LF- AASZR",
+    "edifact_format": "ORDERS"
+  },
+  {
+    "condition_key": "525",
+    "condition_text": "Hinweis: Wert aus BGM DE1004 der MSCONS",
+    "edifact_format": "ORDERS"
+  },
+  {
+    "condition_key": "527",
+    "condition_text": "Hinweis: Zählpunkt der BG-SZR (Kategorie B)",
+    "edifact_format": "ORDERS"
+  },
+  {
+    "condition_key": "903",
+    "condition_text": "Format: Möglicher Wert: 1",
+    "edifact_format": "ORDERS"
+  },
+  {
+    "condition_key": "922",
+    "condition_text": "Format: TR-ID",
+    "edifact_format": "ORDERS"
+  },
+  {
+    "condition_key": "931",
+    "condition_text": "Format: ZZZ = +00",
+    "edifact_format": "ORDERS"
+  },
+  {
+    "condition_key": "951",
+    "condition_text": "Format: Zählpunktbezeichnu ng",
+    "edifact_format": "ORDERS"
+  },
+  {
+    "condition_key": "2050",
+    "condition_text": "Pro Nachricht ist die SG29 genau einmal anzugeben",
+    "edifact_format": "ORDERS"
+  }
+]
