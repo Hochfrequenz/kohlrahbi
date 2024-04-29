@@ -9,7 +9,7 @@ from unittests import path_to_test_files_fv2310
 
 
 class TestAhbConditions:
-    def test_dump_as_json(self):
+    def test_dump_as_json(self, tmp_path):
         test_condition_dict = AhbConditions(
             conditions_dict={
                 "PARTIN": {
@@ -33,7 +33,7 @@ class TestAhbConditions:
             ],
         }
 
-        actual_output_dir = path_to_test_files_fv2310 / Path("actual-output/temp")
+        actual_output_dir = tmp_path / Path("actual-output/temp")
 
         test_condition_dict.dump_as_json(actual_output_dir)
 
@@ -42,7 +42,6 @@ class TestAhbConditions:
             with open(actual_output_dir / edifact_format / "conditions.json", "r", encoding="utf-8") as file:
                 actual_package_dict = json.load(file)
                 assert actual_package_dict == expected_condition_dict[edifact_format]
-        shutil.rmtree(path_to_test_files_fv2310 / "actual-output" / "temp")
 
     @pytest.mark.parametrize(
         "dict1, dict2, expected",
