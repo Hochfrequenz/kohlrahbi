@@ -143,6 +143,13 @@ To extract all conditions for each format of a specific format version, you can 
 ```bash
 kohlrahbi conditions --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --format-version FV2310
 ```
+This will provide you with:
+* all conditions
+* all packages
+
+found in all AHBs (including the condition texts from package tables) within the specified folder with the .docx files.
+The output will be saved for each Edifact format separately as `conditions.json` and `packages.json` in the specified output path.
+Please note that the information regarding the conditions collected here may more comprehensive compared to the information collected for the AHBs above. This is because `conditions` uses a different routine than `ahb`.
 
 ### Extract change history
 

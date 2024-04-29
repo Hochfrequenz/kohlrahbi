@@ -16,7 +16,6 @@ from unittests import path_to_test_edi_energy_mirror_repo, path_to_test_files_fv
 runner: CliRunner = CliRunner()
 
 
-# todo: all
 class TestCliConditions:
     """
     Test the CLI tool conditions.
