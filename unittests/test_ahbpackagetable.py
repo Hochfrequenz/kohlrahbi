@@ -1,4 +1,5 @@
 import json
+import shutil
 from pathlib import Path
 
 import pytest
@@ -41,6 +42,7 @@ class TestAhbPackageTable:
             with open(actual_output_dir / edifact_format / "packages.json", "r", encoding="utf-8") as file:
                 actual_package_dict = json.load(file)
                 assert actual_package_dict == expected_package_dict[edifact_format]
+        shutil.rmtree(path_to_test_files_fv2310 / "actual-output" / "temp")
 
     @pytest.mark.parametrize(
         "dict1, dict2, expected",
