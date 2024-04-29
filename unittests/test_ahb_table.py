@@ -5,6 +5,7 @@ import pytest  # type:ignore[import]
 
 from kohlrahbi.ahbtable.ahbtable import AhbTable
 from kohlrahbi.unfoldedahb import UnfoldedAhb
+from unittests import path_to_test_files_fv2310
 
 
 class TestAhbTable:
@@ -627,3 +628,36 @@ class TestAhbTable:
         # and false if not.
 
         assert actual_ahb_table.table.equals(expected_ahb_table.table)
+
+    def test_to_csv(self):
+        """
+        test the to_csv
+        """
+        ahb_table_dataframe = pd.DataFrame(
+            {
+                "Segment Gruppe": ["SG8", "Referenz auf die ID einer", "Messlokation", "SG8"],
+                "Segment": ["SEQ", "", "", ""],
+                "Datenelement": ["1229", "", "", ""],
+                "Codes und Qualifier": ["Z50", "", "", ""],
+                "Beschreibung": ["Messdatenregistriergerätedaten", "", "", ""],
+                "11042": ["", "", "", ""],
+                "11043": ["X", "", "", ""],
+                "11044": ["", "", "", ""],
+                "Bedingung": ["A", "B", "C", "D"],
+            }
+        )
+
+        ahb_table = AhbTable(table=ahb_table_dataframe)
+
+        ahb_table.sanitize()
+
+        ahb_table.to_csv("11042", path_to_test_files_fv2310 / "actual-output" / "temp")
+
+        assert (path_to_test_files_fv2310 / "actual-output" / "temp" / "csv" / "UTILMD" / "11042.csv").exists()
+
+        with open(
+            path_to_test_files_fv2310 / "actual-output" / "temp" / "csv" / "UTILMD" / "11042.csv", "r", encoding="utf-8"
+        ) as file:
+            actual_csv = file.read()
+        expected_csv = ",Segment Gruppe,Segment,Datenelement,Codes und Qualifier,Beschreibung,11042,Bedingung\n0,SG8,SEQ,1229,Z50,Messdatenregistriergerätedaten,,A\n1,Referenz auf die ID einer,,,,,,B\n2,Messlokation,,,,,,C\n3,SG8,,,,,,D\n"
+        assert actual_csv == expected_csv
