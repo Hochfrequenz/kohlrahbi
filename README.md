@@ -115,25 +115,25 @@ kohlrahbi --help
 To extract the all AHB tables for each pruefi of a specific format version, you can run the following command.
 
 ```bash
-kohlrahbi ahb --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --file-type csv --format-version FV2310
+kohlrahbi ahb --edi-energy-mirror-path ../edi_energy_mirror/ --output-path ./output/ --file-type csv --format-version FV2310
 ```
 
 To extract the AHB tables for a specific pruefi of a specific format version, you can run the following command.
 
 ```bash
-kohlrahbi ahb --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --file-type csv --pruefis 13002 --format-version FV2310
+kohlrahbi ahb -eemp ../edi_energy_mirror/ --output-path ./output/ --file-type csv --pruefis 13002 --format-version FV2310
 ```
 
 You can also provide multiple pruefis.
 
 ```bash
-kohlrahbi ahb --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --file-type csv --pruefis 13002 --pruefis 13003 --pruefis 13005 --format-version FV2310
+kohlrahbi ahb -eemp ../edi_energy_mirror/ --output-path ./output/ --file-type csv --pruefis 13002 --pruefis 13003 --pruefis 13005 --format-version FV2310
 ```
 
 And you can also provide multiple file types.
 
 ```bash
-kohlrahbi ahb --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --file-type csv --file-type xlsx --file-type flatahb --pruefis 13002 --format-version FV2310
+kohlrahbi ahb -eemp ../edi_energy_mirror/ --output-path ./output/ --file-type csv --file-type xlsx --file-type flatahb --pruefis 13002 --format-version FV2310
 ```
 
 ### Extract all conditions
@@ -141,7 +141,7 @@ kohlrahbi ahb --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./o
 To extract all conditions for each format of a specific format version, you can run the following command.
 
 ```bash
-kohlrahbi conditions --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --format-version FV2310
+kohlrahbi conditions -eemp ../edi_energy_mirror/ --output-path ./output/ --format-version FV2310
 ```
 This will provide you with:
 * all conditions
@@ -154,7 +154,7 @@ Please note that the information regarding the conditions collected here may mor
 ### Extract change history
 
 ```bash
-kohlrahbi changehistory --input-path ../edi_energy_mirror/edi_energy_de/ --output-path ./output/ --format-version FV2310
+kohlrahbi changehistory -eemp ../edi_energy_mirror/ --output-path ./output/ --format-version FV2310
 ```
 
 ## `.docx` Data Sources
