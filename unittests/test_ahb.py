@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+from freezegun import freeze_time
 
 from kohlrahbi.ahb import (
     extract_pruefis_from_docx,
@@ -62,6 +63,7 @@ class TestAhb:
             get_ahb_documents_path(path_to_test_edi_energy_mirror_repo, "FV2210")
         assert str(exc_info.value) == f"The specified path {expected_path.absolute()} does not exist."
 
+    @freeze_time("2024-04-29")
     def test_save_pruefi_map_to_toml(self):
         """
         test save_pruefi_map_to_toml.
