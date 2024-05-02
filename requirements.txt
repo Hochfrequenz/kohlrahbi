@@ -16,7 +16,7 @@ et-xmlfile==1.1.0
     # via openpyxl
 lxml==5.2.1
     # via python-docx
-marshmallow==3.21.1
+marshmallow==3.21.2
     # via maus
 maus==0.4.2
     # via kohlrahbi (pyproject.toml)
