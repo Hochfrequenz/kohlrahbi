@@ -30,9 +30,9 @@ packaging==24.0
     # via marshmallow
 pandas==2.2.2
     # via kohlrahbi (pyproject.toml)
-pydantic==2.7.0
+pydantic==2.7.1
     # via kohlrahbi (pyproject.toml)
-pydantic-core==2.18.1
+pydantic-core==2.18.2
     # via pydantic
 python-dateutil==2.9.0.post0
     # via pandas
