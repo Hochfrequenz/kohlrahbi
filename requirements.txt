@@ -44,7 +44,7 @@ pytz==2024.1
     #   pandas
 six==1.16.0
     # via python-dateutil
-tomlkit==0.12.4
+tomlkit==0.12.5
     # via kohlrahbi (pyproject.toml)
 typing-extensions==4.11.0
     # via
