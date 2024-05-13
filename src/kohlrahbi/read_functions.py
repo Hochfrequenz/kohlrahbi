@@ -2,6 +2,7 @@
 A collection of functions to get information from AHB tables.
 """
 
+import re
 from typing import Generator, Optional, Tuple, Union
 
 from docx.document import Document  # type:ignore[import]
@@ -303,3 +304,30 @@ def is_item_package_heading(item: Paragraph | Table | None, style_name: str, edi
         )
         or (((style_name == "Heading 2") and f"Übersicht der Pakete in der {edifact_format.name}" in item.text))
     )
+
+
+def parse_conditons_from_string(
+    conditions_text: str, edifact_format: EdifactFormat, conditions_dict: dict[EdifactFormat, dict[str, str]]
+) -> dict[EdifactFormat, dict[str, str]]:
+    """
+    Takes string with some conditions and sorts it into a dict.
+    """
+    # Split the input into parts enclosed in square brackets and other parts
+    matches = re.findall(
+        r"\[(\d+)](.*?)(?=\[\d+]|$)",
+        conditions_text,
+        re.DOTALL,
+    )
+    for match in matches:
+        # make text prettier:
+        text = match[1].strip()
+        text = re.sub(r"\s+", " ", text)
+
+        # check whether condition was already collected:
+        existing_text = conditions_dict[edifact_format].get(match[0])
+        is_condition_key_collected_yet = existing_text is not None
+        if is_condition_key_collected_yet:
+            key_exits_but_shorter_text = len(text) > len(edifact_format)
+        if not is_condition_key_collected_yet or key_exits_but_shorter_text:
+            conditions_dict[edifact_format][match[0]] = text
+    return conditions_dict

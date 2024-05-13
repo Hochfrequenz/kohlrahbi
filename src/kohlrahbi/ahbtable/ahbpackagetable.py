@@ -12,6 +12,7 @@ from maus.edifact import EdifactFormat
 from pydantic import BaseModel, ConfigDict
 
 from kohlrahbi.logger import logger
+from kohlrahbi.read_functions import parse_conditons_from_string
 
 
 class AhbPackageTable(BaseModel):
@@ -45,30 +46,10 @@ class AhbPackageTable(BaseModel):
     def provide_conditions(self, edifact_format: EdifactFormat) -> dict[EdifactFormat, dict[str, str]]:
         """collect conditions from package table and store them in conditions dict."""
         conditions_dict: dict[EdifactFormat, dict[str, str]] = {edifact_format: {}}
-
-        df = self.table
-        there_are_conditions = (df["Bedingungen"] != "").any()
+        there_are_conditions = (self.table["Bedingungen"] != "").any()
         if there_are_conditions:
-            for conditions_text in df["Bedingungen"][df["Bedingungen"] != ""]:
-                # Split the input into parts enclosed in square brackets and other parts
-                matches = re.findall(
-                    r"\[(\d+)](.*?)(?=\[\d+]|$)",
-                    conditions_text,
-                    re.DOTALL,
-                )
-                for match in matches:
-                    # make text prettier:
-                    text = match[1].strip()
-                    text = re.sub(r"\s+", " ", text)
-
-                    # check whether condition was already collected:
-                    existing_text = conditions_dict[edifact_format].get(match[0])
-                    is_condition_key_collected_yet = existing_text is not None
-                    if is_condition_key_collected_yet:
-                        key_exits_but_shorter_text = len(text) > len(edifact_format)
-                    if not is_condition_key_collected_yet or key_exits_but_shorter_text:
-                        conditions_dict[edifact_format][match[0]] = text
-
+            for conditions_text in self.table["Bedingungen"][self.table["Bedingungen"] != ""]:
+                conditions_dict = parse_conditons_from_string(conditions_text, edifact_format, conditions_dict)
         logger.info("The package conditions for %s were collected.", edifact_format)
         return conditions_dict
 
