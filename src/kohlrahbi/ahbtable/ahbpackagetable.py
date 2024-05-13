@@ -18,8 +18,8 @@ from kohlrahbi.logger import logger
 class AhbPackageTable(BaseModel):
     """
     This class contains the AHB Package table as you see it in the beginning AHB documents,
-    but in a machine readable format. Caution: if two PackageTables objects are combined
-    so far only the package_dict field is updated.
+    but in a machine readable format.
+    Caution: if two PackageTables objects are combined so far only the package_dict field is updated.
     """
 
     table: pd.DataFrame = pd.DataFrame()
