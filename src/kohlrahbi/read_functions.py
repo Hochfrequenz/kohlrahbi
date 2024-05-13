@@ -2,7 +2,6 @@
 A collection of functions to get information from AHB tables.
 """
 
-import re
 from typing import Generator, Optional, Tuple, Union
 
 from docx.document import Document  # type:ignore[import]

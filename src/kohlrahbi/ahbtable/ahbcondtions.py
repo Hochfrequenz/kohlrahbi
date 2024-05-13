@@ -117,8 +117,8 @@ def parse_conditions_from_string(
         # check whether condition was already collected:
         existing_text = conditions_dict[edifact_format].get(match[0])
         is_condition_key_collected_yet = existing_text is not None
-        if is_condition_key_collected_yet:
-            key_exits_but_shorter_text = len(text) > len(edifact_format)
+        if is_condition_key_collected_yet and existing_text is not None:
+            key_exits_but_shorter_text = len(text) > len(existing_text)
         if not is_condition_key_collected_yet or key_exits_but_shorter_text:
             conditions_dict[edifact_format][match[0]] = text
     return conditions_dict
