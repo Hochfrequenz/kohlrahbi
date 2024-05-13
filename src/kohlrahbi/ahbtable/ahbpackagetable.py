@@ -13,8 +13,6 @@ from pydantic import BaseModel, ConfigDict
 
 from kohlrahbi.logger import logger
 
-# pylint: disable=duplicate-code
-
 
 class AhbPackageTable(BaseModel):
     """
