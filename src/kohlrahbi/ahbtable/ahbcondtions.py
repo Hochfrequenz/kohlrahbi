@@ -98,7 +98,7 @@ class AhbConditions(BaseModel):
             condition_json_output_directory_path = output_directory_path / str(edifact_format)
             condition_json_output_directory_path.mkdir(parents=True, exist_ok=True)
             file_path = condition_json_output_directory_path / "conditions.json"
-            # resort  ConditionKeyConditionTextMappings for output
+            # resort ConditionKeyConditionTextMappings for output
             sorted_condition_dict = {k: format_cond_dict[k] for k in sorted(format_cond_dict, key=int)}
             array = [
                 {"condition_key": i, "condition_text": sorted_condition_dict[i], "edifact_format": edifact_format}
