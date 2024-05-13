@@ -83,7 +83,7 @@ class AhbPackageTable(BaseModel):
         self.package_dict = package_dict
 
     def include_package_dict(self, to_add=dict[EdifactFormat, dict[str, str]] | None) -> None:
-        """ " Include a dict of conditions to the conditions_dict"""
+        """Include a dict of conditions to the conditions_dict"""
         if to_add is None:
             logger.info("Packages dict to be added is empty.")
         for edifact_format, edi_cond_dict in to_add.items():
