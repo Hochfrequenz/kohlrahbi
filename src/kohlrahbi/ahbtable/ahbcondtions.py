@@ -24,7 +24,6 @@ class AhbConditions(BaseModel):
     def from_docx_table(cls, docx_tables: list[DocxTable], edifact_format: EdifactFormat) -> "AhbConditions":
         """
         Create an AhbPackageTable object from a docx table.
-
         """
         table_data = []
         for table in docx_tables:
