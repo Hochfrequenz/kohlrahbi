@@ -111,12 +111,11 @@ class AhbPackageTable(BaseModel):
         for edifact_format, edi_cond_dict in to_add.items():
             for package_key, package_conditions in edi_cond_dict.items():
                 if edifact_format in self.package_dict:
-                    if package_key in self.package_dict[edifact_format]:
-                        if len(package_conditions) > len(
-                            self.package_dict[edifact_format][package_key]
-                        ):  # +1 to avoid simple line breaks
-                            self.package_dict[edifact_format][package_key] = package_conditions
-                    else:
+                    if (
+                        package_key in self.package_dict[edifact_format]
+                        and len(package_conditions) > len(self.package_dict[edifact_format][package_key])
+                        or package_key not in self.package_dict[edifact_format]
+                    ):
                         self.package_dict[edifact_format][package_key] = package_conditions
                 else:
                     self.package_dict[edifact_format] = {package_key: package_conditions}
