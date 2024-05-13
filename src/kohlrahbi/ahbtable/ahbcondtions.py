@@ -1,6 +1,7 @@
 """This module contains the ahbconditions class."""
 
 import json
+import re
 from pathlib import Path
 
 from docx.table import Table as DocxTable  # type: ignore[import-untyped]
@@ -8,7 +9,6 @@ from maus.edifact import EdifactFormat
 from pydantic import BaseModel, ConfigDict
 
 from kohlrahbi.logger import logger
-from kohlrahbi.read_functions import parse_conditons_from_string
 
 
 class AhbConditions(BaseModel):
@@ -49,7 +49,7 @@ class AhbConditions(BaseModel):
         conditions_dict: dict[EdifactFormat, dict[str, str]] = {edifact_format: {}}
 
         conditions_str = "".join(conditions_list)
-        conditions_dict = parse_conditons_from_string(conditions_str, edifact_format, conditions_dict)
+        conditions_dict = parse_conditions_from_string(conditions_str, edifact_format, conditions_dict)
         logger.info("The package conditions for %s were collected.", edifact_format)
         return conditions_dict
 
@@ -95,3 +95,30 @@ class AhbConditions(BaseModel):
                 edifact_format,
                 file_path,
             )
+
+
+def parse_conditions_from_string(
+    conditions_text: str, edifact_format: EdifactFormat, conditions_dict: dict[EdifactFormat, dict[str, str]]
+) -> dict[EdifactFormat, dict[str, str]]:
+    """
+    Takes string with some conditions and sorts it into a dict.
+    """
+    # Split the input into parts enclosed in square brackets and other parts
+    matches = re.findall(
+        r"\[(\d+)](.*?)(?=\[\d+]|$)",
+        conditions_text,
+        re.DOTALL,
+    )
+    for match in matches:
+        # make text prettier:
+        text = match[1].strip()
+        text = re.sub(r"\s+", " ", text)
+
+        # check whether condition was already collected:
+        existing_text = conditions_dict[edifact_format].get(match[0])
+        is_condition_key_collected_yet = existing_text is not None
+        if is_condition_key_collected_yet:
+            key_exits_but_shorter_text = len(text) > len(edifact_format)
+        if not is_condition_key_collected_yet or key_exits_but_shorter_text:
+            conditions_dict[edifact_format][match[0]] = text
+    return conditions_dict

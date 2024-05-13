@@ -11,8 +11,8 @@ from docx.table import Table as DocxTable  # type: ignore[import-untyped]
 from maus.edifact import EdifactFormat
 from pydantic import BaseModel, ConfigDict
 
+from kohlrahbi.ahbtable.ahbcondtions import parse_conditions_from_string
 from kohlrahbi.logger import logger
-from kohlrahbi.read_functions import parse_conditons_from_string
 
 
 class AhbPackageTable(BaseModel):
@@ -49,7 +49,7 @@ class AhbPackageTable(BaseModel):
         there_are_conditions = (self.table["Bedingungen"] != "").any()
         if there_are_conditions:
             for conditions_text in self.table["Bedingungen"][self.table["Bedingungen"] != ""]:
-                conditions_dict = parse_conditons_from_string(conditions_text, edifact_format, conditions_dict)
+                conditions_dict = parse_conditions_from_string(conditions_text, edifact_format, conditions_dict)
         logger.info("The package conditions for %s were collected.", edifact_format)
         return conditions_dict
 
