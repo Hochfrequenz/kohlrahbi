@@ -57,10 +57,9 @@ class AhbPackageTable(BaseModel):
         """collect conditions from package table and store them in conditions dict."""
         package_dict: dict[EdifactFormat, dict[str, str]] = {edifact_format: {}}
 
-        df = self.table
-        there_are_packages = (df["Paket"] != "").any()
+        there_are_packages = (self.table["Paket"] != "").any()
         if there_are_packages:
-            for _, row in df.iterrows():
+            for _, row in self.table.iterrows():
                 package = row["Paket"]
                 # Use re.search to find the first match
                 match = re.search(r"\[(\d+)P\]", package)
