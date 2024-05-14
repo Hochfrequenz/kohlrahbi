@@ -20,10 +20,11 @@ def find_all_files_from_all_pruefis(pruefi_to_file_mapping: dict[str, str]) -> d
     for pruefi, filename in pruefi_to_file_mapping.items():
         if not filename:
             raise ValueError(f"No file provided for pruefi {pruefi}")
-        if format_to_files_mapping.get(get_format_of_pruefidentifikator(pruefi)) is None:
-            format_to_files_mapping[get_format_of_pruefidentifikator(pruefi)] = [filename]
-        elif filename not in format_to_files_mapping[get_format_of_pruefidentifikator(pruefi)]:
-            format_to_files_mapping[get_format_of_pruefidentifikator(pruefi)].append(filename)
+        edifact_format = get_format_of_pruefidentifikator(pruefi)
+        if format_to_files_mapping.get(edifact_format) is None:
+            format_to_files_mapping[edifact_format] = [filename]
+        elif filename not in format_to_files_mapping[edifact_format]:
+            format_to_files_mapping[edifact_format].append(filename)
     return format_to_files_mapping
 
 
