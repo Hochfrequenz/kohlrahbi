@@ -216,7 +216,7 @@ def get_all_conditions_from_doc(
     document: Document, edifact_format: EdifactFormat
 ) -> Tuple[Optional[AhbPackageTable], AhbConditions]:
     """
-    Go through a given document and grasp all conditions and package tables. for a given format
+    Go through a given document and grasp all conditions and package tables for a given format.
     """
     package_table: AhbPackageTable
     conditions_table: AhbConditions
