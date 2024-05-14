@@ -18,9 +18,9 @@ colorlog==6.8.2
     # via kohlrahbi (pyproject.toml)
 et-xmlfile==1.1.0
     # via openpyxl
-lxml==5.2.1
+lxml==5.2.2
     # via python-docx
-marshmallow==3.21.1
+marshmallow==3.21.2
     # via maus
 maus==0.4.2
     # via kohlrahbi (pyproject.toml)
@@ -34,9 +34,9 @@ packaging==24.0
     # via marshmallow
 pandas==2.2.2
     # via kohlrahbi (pyproject.toml)
-pydantic==2.7.0
+pydantic==2.7.1
     # via kohlrahbi (pyproject.toml)
-pydantic-core==2.18.1
+pydantic-core==2.18.2
     # via pydantic
 python-dateutil==2.9.0.post0
     # via pandas
@@ -48,7 +48,7 @@ pytz==2024.1
     #   pandas
 six==1.16.0
     # via python-dateutil
-tomlkit==0.12.4
+tomlkit==0.12.5
     # via kohlrahbi (pyproject.toml)
 typing-extensions==4.11.0
     # via
