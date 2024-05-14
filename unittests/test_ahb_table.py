@@ -1,5 +1,3 @@
-import os
-import shutil
 from pathlib import Path
 
 import pandas as pd
@@ -7,7 +5,6 @@ import pytest  # type:ignore[import]
 
 from kohlrahbi.ahbtable.ahbtable import AhbTable
 from kohlrahbi.unfoldedahb import UnfoldedAhb
-from unittests import path_to_test_files_fv2310
 
 
 class TestAhbTable:
