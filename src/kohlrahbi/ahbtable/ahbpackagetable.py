@@ -18,8 +18,8 @@ from kohlrahbi.logger import logger
 class AhbPackageTable(BaseModel):
     """
     This class contains the AHB Package table as you see it in the beginning AHB documents,
-    but in a machine readable format. Caution: if two PackageTables objects are combined
-    so far only the package_dict field is updated.
+    but in a machine readable format.
+    Caution: if two PackageTables objects are combined so far only the package_dict field is updated.
     """
 
     table: pd.DataFrame = pd.DataFrame()
@@ -30,7 +30,6 @@ class AhbPackageTable(BaseModel):
     def from_docx_table(cls, docx_tables: list[DocxTable]) -> "AhbPackageTable":
         """
         Create an AhbPackageTable object from a docx table.
-
         """
         table_data = []
         for table in docx_tables:
@@ -83,7 +82,7 @@ class AhbPackageTable(BaseModel):
         self.package_dict = package_dict
 
     def include_package_dict(self, to_add=dict[EdifactFormat, dict[str, str]] | None) -> None:
-        """ " Include a dict of conditions to the conditions_dict"""
+        """Include a dict of conditions to the conditions_dict"""
         if to_add is None:
             logger.info("Packages dict to be added is empty.")
         for edifact_format, edi_cond_dict in to_add.items():
