@@ -18,6 +18,7 @@ $ python command.py --eemp /path/to/eemp --output-path /path/to/output --format-
 """
 
 # pylint: disable=duplicate-code
+# duplicate-code warning is disabled because the code cli structure of 'ahb' and 'conditions' are intentionally similar.
 import sys
 from pathlib import Path
 
