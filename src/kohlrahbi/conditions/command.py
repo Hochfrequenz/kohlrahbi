@@ -5,7 +5,7 @@ The `conditions` function is the main entry point for the command-line interface
 It takes several options as command-line arguments and performs the necessary operations based on those options.
 
 Options:
-- `--input-path`: Specifies the path to the folder with the docx AHBs.
+- `--edi-energy-mirror-path`: Specifies the path to the directory with an edi_energy_mirror repository structure.
 - `--output-path`: Specifies the path where the generated files will be saved.
 - `--format-version`: Specifies the format version(s) of the AHB documents.
 - `--assume-yes`: Automatically confirms all prompts.
@@ -14,7 +14,7 @@ Usage:
 To use this command-line interface, run the script and provide the necessary options as command-line arguments.
 
 Example:
-$ python command.py --input-path /path/to/input --output-path /path/to/output --format-version FV2310 --assume-yes
+$ python command.py --eemp /path/to/eemp --output-path /path/to/output --format-version FV2310 --assume-yes
 """
 
 # pylint: disable=duplicate-code
@@ -81,10 +81,15 @@ you will be asked if you want to create it.""",
     required=True,
     help="Format version(s) of the AHB documents, e.g. FV2310",
 )
+@click.option(
+    "--assume-yes",
+    "-y",
+    is_flag=True,
+    default=False,
+    help="Confirm all prompts automatically.",
+)
 def conditions(
-    edi_energy_mirror_path: Path,
-    output_path: Path,
-    format_version: EdifactFormatVersion | str,
+    edi_energy_mirror_path: Path, output_path: Path, format_version: EdifactFormatVersion | str, assume_yes: bool
 ):
     """
     Scrape AHB documents for conditions.
