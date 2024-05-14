@@ -293,7 +293,7 @@ def is_pruefi_of_edifact_format(last_pruefis: list[str], edifact_format: Edifact
 
 def is_item_package_heading(item: Paragraph | Table | None, style_name: str, edifact_format: EdifactFormat) -> bool:
     """
-    Checks if the given item is the heading of the package table.
+    Checks if the given item is the header of the package table.
     """
     return isinstance(item, Paragraph) and (
         (
