@@ -1,0 +1,242 @@
+[
+  {
+    "condition_key": "1",
+    "condition_text": "Nur MP-ID aus Sparte Strom",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "2",
+    "condition_text": "Wenn der Code im DE3207 in der \"EDI@Energy Codeliste der europäischen Ländercodes\" in der Spalte \"PLZ vorhanden\" ein \"X\" enthält",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "3",
+    "condition_text": "wenn vorhanden",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "4",
+    "condition_text": "Wenn Vorgängerversion vorhanden",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "5",
+    "condition_text": "Wenn MP-ID in SG2 NAD+MR (Nachrichtenempfänger) in der Rolle LF",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "6",
+    "condition_text": "wenn im DE3155 im demselben COM der Code EM vorhanden ist",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "7",
+    "condition_text": "wenn im DE3155 im demselben COM der Code TE / FX / AJ / AL vorhanden ist",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "8",
+    "condition_text": "wenn im DE3155 im demselben COM der Code TE / FX vorhanden ist",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "9",
+    "condition_text": "Wenn die Kommunikationsdaten vom Absender nicht mehr aktiv sind.",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "10",
+    "condition_text": "Wenn BGM DE1373 = 11 (Dokument nicht verfügbar) nicht vorhanden",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "11",
+    "condition_text": "Wenn SG4 NAD+SU (Lieferant) DE3207 mit Code „DE“ vorhanden",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "12",
+    "condition_text": "Wenn SG4 NAD+DDM (Netzbetreiber) DE3207 mit Code „DE“ vorhanden",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "13",
+    "condition_text": "Wenn SG4 NAD+DEB (Messstellenbetreiber) DE3207 mit Code „DE“ vorhanden",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "14",
+    "condition_text": "Wenn SG4 NAD+SU (Lieferant) DE3207 der Code „DE“ nicht vorhanden ist",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "15",
+    "condition_text": "Wenn SG4 NAD+DDM (Netzbetreiber) DE3207 der Code „DE“ nicht vorhanden ist",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "16",
+    "condition_text": "Wenn SG4 NAD+DEB (Messstellenbetreiber) DE3207 der Code „DE“ nicht vorhanden ist",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "17",
+    "condition_text": "Wenn MP-ID in SG2 NAD+MR (Nachrichtenempfänger) in der Rolle LF/NB/MSB",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "18",
+    "condition_text": "Wenn MP-ID in SG2 NAD+MR (Nachrichtenempfänger) in der Rolle LF/MSB",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "19",
+    "condition_text": "Wenn MP-ID in SG2 NAD+MR (Nachrichtenempfänger) in der Rolle LF/MSB/ NB/ÜNB",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "20",
+    "condition_text": "Wenn MP-ID in SG2 NAD+MR (Nachrichtenempfänger) in der Rolle LF/MSB/ÜNB",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "21",
+    "condition_text": "Wenn MP-ID in SG2 NAD+MR (Nachrichtenempfänger) in der Rolle LF/NB/ESA",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "22",
+    "condition_text": "Wenn MP-ID in SG2 NAD+MR (Nachrichtenempfänger) in der Rolle MSB",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "23",
+    "condition_text": "Wenn MP-ID in SG2 NAD+MR (Nachrichtenempfänger) in der Rolle NB/ÜNB",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "24",
+    "condition_text": "Wenn MP-ID in SG2 NAD+MR (Nachrichtenempfänger) in der Rolle NB/LF/ MSB/ESA",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "25",
+    "condition_text": "Wenn MP-ID in SG2 NAD+MR (Nachrichtenempfänger) in der Rolle NB",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "26",
+    "condition_text": "Wenn MP-ID in SG2 NAD+MR (Nachrichtenempfänger) in der Rolle NB/LF/BKV/ BIKO",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "27",
+    "condition_text": "Wenn SG4 NAD+Z31 (Übertragungsnetzbetreiber) DE3207 mit Code „DE“ vorhanden",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "28",
+    "condition_text": "Wenn SG4 NAD+Z34 (Bilanzkoordinator) DE3207 mit Code „DE“ vorhanden",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "29",
+    "condition_text": "Wenn SG4 NAD+Z35 (Bilanzkreisverantwortlicher) DE3207 mit Code „DE“ vorhanden",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "30",
+    "condition_text": "Wenn SG4 NAD+Z36 (Energieserviceanbieter) DE3207 mit Code „DE“ vorhanden",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "31",
+    "condition_text": "Wenn SG4 NAD+Z31 (Übertragungsnetzbetreiber) DE3207 mit Code „DE“ nicht vorhanden",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "32",
+    "condition_text": "Wenn SG4 NAD+Z34 (Bilanzkoordinator) DE3207 mit Code „DE“ nicht vorhanden",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "33",
+    "condition_text": "Wenn SG4 NAD+Z35 (Bilanzkreisverantwortlicher) DE3207 mit Code „DE“ nicht vorhanden",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "34",
+    "condition_text": "Wenn SG4 NAD+Z36 (Energieserviceanbieter) DE3207 mit Code „DE“ nicht vorhanden",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "35",
+    "condition_text": "Wenn MP-ID in SG2 NAD+MR (Nachrichtenempfänger) in der Rolle ÜNB",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "36",
+    "condition_text": "Wenn MP-ID in SG2 NAD+MR (Nachrichtenempfänger) in der Rolle BKV",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "494",
+    "condition_text": "Das hier genannte Datum muss der Zeitpunkt sein, zu dem das Dokument erstellt wurde, oder ein Zeitpunkt, der davor liegt.",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "500",
+    "condition_text": "Hinweis: Es kann der Firmenname eines Dienstleisters oder die identische Firmenbezeichnung aus SG4 NAD+SU / DDM / DEB / Z31 / Z34 / Z35 / Z36 eingetragen werden.",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "501",
+    "condition_text": "Hinweis: Es darf kein Name einer natürlichen Person übermittelt werden, stattdessen ist die organisatorische Einheit im Unternehmen zu nennen.",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "502",
+    "condition_text": "Hinweis: Es darf nur eine Information im DE3148 übermittelt werden",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "503",
+    "condition_text": "Hinweis: Angabe erfolgt in gesetzlicher deutscher Zeit",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "504",
+    "condition_text": "Hinweis: Es ist mindestens dieUmsatzsteuer- bzw. Steuernummer zu nennen, die in der INVOIC genutzt wird.",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "505",
+    "condition_text": "Wenn eine Vorgängerversion (RFF+ACW) angegeben ist, so muss der Wert in diesem DE1056 mindestens um 1 höher sein, als der Wert aus DE1056 der Vorgängerversion (RFF+ACW).",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "506",
+    "condition_text": "Hinweis: Das Datenelement ist so zu füllen, dass sein Inhalt den Vorgaben des USt.- Gesetzes genügt, so dass der Empfänger diese Daten in einer INVOIC nutzen kann.",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "908",
+    "condition_text": "Format: Mögliche Werte: 1 bis n",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "931",
+    "condition_text": "Format: ZZZ = +00",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "939",
+    "condition_text": "Format: Die Zeichenkette muss die Zeichen @ und . enthalten",
+    "edifact_format": "PARTIN"
+  },
+  {
+    "condition_key": "940",
+    "condition_text": "Format: Die Zeichenkette muss mit dem Zeichen + beginnen und danach dürfen nur noch Ziffern folgen",
+    "edifact_format": "PARTIN"
+  }
+]

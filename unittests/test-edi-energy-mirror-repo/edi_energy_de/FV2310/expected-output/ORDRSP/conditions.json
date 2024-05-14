@@ -1,0 +1,17 @@
+[
+  {
+    "condition_key": "30",
+    "condition_text": "MP-ID nur aus Sparte Strom",
+    "edifact_format": "ORDRSP"
+  },
+  {
+    "condition_key": "494",
+    "condition_text": "Das hier genannte Datum muss der Zeitpunkt sein, zu dem das Dokument erstellt wurde, oder ein Zeitpunkt, der davor liegt.",
+    "edifact_format": "ORDRSP"
+  },
+  {
+    "condition_key": "931",
+    "condition_text": "Format: ZZZ = +00",
+    "edifact_format": "ORDRSP"
+  }
+]

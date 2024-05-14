@@ -2,10 +2,13 @@
 This module contains the tests for the CLI tool conditions.
 """
 
+import json
+import os
 from pathlib import Path
 
 from click.testing import CliRunner, Result
 from freezegun import freeze_time
+from maus.edifact import EdifactFormat
 
 from kohlrahbi.conditions.command import conditions
 from unittests import path_to_test_edi_energy_mirror_repo, path_to_test_files_fv2310
@@ -32,22 +35,46 @@ class TestCliConditions:
             str(path_to_test_edi_energy_mirror_repo),
             "--output-path",
             str(actual_output_dir),
+            "--format-version",
+            "FV2310",
         ]
 
         # Call the CLI tool with the desired arguments
         response: Result = runner.invoke(conditions, argument_options)
 
-        # assert response.exit_code == 0
+        assert response.exit_code == 0
 
-        timestamp_of_expected_change_history_file = "2024-03-30"
-        conditions_file_name = f"{timestamp_of_expected_change_history_file}_conditions.json"  # TODO change to correct file extension or delete this comment
-        # assert Path(actual_output_dir, conditions_file_name).exists(), "No matching file found"
+        # collect all test formats
+        edifact_formats = []
+        for item in os.listdir(expected_output_dir):
+            item_path = os.path.join(expected_output_dir, item)
+            if os.path.isdir(item_path):
+                edifact_formats.append(EdifactFormat(item))
 
-        path_to_actual_conditions_file = actual_output_dir / conditions_file_name
-        path_to_expected_conditions_file = expected_output_dir / conditions_file_name
+        for edifact_format in edifact_formats:
+            # asssert that all files which should be generated do really exist
+            assert (actual_output_dir / str(edifact_format) / "conditions.json").exists(), "No matching file found"
+            assert (expected_output_dir / str(edifact_format) / "packages.json").exists() == (
+                actual_output_dir / str(edifact_format) / "packages.json"
+            ).exists()
+            # compare the generated files with the expected files
+            with open(
+                expected_output_dir / Path(str(edifact_format)) / Path("conditions.json"), "r", encoding="utf-8"
+            ) as file:
+                expected_cond_dict = json.load(file)
+            with open(
+                actual_output_dir / Path(str(edifact_format)) / Path("conditions.json"), "r", encoding="utf-8"
+            ) as file:
+                actual_cond_dict = json.load(file)
+            assert actual_cond_dict == expected_cond_dict
+            if Path(actual_output_dir, Path(str(edifact_format)) / Path("packages.json")).exists():
+                with open(
+                    expected_output_dir / Path(str(edifact_format)) / Path("packages.json"), "r", encoding="utf-8"
+                ) as file:
+                    expected_package_dict = json.load(file)
+                with open(
+                    actual_output_dir / Path(str(edifact_format)) / Path("packages.json"), "r", encoding="utf-8"
+                ) as file:
+                    actual_package_dict = json.load(file)
 
-        # assert actual_conditions are equal to expected_conditions
-
-        # optional
-        # Delete the conditions files after the test
-        path_to_actual_conditions_file.unlink(missing_ok=True)
+                assert actual_package_dict == expected_package_dict

@@ -43,24 +43,6 @@ def load_pruefi_docx_file_map_from_file(path_to_pruefi_docx_file_map_file: Path)
     return pruefi_docx_file_map
 
 
-def get_or_cache_document(ahb_file_path: Path, path_to_document_mapping: dict) -> Document:
-    """
-    Get the document from the cache or read it from the file system.
-    """
-    if ahb_file_path not in path_to_document_mapping:
-        if not ahb_file_path.exists():
-            logger.warning("The file '%s' does not exist", ahb_file_path)
-            raise FileNotFoundError(f"The file '{ahb_file_path}' does not exist")
-        try:
-            doc = docx.Document(str(ahb_file_path))
-            path_to_document_mapping[ahb_file_path] = doc
-            logger.debug("Saved %s document in cache", ahb_file_path)
-        except IOError as ioe:
-            logger.exception("There was an error opening the file '%s'", ahb_file_path, exc_info=True)
-            raise click.Abort() from ioe
-    return path_to_document_mapping[ahb_file_path]
-
-
 def process_ahb_table(
     ahb_table: AhbTable,
     pruefi: str,
@@ -202,20 +184,6 @@ def extract_pruefis_from_table(table: Table) -> list[str]:
 def table_header_contains_text_pruefidentifikator(table: Table) -> bool:
     """Checks if the table header contains the text 'Prüfidentifikator'."""
     return table.row_cells(0)[-1].paragraphs[-1].text.startswith("Prüfidentifikator")
-
-
-def create_pruefi_docx_filename_map(format_version: EdifactFormatVersion, edi_energy_mirror_path: Path):
-    """Creates a mapping of pruefis to their corresponding docx files."""
-
-    ahb_documents_path = get_ahb_documents_path(edi_energy_mirror_path, format_version)
-
-    pruefis = find_pruefidentifikatoren(ahb_documents_path)
-
-    if not pruefis:
-        log_no_pruefis_warning(format_version.value, ahb_documents_path)
-        pruefis = get_default_pruefi_map(ahb_documents_path)
-
-    save_pruefi_map_to_toml(pruefis, format_version.value)
 
 
 def get_pruefi_to_file_mapping(basic_input_path: Path, format_version: EdifactFormatVersion) -> dict[str, str]:

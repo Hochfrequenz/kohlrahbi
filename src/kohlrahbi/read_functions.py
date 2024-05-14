@@ -2,14 +2,17 @@
 A collection of functions to get information from AHB tables.
 """
 
-from typing import Generator, Optional, Union
+from typing import Generator, Optional, Tuple, Union
 
 from docx.document import Document  # type:ignore[import]
 from docx.oxml.table import CT_Tbl  # type:ignore[import]
 from docx.oxml.text.paragraph import CT_P  # type:ignore[import]
 from docx.table import Table, _Cell  # type:ignore[import]
 from docx.text.paragraph import Paragraph  # type:ignore[import]
+from maus.edifact import EdifactFormat, get_format_of_pruefidentifikator
 
+from kohlrahbi.ahbtable.ahbcondtions import AhbConditions
+from kohlrahbi.ahbtable.ahbpackagetable import AhbPackageTable
 from kohlrahbi.ahbtable.ahbsubtable import AhbSubTable
 from kohlrahbi.ahbtable.ahbtable import AhbTable
 from kohlrahbi.logger import logger
@@ -206,3 +209,97 @@ def log_pruefi_not_found(pruefi):
     Logs that the Prüfi was not found in the provided document.
     """
     logger.warning("Prüfi '%s' was not found in the provided document.", pruefi)
+
+
+# pylint: disable=too-many-branches
+def get_all_conditions_from_doc(
+    document: Document, edifact_format: EdifactFormat
+) -> Tuple[Optional[AhbPackageTable], AhbConditions]:
+    """
+    Go through a given document and grasp all conditions and package tables for a given format.
+    """
+    package_table: AhbPackageTable
+    conditions_table: AhbConditions
+    package_tables: list[Table] = []
+    conditions_tables: list[Table] = []
+    seed = None
+
+    # Iterate through the whole word document
+    logger.info("🔁 Start iterating through paragraphs and tables")
+    found_package_table = False
+    for item in get_all_paragraphs_and_tables(document):
+        style_name = get_style_name(item)
+        if isinstance(item, Paragraph) and "Änderungshistorie" in item.text and "Heading" in style_name:
+            logger.info(
+                "Reached the end of the document, i.e. the section 'Änderungshistorie'.",
+            )
+        if is_item_text_paragraph(item, style_name):
+            continue
+        # processing of package tables
+        if is_item_package_heading(item, style_name, edifact_format):
+            found_package_table = True
+            logger.info("🏁 Found Package Table for %s", edifact_format)
+        elif isinstance(item, Table) and found_package_table:
+            package_tables.append(item)
+        elif found_package_table and not isinstance(item, Table):
+            logger.info("We reached the end of the package table.")
+            found_package_table = False
+
+        if reached_end_of_document(style_name, item):
+            log_end_of_document(edifact_format)
+
+            break
+        # processing of conditions tables
+        seed = update_seed(item, seed)
+        if is_relevant_pruefi_table(item, seed, edifact_format):
+            conditions_tables.append(item)
+        if is_last_row_unt_0062(item):
+            seed = None
+    if len(conditions_tables) > 0:
+        conditions_table = AhbConditions.from_docx_table(conditions_tables, edifact_format)
+    else:
+        logger.warning("⛔️ No conditions found in the provided file.\n")
+
+    if len(package_tables) > 0:
+        package_table = AhbPackageTable.from_docx_table(package_tables)
+        package_table.provide_packages(edifact_format)
+    else:
+        logger.warning("⛔️ No package table found in the provided file.\n")
+    return package_table, conditions_table
+
+
+def is_last_row_unt_0062(item: Table | Paragraph) -> bool:
+    """
+    Checks if the given table contains UNT segment in last row.
+    """
+    return isinstance(item, Table) and "UNT\t0062" == item.cell(row_idx=-1, col_idx=0).text.strip()
+
+
+def is_relevant_pruefi_table(item: Paragraph | Table, seed: Seed, edifact_format) -> bool:
+    """compares new pruefis to last pruefi and thus checks whether new table"""
+    return (
+        isinstance(item, Table)
+        and seed is not None
+        and is_pruefi_of_edifact_format(seed.pruefidentifikatoren, edifact_format)
+    )
+
+
+def is_pruefi_of_edifact_format(last_pruefis: list[str], edifact_format: EdifactFormat) -> bool:
+    """Checks if the pruefi is of the given edifact format"""
+    return len(last_pruefis) > 0 and all(
+        get_format_of_pruefidentifikator(pruefi) is edifact_format for pruefi in last_pruefis
+    )
+
+
+def is_item_package_heading(item: Paragraph | Table | None, style_name: str, edifact_format: EdifactFormat) -> bool:
+    """
+    Checks if the given item is the header of the package table.
+    """
+    return isinstance(item, Paragraph) and (
+        (
+            (style_name == "Heading 1")
+            and "Übersicht der Pakete in der" in item.text
+            and f"{edifact_format.name}" in item.text
+        )
+        or (((style_name == "Heading 2") and f"Übersicht der Pakete in der {edifact_format.name}" in item.text))
+    )
