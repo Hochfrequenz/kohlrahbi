@@ -23,7 +23,7 @@ packaging==24.0
     # via pytest
 pandas==2.2.2
     # via -r dev_requirements/requirements-type_check.in
-pandas-stubs==2.2.1.240316
+pandas-stubs==2.2.2.240514
     # via -r dev_requirements/requirements-type_check.in
 pluggy==1.5.0
     # via pytest
