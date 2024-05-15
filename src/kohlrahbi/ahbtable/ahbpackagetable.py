@@ -71,10 +71,9 @@ class AhbPackageTable(BaseModel):
                     # check whether package was already collected:
                     existing_text = package_dict[edifact_format].get(package)
                     is_package_key_collected_yet = existing_text is not None
-                    if is_package_key_collected_yet:
-                        key_exits_but_shorter_text = len(package_conditions) > len(
-                            existing_text  # type: ignore[arg-type]
-                        )  # type: ignore[arg-type]
+                    key_exits_but_shorter_text = existing_text is not None and len(package_conditions) > len(
+                        existing_text
+                    )
                     if not is_package_key_collected_yet or key_exits_but_shorter_text:
                         package_dict[edifact_format][package] = package_conditions
 

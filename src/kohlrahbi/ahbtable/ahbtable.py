@@ -112,6 +112,7 @@ class AhbTable(BaseModel):
         iterable_ahb_table = peekable(self.table.iterrows())
         self.table.reset_index(drop=True, inplace=True)
         for _, row in iterable_ahb_table:
+            # pylint: disable=unpacking-non-sequence # it is a tuple indeed
             index_of_next_row, next_row = iterable_ahb_table.peek(
                 (
                     0,
