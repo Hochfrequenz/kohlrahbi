@@ -4,8 +4,8 @@ This module contains all tests regarding the AhbSubTable class
 
 from pathlib import Path
 
-import docx  # type:ignore[import]
-from docx.table import Table  # type:ignore[import]
+import docx
+from docx.table import Table
 
 from kohlrahbi.ahbtable.ahbsubtable import AhbSubTable
 from kohlrahbi.read_functions import get_all_paragraphs_and_tables

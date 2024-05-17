@@ -5,7 +5,7 @@ This module contains the class EdifactStrukturCell
 import re
 
 import pandas as pd
-from docx.table import _Cell  # type:ignore[import]
+from docx.table import _Cell
 from pydantic import BaseModel, ConfigDict
 
 _segment_group_pattern = re.compile(r"^SG\d+$")

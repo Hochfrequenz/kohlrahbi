@@ -3,7 +3,7 @@ This module provides the ChangeHistoryTable class
 """
 
 import pandas as pd
-from docx.table import Table  # type:ignore[import]
+from docx.table import Table
 from pydantic import BaseModel, ConfigDict
 
 from kohlrahbi.ahbtable.ahbsubtable import AhbSubTable

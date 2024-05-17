@@ -5,8 +5,8 @@ This module contains the TableHeader class.
 from enum import StrEnum
 from typing import Dict, List, Mapping, cast
 
-from docx.table import _Cell  # type:ignore[import]
-from docx.text.paragraph import Paragraph  # type:ignore[import]
+from docx.table import _Cell
+from docx.text.paragraph import Paragraph
 from more_itertools import first, last
 from pydantic import BaseModel
 

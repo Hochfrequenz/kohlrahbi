@@ -1,6 +1,6 @@
-import docx  # type:ignore[import]
+import docx
 import pytest  # type:ignore[import]
-from docx.shared import RGBColor  # type:ignore[import]
+from docx.shared import RGBColor
 
 from kohlrahbi.row_type_checker import RowType, get_row_type
 

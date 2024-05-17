@@ -1,6 +1,6 @@
 import pandas as pd
 import pytest  # type:ignore[import]
-from docx.shared import Twips  # type:ignore[import]
+from docx.shared import Twips
 
 from kohlrahbi.docxtablecells import EdifactStrukturCell
 from unittests.cellparagraph import CellParagraph
