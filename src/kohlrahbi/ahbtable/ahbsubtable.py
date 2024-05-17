@@ -5,8 +5,8 @@ This module contains the AhbSubTable class.
 from typing import Generator
 
 import pandas as pd
-from docx.table import Table as DocxTable  # type:ignore[import]
-from docx.table import _Cell  # type:ignore[import]
+from docx.table import Table as DocxTable
+from docx.table import _Cell
 from pydantic import BaseModel, ConfigDict
 
 from kohlrahbi.ahbtable.ahbtablerow import AhbTableRow

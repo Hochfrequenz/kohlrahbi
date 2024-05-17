@@ -2,13 +2,13 @@
 A collection of functions to get information from AHB tables.
 """
 
-from typing import Generator, Optional, Tuple, Union
+from typing import Generator, Optional, Tuple, TypeGuard, Union
 
-from docx.document import Document  # type:ignore[import]
-from docx.oxml.table import CT_Tbl  # type:ignore[import]
-from docx.oxml.text.paragraph import CT_P  # type:ignore[import]
-from docx.table import Table, _Cell  # type:ignore[import]
-from docx.text.paragraph import Paragraph  # type:ignore[import]
+from docx.document import Document
+from docx.oxml.table import CT_Tbl
+from docx.oxml.text.paragraph import CT_P
+from docx.table import Table, _Cell
+from docx.text.paragraph import Paragraph
 from maus.edifact import EdifactFormat, get_format_of_pruefidentifikator
 
 from kohlrahbi.ahbtable.ahbcondtions import AhbConditions
@@ -275,7 +275,7 @@ def is_last_row_unt_0062(item: Table | Paragraph) -> bool:
     return isinstance(item, Table) and "UNT\t0062" == item.cell(row_idx=-1, col_idx=0).text.strip()
 
 
-def is_relevant_pruefi_table(item: Paragraph | Table, seed: Seed, edifact_format) -> bool:
+def is_relevant_pruefi_table(item: Paragraph | Table, seed: Seed, edifact_format) -> TypeGuard[Table]:
     """compares new pruefis to last pruefi and thus checks whether new table"""
     return (
         isinstance(item, Table)

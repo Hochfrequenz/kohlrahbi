@@ -9,10 +9,10 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 import click
-import docx  # type: ignore
+import docx
 import tomlkit
-from docx.document import Document  # type:ignore[import]
-from docx.table import Table  # type:ignore[import]
+from docx.document import Document
+from docx.table import Table
 from maus.edifact import EdifactFormatVersion
 
 from kohlrahbi.ahbtable.ahbtable import AhbTable
