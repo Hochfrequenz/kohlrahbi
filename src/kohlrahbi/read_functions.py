@@ -78,10 +78,8 @@ def is_item_table_with_pruefidentifikatoren(item: Paragraph | Table | None) -> T
 
 
 def is_item_headless_table(
-    item: Paragraph | Table | None,
-    # seed: Seed | None,
-    ahb_table: AhbTable | None,
-) -> TypeGuard[Table]:
+    value: tuple[Union[Paragraph, Table, None], Union[AhbTable, None]]
+) -> TypeGuard[tuple[Table, AhbTable]]:
     """
     Checks if the given item is a headless table.
 
@@ -93,6 +91,7 @@ def is_item_headless_table(
     Returns:
         bool: True if the item is a headless table, False otherwise.
     """
+    item, ahb_table = value
     # return isinstance(item, Table) and seed is not None and ahb_table is not None
     return isinstance(item, Table) and ahb_table is not None
 
@@ -171,7 +170,7 @@ def process_table(
     item: Paragraph | Table | None,
     pruefi: str,
     searched_pruefi_is_found: bool,
-    ahb_table: AhbTable,
+    ahb_table: AhbTable | None,
     seed: Seed | None = None,
 ) -> tuple[bool, AhbTable]:
     """Processes tables to find and build the AHB table."""
@@ -184,12 +183,13 @@ def process_table(
             ahb_table = AhbTable.from_ahb_sub_table(ahb_sub_table=ahb_sub_table)
             searched_pruefi_is_found = True
 
-    # elif is_item_headless_table(item, seed, ahb_table):
-    elif is_item_headless_table(item, ahb_table):
+    elif is_item_headless_table((item, ahb_table)):
+        assert ahb_table is not None
+        assert isinstance(item, Table)
         assert seed is not None
         ahb_sub_table = AhbSubTable.from_headless_table(docx_table=item, tmd=seed)
         ahb_table.append_ahb_sub_table(ahb_sub_table=ahb_sub_table)
-
+    assert ahb_table is not None
     return searched_pruefi_is_found, ahb_table
 
 

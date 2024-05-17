@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 import docx
-import pytest  # type:ignore[import]
+import pytest
 from docx import Document
 from maus.edifact import EdifactFormat, EdifactFormatVersion
 

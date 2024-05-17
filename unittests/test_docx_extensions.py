@@ -4,7 +4,7 @@ tests all the features the kohlrahbi package provides to process Docx files (by 
 
 from typing import Generator
 
-import pytest  # type:ignore[import]
+import pytest
 from _pytest.fixtures import SubRequest  # type:ignore[import]
 from docx import Document
 from docx.document import Document as DocumentClass
