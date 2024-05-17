@@ -54,7 +54,7 @@ class ChangeHistoryTable(BaseModel):
             return pd.isna(val) or val == ""
 
         # Define a function to check if a value is considered empty for our case
-        def is_the_first_column_empty(row: pd.Series) -> bool:
+        def is_the_first_column_empty(row: pd.Series) -> bool:  # type:ignore[type-arg]
             """
             Checks if the first column of the given row is empty.
             This is our indicator if the current row is a continuation of the upper row.

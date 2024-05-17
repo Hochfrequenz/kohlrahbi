@@ -56,7 +56,7 @@ class Seed(BaseModel):
         # metadata
         metadata = table_header.pruefi_meta_data
 
-        base_column_names: list = [
+        base_column_names: list[str] = [
             "Segment Gruppe",
             "Segment",
             "Datenelement",

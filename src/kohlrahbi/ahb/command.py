@@ -12,7 +12,7 @@ from kohlrahbi.ahb import scrape_pruefis
 from kohlrahbi.enums.ahbexportfileformat import AhbExportFileFormat
 
 
-def check_python_version():
+def check_python_version() -> None:
     """
     Check if the Python interpreter is greater or equal to 3.11
     """
@@ -24,7 +24,7 @@ def check_python_version():
 
 
 # pylint: disable=unused-argument
-def validate_path(ctx, param, value):
+def validate_path(ctx, param, value) -> Path:  # type:ignore[no-untyped-def]
     """
     Ensure the path exists or offer to create it.
     """
@@ -97,7 +97,7 @@ def ahb(
     format_version: EdifactFormatVersion | str,
     assume_yes: bool,  # pylint: disable=unused-argument
     # it is used by the callback function of the output-path
-):
+) -> None:
     """
     Scrape AHB documents for pruefidentifikatoren.
     This is a command line interface for the pruefis module.

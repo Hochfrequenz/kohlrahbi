@@ -1,5 +1,5 @@
 import docx
-import pytest  # type:ignore[import]
+import pytest
 from docx.shared import RGBColor
 
 from kohlrahbi.row_type_checker import RowType, get_row_type

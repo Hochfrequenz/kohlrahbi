@@ -1,5 +1,5 @@
 import pandas as pd
-import pytest  # type:ignore[import]
+import pytest
 from docx.shared import Length, Twips
 
 from kohlrahbi.docxtablecells import BodyCell

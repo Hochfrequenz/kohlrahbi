@@ -47,7 +47,7 @@ def changehistory(
     format_version: EdifactFormatVersion | str,
     assume_yes: bool,  # pylint: disable=unused-argument
     # it is used by the callback function of the output-path
-):
+) -> None:
     """
     Scrape change histories from the input path and save them to the output path.
 

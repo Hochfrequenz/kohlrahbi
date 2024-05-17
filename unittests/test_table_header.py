@@ -2,7 +2,7 @@
 Test the table_header module.
 """
 
-import pytest  # type:ignore[import]
+import pytest
 
 from kohlrahbi.table_header import create_mapping_of_tabstop_positions
 

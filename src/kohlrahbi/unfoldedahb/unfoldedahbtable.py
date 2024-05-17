@@ -71,7 +71,7 @@ class UnfoldedAhb(BaseModel):
     unfolded_ahb_lines: list[UnfoldedAhbLine]
 
     @classmethod
-    def from_ahb_table(cls, ahb_table: AhbTable, pruefi: str):
+    def from_ahb_table(cls, ahb_table: AhbTable, pruefi: str) -> "UnfoldedAhb":
         """
         This function creates an UnfoldedAhb from an AhbTable.
         """
@@ -236,7 +236,7 @@ class UnfoldedAhb(BaseModel):
         return last_section_name
 
     @staticmethod
-    def _is_section_name(ahb_row: pd.Series) -> bool:
+    def _is_section_name(ahb_row: pd.Series) -> bool:  # type:ignore[type-arg]
         """
         Checks if the current AHB row is a section name.
         It uses the same logic as the function 'line_contains_only_segment_gruppe'
@@ -245,7 +245,7 @@ class UnfoldedAhb(BaseModel):
         return AhbTable.line_contains_only_segment_gruppe(ahb_row)
 
     @staticmethod
-    def _is_segment_group(ahb_row: pd.Series) -> bool:
+    def _is_segment_group(ahb_row: pd.Series) -> bool:  # type:ignore[type-arg]
         """Checks if the current AHB row is a segment group."""
 
         if _segment_group_pattern.match(ahb_row["Segment Gruppe"]) and not ahb_row["Segment"]:
@@ -253,7 +253,7 @@ class UnfoldedAhb(BaseModel):
         return False
 
     @staticmethod
-    def _is_segment_opening_line(ahb_row: pd.Series) -> bool:
+    def _is_segment_opening_line(ahb_row: pd.Series) -> bool:  # type:ignore[type-arg]
         """Checks if the current AHB row is a segment opening line.
         Example:
 
@@ -273,7 +273,7 @@ class UnfoldedAhb(BaseModel):
         return False
 
     @staticmethod
-    def _is_just_segment(ahb_row: pd.Series) -> bool:
+    def _is_just_segment(ahb_row: pd.Series) -> bool:  # type:ignore[type-arg]
         """
         Checks if the given AHB row is a segment
         """
@@ -287,7 +287,7 @@ class UnfoldedAhb(BaseModel):
         return False
 
     @staticmethod
-    def _is_dataelement(ahb_row: pd.Series) -> bool:
+    def _is_dataelement(ahb_row: pd.Series) -> bool:  # type:ignore[type-arg]
         """
         Checks if the given AHB row is a dataelement
         """
@@ -296,7 +296,7 @@ class UnfoldedAhb(BaseModel):
         return False
 
     @staticmethod
-    def _is_just_value_pool_entry(ahb_row: pd.Series) -> bool:
+    def _is_just_value_pool_entry(ahb_row: pd.Series) -> bool:  # type:ignore[type-arg]
         """
         Checks if the given AHB row contains only a value pool entry (w/o Segment (group) and data element)
         """

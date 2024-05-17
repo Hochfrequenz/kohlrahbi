@@ -4,6 +4,7 @@ This module contains the class BodyCell
 
 import pandas as pd
 from docx.table import _Cell
+from docx.text.paragraph import Paragraph
 from maus.reader.flat_ahb_reader import FlatAhbCsvReader
 from pydantic import BaseModel, ConfigDict
 
@@ -103,9 +104,9 @@ class BodyCell(BaseModel):
 
         return ahb_row_dataframe
 
-    def has_paragraph_tabstops(self, paragraph) -> bool:
+    def has_paragraph_tabstops(self, paragraph: Paragraph) -> bool:
         """
         Checks if the given paragraph contains tabstops
         """
         tab_stops = list(paragraph.paragraph_format.tab_stops)
-        return len(tab_stops) > 0
+        return any(tab_stops)

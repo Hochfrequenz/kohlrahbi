@@ -10,7 +10,7 @@ from docx.table import _Cell
 from kohlrahbi.enums import RowType
 
 
-def set_table_header_bg_color(cell, hex_color: str):
+def set_table_header_bg_color(cell: _Cell, hex_color: str) -> _Cell:
     """
     set background shading for Header Rows
     """
@@ -48,7 +48,8 @@ def is_row_segmentname(edifact_struktur_cell: _Cell) -> bool:
         bool:
     """
     try:
-        return edifact_struktur_cell.paragraphs[0].runs[0].font.color.rgb == RGBColor(128, 128, 128)  # grey
+        colour_is_grey: bool = edifact_struktur_cell.paragraphs[0].runs[0].font.color.rgb == RGBColor(128, 128, 128)
+        return colour_is_grey
     except IndexError:
         return False
 

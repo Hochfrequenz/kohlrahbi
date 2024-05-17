@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Union
 
-import pytest  # type:ignore[import]
+import pytest
 from click.testing import CliRunner, Result
 
 from kohlrahbi.ahb.command import ahb

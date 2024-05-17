@@ -12,7 +12,7 @@ from kohlrahbi.version import version
 
 @click.group()
 @click.version_option(version=version)
-def cli():
+def cli() -> None:
     """Kohlrahbi CLI tool"""
 
 

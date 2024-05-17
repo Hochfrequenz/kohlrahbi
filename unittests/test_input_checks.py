@@ -1,4 +1,4 @@
-import pytest  # type:ignore[import]
+import pytest
 
 from kohlrahbi.ahb import get_valid_pruefis
 

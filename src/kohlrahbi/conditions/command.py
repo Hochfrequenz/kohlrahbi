@@ -28,7 +28,7 @@ from maus.edifact import EdifactFormatVersion
 from kohlrahbi.conditions import scrape_conditions
 
 
-def check_python_version():
+def check_python_version() -> None:
     """
     Check if the Python interpreter is greater or equal to 3.11
     """
@@ -40,7 +40,7 @@ def check_python_version():
 
 
 # pylint: disable=unused-argument
-def validate_path(ctx, param, value):
+def validate_path(ctx, param, value) -> Path:  # type:ignore[no-untyped-def]
     """
     Ensure the path exists or offer to create it.
     """
@@ -91,7 +91,7 @@ you will be asked if you want to create it.""",
 )
 def conditions(
     edi_energy_mirror_path: Path, output_path: Path, format_version: EdifactFormatVersion | str, assume_yes: bool
-):
+) -> None:
     """
     Scrape AHB documents for conditions.
     """
