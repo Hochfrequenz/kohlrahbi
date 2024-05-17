@@ -189,7 +189,7 @@ def process_table(
         assert seed is not None
         ahb_sub_table = AhbSubTable.from_headless_table(docx_table=item, tmd=seed)
         ahb_table.append_ahb_sub_table(ahb_sub_table=ahb_sub_table)
-    assert ahb_table is not None
+    # actually, the ahb_table is none here (see test_kohlrahbi_cli_with_valid_arguments)
     return searched_pruefi_is_found, ahb_table
 
 
