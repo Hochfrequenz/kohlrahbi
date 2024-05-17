@@ -89,7 +89,7 @@ class UnfoldedAhb(BaseModel):
             )
 
             if UnfoldedAhb._is_section_name(ahb_row=row):
-                _, next_row = iterable_ahb_table.peek()
+                _, next_row = iterable_ahb_table.peek()  # pylint: disable=unpacking-non-sequence # it is a tuple indeed
                 ahb_expression = next_row[pruefi]
 
                 if _segment_group_pattern.match(next_row["Segment Gruppe"]):
