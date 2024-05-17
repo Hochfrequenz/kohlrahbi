@@ -1,6 +1,6 @@
 from pathlib import Path
 
-import pytest  # type:ignore[import]
+import pytest
 from maus.edifact import EdifactFormat
 
 from kohlrahbi.docxfilefinder import DocxFileFinder

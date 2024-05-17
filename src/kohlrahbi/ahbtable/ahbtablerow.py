@@ -5,11 +5,11 @@ This module contains the class AhbTableRow
 from typing import Optional
 
 import pandas as pd
-from docx.table import _Cell  # type:ignore[import]
+from docx.table import _Cell
 from pydantic import BaseModel, ConfigDict
 
 from kohlrahbi.docxtablecells import BedingungCell, BodyCell, EdifactStrukturCell
-from kohlrahbi.row_type_checker import RowType
+from kohlrahbi.enums import RowType
 from kohlrahbi.seed import Seed
 
 
@@ -46,7 +46,9 @@ class AhbTableRow(BaseModel):
             dtype="str",
         )
         # pylint: disable=unsubscriptable-object, no-member
-        empty_row: pd.Series[str] = pd.Series(len(ahb_row_dataframe.columns) * [""], index=self.seed.column_headers)
+        empty_row: pd.Series = pd.Series(  # type:ignore[type-arg]
+            len(ahb_row_dataframe.columns) * [""], index=self.seed.column_headers
+        )
 
         ahb_row_dataframe = pd.concat([ahb_row_dataframe, empty_row.to_frame().T], ignore_index=True)
 

@@ -138,7 +138,7 @@ class DocxFileFinder(BaseModel):
 
         self.paths_to_docx_files = [path for path in self.paths_to_docx_files if str(edifact_format) in path.name]
 
-    def remove_temporary_files(self):
+    def remove_temporary_files(self) -> None:
         """
         This method removes all temporary files from paths_to_docx_files.
         Temporary files lead to the exception `BadZipFile: File is not a zip file`.

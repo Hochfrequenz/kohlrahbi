@@ -91,7 +91,7 @@ class AhbTable(BaseModel):
             self.table = pd.concat([self.table, ahb_sub_table.table], ignore_index=True)
 
     @staticmethod
-    def line_contains_only_segment_gruppe(raw_line: pd.Series) -> bool:
+    def line_contains_only_segment_gruppe(raw_line: pd.Series) -> bool:  # type:ignore[type-arg]
         """
         Returns true if the given raw line only contains some meaningful data in the "Segment Gruppe" key
         """
@@ -112,6 +112,7 @@ class AhbTable(BaseModel):
         iterable_ahb_table = peekable(self.table.iterrows())
         self.table.reset_index(drop=True, inplace=True)
         for _, row in iterable_ahb_table:
+            # pylint: disable=unpacking-non-sequence # it is a tuple indeed
             index_of_next_row, next_row = iterable_ahb_table.peek(
                 (
                     0,

@@ -1,6 +1,6 @@
 import pandas as pd
-import pytest  # type:ignore[import]
-from docx.shared import Twips  # type:ignore[import]
+import pytest
+from docx.shared import Twips
 
 from kohlrahbi.docxtablecells import BedingungCell
 from unittests.cellparagraph import CellParagraph

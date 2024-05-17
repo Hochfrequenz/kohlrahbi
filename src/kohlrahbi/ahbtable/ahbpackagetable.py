@@ -7,7 +7,7 @@ import re
 from pathlib import Path
 
 import pandas as pd
-from docx.table import Table as DocxTable  # type: ignore[import-untyped]
+from docx.table import Table as DocxTable
 from maus.edifact import EdifactFormat
 from pydantic import BaseModel, ConfigDict
 
@@ -52,7 +52,7 @@ class AhbPackageTable(BaseModel):
         logger.info("The package conditions for %s were collected.", edifact_format)
         return conditions_dict
 
-    def provide_packages(self, edifact_format: EdifactFormat):
+    def provide_packages(self, edifact_format: EdifactFormat) -> None:
         """collect conditions from package table and store them in conditions dict."""
         package_dict: dict[EdifactFormat, dict[str, str]] = {edifact_format: {}}
 
@@ -71,20 +71,20 @@ class AhbPackageTable(BaseModel):
                     # check whether package was already collected:
                     existing_text = package_dict[edifact_format].get(package)
                     is_package_key_collected_yet = existing_text is not None
-                    if is_package_key_collected_yet:
-                        key_exits_but_shorter_text = len(package_conditions) > len(
-                            existing_text  # type: ignore[arg-type]
-                        )  # type: ignore[arg-type]
+                    key_exits_but_shorter_text = existing_text is not None and len(package_conditions) > len(
+                        existing_text
+                    )
                     if not is_package_key_collected_yet or key_exits_but_shorter_text:
                         package_dict[edifact_format][package] = package_conditions
 
         logger.info("Packages for %s were collected.", edifact_format)
         self.package_dict = package_dict
 
-    def include_package_dict(self, to_add=dict[EdifactFormat, dict[str, str]] | None) -> None:
+    def include_package_dict(self, to_add: dict[EdifactFormat, dict[str, str]] | None) -> None:
         """Include a dict of conditions to the conditions_dict"""
         if to_add is None:
             logger.info("Packages dict to be added is empty.")
+            return
         for edifact_format, edi_cond_dict in to_add.items():
             for package_key, package_conditions in edi_cond_dict.items():
                 if edifact_format in self.package_dict:

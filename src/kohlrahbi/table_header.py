@@ -5,8 +5,8 @@ This module contains the TableHeader class.
 from enum import StrEnum
 from typing import Dict, List, Mapping, cast
 
-from docx.table import _Cell  # type:ignore[import]
-from docx.text.paragraph import Paragraph  # type:ignore[import]
+from docx.table import _Cell
+from docx.text.paragraph import Paragraph
 from more_itertools import first, last
 from pydantic import BaseModel
 
@@ -157,7 +157,7 @@ class TableHeader(BaseModel):
         return cls(pruefi_meta_data=pruefi_meta_data)
 
     @staticmethod
-    def initialize_collector(paragraph) -> Dict[str, Dict[str, str | int]]:
+    def initialize_collector(paragraph: Paragraph) -> Dict[str, Dict[str, str | int]]:
         """Initialize the collector"""
         current_tabstop_positions = get_tabstop_positions(paragraph=paragraph)
         splitted_text = paragraph.text.split("\t")

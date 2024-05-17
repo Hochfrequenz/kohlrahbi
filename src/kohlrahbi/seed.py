@@ -2,7 +2,7 @@
 This module provides a class to collect information which of need for all parsing functions
 """
 
-from docx.table import Table  # type:ignore[import]
+from docx.table import Table
 from pydantic import BaseModel
 
 from kohlrahbi.enums import RowType
@@ -56,7 +56,7 @@ class Seed(BaseModel):
         # metadata
         metadata = table_header.pruefi_meta_data
 
-        base_column_names: list = [
+        base_column_names: list[str] = [
             "Segment Gruppe",
             "Segment",
             "Datenelement",

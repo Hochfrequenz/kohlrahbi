@@ -4,7 +4,7 @@ import json
 import re
 from pathlib import Path
 
-from docx.table import Table as DocxTable  # type: ignore[import-untyped]
+from docx.table import Table as DocxTable
 from maus.edifact import EdifactFormat
 from pydantic import BaseModel, ConfigDict
 
@@ -53,10 +53,11 @@ class AhbConditions(BaseModel):
         logger.info("The package conditions for %s were collected.", edifact_format)
         return conditions_dict
 
-    def include_condition_dict(self, to_add=dict[EdifactFormat, dict[str, str]] | None) -> None:
+    def include_condition_dict(self, to_add: dict[EdifactFormat, dict[str, str]] | None) -> None:
         """ " Include a dict of conditions to the conditions_dict"""
         if to_add is None:
             logger.info("Conditions dict to be added is empty.")
+            return
         for edifact_format, edi_cond_dict in to_add.items():
             for condition_key, condition_text in edi_cond_dict.items():
                 if edifact_format in self.conditions_dict:
@@ -117,8 +118,7 @@ def parse_conditions_from_string(
         # check whether condition was already collected:
         existing_text = conditions_dict[edifact_format].get(match[0])
         is_condition_key_collected_yet = existing_text is not None
-        if is_condition_key_collected_yet and existing_text is not None:
-            key_exits_but_shorter_text = len(text) > len(existing_text)
+        key_exits_but_shorter_text = existing_text is not None and len(text) > len(existing_text)
         if not is_condition_key_collected_yet or key_exits_but_shorter_text:
             conditions_dict[edifact_format][match[0]] = text
     return conditions_dict

@@ -5,12 +5,13 @@ This module contains the AhbSubTable class.
 from typing import Generator
 
 import pandas as pd
-from docx.table import Table as DocxTable  # type:ignore[import]
-from docx.table import _Cell  # type:ignore[import]
+from docx.table import Table as DocxTable
+from docx.table import _Cell, _Row
 from pydantic import BaseModel, ConfigDict
 
 from kohlrahbi.ahbtable.ahbtablerow import AhbTableRow
-from kohlrahbi.row_type_checker import RowType, get_row_type
+from kohlrahbi.enums import RowType
+from kohlrahbi.row_type_checker import get_row_type
 from kohlrahbi.seed import Seed
 
 
@@ -122,7 +123,7 @@ class AhbSubTable(BaseModel):
         return cls(table_meta_data=tmd, table=ahb_table_dataframe)
 
     @staticmethod
-    def iter_visible_cells(row) -> Generator[_Cell, None, None]:
+    def iter_visible_cells(row: _Row) -> Generator[_Cell, None, None]:
         """
         This function makes sure that you will iterate over the cells you see in the word document.
         For more information go to https://github.com/python-openxml/python-docx/issues/970#issuecomment-877386927
