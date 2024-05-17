@@ -161,9 +161,7 @@ def should_end_search(pruefi: str, seed: Seed | None, searched_pruefi_is_found: 
     """Determines if the search for the AHB table should end."""
     if seed is None:
         return False
-    if pruefi not in seed.pruefidentifikatoren:
-        return False
-    return searched_pruefi_is_found
+    return pruefi not in seed.pruefidentifikatoren and searched_pruefi_is_found
 
 
 def process_table(
