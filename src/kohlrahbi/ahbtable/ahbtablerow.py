@@ -5,7 +5,7 @@ This module contains the class AhbTableRow
 from typing import Optional
 
 import pandas as pd
-from docx.table import _Cell  # type:ignore[import]
+from docx.table import _Cell
 from pydantic import BaseModel, ConfigDict
 
 from kohlrahbi.docxtablecells import BedingungCell, BodyCell, EdifactStrukturCell

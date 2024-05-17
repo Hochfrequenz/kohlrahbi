@@ -13,10 +13,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
-import docx  # type: ignore
+import docx
 import pandas as pd
-from docx.document import Document  # type:ignore[import]
-from docx.table import Table  # type: ignore
+from docx.document import Document
+from docx.table import Table
 
 from kohlrahbi.changehistory.changehistorytable import ChangeHistoryTable
 from kohlrahbi.docxfilefinder import DocxFileFinder

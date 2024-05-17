@@ -4,7 +4,7 @@ This module contains the function to write the collected conditions to a json fi
 
 from pathlib import Path
 
-import docx  # type: ignore[import-untyped]
+import docx
 from maus.edifact import EdifactFormat, EdifactFormatVersion, get_format_of_pruefidentifikator
 
 from kohlrahbi.ahb import get_pruefi_to_file_mapping
@@ -46,7 +46,8 @@ def scrape_conditions(
         for file in files:
             # pylint: disable=too-many-function-args
             # type: ignore[call-arg, arg-type]
-            doc = docx.Document(basic_input_path / path_to_file / Path(file))
+            path: Path = basic_input_path / path_to_file / Path(file)
+            doc = docx.Document(str(path.absolute()))
             logger.info("Start scraping conditions for %s in %s", edifact_format, file)
             if not doc:
                 logger.error("Could not open file %s as docx", Path(file))

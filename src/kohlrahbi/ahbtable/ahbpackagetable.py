@@ -7,7 +7,7 @@ import re
 from pathlib import Path
 
 import pandas as pd
-from docx.table import Table as DocxTable  # type: ignore[import-untyped]
+from docx.table import Table as DocxTable
 from maus.edifact import EdifactFormat
 from pydantic import BaseModel, ConfigDict
 

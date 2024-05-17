@@ -3,7 +3,7 @@ This module contains the class BodyCell
 """
 
 import pandas as pd
-from docx.table import _Cell  # type:ignore[import]
+from docx.table import _Cell
 from maus.reader.flat_ahb_reader import FlatAhbCsvReader
 from pydantic import BaseModel, ConfigDict
 

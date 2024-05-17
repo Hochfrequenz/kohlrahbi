@@ -2,10 +2,10 @@
 This module contains all functions to define the type of a row of the tables in an AHB.
 """
 
-from docx.oxml.ns import qn  # type:ignore[import]
-from docx.oxml.parser import OxmlElement  # type:ignore[import]
-from docx.shared import RGBColor  # type:ignore[import]
-from docx.table import _Cell  # type:ignore[import]
+from docx.oxml.ns import qn
+from docx.oxml.parser import OxmlElement
+from docx.shared import RGBColor
+from docx.table import _Cell
 
 from kohlrahbi.enums import RowType
 
