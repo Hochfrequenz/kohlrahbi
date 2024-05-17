@@ -190,7 +190,7 @@ def process_table(
         ahb_sub_table = AhbSubTable.from_headless_table(docx_table=item, tmd=seed)
         ahb_table.append_ahb_sub_table(ahb_sub_table=ahb_sub_table)
     # actually, the ahb_table is none here (see test_kohlrahbi_cli_with_valid_arguments)
-    return searched_pruefi_is_found, ahb_table
+    return searched_pruefi_is_found, ahb_table  # type:ignore[return-value]
 
 
 # Logging functions
