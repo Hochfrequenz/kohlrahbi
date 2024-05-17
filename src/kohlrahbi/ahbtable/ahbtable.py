@@ -91,7 +91,7 @@ class AhbTable(BaseModel):
             self.table = pd.concat([self.table, ahb_sub_table.table], ignore_index=True)
 
     @staticmethod
-    def line_contains_only_segment_gruppe(raw_line: pd.Series[str]) -> bool:
+    def line_contains_only_segment_gruppe(raw_line: pd.Series) -> bool:  # type:ignore[type-arg]
         """
         Returns true if the given raw line only contains some meaningful data in the "Segment Gruppe" key
         """
