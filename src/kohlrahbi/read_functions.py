@@ -48,7 +48,7 @@ def table_header_starts_with_text_edifact_struktur(table: Table) -> bool:
     return table.cell(row_idx=0, col_idx=0).text.strip() == "EDIFACT Struktur"
 
 
-def is_item_header_of_change_history_section(item: Paragraph | Table | None, style_name: str) -> bool:
+def is_item_header_of_change_history_section(item: Paragraph | Table | None, style_name: str) -> TypeGuard[Paragraph]:
     """
     Checks if the given item is a header of the change history section.
     """
@@ -57,14 +57,14 @@ def is_item_header_of_change_history_section(item: Paragraph | Table | None, sty
     return isinstance(item, Paragraph) and "Änderungshistorie" in item.text and "Heading" in style_name
 
 
-def is_item_text_paragraph(item: Paragraph | Table | None, style_name: str) -> bool:
+def is_item_text_paragraph(item: Paragraph | Table | None, style_name: str) -> TypeGuard[Paragraph]:
     """
     Checks if the given item is a text paragraph.
     """
     return isinstance(item, Paragraph) and "Heading" not in style_name
 
 
-def is_item_table_with_pruefidentifikatoren(item: Paragraph | Table | None) -> bool:
+def is_item_table_with_pruefidentifikatoren(item: Paragraph | Table | None) -> TypeGuard[Table]:
     """
     Check if the item is a Table and contains Pruefidentifikatoren.
 
@@ -81,7 +81,7 @@ def is_item_headless_table(
     item: Paragraph | Table | None,
     # seed: Seed | None,
     ahb_table: AhbTable | None,
-) -> bool:
+) -> TypeGuard[Table]:
     """
     Checks if the given item is a headless table.
 
@@ -97,7 +97,7 @@ def is_item_headless_table(
     return isinstance(item, Table) and ahb_table is not None
 
 
-def get_ahb_table(document, pruefi: str) -> Optional[AhbTable]:
+def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
     """
     Reads a docx file and extracts all information for a given Prüfidentifikator.
     If the Prüfidentifikator is not found or we reach the end of the AHB document
@@ -111,8 +111,8 @@ def get_ahb_table(document, pruefi: str) -> Optional[AhbTable]:
         AhbTable or None: The extracted AHB table or None if not found
     """
 
-    ahb_table = None
-    seed = None
+    ahb_table: AhbTable | None = None
+    seed: Seed | None = None
     searched_pruefi_is_found = False
 
     for item in get_all_paragraphs_and_tables(document):
@@ -133,7 +133,7 @@ def get_ahb_table(document, pruefi: str) -> Optional[AhbTable]:
 
         searched_pruefi_is_found, ahb_table = process_table(item, pruefi, searched_pruefi_is_found, ahb_table, seed)
 
-    if ahb_table:
+    if ahb_table is not None:
         ahb_table.sanitize()
         return ahb_table
 
@@ -141,29 +141,39 @@ def get_ahb_table(document, pruefi: str) -> Optional[AhbTable]:
     return None
 
 
-def get_style_name(item) -> str:
+def get_style_name(item: Paragraph | Table) -> str:
     """Extracts and normalizes the style name of a document item."""
-    return item.style.name if item.style else "None"
+    return item.style.name if item.style else "None"  # type:ignore[no-any-return]
 
 
-def reached_end_of_document(style_name, item) -> bool:
+def reached_end_of_document(style_name: str, item: Paragraph | Table | None) -> bool:
     """Checks if the current item marks the end of the document."""
     return is_item_header_of_change_history_section(item, style_name)
 
 
-def update_seed(item, seed):
+def update_seed(item: Paragraph | Table | None, seed: Seed | None) -> Seed | None:
     """Updates the seed if the current item is a table with Prüfidentifikatoren."""
     if is_item_table_with_pruefidentifikatoren(item):
         return Seed.from_table(docx_table=item)
     return seed
 
 
-def should_end_search(pruefi, seed, searched_pruefi_is_found):
+def should_end_search(pruefi: str, seed: Seed | None, searched_pruefi_is_found: bool) -> bool:
     """Determines if the search for the AHB table should end."""
-    return seed and pruefi not in seed.pruefidentifikatoren and searched_pruefi_is_found
+    if seed is None:
+        return False
+    if pruefi not in seed.pruefidentifikatoren:
+        return False
+    return searched_pruefi_is_found
 
 
-def process_table(item, pruefi, searched_pruefi_is_found, ahb_table, seed=None):
+def process_table(
+    item: Paragraph | Table | None,
+    pruefi: str,
+    searched_pruefi_is_found: bool,
+    ahb_table: AhbTable,
+    seed: Seed | None = None,
+) -> tuple[bool, AhbTable]:
     """Processes tables to find and build the AHB table."""
     if is_item_table_with_pruefidentifikatoren(item):
         seed = Seed.from_table(docx_table=item)
@@ -176,6 +186,7 @@ def process_table(item, pruefi, searched_pruefi_is_found, ahb_table, seed=None):
 
     # elif is_item_headless_table(item, seed, ahb_table):
     elif is_item_headless_table(item, ahb_table):
+        assert seed is not None
         ahb_sub_table = AhbSubTable.from_headless_table(docx_table=item, tmd=seed)
         ahb_table.append_ahb_sub_table(ahb_sub_table=ahb_sub_table)
 
@@ -183,28 +194,28 @@ def process_table(item, pruefi, searched_pruefi_is_found, ahb_table, seed=None):
 
 
 # Logging functions
-def log_end_of_document(pruefi):
+def log_end_of_document(pruefi: str) -> None:
     """
     Logs that the end of the document was reached before finding the table for a given Prüfi.
     """
     logger.info("Reached the end of the document before finding the table for Prüfi '%s'.", pruefi)
 
 
-def log_end_of_ahb_table(pruefi):
+def log_end_of_ahb_table(pruefi: str) -> None:
     """
     Logs that the end of the AHB table was reached for a given Prüfi.
     """
     logger.info("Reached the end of the AHB table for Prüfi '%s'.", pruefi)
 
 
-def log_found_pruefi(pruefi):
+def log_found_pruefi(pruefi: str) -> None:
     """
     Logs that the AHB table for a given Prüfi was found.
     """
     logger.info("Found the AHB table for Prüfi '%s'.", pruefi)
 
 
-def log_pruefi_not_found(pruefi):
+def log_pruefi_not_found(pruefi: str) -> None:
     """
     Logs that the Prüfi was not found in the provided document.
     """
@@ -275,7 +286,9 @@ def is_last_row_unt_0062(item: Table | Paragraph) -> bool:
     return isinstance(item, Table) and "UNT\t0062" == item.cell(row_idx=-1, col_idx=0).text.strip()
 
 
-def is_relevant_pruefi_table(item: Paragraph | Table, seed: Seed, edifact_format) -> TypeGuard[Table]:
+def is_relevant_pruefi_table(
+    item: Paragraph | Table, seed: Seed | None, edifact_format: EdifactFormat
+) -> TypeGuard[Table]:
     """compares new pruefis to last pruefi and thus checks whether new table"""
     return (
         isinstance(item, Table)

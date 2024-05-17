@@ -48,7 +48,7 @@ def process_ahb_table(
     pruefi: str,
     output_path: Path,
     file_type: str,
-):
+) -> None:
     """
     Process the ahb table.
     """
@@ -98,7 +98,7 @@ def process_pruefi(
     path_to_ahb_docx_file: Path,
     output_path: Path,
     file_type: str,
-):
+) -> None:
     """
     Process one pruefi.
     If the input path ends with .docx, we assume that the file containing the pruefi is given.
@@ -183,7 +183,7 @@ def extract_pruefis_from_table(table: Table) -> list[str]:
 
 def table_header_contains_text_pruefidentifikator(table: Table) -> bool:
     """Checks if the table header contains the text 'Prüfidentifikator'."""
-    return table.row_cells(0)[-1].paragraphs[-1].text.startswith("Prüfidentifikator")
+    return table.row_cells(0)[-1].paragraphs[-1].text.startswith("Prüfidentifikator")  # type:ignore[no-any-return]
 
 
 def get_pruefi_to_file_mapping(basic_input_path: Path, format_version: EdifactFormatVersion) -> dict[str, str]:

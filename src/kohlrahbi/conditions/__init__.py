@@ -45,7 +45,6 @@ def scrape_conditions(
     for edifact_format, files in all_format_files.items():
         for file in files:
             # pylint: disable=too-many-function-args
-            # type: ignore[call-arg, arg-type]
             path: Path = basic_input_path / path_to_file / Path(file)
             doc = docx.Document(str(path.absolute()))
             logger.info("Start scraping conditions for %s in %s", edifact_format, file)

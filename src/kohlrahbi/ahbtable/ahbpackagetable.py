@@ -52,7 +52,7 @@ class AhbPackageTable(BaseModel):
         logger.info("The package conditions for %s were collected.", edifact_format)
         return conditions_dict
 
-    def provide_packages(self, edifact_format: EdifactFormat):
+    def provide_packages(self, edifact_format: EdifactFormat) -> None:
         """collect conditions from package table and store them in conditions dict."""
         package_dict: dict[EdifactFormat, dict[str, str]] = {edifact_format: {}}
 
@@ -80,10 +80,11 @@ class AhbPackageTable(BaseModel):
         logger.info("Packages for %s were collected.", edifact_format)
         self.package_dict = package_dict
 
-    def include_package_dict(self, to_add=dict[EdifactFormat, dict[str, str]] | None) -> None:
+    def include_package_dict(self, to_add: dict[EdifactFormat, dict[str, str]] | None) -> None:
         """Include a dict of conditions to the conditions_dict"""
         if to_add is None:
             logger.info("Packages dict to be added is empty.")
+            return
         for edifact_format, edi_cond_dict in to_add.items():
             for package_key, package_conditions in edi_cond_dict.items():
                 if edifact_format in self.package_dict:

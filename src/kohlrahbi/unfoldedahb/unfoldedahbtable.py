@@ -71,7 +71,7 @@ class UnfoldedAhb(BaseModel):
     unfolded_ahb_lines: list[UnfoldedAhbLine]
 
     @classmethod
-    def from_ahb_table(cls, ahb_table: AhbTable, pruefi: str):
+    def from_ahb_table(cls, ahb_table: AhbTable, pruefi: str) -> "UnfoldedAhb":
         """
         This function creates an UnfoldedAhb from an AhbTable.
         """

@@ -157,7 +157,7 @@ class TableHeader(BaseModel):
         return cls(pruefi_meta_data=pruefi_meta_data)
 
     @staticmethod
-    def initialize_collector(paragraph) -> Dict[str, Dict[str, str | int]]:
+    def initialize_collector(paragraph: Paragraph) -> Dict[str, Dict[str, str | int]]:
         """Initialize the collector"""
         current_tabstop_positions = get_tabstop_positions(paragraph=paragraph)
         splitted_text = paragraph.text.split("\t")

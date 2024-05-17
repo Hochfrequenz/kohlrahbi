@@ -53,10 +53,11 @@ class AhbConditions(BaseModel):
         logger.info("The package conditions for %s were collected.", edifact_format)
         return conditions_dict
 
-    def include_condition_dict(self, to_add=dict[EdifactFormat, dict[str, str]] | None) -> None:
+    def include_condition_dict(self, to_add: dict[EdifactFormat, dict[str, str]] | None) -> None:
         """ " Include a dict of conditions to the conditions_dict"""
         if to_add is None:
             logger.info("Conditions dict to be added is empty.")
+            return
         for edifact_format, edi_cond_dict in to_add.items():
             for condition_key, condition_text in edi_cond_dict.items():
                 if edifact_format in self.conditions_dict:

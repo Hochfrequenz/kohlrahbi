@@ -9,7 +9,7 @@ from docx.table import _Cell
 from pydantic import BaseModel, ConfigDict
 
 from kohlrahbi.docxtablecells import BedingungCell, BodyCell, EdifactStrukturCell
-from kohlrahbi.row_type_checker import RowType
+from kohlrahbi.enums import RowType
 from kohlrahbi.seed import Seed
 
 
