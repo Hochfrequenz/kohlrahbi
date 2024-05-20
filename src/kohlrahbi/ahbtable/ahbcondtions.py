@@ -6,7 +6,7 @@ from pathlib import Path
 
 from docx.table import Table as DocxTable
 from maus.edifact import EdifactFormat
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from kohlrahbi.logger import logger
 
@@ -16,7 +16,7 @@ class AhbConditions(BaseModel):
     Class which contains a dict of conditions for each edifact format
     """
 
-    conditions_dict: dict[EdifactFormat, dict[str, str]] = {}
+    conditions_dict: dict[EdifactFormat, dict[str, str]] = Field(default_factory=dict)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
