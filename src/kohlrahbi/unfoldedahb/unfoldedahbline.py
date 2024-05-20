@@ -81,6 +81,7 @@ class UnfoldedAhbLine(BaseModel):
     segment_name: str  # Ansprechpartner
     segment_gruppe: str | None  # SG3
     segment: str | None  # CTA
+    segment_id: str | None = None  # 00009
     datenelement: str | None  # 3055
     code: str | None  # IC
     qualifier: str | None  # Name vom Ansprechpartner

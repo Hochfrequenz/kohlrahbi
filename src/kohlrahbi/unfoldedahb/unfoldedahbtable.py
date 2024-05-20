@@ -5,6 +5,7 @@ This module contains the UnfoldedAhbTable class.
 import copy
 import json
 import re
+from functools import lru_cache
 from pathlib import Path
 from uuid import uuid4
 
@@ -26,6 +27,7 @@ from kohlrahbi.unfoldedahb.unfoldedahbline import UnfoldedAhbLine
 from kohlrahbi.unfoldedahb.unfoldedahbtablemetadata import UnfoldedAhbTableMetaData
 
 _segment_group_pattern = re.compile(r"^SG\d+$")
+_segment_id_pattern = re.compile(r"^\d{5}$")
 
 
 def _lines_are_equal_when_ignoring_guid(line1: AhbLine, line2: AhbLine) -> bool:
@@ -37,6 +39,24 @@ def _lines_are_equal_when_ignoring_guid(line1: AhbLine, line2: AhbLine) -> bool:
     line1_copy.guid = None
     line2_copy.guid = None
     return line1_copy == line2_copy
+
+
+@lru_cache
+def _split_data_element_and_segment_id(value: str | None) -> tuple[str | None, str | None]:
+    """
+    returns the data element id and segment id
+    """
+    if value is None:
+        return None, None
+    datenelement_id: str | None
+    segment_id: str | None
+    if _segment_id_pattern.match(value):
+        datenelement_id = None
+        segment_id = value
+    else:
+        datenelement_id = value
+        segment_id = None
+    return datenelement_id, segment_id
 
 
 def _keep_guids_of_unchanged_lines_stable(
@@ -159,7 +179,8 @@ class UnfoldedAhb(BaseModel):
                         segment_name=current_section_name,
                         segment_gruppe=row["Segment Gruppe"] or None,
                         segment=row["Segment"] or None,
-                        datenelement=row["Datenelement"] or None,
+                        datenelement=_split_data_element_and_segment_id(row["Datenelement"])[0],
+                        segment_id=_split_data_element_and_segment_id(row["Datenelement"])[1],
                         code=value_pool_entry,
                         qualifier="",
                         beschreibung=description,
@@ -284,6 +305,8 @@ class UnfoldedAhb(BaseModel):
             and not ahb_row["Datenelement"]
         ):
             return True
+        if ahb_row["Datenelement"] is not None and _segment_id_pattern.match(ahb_row["Datenelement"]):
+            return True
         return False
 
     @staticmethod
@@ -325,6 +348,7 @@ class UnfoldedAhb(BaseModel):
                     segment_group_key=unfolded_ahb_line.segment_gruppe,
                     segment_code=unfolded_ahb_line.segment,
                     data_element=unfolded_ahb_line.datenelement,
+                    segment_id=unfolded_ahb_line.segment_id,
                     value_pool_entry=unfolded_ahb_line.code,
                     name=unfolded_ahb_line.beschreibung or unfolded_ahb_line.qualifier,
                     ahb_expression=unfolded_ahb_line.bedingung_ausdruck,
