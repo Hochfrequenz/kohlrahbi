@@ -188,4 +188,5 @@ class TableHeader(BaseModel):
         The order of the Prüfidentifikatoren is the same as in the docx table headers.
         So there should be no duplicates.
         """
+        # pylint:disable=not-an-iterable
         return [pruefi.pruefidentifikator for pruefi in self.pruefi_meta_data]

@@ -148,6 +148,7 @@ def extract_pruefis_from_docx(docx_path: Path) -> Dict[str, str]:
             and table_header_starts_with_text_edifact_struktur(item)
             and table_header_contains_text_pruefidentifikator(item)
         ):
+            # pylint:disable=not-an-iterable
             pruefis.update({pruefi: docx_path.name for pruefi in extract_pruefis_from_table(item)})
     return pruefis
 

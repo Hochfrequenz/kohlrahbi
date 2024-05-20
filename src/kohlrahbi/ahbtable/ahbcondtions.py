@@ -60,15 +60,19 @@ class AhbConditions(BaseModel):
             return
         for edifact_format, edi_cond_dict in to_add.items():
             for condition_key, condition_text in edi_cond_dict.items():
-                if edifact_format in self.conditions_dict:
+                if edifact_format in self.conditions_dict:  # pylint:disable=unsupported-membership-test
                     if (
+                        # pylint:disable=unsubscriptable-object
                         condition_key in self.conditions_dict[edifact_format]
                         and len(condition_text) > len(self.conditions_dict[edifact_format][condition_key])
+                        # pylint:disable=unsubscriptable-object
                         or condition_key not in self.conditions_dict[edifact_format]
                     ):
                         self.conditions_dict[edifact_format][condition_key] = condition_text
                 else:
-                    self.conditions_dict[edifact_format] = {condition_key: condition_text}
+                    self.conditions_dict[edifact_format] = {  # pylint:disable=unsupported-assignment-operation
+                        condition_key: condition_text
+                    }
 
         logger.info("Conditions were updated.")
 
@@ -78,6 +82,7 @@ class AhbConditions(BaseModel):
         The file will be stored in the directory:
             'output_directory_path/<edifact_format>/conditions.json'
         """
+        # pylint:disable=no-member
         for edifact_format, format_cond_dict in self.conditions_dict.items():
             condition_json_output_directory_path = output_directory_path / str(edifact_format)
             condition_json_output_directory_path.mkdir(parents=True, exist_ok=True)
