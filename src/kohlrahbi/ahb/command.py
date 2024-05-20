@@ -93,7 +93,7 @@ def ahb(
     pruefis: list[str],
     edi_energy_mirror_path: Path,
     output_path: Path,
-    file_type: list[AhbExportFileFormat],
+    file_type: tuple[AhbExportFileFormat, ...],
     format_version: EdifactFormatVersion | str,
     assume_yes: bool,  # pylint: disable=unused-argument
     # it is used by the callback function of the output-path

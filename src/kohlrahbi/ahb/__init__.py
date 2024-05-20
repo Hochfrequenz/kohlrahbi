@@ -47,7 +47,7 @@ def process_ahb_table(
     ahb_table: AhbTable,
     pruefi: str,
     output_path: Path,
-    file_type: list[AhbExportFileFormat],
+    file_type: tuple[AhbExportFileFormat, ...],
 ) -> None:
     """
     Process the ahb table.
@@ -96,7 +96,7 @@ def process_pruefi(
     pruefi: str,
     path_to_ahb_docx_file: Path,
     output_path: Path,
-    file_type: list[AhbExportFileFormat],
+    file_type: tuple[AhbExportFileFormat, ...],
 ) -> None:
     """
     Process one pruefi.
@@ -213,7 +213,7 @@ def scrape_pruefis(
     pruefis: list[str],
     basic_input_path: Path,
     output_path: Path,
-    file_type: list[AhbExportFileFormat],
+    file_type: tuple[AhbExportFileFormat, ...],
     format_version: EdifactFormatVersion,
 ) -> None:
     """
