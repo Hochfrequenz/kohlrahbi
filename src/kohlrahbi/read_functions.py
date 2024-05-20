@@ -174,7 +174,7 @@ def process_table(
     """Processes tables to find and build the AHB table."""
     if is_item_table_with_pruefidentifikatoren(item):
         seed = Seed.from_table(docx_table=item)
-
+        # pylint:disable=unsupported-membership-test
         if pruefi in seed.pruefidentifikatoren and not searched_pruefi_is_found:
             log_found_pruefi(pruefi)
             ahb_sub_table = AhbSubTable.from_table_with_header(docx_table=item)

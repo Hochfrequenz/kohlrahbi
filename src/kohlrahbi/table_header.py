@@ -8,7 +8,7 @@ from typing import Dict, List, Mapping, cast
 from docx.table import _Cell
 from docx.text.paragraph import Paragraph
 from more_itertools import first, last
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class HeaderSection(StrEnum):
@@ -93,7 +93,7 @@ class TableHeader(BaseModel):
     It contains the information about the Prüfidentifikatoren.
     """
 
-    pruefi_meta_data: List[PruefiMetaData] = []
+    pruefi_meta_data: List[PruefiMetaData] = Field(default_factory=list)
 
     @classmethod
     def from_header_cell(cls, row_cell: _Cell) -> "TableHeader":
@@ -188,4 +188,5 @@ class TableHeader(BaseModel):
         The order of the Prüfidentifikatoren is the same as in the docx table headers.
         So there should be no duplicates.
         """
+        # pylint:disable=not-an-iterable
         return [pruefi.pruefidentifikator for pruefi in self.pruefi_meta_data]

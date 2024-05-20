@@ -3,7 +3,7 @@ This module provides a class to collect information which of need for all parsin
 """
 
 from docx.table import Table
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from kohlrahbi.enums import RowType
 from kohlrahbi.table_header import PruefiMetaData, TableHeader, get_tabstop_positions
@@ -15,13 +15,13 @@ class Seed(BaseModel):
     helper class to store all values to extract the AHB and the final AHB as dataframe
     """
 
-    pruefidentifikatoren: list[str] = []
-    column_headers: list[str] = []
+    pruefidentifikatoren: list[str] = Field(default_factory=list)
+    column_headers: list[str] = Field(default_factory=list)
     edifact_struktur_left_indent_position: int = 0
     middle_cell_left_indent_position: int = 0
-    tabstop_positions: list[int] = []
-    last_two_row_types: list[RowType] = []
-    metadata: list[PruefiMetaData] = []
+    tabstop_positions: list[int] = Field(default_factory=list)
+    last_two_row_types: list[RowType] = Field(default_factory=list)
+    metadata: list[PruefiMetaData] = Field(default_factory=list)
 
     # why this classmethod?
     # to decouple the data structure of Elixir from the input data

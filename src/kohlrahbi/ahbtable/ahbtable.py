@@ -8,7 +8,7 @@ from typing import Union
 import pandas as pd
 from maus.edifact import get_format_of_pruefidentifikator
 from more_itertools import peekable
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from kohlrahbi.ahbtable.ahbsubtable import AhbSubTable
 from kohlrahbi.logger import logger
@@ -32,7 +32,7 @@ class AhbTable(BaseModel):
     """
 
     table: pd.DataFrame
-    metadata: list[PruefiMetaData] = []
+    metadata: list[PruefiMetaData] = Field(default_factory=list)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
