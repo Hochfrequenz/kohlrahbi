@@ -118,6 +118,7 @@ def process_pruefi(
         return
 
     process_ahb_table(ahb_table, pruefi, output_path, file_type)
+    del ahb_table.table
     del ahb_table
     del doc
     gc.collect()
