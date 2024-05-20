@@ -5,6 +5,7 @@ This module contains the UnfoldedAhbTable class.
 import copy
 import json
 import re
+from functools import lru_cache
 from pathlib import Path
 from uuid import uuid4
 
@@ -26,7 +27,7 @@ from kohlrahbi.unfoldedahb.unfoldedahbline import UnfoldedAhbLine
 from kohlrahbi.unfoldedahb.unfoldedahbtablemetadata import UnfoldedAhbTableMetaData
 
 _segment_group_pattern = re.compile(r"^SG\d+$")
-_segment_id_pattern = re.compile("^\d{5}$")
+_segment_id_pattern = re.compile(r"^\d{5}$")
 
 
 def _lines_are_equal_when_ignoring_guid(line1: AhbLine, line2: AhbLine) -> bool:
@@ -38,6 +39,22 @@ def _lines_are_equal_when_ignoring_guid(line1: AhbLine, line2: AhbLine) -> bool:
     line1_copy.guid = None
     line2_copy.guid = None
     return line1_copy == line2_copy
+
+
+@lru_cache
+def _split_data_element_and_segment_id(value: str | None) -> tuple[str | None, str | None]:
+    """
+    returns the data element id and segment id
+    """
+    datenelement_id: str | None
+    segment_id: str | None
+    if _segment_id_pattern.match(value):
+        datenelement_id = None
+        segment_id = value
+    else:
+        datenelement_id = value
+        segment_id = None
+    return datenelement_id, segment_id
 
 
 def _keep_guids_of_unchanged_lines_stable(
@@ -154,22 +171,14 @@ class UnfoldedAhb(BaseModel):
                 value_pool_entry, description = FlatAhbCsvReader.separate_value_pool_entry_and_name(
                     row["Codes und Qualifier"], row["Beschreibung"]
                 )
-                datenelement: str | None
-                segment_id: str | None
-                if _segment_id_pattern.match(row["Datenelement"]):
-                    datenelement = None
-                    segment_id = row["Datenelement"]
-                else:
-                    datenelement = row["Datenelement"]
-                    segment_id = None
                 unfolded_ahb_lines.append(
                     UnfoldedAhbLine(
                         index=index,
                         segment_name=current_section_name,
                         segment_gruppe=row["Segment Gruppe"] or None,
                         segment=row["Segment"] or None,
-                        datenelement=datenelement,
-                        segment_id=segment_id,
+                        datenelement=_split_data_element_and_segment_id(row["Datenelement"])[0],
+                        segment_id=_split_data_element_and_segment_id(row["Datenelement"])[1],
                         code=value_pool_entry,
                         qualifier="",
                         beschreibung=description,
