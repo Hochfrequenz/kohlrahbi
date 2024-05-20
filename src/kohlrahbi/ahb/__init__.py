@@ -48,18 +48,18 @@ def process_ahb_table(
     ahb_table: AhbTable,
     pruefi: str,
     output_path: Path,
-    file_type: str,
+    file_type: tuple[AhbExportFileFormat, ...],
 ) -> None:
     """
     Process the ahb table.
     """
     unfolded_ahb = UnfoldedAhb.from_ahb_table(ahb_table=ahb_table, pruefi=pruefi)
 
-    if "xlsx" in file_type:
+    if AhbExportFileFormat.XLSX in file_type:
         unfolded_ahb.dump_xlsx(output_path)
-    if "flatahb" in file_type:
+    if AhbExportFileFormat.FLATAHB in file_type:
         unfolded_ahb.dump_flatahb_json(output_path)
-    if "csv" in file_type:
+    if AhbExportFileFormat.CSV in file_type:
         unfolded_ahb.dump_csv(output_path)
     del unfolded_ahb
 
@@ -94,12 +94,11 @@ def validate_pruefis(pruefis: list[str]) -> list[str]:
     return valid_pruefis
 
 
-# pylint: disable=too-many-arguments
 def process_pruefi(
     pruefi: str,
     path_to_ahb_docx_file: Path,
     output_path: Path,
-    file_type: str,
+    file_type: tuple[AhbExportFileFormat, ...],
 ) -> None:
     """
     Process one pruefi.
@@ -220,7 +219,7 @@ def scrape_pruefis(
     pruefis: list[str],
     basic_input_path: Path,
     output_path: Path,
-    file_type: AhbExportFileFormat,
+    file_type: tuple[AhbExportFileFormat, ...],
     format_version: EdifactFormatVersion,
 ) -> None:
     """
