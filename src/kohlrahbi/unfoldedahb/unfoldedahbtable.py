@@ -26,6 +26,7 @@ from kohlrahbi.unfoldedahb.unfoldedahbline import UnfoldedAhbLine
 from kohlrahbi.unfoldedahb.unfoldedahbtablemetadata import UnfoldedAhbTableMetaData
 
 _segment_group_pattern = re.compile(r"^SG\d+$")
+_segment_id_pattern = re.compile("^\d{5}$")
 
 
 def _lines_are_equal_when_ignoring_guid(line1: AhbLine, line2: AhbLine) -> bool:
@@ -153,13 +154,22 @@ class UnfoldedAhb(BaseModel):
                 value_pool_entry, description = FlatAhbCsvReader.separate_value_pool_entry_and_name(
                     row["Codes und Qualifier"], row["Beschreibung"]
                 )
+                datenelement: str | None
+                segment_id: str | None
+                if _segment_id_pattern.match(row["Datenelement"]):
+                    datenelement = None
+                    segment_id = row["Datenelement"]
+                else:
+                    datenelement = row["Datenelement"]
+                    segment_id = None
                 unfolded_ahb_lines.append(
                     UnfoldedAhbLine(
                         index=index,
                         segment_name=current_section_name,
                         segment_gruppe=row["Segment Gruppe"] or None,
                         segment=row["Segment"] or None,
-                        datenelement=row["Datenelement"] or None,
+                        datenelement=datenelement,
+                        segment_id=segment_id,
                         code=value_pool_entry,
                         qualifier="",
                         beschreibung=description,
@@ -284,6 +294,8 @@ class UnfoldedAhb(BaseModel):
             and not ahb_row["Datenelement"]
         ):
             return True
+        if ahb_row["Datenelement"] is not None and _segment_id_pattern.match(ahb_row["Datenelement"]):
+            return True
         return False
 
     @staticmethod
@@ -325,6 +337,7 @@ class UnfoldedAhb(BaseModel):
                     segment_group_key=unfolded_ahb_line.segment_gruppe,
                     segment_code=unfolded_ahb_line.segment,
                     data_element=unfolded_ahb_line.datenelement,
+                    segment_id=unfolded_ahb_line.segment_id,
                     value_pool_entry=unfolded_ahb_line.code,
                     name=unfolded_ahb_line.beschreibung or unfolded_ahb_line.qualifier,
                     ahb_expression=unfolded_ahb_line.bedingung_ausdruck,
