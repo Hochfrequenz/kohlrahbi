@@ -46,6 +46,8 @@ def _split_data_element_and_segment_id(value: str | None) -> tuple[str | None, s
     """
     returns the data element id and segment id
     """
+    if value is None:
+        return None, None
     datenelement_id: str | None
     segment_id: str | None
     if _segment_id_pattern.match(value):
