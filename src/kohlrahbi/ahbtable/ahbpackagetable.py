@@ -9,7 +9,7 @@ from pathlib import Path
 import pandas as pd
 from docx.table import Table as DocxTable
 from maus.edifact import EdifactFormat
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from kohlrahbi.ahbtable.ahbcondtions import parse_conditions_from_string
 from kohlrahbi.logger import logger
@@ -23,7 +23,7 @@ class AhbPackageTable(BaseModel):
     """
 
     table: pd.DataFrame = pd.DataFrame()
-    package_dict: dict[EdifactFormat, dict[str, str]] = {}
+    package_dict: dict[EdifactFormat, dict[str, str]] = Field(default_factory=dict)
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @classmethod
