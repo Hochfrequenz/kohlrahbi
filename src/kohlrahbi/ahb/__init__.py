@@ -3,6 +3,7 @@ This module contains the functions to scrape the AHBs for Pruefidentifikatoren.
 """
 
 import fnmatch
+import gc
 import re
 from datetime import date
 from pathlib import Path
@@ -60,6 +61,7 @@ def process_ahb_table(
         unfolded_ahb.dump_flatahb_json(output_path)
     if AhbExportFileFormat.CSV in file_type:
         unfolded_ahb.dump_csv(output_path)
+    del unfolded_ahb
 
 
 # pylint:disable=anomalous-backslash-in-string
@@ -115,6 +117,10 @@ def process_pruefi(
         return
 
     process_ahb_table(ahb_table, pruefi, output_path, file_type)
+    del ahb_table.table
+    del ahb_table
+    del doc
+    gc.collect()
 
 
 def get_ahb_documents_path(base_path: Path, version: str) -> Path:
