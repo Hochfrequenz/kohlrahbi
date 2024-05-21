@@ -2,6 +2,7 @@
 tests all the features the kohlrahbi package provides to process Docx files (by using the docx package)
 """
 
+from pathlib import Path
 from typing import Generator
 
 import pytest
@@ -11,6 +12,7 @@ from docx.document import Document as DocumentClass
 from docx.table import Table
 from docx.text.paragraph import Paragraph
 
+from kohlrahbi.docxfilefinder import DocxFileFinder
 from kohlrahbi.read_functions import get_all_paragraphs_and_tables
 
 
@@ -40,3 +42,38 @@ class TestDocxExtensions:
         actual = list(get_all_paragraphs_and_tables(create_docx_from_filename))
         assert len(actual) == expected_length
         assert all([isinstance(x, Table) or isinstance(x, Paragraph) for x in actual]) is True
+
+    @pytest.mark.parametrize(
+        "all_file_paths, filtered_file_paths",
+        [
+            pytest.param(
+                [Path("IFTSTAAHB-informatorischeLesefassung2.0e_99991231_20231001.docx")],
+                [Path("IFTSTAAHB-informatorischeLesefassung2.0e_99991231_20231001.docx")],
+                id="One file",
+            ),
+            pytest.param(
+                [
+                    Path("IFTSTAAHB-informatorischeLesefassung2.0e_99991231_20231001.docx"),
+                    Path(
+                        "IFTSTAAHB-informatorischeLesefassung2.0e-AußerordentlicheVeröffentlichung_20231211_20231001.docx"
+                    ),
+                    Path(
+                        "IFTSTAAHB-informatorischeLesefassung2.0eKonsolidierteLesefassungmitFehlerkorrekturenStand11.03.2024_99991231_20240311.docx"
+                    ),
+                    Path(
+                        "IFTSTAAHB-informatorischeLesefassung2.0eKonsolidierteLesefassungmitFehlerkorrekturenStand12.12.2023_20240310_20231212.docx"
+                    ),
+                ],
+                [
+                    Path(
+                        "IFTSTAAHB-informatorischeLesefassung2.0eKonsolidierteLesefassungmitFehlerkorrekturenStand11.03.2024_99991231_20240311.docx"
+                    )
+                ],
+                id="Several files",
+            ),
+        ],
+    )
+    def test_filter_lastest_version(self, all_file_paths, filtered_file_paths):
+        input_file_dict = {"FORMAT": all_file_paths}
+        actual = DocxFileFinder.filter_latest_version(input_file_dict)
+        assert actual == filtered_file_paths
