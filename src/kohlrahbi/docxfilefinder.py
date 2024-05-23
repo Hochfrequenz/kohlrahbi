@@ -112,14 +112,20 @@ class DocxFileFinder(BaseModel):
             if len(group_items) == 1:
                 result.append(group_items[0])
             else:
-                for path in group_items:
-                    if (
-                        "KonsolidierteLesefassungmitFehlerkorrekturen" in path.name
+                most_recent_file = max(
+                    (
+                        path
+                        for path in group_items
+                        if "KonsolidierteLesefassungmitFehlerkorrekturen" in path.name
                         or "AußerordentlicheVeröffentlichung" in path.name
-                    ):
-                        result.append(path)
-                    else:
+                    ),
+                    key=lambda path: (int(path.stem.split("_")[-1])),
+                )
+                for path in group_items:
+                    if path != most_recent_file:
                         logger.debug("Ignoring file %s", path.name)
+                    else:
+                        result.append(most_recent_file)
         return result
 
     def filter_for_latest_mig_and_ahb_docx_files(self) -> None:
