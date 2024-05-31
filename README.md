@@ -13,6 +13,8 @@
 Kohlrahbi generates machine-readable files from AHB documents.
 Kohlrahbi's sister is [MIG_mose](https://github.com/Hochfrequenz/migmose).
 
+If you're looking for a tool to process the **official** BDEW XMLs for AHBs (available since 2024), checkout [fundamend](https://github.com/Hochfrequenz/xml-fundamend-python).
+
 ## Rationale
 
 German utilities exchange data using [EDIFACT](https://en.wikipedia.org/wiki/EDIFACT); This is called market communication (mako).
