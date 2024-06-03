@@ -39,7 +39,7 @@ types-freezegun==1.1.10
     # via -r dev_requirements/requirements-type_check.in
 types-pytz==2024.1.0.20240417
     # via pandas-stubs
-types-requests==2.32.0.20240523
+types-requests==2.32.0.20240602
     # via -r dev_requirements/requirements-type_check.in
 typing-extensions==4.11.0
     # via mypy
