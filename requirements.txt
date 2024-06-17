@@ -26,7 +26,7 @@ maus==0.5.0
     # via kohlrahbi (pyproject.toml)
 more-itertools==10.3.0
     # via maus
-numpy==1.26.4
+numpy==2.0.0
     # via pandas
 openpyxl==3.1.4
     # via kohlrahbi (pyproject.toml)
