@@ -505,6 +505,15 @@ def _remove_irrelevant_lines(lines: list[AhbLine]) -> list[AhbLine]:
             and line_dict["section_name"] is not None
             and line_dict["ahb_expression"] is None
         ) or (is_ahb_line_only_segment_group_header and is_next_ahb_line_empty)
-        if not is_empty_ahb_line:
+
+        is_double_line = (
+            line_dict["data_element"] is None
+            and line_dict["name"] == ""
+            and line_dict["segment_code"] is None
+            and line_dict["value_pool_entry"] is None
+            and line_dict["segment_group_key"] is not None
+            and line_dict["section_name"] is not None
+        )
+        if not is_double_line and not is_empty_ahb_line:
             reduced_lines.append(line)
     return reduced_lines
