@@ -352,7 +352,7 @@ class UnfoldedAhb(BaseModel):
                     value_pool_entry=unfolded_ahb_line.code,
                     name=unfolded_ahb_line.beschreibung or unfolded_ahb_line.qualifier,
                     ahb_expression=unfolded_ahb_line.bedingung_ausdruck,
-                    section_name=unfolded_ahb_line.segment_name,
+                    section_name=unfolded_ahb_line.segment_name if unfolded_ahb_line.segment is not None else None,
                     index=unfolded_ahb_line.index,
                 )
             )
