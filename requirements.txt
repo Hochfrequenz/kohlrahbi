@@ -28,7 +28,7 @@ more-itertools==10.3.0
     # via maus
 numpy==2.0.0
     # via pandas
-openpyxl==3.1.4
+openpyxl==3.1.5
     # via kohlrahbi (pyproject.toml)
 packaging==24.1
     # via marshmallow
