@@ -19,7 +19,7 @@ numpy==2.0.0
     # via
     #   pandas
     #   pandas-stubs
-packaging==24.0
+packaging==24.1
     # via pytest
 pandas==2.2.2
     # via -r requirements-type_check.in
