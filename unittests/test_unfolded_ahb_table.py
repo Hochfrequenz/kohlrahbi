@@ -111,7 +111,7 @@ class TestUnfoldedAhbTable:
             lines=[
                 AhbLine(
                     guid=None,
-                    section_name="Ansprechpartner",
+                    section_name=None,
                     segment_group_key="SG3",
                     segment_code=None,
                     data_element=None,
@@ -122,7 +122,7 @@ class TestUnfoldedAhbTable:
                 ),
                 AhbLine(
                     guid=None,
-                    section_name="Ansprechpartner",
+                    section_name=None,
                     segment_group_key="SG3",
                     segment_code=None,
                     data_element=None,
