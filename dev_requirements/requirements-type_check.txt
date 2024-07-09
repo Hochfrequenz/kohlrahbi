@@ -15,11 +15,11 @@ networkx==3.3
     # via networkx-stubs
 networkx-stubs==0.0.1
     # via -r requirements-type_check.in
-numpy==1.26.4
+numpy==2.0.0
     # via
     #   pandas
     #   pandas-stubs
-packaging==24.0
+packaging==24.1
     # via pytest
 pandas==2.2.2
     # via -r requirements-type_check.in
