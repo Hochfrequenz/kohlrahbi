@@ -1,9 +1,10 @@
+import pytest
 from maus.edifact import EdifactFormat
 from maus.models.anwendungshandbuch import AhbLine, AhbMetaInformation, FlatAnwendungshandbuch
 
 from kohlrahbi.unfoldedahb import UnfoldedAhbTableMetaData
 from kohlrahbi.unfoldedahb.unfoldedahbline import UnfoldedAhbLine
-from kohlrahbi.unfoldedahb.unfoldedahbtable import UnfoldedAhb
+from kohlrahbi.unfoldedahb.unfoldedahbtable import UnfoldedAhb, _remove_irrelevant_lines
 
 
 class TestUnfoldedAhbTable:
@@ -204,3 +205,124 @@ class TestUnfoldedAhbTable:
 
     def test_convert_to_dataframe(self):
         pass
+
+    @pytest.mark.parametrize(
+        "input_lines, expected_output",
+        [
+            pytest.param(
+                [
+                    AhbLine(
+                        guid=None,
+                        section_name="Ansprechpartner",
+                        segment_group_key="SG3",
+                        segment_code="CTA",
+                        data_element="3139",
+                        value_pool_entry="IC",
+                        name="Informationskontakt",
+                        ahb_expression="X",
+                        index=3,
+                    ),
+                    AhbLine(
+                        guid=None,
+                        section_name="Ansprechpartner",
+                        segment_group_key="SG3",
+                        segment_code="CTA",
+                        data_element="3412",
+                        value_pool_entry=None,
+                        name="Name vom Ansprechpartner",
+                        ahb_expression="X",
+                        index=4,
+                    ),
+                ],
+                [
+                    AhbLine(
+                        guid=None,
+                        section_name="Ansprechpartner",
+                        segment_group_key="SG3",
+                        segment_code="CTA",
+                        data_element="3139",
+                        value_pool_entry="IC",
+                        name="Informationskontakt",
+                        ahb_expression="X",
+                        index=3,
+                    ),
+                    AhbLine(
+                        guid=None,
+                        section_name="Ansprechpartner",
+                        segment_group_key="SG3",
+                        segment_code="CTA",
+                        data_element="3412",
+                        value_pool_entry=None,
+                        name="Name vom Ansprechpartner",
+                        ahb_expression="X",
+                        index=4,
+                    ),
+                ],
+                id="Generic Case",
+            ),
+            pytest.param(
+                [
+                    AhbLine(
+                        guid=None,
+                        section_name=None,
+                        segment_group_key="SG3",
+                        segment_code=None,
+                        data_element=None,
+                        value_pool_entry=None,
+                        name=None,
+                        ahb_expression=None,
+                        index=3,
+                    ),
+                ],
+                [],
+                id="Next Line None and only SH_header",
+            ),
+            pytest.param(
+                [
+                    AhbLine(
+                        guid=None,
+                        section_name=None,
+                        segment_group_key="SG3",
+                        segment_code=None,
+                        data_element=None,
+                        value_pool_entry=None,
+                        name=None,
+                        ahb_expression=None,
+                        index=0,
+                    ),
+                    AhbLine(
+                        guid=None,
+                        section_name=None,
+                        segment_group_key="SG3",
+                        segment_code=None,
+                        data_element=None,
+                        value_pool_entry=None,
+                        name=None,
+                        ahb_expression=None,
+                        index=1,
+                    ),
+                ],
+                [],
+                id="Next Line empty and only SH_header",
+            ),
+            pytest.param(
+                [
+                    AhbLine(
+                        guid=None,
+                        section_name="Ansprechpartner",
+                        segment_group_key="SG3",
+                        segment_code="CTA",
+                        data_element=None,
+                        value_pool_entry=None,
+                        name=None,
+                        ahb_expression=None,
+                        index=0,
+                    ),
+                ],
+                [],
+                id="Empty Line",
+            ),
+        ],
+    )
+    def test_remove_irrelevant_lines(self, input_lines, expected_output):
+        assert _remove_irrelevant_lines(input_lines) == expected_output

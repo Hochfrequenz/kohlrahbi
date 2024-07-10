@@ -9,6 +9,7 @@ from functools import lru_cache
 from pathlib import Path
 from uuid import uuid4
 
+import attrs
 import pandas as pd
 from maus.edifact import get_format_of_pruefidentifikator
 from maus.models.anwendungshandbuch import (
@@ -357,6 +358,7 @@ class UnfoldedAhb(BaseModel):
                     index=unfolded_ahb_line.index,
                 )
             )
+        lines = _remove_irrelevant_lines(lines)
         try:
             return FlatAnwendungshandbuch(meta=meta, lines=lines)
         except ValueError:
@@ -481,3 +483,29 @@ class UnfoldedAhb(BaseModel):
             self.meta_data.pruefidentifikator,
             xlsx_output_directory_path / f"{self.meta_data.pruefidentifikator}.json",
         )
+
+
+def _remove_irrelevant_lines(lines: list[AhbLine]) -> list[AhbLine]:
+    """
+    Removes lines that are irrelevant for the AHB.
+    """
+    reduced_lines: list[AhbLine] = []
+    for line, next_line in zip(lines, lines[1:] + [None]):
+        line_dict = attrs.asdict(line)
+        next_line_dict: dict[str, str | None]
+        if next_line:
+            next_line_dict = attrs.asdict(next_line)
+        is_next_ahb_line_empty = next_line is None or next_line_dict["ahb_expression"] is None
+        is_ahb_line_only_segment_group_header = (
+            line_dict["segment_group_key"] is not None
+            and line_dict["segment_code"] is None
+            and line_dict["ahb_expression"] is None
+        )
+        is_empty_ahb_line = (
+            line_dict["segment_code"] is not None
+            and line_dict["section_name"] is not None
+            and line_dict["ahb_expression"] is None
+        ) or (is_ahb_line_only_segment_group_header and is_next_ahb_line_empty)
+        if not is_empty_ahb_line:
+            reduced_lines.append(line)
+    return reduced_lines
