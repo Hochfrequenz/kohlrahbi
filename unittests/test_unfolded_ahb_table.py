@@ -322,6 +322,46 @@ class TestUnfoldedAhbTable:
                 [],
                 id="Empty Line",
             ),
+            pytest.param(
+                [
+                    AhbLine(
+                        guid=None,
+                        section_name="Ansprechpartner",
+                        segment_group_key="SG3",
+                        segment_code=None,
+                        data_element=None,
+                        value_pool_entry=None,
+                        name=None,
+                        ahb_expression="Kann",
+                        index=0,
+                    ),
+                    AhbLine(
+                        guid=None,
+                        section_name="Ansprechpartner",
+                        segment_group_key="SG3",
+                        segment_code=None,
+                        data_element=None,
+                        value_pool_entry=None,
+                        name="",
+                        ahb_expression="Kann",
+                        index=0,
+                    ),
+                ],
+                [
+                    AhbLine(
+                        guid=None,
+                        section_name="Ansprechpartner",
+                        segment_group_key="SG3",
+                        segment_code=None,
+                        data_element=None,
+                        value_pool_entry=None,
+                        name=None,
+                        ahb_expression="Kann",
+                        index=0,
+                    ),
+                ],
+                id="Double Line",
+            ),
         ],
     )
     def test_remove_irrelevant_lines(self, input_lines, expected_output):
