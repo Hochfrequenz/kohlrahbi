@@ -7,7 +7,7 @@
 #
 iniconfig==2.0.0
     # via pytest
-mypy==1.10.0
+mypy==1.10.1
     # via -r dev_requirements/requirements-type_check.in
 mypy-extensions==1.0.0
     # via mypy
@@ -15,11 +15,11 @@ networkx==3.3
     # via networkx-stubs
 networkx-stubs==0.0.1
     # via -r dev_requirements/requirements-type_check.in
-numpy==1.26.4
+numpy==2.0.0
     # via
     #   pandas
     #   pandas-stubs
-packaging==24.0
+packaging==24.1
     # via pytest
 pandas==2.2.2
     # via -r dev_requirements/requirements-type_check.in
@@ -39,11 +39,11 @@ types-freezegun==1.1.10
     # via -r dev_requirements/requirements-type_check.in
 types-pytz==2024.1.0.20240417
     # via pandas-stubs
-types-requests==2.32.0.20240602
+types-requests==2.32.0.20240622
     # via -r dev_requirements/requirements-type_check.in
-typing-extensions==4.11.0
+typing-extensions==4.12.2
     # via mypy
 tzdata==2024.1
     # via pandas
-urllib3==2.2.1
+urllib3==2.2.2
     # via types-requests
