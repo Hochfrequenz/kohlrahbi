@@ -98,6 +98,18 @@ class TestUnfoldedAhbTable:
                 bedingung_ausdruck="X",
                 bedingung=None,
             ),
+            UnfoldedAhbLine(
+                index=5,
+                segment_name="Marktlokation",
+                segment_gruppe="SG5",
+                segment="LOC",
+                datenelement="3225",
+                code=None,
+                qualifier="ID der Marktlokation",
+                beschreibung=None,
+                bedingung_ausdruck="X[950]",
+                bedingung="[950] Format:\n Marktlokations-ID",
+            ),
         ]
 
         unfolded_ahb = UnfoldedAhb(meta_data=meta_data, unfolded_ahb_lines=unfolded_ahb_lines)
@@ -163,6 +175,18 @@ class TestUnfoldedAhbTable:
                     name="Name vom Ansprechpartner",
                     ahb_expression="X",
                     index=4,
+                ),
+                AhbLine(
+                    guid=None,
+                    section_name="Marktlokation",
+                    conditions="[950] Format:\n Marktlokations-ID",
+                    segment_group_key="SG5",
+                    segment_code="LOC",
+                    data_element="3225",
+                    value_pool_entry=None,
+                    name="ID der Marktlokation",
+                    ahb_expression="X[950]",
+                    index=5,
                 ),
             ],
         )
