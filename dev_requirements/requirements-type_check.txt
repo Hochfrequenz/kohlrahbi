@@ -7,28 +7,28 @@
 #
 iniconfig==2.0.0
     # via pytest
-mypy==1.10.0
-    # via -r requirements-type_check.in
+mypy==1.10.1
+    # via -r dev_requirements/requirements-type_check.in
 mypy-extensions==1.0.0
     # via mypy
 networkx==3.3
     # via networkx-stubs
 networkx-stubs==0.0.1
-    # via -r requirements-type_check.in
-numpy==1.26.4
+    # via -r dev_requirements/requirements-type_check.in
+numpy==2.0.0
     # via
     #   pandas
     #   pandas-stubs
-packaging==24.0
+packaging==24.1
     # via pytest
 pandas==2.2.2
-    # via -r requirements-type_check.in
+    # via -r dev_requirements/requirements-type_check.in
 pandas-stubs==2.2.2.240603
-    # via -r requirements-type_check.in
+    # via -r dev_requirements/requirements-type_check.in
 pluggy==1.5.0
     # via pytest
 pytest==8.2.2
-    # via -r requirements-type_check.in
+    # via -r dev_requirements/requirements-type_check.in
 python-dateutil==2.9.0.post0
     # via pandas
 pytz==2024.1
@@ -36,12 +36,12 @@ pytz==2024.1
 six==1.16.0
     # via python-dateutil
 types-freezegun==1.1.10
-    # via -r requirements-type_check.in
+    # via -r dev_requirements/requirements-type_check.in
 types-pytz==2024.1.0.20240417
     # via pandas-stubs
-types-requests==2.32.0.20240602
-    # via -r requirements-type_check.in
-typing-extensions==4.11.0
+types-requests==2.32.0.20240622
+    # via -r dev_requirements/requirements-type_check.in
+typing-extensions==4.12.2
     # via mypy
 tzdata==2024.1
     # via pandas
