@@ -26,11 +26,11 @@ maus==0.5.0
     # via kohlrahbi (pyproject.toml)
 more-itertools==10.3.0
     # via maus
-numpy==1.26.4
+numpy==2.0.0
     # via pandas
-openpyxl==3.1.4
+openpyxl==3.1.5
     # via kohlrahbi (pyproject.toml)
-packaging==24.0
+packaging==24.1
     # via marshmallow
 pandas==2.2.2
     # via kohlrahbi (pyproject.toml)
@@ -50,7 +50,7 @@ six==1.16.0
     # via python-dateutil
 tomlkit==0.12.5
     # via kohlrahbi (pyproject.toml)
-typing-extensions==4.11.0
+typing-extensions==4.12.2
     # via
     #   pydantic
     #   pydantic-core
