@@ -116,8 +116,8 @@ class DocxFileFinder(BaseModel):
                     (
                         path
                         for path in group_items
-                        if "KonsolidierteLesefassungmitFehlerkorrekturen" in path.name
-                        or "AußerordentlicheVeröffentlichung" in path.name
+                        if "konsolidiertelesefassungmitfehlerkorrekturen" in path.name.lower()
+                        or "außerordentlicheveröffentlichung" in path.name.lower()
                     ),
                     key=lambda path: (int(path.stem.split("_")[-1])),
                 )
