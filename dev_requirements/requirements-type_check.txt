@@ -15,7 +15,7 @@ networkx==3.3
     # via networkx-stubs
 networkx-stubs==0.0.1
     # via -r dev_requirements/requirements-type_check.in
-numpy==2.0.0
+numpy==2.0.1
     # via
     #   pandas
     #   pandas-stubs
