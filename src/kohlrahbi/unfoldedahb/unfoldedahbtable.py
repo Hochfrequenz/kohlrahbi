@@ -478,7 +478,7 @@ class UnfoldedAhb(BaseModel):
             logger.warning("'%s' is not a pruefidentifikator", self.meta_data.pruefidentifikator)
             raise ValueError(f"'{self.meta_data.pruefidentifikator}' is not a pruefidentifikator")
 
-        xlsx_output_directory_path: Path = output_directory_path / str(edifact_format)
+        xlsx_output_directory_path: Path = output_directory_path / str(edifact_format) / "xlsx"
         file_path = xlsx_output_directory_path / f"{self.meta_data.pruefidentifikator}.xlsx"
         return file_path
 
