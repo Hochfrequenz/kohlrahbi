@@ -7,6 +7,7 @@ import json
 import re
 from functools import lru_cache
 from pathlib import Path
+from typing import Union
 from uuid import uuid4
 
 import attrs
@@ -368,22 +369,33 @@ class UnfoldedAhb(BaseModel):
             )
             raise
 
+    def get_flatahb_json_file_path(self, output_directory_path: Path) -> Path:
+        """
+        returns the filepath to where the flat ahb json will be dumped when using dump_flatahb_json()
+        raises a value error when the pruefidentifikator is not a valid one
+        """
+        edifact_format = get_format_of_pruefidentifikator(self.meta_data.pruefidentifikator)
+        if edifact_format is None:
+            logger.warning("'%s' is not a pruefidentifikator", self.meta_data.pruefidentifikator)
+            raise ValueError(f"'{self.meta_data.pruefidentifikator}' is not a pruefidentifikator")
+
+        flatahb_output_directory_path = output_directory_path / str(edifact_format) / "flatahb"
+        file_path = flatahb_output_directory_path / f"{self.meta_data.pruefidentifikator}.json"
+        return file_path
+
     def dump_flatahb_json(self, output_directory_path: Path) -> None:
         """
         Converts the unfolded AHB to a flat AHB and writes it to a json file.
         The file will be stored in the directory:
             'output_directory_path/<edifact_format>/flatahb/<pruefidentifikator>.json'
         """
-        edifact_format = get_format_of_pruefidentifikator(self.meta_data.pruefidentifikator)
-        if edifact_format is None:
-            logger.warning("'%s' is not a pruefidentifikator", self.meta_data.pruefidentifikator)
+        try:
+            file_path = self.get_flatahb_json_file_path(output_directory_path)
+        except ValueError:
             return
-
-        flatahb_output_directory_path = output_directory_path / str(edifact_format) / "flatahb"
-        flatahb_output_directory_path.mkdir(parents=True, exist_ok=True)
+        flatahb_directory = file_path.parent
+        flatahb_directory.mkdir(parents=True, exist_ok=True)
         flat_ahb = self.convert_to_flat_ahb()
-
-        file_path = flatahb_output_directory_path / f"{self.meta_data.pruefidentifikator}.json"
         if file_path.exists():
             with open(file_path, "r", encoding="utf-8") as file:
                 existing_flat_ahb = FlatAnwendungshandbuchSchema().load(json.load(file))
@@ -394,7 +406,7 @@ class UnfoldedAhb(BaseModel):
         logger.info(
             "The flatahb file for %s is saved at %s",
             self.meta_data.pruefidentifikator,
-            flatahb_output_directory_path / f"{self.meta_data.pruefidentifikator}.json",
+            file_path.absolute(),
         )
         del flat_ahb
         del dump_data
@@ -424,6 +436,20 @@ class UnfoldedAhb(BaseModel):
         df.fillna(value="", inplace=True)
         return df
 
+    def get_csv_file_path(self, output_directory_path: Path) -> Path:
+        """
+        returns the filepath to where the CSV will be dumped when using dump_csv()
+        raises a value error when the pruefidentifikator is not a valid one
+        """
+        edifact_format = get_format_of_pruefidentifikator(self.meta_data.pruefidentifikator)
+        if edifact_format is None:
+            logger.warning("'%s' is not a pruefidentifikator", self.meta_data.pruefidentifikator)
+            raise ValueError(f"'{self.meta_data.pruefidentifikator}' is not a pruefidentifikator")
+
+        csv_output_directory_path = output_directory_path / str(edifact_format) / "csv"
+        file_path = csv_output_directory_path / f"{self.meta_data.pruefidentifikator}.csv"
+        return file_path
+
     def dump_csv(self, path_to_output_directory: Path) -> None:
         """
         Dump a UnfoldedAHB table into a csv file.
@@ -431,22 +457,30 @@ class UnfoldedAhb(BaseModel):
             'path_to_output_directory/<edifact_format>/csv/<pruefidentifikator>.csv'
         """
         df = self.convert_to_dataframe()
+        try:
+            csv_file_path = self.get_csv_file_path(path_to_output_directory)
+        except ValueError:
+            return
+        csv_output_directory_path = csv_file_path.parent
+        csv_output_directory_path.mkdir(parents=True, exist_ok=True)
 
+        df.to_csv(csv_file_path, encoding="utf-8")
+        logger.info("The csv file for %s is saved at %s", self.meta_data.pruefidentifikator, csv_file_path.absolute())
+        del df
+
+    def get_xlsx_file_path(self, output_directory_path: Path) -> Path:
+        """
+        returns the filepath to where the xlsx will be dumped when using dump_xlsx()
+        raises a value error when the pruefidentifikator is not a valid one
+        """
         edifact_format = get_format_of_pruefidentifikator(self.meta_data.pruefidentifikator)
         if edifact_format is None:
             logger.warning("'%s' is not a pruefidentifikator", self.meta_data.pruefidentifikator)
-            return
+            raise ValueError(f"'{self.meta_data.pruefidentifikator}' is not a pruefidentifikator")
 
-        csv_output_directory_path = path_to_output_directory / str(edifact_format) / "csv"
-        csv_output_directory_path.mkdir(parents=True, exist_ok=True)
-
-        df.to_csv(csv_output_directory_path / f"{self.meta_data.pruefidentifikator}.csv", encoding="utf-8")
-        logger.info(
-            "The csv file for %s is saved at %s",
-            self.meta_data.pruefidentifikator,
-            csv_output_directory_path / f"{self.meta_data.pruefidentifikator}.csv",
-        )
-        del df
+        xlsx_output_directory_path: Path = output_directory_path / str(edifact_format)
+        file_path = xlsx_output_directory_path / f"{self.meta_data.pruefidentifikator}.xlsx"
+        return file_path
 
     def dump_xlsx(self, path_to_output_directory: Path) -> None:
         """
@@ -454,18 +488,18 @@ class UnfoldedAhb(BaseModel):
         The file will be stored in the directory:
             'path_to_output_directory/<edifact_format>/xlsx/<pruefidentifikator>.xlsx'
         """
-        edifact_format = get_format_of_pruefidentifikator(self.meta_data.pruefidentifikator)
-        xlsx_output_directory_path: Path = path_to_output_directory / str(edifact_format) / "xlsx"
+        try:
+            excel_file_path = self.get_xlsx_file_path(path_to_output_directory)
+        except ValueError:
+            return
+        xlsx_output_directory_path = excel_file_path.parent
         xlsx_output_directory_path.mkdir(parents=True, exist_ok=True)
 
-        excel_file_name = f"{self.meta_data.pruefidentifikator}.xlsx"
-
         df = self.convert_to_dataframe()
-
         try:
             # https://github.com/PyCQA/pylint/issues/3060
             # pylint: disable=abstract-class-instantiated
-            with pd.ExcelWriter(xlsx_output_directory_path / excel_file_name, engine="xlsxwriter") as writer:
+            with pd.ExcelWriter(excel_file_path, engine="xlsxwriter") as writer:
                 df.to_excel(writer, sheet_name=f"{self.meta_data.pruefidentifikator}")
                 # pylint: disable=no-member
                 workbook = writer.book
@@ -476,12 +510,12 @@ class UnfoldedAhb(BaseModel):
                     worksheet.set_column(excel_header, column_width, wrap_format)
                 logger.info("💾 Saved file(s) for Pruefidentifikator %s", self.meta_data.pruefidentifikator)
         except PermissionError:
-            logger.error("The Excel file %s is open. Please close this file and try again.", excel_file_name)
+            logger.error("The Excel file %s is open. Please close this file and try again.", excel_file_path)
 
         logger.info(
             "The xlsx file for %s is saved at %s",
             self.meta_data.pruefidentifikator,
-            xlsx_output_directory_path / f"{self.meta_data.pruefidentifikator}.json",
+            excel_file_path.absolute(),
         )
 
 
@@ -518,3 +552,36 @@ def _remove_irrelevant_lines(lines: list[AhbLine]) -> list[AhbLine]:
         if not is_double_line and not is_empty_ahb_line:
             reduced_lines.append(line)
     return reduced_lines
+
+
+def _get_ahb(ahb_model_or_path: Union[FlatAnwendungshandbuch, UnfoldedAhb, Path]) -> FlatAnwendungshandbuch:
+    """
+    returns the AHB model
+    """
+    if isinstance(ahb_model_or_path, FlatAnwendungshandbuch):
+        return ahb_model_or_path
+    if isinstance(ahb_model_or_path, UnfoldedAhb):
+        return ahb_model_or_path.convert_to_flat_ahb()
+    if isinstance(ahb_model_or_path, Path):
+        with open(ahb_model_or_path, "r", encoding="utf-8") as file:
+            return FlatAnwendungshandbuchSchema().load(json.load(file))  # type:ignore[no-any-return]
+    raise ValueError(
+        f"argument must be either a FlatAnwendungshandbuch, UnfoldedAhb or a Path but was {type(ahb_model_or_path)}"
+    )
+
+
+def are_equal_except_for_guids(
+    ahb_1: Union[FlatAnwendungshandbuch, UnfoldedAhb, Path],
+    ahb_2: Union[FlatAnwendungshandbuch, UnfoldedAhb, Path],
+) -> bool:
+    """returns true iff both provided AHBs are equal except for/when ignoring their line guids"""
+    ahb1 = _get_ahb(ahb_1)
+    ahb2 = _get_ahb(ahb_2)
+    if ahb1.meta != ahb2.meta:
+        return False
+    if len(ahb1.lines) != len(ahb2.lines):
+        return False
+    for line1, line2 in zip(ahb1.lines, ahb2.lines, strict=True):
+        if not _lines_are_equal_when_ignoring_guid(line1, line2):
+            return False
+    return True
