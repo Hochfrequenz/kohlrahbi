@@ -406,7 +406,7 @@ class UnfoldedAhb(BaseModel):
         logger.info(
             "The flatahb file for %s is saved at %s",
             self.meta_data.pruefidentifikator,
-            flatahb_directory / f"{self.meta_data.pruefidentifikator}.json",
+            file_path.absolute(),
         )
         del flat_ahb
         del dump_data
@@ -465,11 +465,7 @@ class UnfoldedAhb(BaseModel):
         csv_output_directory_path.mkdir(parents=True, exist_ok=True)
 
         df.to_csv(csv_file_path, encoding="utf-8")
-        logger.info(
-            "The csv file for %s is saved at %s",
-            self.meta_data.pruefidentifikator,
-            csv_output_directory_path / f"{self.meta_data.pruefidentifikator}.csv",
-        )
+        logger.info("The csv file for %s is saved at %s", self.meta_data.pruefidentifikator, csv_file_path.absolute())
         del df
 
     def get_xlsx_file_path(self, output_directory_path: Path) -> Path:
