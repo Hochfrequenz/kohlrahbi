@@ -27,6 +27,7 @@ from kohlrahbi.read_functions import (
 )
 from kohlrahbi.seed import Seed
 from kohlrahbi.unfoldedahb import UnfoldedAhb
+from kohlrahbi.unfoldedahb.unfoldedahbtable import are_equal_except_for_guids
 
 _pruefi_pattern = re.compile(r"^[1-9]\d{4}$")
 
@@ -55,12 +56,29 @@ def process_ahb_table(
     """
     unfolded_ahb = UnfoldedAhb.from_ahb_table(ahb_table=ahb_table, pruefi=pruefi)
 
-    if AhbExportFileFormat.XLSX in file_type:
-        unfolded_ahb.dump_xlsx(output_path)
+    try:
+        json_file_path = unfolded_ahb.get_flatahb_json_file_path(output_path)
+        excel_file_path = unfolded_ahb.get_xlsx_file_path(output_path)
+        csv_file_path = unfolded_ahb.get_csv_file_path(output_path)
+    except ValueError:
+        logger.warning("Error while determining file paths for pruefi '%s'. Skipping saving files.", pruefi)
+        return
+    pruefi_didnt_change_since_last_scraping: Optional[bool] = None
     if AhbExportFileFormat.FLATAHB in file_type:
-        unfolded_ahb.dump_flatahb_json(output_path)
+        # the flat ahb ist the only file formt from which we can READ to compare our current with previous results
+        if json_file_path.exists():
+            pruefi_didnt_change_since_last_scraping = are_equal_except_for_guids(unfolded_ahb, json_file_path)
+    # ⚠ here we assume that the csv/json/xlsx files are in sync, if they exist.
+    # this means: if the json file didn't change and a csv file exists, we expect the csv file to also be unchanged
+    if AhbExportFileFormat.XLSX in file_type:
+        if not excel_file_path.exists() or not pruefi_didnt_change_since_last_scraping:
+            unfolded_ahb.dump_xlsx(output_path)
+    if AhbExportFileFormat.FLATAHB in file_type:
+        if not json_file_path.exists() or not pruefi_didnt_change_since_last_scraping:
+            unfolded_ahb.dump_flatahb_json(output_path)
     if AhbExportFileFormat.CSV in file_type:
-        unfolded_ahb.dump_csv(output_path)
+        if not csv_file_path.exists() or not pruefi_didnt_change_since_last_scraping:
+            unfolded_ahb.dump_csv(output_path)
     del unfolded_ahb
 
 
@@ -103,7 +121,7 @@ def process_pruefi(
     """
     Process one pruefi.
     If the input path ends with .docx, we assume that the file containing the pruefi is given.
-    Therefore we only access that file.
+    Therefore, we only access that file.
     """
 
     # TODO try to cache document objects cause it is slow to read them from disk # pylint: disable=fixme
