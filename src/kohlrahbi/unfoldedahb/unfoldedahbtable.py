@@ -7,6 +7,7 @@ import json
 import re
 from functools import lru_cache
 from pathlib import Path
+from typing import Optional
 from uuid import uuid4
 
 import attrs
@@ -492,7 +493,7 @@ def _remove_irrelevant_lines(lines: list[AhbLine]) -> list[AhbLine]:
     reduced_lines: list[AhbLine] = []
     for line, next_line in zip(lines, lines[1:] + [None]):
         line_dict = attrs.asdict(line)
-        next_line_dict: dict[str, str | None]
+        next_line_dict: dict[str, str | None] = {}
         if next_line:
             next_line_dict = attrs.asdict(next_line)
         is_next_ahb_line_empty = next_line is None or next_line_dict["ahb_expression"] is None
@@ -502,19 +503,90 @@ def _remove_irrelevant_lines(lines: list[AhbLine]) -> list[AhbLine]:
             and line_dict["ahb_expression"] is None
         )
         is_empty_ahb_line = (
-            line_dict["segment_code"] is not None
-            and line_dict["section_name"] is not None
-            and line_dict["ahb_expression"] is None
-        ) or (is_ahb_line_only_segment_group_header and is_next_ahb_line_empty)
+            (
+                line_dict["segment_code"] is not None
+                and line_dict["section_name"] is not None
+                and line_dict["ahb_expression"] is None
+            )
+            or (is_ahb_line_only_segment_group_header and is_next_ahb_line_empty)
+            or _check_compare_unfolded_ahb(
+                line_dict,
+                [
+                    "conditions",
+                    "data_element",
+                    "name",
+                    "section_name",
+                    "segment_code",
+                    "segment_group_key",
+                    "value_pool_entry",
+                ],
+                None,
+            )
+        )
 
         is_double_line = (
-            line_dict["data_element"] is None
-            and line_dict["name"] == ""
-            and line_dict["segment_code"] is None
-            and line_dict["value_pool_entry"] is None
+            _check_compare_unfolded_ahb(
+                line_dict,
+                [
+                    "data_element",
+                    "name",
+                    "segment_code",
+                    "value_pool_entry",
+                ],
+                None,
+            )
             and line_dict["segment_group_key"] is not None
             and line_dict["section_name"] is not None
+        ) or (
+            next_line is not None
+            and _check_compare_unfolded_ahb(
+                line_dict,
+                [
+                    "ahb_expression",
+                    "section_name",
+                    "segment_code",
+                    "segment_group_key",
+                    "data_element",
+                    "name",
+                    "value_pool_entry",
+                    "conditions",
+                ],
+                dict2=next_line_dict,
+            )
         )
         if not is_double_line and not is_empty_ahb_line:
             reduced_lines.append(line)
     return reduced_lines
+
+
+def _check_compare_unfolded_ahb(
+    dict1: dict[str, str | int | None],
+    fields: list[str],
+    value: Optional[str | int | None] = None,
+    dict2: Optional[dict[str, str | int | None]] = None,
+) -> bool:
+    """
+    Compares either fields of two dicts of unfolded ahb tables or field of one dict for one value.
+    Equals None and empty str values.
+    """
+    if value is not None and dict2 is not None:
+        raise ValueError("Exactly one of both value or dict2 must be None")
+    if dict2 is None:
+        for fields_name in fields:
+            if dict1[fields_name] != value:
+                if dict1[fields_name] is None and value == "" or dict1[fields_name] == "" and value is None:
+                    continue
+                return False
+        return True
+    if value is None:
+        for fields_name in fields:
+            if dict1[fields_name] != dict2[fields_name]:
+                if (
+                    dict1[fields_name] is None
+                    and dict2[fields_name] == ""
+                    or dict1[fields_name] == ""
+                    and dict2[fields_name] is None
+                ):
+                    continue
+                return False
+        return True
