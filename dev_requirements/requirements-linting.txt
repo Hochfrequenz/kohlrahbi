@@ -17,5 +17,5 @@ platformdirs==4.2.0
     # via pylint
 pylint==3.2.6
     # via -r dev_requirements/requirements-linting.in
-tomlkit==0.12.5
+tomlkit==0.13.0
     # via pylint
