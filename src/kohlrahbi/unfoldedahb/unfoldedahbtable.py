@@ -568,7 +568,7 @@ def _get_ahb(ahb_model_or_path: Union[FlatAnwendungshandbuch, UnfoldedAhb, Path]
         return ahb_model_or_path.convert_to_flat_ahb()
     if isinstance(ahb_model_or_path, Path):
         with open(ahb_model_or_path, "r", encoding="utf-8") as file:
-            return FlatAnwendungshandbuchSchema().load(json.load(file))
+            return FlatAnwendungshandbuchSchema().load(json.load(file))  # type:ignore[return-type]
     raise ValueError(
         f"argument must be either a FlatAnwendungshandbuch, UnfoldedAhb or a Path but was {type(ahb_model_or_path)}"
     )
