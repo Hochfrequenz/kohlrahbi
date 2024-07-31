@@ -63,22 +63,28 @@ def process_ahb_table(
     except ValueError:
         logger.warning("Error while determining file paths for pruefi '%s'. Skipping saving files.", pruefi)
         return
-    pruefi_didnt_change_since_last_scraping: Optional[bool] = None
-    if AhbExportFileFormat.FLATAHB in file_type:
+    pruefi_did_change_since_last_scraping: bool = True  # we assume it yes, if we can't compare or unless we know better
+    if AhbExportFileFormat.FLATAHB in file_type and json_file_path.exists():
         # the flat ahb ist the only file format from which we can READ to compare our current with previous results
-        if json_file_path.exists():
-            pruefi_didnt_change_since_last_scraping = are_equal_except_for_guids(unfolded_ahb, json_file_path)
+        pruefi_did_change_since_last_scraping = not are_equal_except_for_guids(unfolded_ahb, json_file_path)
+        logger.info("Pruefi '%s' did change since last scraping: %s", pruefi, pruefi_did_change_since_last_scraping)
     # ⚠ here we assume that the csv/json/xlsx files are in sync, if they exist.
     # this means: if the json file didn't change and a csv file exists, we expect the csv file to also be unchanged
-    if AhbExportFileFormat.XLSX in file_type:
-        if not excel_file_path.exists() or not pruefi_didnt_change_since_last_scraping:
-            unfolded_ahb.dump_xlsx(output_path)
-    if AhbExportFileFormat.FLATAHB in file_type:
-        if not json_file_path.exists() or not pruefi_didnt_change_since_last_scraping:
-            unfolded_ahb.dump_flatahb_json(output_path)
-    if AhbExportFileFormat.CSV in file_type:
-        if not csv_file_path.exists() or not pruefi_didnt_change_since_last_scraping:
-            unfolded_ahb.dump_csv(output_path)
+    excel_needs_to_be_dumped = AhbExportFileFormat.XLSX in file_type and (
+        (not excel_file_path.exists()) or pruefi_did_change_since_last_scraping
+    )
+    json_needs_to_be_dumped = AhbExportFileFormat.FLATAHB in file_type and (
+        (not json_file_path.exists()) or pruefi_did_change_since_last_scraping
+    )
+    csv_needs_to_be_dumped = AhbExportFileFormat.CSV in file_type and (
+        (not csv_file_path.exists()) or pruefi_did_change_since_last_scraping
+    )
+    if excel_needs_to_be_dumped:
+        unfolded_ahb.dump_xlsx(output_path)
+    if json_needs_to_be_dumped:
+        unfolded_ahb.dump_flatahb_json(output_path)
+    if csv_needs_to_be_dumped:
+        unfolded_ahb.dump_csv(output_path)
     del unfolded_ahb
 
 
