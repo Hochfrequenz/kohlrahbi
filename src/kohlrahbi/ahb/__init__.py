@@ -63,7 +63,7 @@ def process_ahb_table(
     except ValueError:
         logger.warning("Error while determining file paths for pruefi '%s'. Skipping saving files.", pruefi)
         return
-    pruefi_did_change_since_last_scraping: Optional[bool] = None
+    pruefi_did_change_since_last_scraping: bool = True  # we assume it yes, if we can't compare or unless we know better
     if AhbExportFileFormat.FLATAHB in file_type:
         # the flat ahb ist the only file format from which we can READ to compare our current with previous results
         if json_file_path.exists():
