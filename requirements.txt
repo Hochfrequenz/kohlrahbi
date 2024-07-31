@@ -22,7 +22,7 @@ lxml==5.2.2
     # via python-docx
 marshmallow==3.21.3
     # via maus
-maus==0.5.3
+maus==0.5.4
     # via kohlrahbi (pyproject.toml)
 more-itertools==10.3.0
     # via maus
