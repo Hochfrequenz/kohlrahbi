@@ -5,7 +5,7 @@ This module contains the DocxFileFinder class.
 from itertools import groupby
 from pathlib import Path
 
-from maus.edifact import EdifactFormat, get_format_of_pruefidentifikator
+from efoli import EdifactFormat, get_format_of_pruefidentifikator
 from pydantic import BaseModel
 
 from kohlrahbi.logger import logger

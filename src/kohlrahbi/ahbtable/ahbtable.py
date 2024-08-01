@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Union
 
 import pandas as pd
-from maus.edifact import get_format_of_pruefidentifikator
+from efoli import get_format_of_pruefidentifikator
 from more_itertools import peekable
 from pydantic import BaseModel, ConfigDict, Field
 
