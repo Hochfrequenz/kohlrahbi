@@ -5,7 +5,7 @@ This module contains the function to write the collected conditions to a json fi
 from pathlib import Path
 
 import docx
-from maus.edifact import EdifactFormat, EdifactFormatVersion, get_format_of_pruefidentifikator
+from efoli import EdifactFormat, EdifactFormatVersion, get_format_of_pruefidentifikator
 
 from kohlrahbi.ahb import get_pruefi_to_file_mapping
 from kohlrahbi.ahbtable.ahbcondtions import AhbConditions

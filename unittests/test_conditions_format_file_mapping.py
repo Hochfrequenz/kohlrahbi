@@ -1,5 +1,5 @@
 import pytest
-from maus.edifact import EdifactFormat
+from efoli import EdifactFormat
 
 from kohlrahbi.conditions import find_all_files_from_all_pruefis
 

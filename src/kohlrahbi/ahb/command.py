@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 import click
-from maus.edifact import EdifactFormatVersion
+from efoli import EdifactFormatVersion
 
 from kohlrahbi.ahb import scrape_pruefis
 from kohlrahbi.enums.ahbexportfileformat import AhbExportFileFormat

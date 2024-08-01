@@ -4,7 +4,7 @@ from pathlib import Path
 import docx
 import pytest
 from docx import Document
-from maus.edifact import EdifactFormat, EdifactFormatVersion
+from efoli import EdifactFormat, EdifactFormatVersion
 
 from kohlrahbi.ahb import get_pruefi_to_file_mapping
 from kohlrahbi.ahbtable.ahbcondtions import AhbConditions

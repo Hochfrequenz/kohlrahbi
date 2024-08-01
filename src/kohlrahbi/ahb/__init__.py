@@ -7,14 +7,13 @@ import gc
 import re
 from datetime import date
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 
 import click
 import docx
 import tomlkit
-from docx.document import Document
 from docx.table import Table
-from maus.edifact import EdifactFormatVersion
+from efoli import EdifactFormatVersion
 
 from kohlrahbi.ahbtable.ahbtable import AhbTable
 from kohlrahbi.docxfilefinder import DocxFileFinder
