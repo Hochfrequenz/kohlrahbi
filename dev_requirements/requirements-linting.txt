@@ -13,7 +13,7 @@ isort==5.13.2
     # via pylint
 mccabe==0.7.0
     # via pylint
-platformdirs==4.2.0
+platformdirs==4.2.2
     # via pylint
 pylint==3.2.6
     # via -r dev_requirements/requirements-linting.in
