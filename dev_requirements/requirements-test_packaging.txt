@@ -41,7 +41,7 @@ nh3==0.2.18
     # via readme-renderer
 packaging==24.1
     # via build
-pkginfo==1.11.1
+pkginfo==1.10.0
     # via twine
 pygments==2.18.0
     # via
