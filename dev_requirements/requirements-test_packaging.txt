@@ -5,59 +5,53 @@
 #
 #    pip-compile-multi
 #
+backports-tarfile==1.2.0
+    # via jaraco-context
 build==1.2.1
     # via -r dev_requirements/requirements-test_packaging.in
 certifi==2024.7.4
     # via requests
-cffi==1.16.0
-    # via cryptography
 charset-normalizer==3.3.2
     # via requests
-cryptography==42.0.7
-    # via secretstorage
-docutils==0.21.1
+docutils==0.21.2
     # via readme-renderer
 idna==3.7
     # via requests
-importlib-metadata==7.1.0
-    # via twine
+importlib-metadata==8.2.0
+    # via
+    #   keyring
+    #   twine
 jaraco-classes==3.4.0
     # via keyring
 jaraco-context==5.3.0
     # via keyring
-jaraco-functools==4.0.1
+jaraco-functools==4.0.2
     # via keyring
-jeepney==0.8.0
-    # via
-    #   keyring
-    #   secretstorage
-keyring==25.1.0
+keyring==25.2.1
     # via twine
 markdown-it-py==3.0.0
     # via rich
 mdurl==0.1.2
     # via markdown-it-py
-more-itertools==10.2.0
+more-itertools==10.3.0
     # via
     #   jaraco-classes
     #   jaraco-functools
-nh3==0.2.17
+nh3==0.2.18
     # via readme-renderer
 packaging==24.1
     # via build
-pkginfo==1.10.0
+pkginfo==1.11.1
     # via twine
-pycparser==2.22
-    # via cffi
-pygments==2.17.2
+pygments==2.18.0
     # via
     #   readme-renderer
     #   rich
-pyproject-hooks==1.0.0
+pyproject-hooks==1.1.0
     # via build
-readme-renderer==43.0
+readme-renderer==44.0
     # via twine
-requests==2.32.0
+requests==2.32.3
     # via
     #   requests-toolbelt
     #   twine
@@ -67,13 +61,11 @@ rfc3986==2.0.0
     # via twine
 rich==13.7.1
     # via twine
-secretstorage==3.3.3
-    # via keyring
 twine==5.1.1
     # via -r dev_requirements/requirements-test_packaging.in
 urllib3==2.2.2
     # via
     #   requests
     #   twine
-zipp==3.19.1
+zipp==3.19.2
     # via importlib-metadata
