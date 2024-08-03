@@ -8,7 +8,6 @@ jobs:
       matrix:
         python-version: ["3.12"]
         os: [ubuntu-latest]
-        tool: ["black", "isort"]
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
