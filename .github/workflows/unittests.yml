@@ -20,4 +20,4 @@ jobs:
           pip install tox
       - name: Run the Unit Tests via Tox
         run: |
-          tox -e tests
+          tox -e test

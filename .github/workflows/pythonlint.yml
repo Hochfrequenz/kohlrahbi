@@ -9,7 +9,7 @@ jobs:
       matrix:
         python-version: [ "3.12" ]
         os: [ ubuntu-latest ]
-        linter-env: [ "linting", "type_check", "dev" ]
+        linter-env: [ "lint", "typecheck" ]
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
