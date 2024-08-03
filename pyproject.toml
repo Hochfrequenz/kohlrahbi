@@ -47,21 +47,15 @@ dynamic = ["readme", "version"]
 kohlrahbi = "kohlrahbi:cli"
 
 [project.optional-dependencies]
-coverage = ["coverage"]
-dev = [
-  "kohlrahbi[coverage]",
-  "kohlrahbi[test]",
-  "kohlrahbi[lint]",
-  "kohlrahbi[typecheck]",
-]
-lint = ["pylint>=3.2.6"]
+dev = ["kohlrahbi[test]", "kohlrahbi[lint]", "kohlrahbi[typecheck]"]
+lint = ["pylint"]
 test = [
-  "pytest>=7.0.0",
+  "coverage",
   "dictdiffer",
   "freezegun",
   "pytest-datafiles",
+  "pytest",
   "syrupy",
-  "pytest-cov>=3.0.0",
 ]
 typecheck = [
   "mypy",

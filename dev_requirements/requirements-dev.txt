@@ -14,10 +14,8 @@ click==8.1.7
     # via kohlrahbi (pyproject.toml)
 colorlog==6.8.2
     # via kohlrahbi (pyproject.toml)
-coverage[toml]==7.6.0
-    # via
-    #   kohlrahbi (pyproject.toml)
-    #   pytest-cov
+coverage==7.6.0
+    # via kohlrahbi (pyproject.toml)
 dictdiffer==0.9.0
     # via kohlrahbi (pyproject.toml)
 dill==0.3.8
@@ -79,11 +77,8 @@ pylint==3.2.6
 pytest==8.3.2
     # via
     #   kohlrahbi (pyproject.toml)
-    #   pytest-cov
     #   pytest-datafiles
     #   syrupy
-pytest-cov==5.0.0
-    # via kohlrahbi (pyproject.toml)
 pytest-datafiles==3.0.0
     # via kohlrahbi (pyproject.toml)
 python-dateutil==2.9.0.post0
