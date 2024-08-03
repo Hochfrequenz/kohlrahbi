@@ -14,12 +14,16 @@ colorlog==6.8.2
     # via kohlrahbi (pyproject.toml)
 coverage[toml]==7.6.0
     # via pytest-cov
+dictdiffer==0.9.0
+    # via kohlrahbi (pyproject.toml)
 efoli==1.1.0
     # via
     #   kohlrahbi (pyproject.toml)
     #   maus
 et-xmlfile==1.1.0
     # via openpyxl
+freezegun==1.5.1
+    # via kohlrahbi (pyproject.toml)
 iniconfig==2.0.0
     # via pytest
 lxml==5.2.2
@@ -50,10 +54,16 @@ pytest==8.3.2
     # via
     #   kohlrahbi (pyproject.toml)
     #   pytest-cov
+    #   pytest-datafiles
+    #   syrupy
 pytest-cov==5.0.0
     # via kohlrahbi (pyproject.toml)
+pytest-datafiles==3.0.0
+    # via kohlrahbi (pyproject.toml)
 python-dateutil==2.9.0.post0
-    # via pandas
+    # via
+    #   freezegun
+    #   pandas
 python-docx==1.1.2
     # via kohlrahbi (pyproject.toml)
 pytz==2024.1
@@ -63,6 +73,8 @@ pytz==2024.1
     #   pandas
 six==1.16.0
     # via python-dateutil
+syrupy==4.6.1
+    # via kohlrahbi (pyproject.toml)
 tomlkit==0.13.0
     # via kohlrahbi (pyproject.toml)
 typing-extensions==4.12.2

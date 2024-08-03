@@ -47,7 +47,7 @@ dynamic = ["readme", "version"]
 kohlrahbi = "kohlrahbi:cli"
 
 [project.optional-dependencies]
-coverage = ["coverage>=7.6.0"]
+coverage = ["coverage"]
 dev = [
   "kohlrahbi[coverage]",
   "kohlrahbi[format]",
@@ -57,8 +57,21 @@ dev = [
 ]
 format = ["black>=24.4.2", "isort>=5.13.2"]
 lint = ["pylint>=3.2.6"]
-test = ["pytest>=7.0.0", "pytest-cov>=3.0.0"]
-typecheck = ["mypy>=0.950"]
+test = [
+  "pytest>=7.0.0",
+  "dictdiffer",
+  "freezegun",
+  "pytest-datafiles",
+  "syrupy",
+  "pytest-cov>=3.0.0",
+]
+typecheck = [
+  "mypy",
+  "networkx-stubs",
+  "pandas-stubs",
+  "types-freezegun",
+  "types-requests",
+]
 
 [project.urls]
 Changelog = "https://github.com/Hochfrequenz/kohlrahbi/releases"

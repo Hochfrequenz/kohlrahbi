@@ -22,6 +22,8 @@ coverage[toml]==7.6.0
     # via
     #   kohlrahbi (pyproject.toml)
     #   pytest-cov
+dictdiffer==0.9.0
+    # via kohlrahbi (pyproject.toml)
 dill==0.3.8
     # via pylint
 efoli==1.1.0
@@ -30,6 +32,8 @@ efoli==1.1.0
     #   maus
 et-xmlfile==1.1.0
     # via openpyxl
+freezegun==1.5.1
+    # via kohlrahbi (pyproject.toml)
 iniconfig==2.0.0
     # via pytest
 isort==5.13.2
@@ -52,8 +56,14 @@ mypy-extensions==1.0.0
     # via
     #   black
     #   mypy
+networkx==3.3
+    # via networkx-stubs
+networkx-stubs==0.0.1
+    # via kohlrahbi (pyproject.toml)
 numpy==2.0.1
-    # via pandas
+    # via
+    #   pandas
+    #   pandas-stubs
 openpyxl==3.1.5
     # via kohlrahbi (pyproject.toml)
 packaging==24.1
@@ -62,6 +72,8 @@ packaging==24.1
     #   marshmallow
     #   pytest
 pandas==2.2.2
+    # via kohlrahbi (pyproject.toml)
+pandas-stubs==2.2.2.240603
     # via kohlrahbi (pyproject.toml)
 pathspec==0.12.1
     # via black
@@ -81,10 +93,16 @@ pytest==8.3.2
     # via
     #   kohlrahbi (pyproject.toml)
     #   pytest-cov
+    #   pytest-datafiles
+    #   syrupy
 pytest-cov==5.0.0
     # via kohlrahbi (pyproject.toml)
+pytest-datafiles==3.0.0
+    # via kohlrahbi (pyproject.toml)
 python-dateutil==2.9.0.post0
-    # via pandas
+    # via
+    #   freezegun
+    #   pandas
 python-docx==1.1.2
     # via kohlrahbi (pyproject.toml)
 pytz==2024.1
@@ -94,10 +112,18 @@ pytz==2024.1
     #   pandas
 six==1.16.0
     # via python-dateutil
+syrupy==4.6.1
+    # via kohlrahbi (pyproject.toml)
 tomlkit==0.13.0
     # via
     #   kohlrahbi (pyproject.toml)
     #   pylint
+types-freezegun==1.1.10
+    # via kohlrahbi (pyproject.toml)
+types-pytz==2024.1.0.20240417
+    # via pandas-stubs
+types-requests==2.32.0.20240712
+    # via kohlrahbi (pyproject.toml)
 typing-extensions==4.12.2
     # via
     #   mypy
@@ -106,5 +132,7 @@ typing-extensions==4.12.2
     #   python-docx
 tzdata==2024.1
     # via pandas
+urllib3==2.2.2
+    # via types-requests
 xlsxwriter==3.2.0
     # via kohlrahbi (pyproject.toml)
