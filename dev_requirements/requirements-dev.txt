@@ -10,12 +10,8 @@ astroid==3.2.4
     # via pylint
 attrs==23.2.0
     # via maus
-black==24.8.0
-    # via kohlrahbi (pyproject.toml)
 click==8.1.7
-    # via
-    #   black
-    #   kohlrahbi (pyproject.toml)
+    # via kohlrahbi (pyproject.toml)
 colorlog==6.8.2
     # via kohlrahbi (pyproject.toml)
 coverage[toml]==7.6.0
@@ -37,9 +33,7 @@ freezegun==1.5.1
 iniconfig==2.0.0
     # via pytest
 isort==5.13.2
-    # via
-    #   kohlrahbi (pyproject.toml)
-    #   pylint
+    # via pylint
 lxml==5.2.2
     # via python-docx
 marshmallow==3.21.3
@@ -53,9 +47,7 @@ more-itertools==10.3.0
 mypy==1.11.1
     # via kohlrahbi (pyproject.toml)
 mypy-extensions==1.0.0
-    # via
-    #   black
-    #   mypy
+    # via mypy
 networkx==3.3
     # via networkx-stubs
 networkx-stubs==0.0.1
@@ -68,19 +60,14 @@ openpyxl==3.1.5
     # via kohlrahbi (pyproject.toml)
 packaging==24.1
     # via
-    #   black
     #   marshmallow
     #   pytest
 pandas==2.2.2
     # via kohlrahbi (pyproject.toml)
 pandas-stubs==2.2.2.240603
     # via kohlrahbi (pyproject.toml)
-pathspec==0.12.1
-    # via black
 platformdirs==4.2.2
-    # via
-    #   black
-    #   pylint
+    # via pylint
 pluggy==1.5.0
     # via pytest
 pydantic==2.8.2

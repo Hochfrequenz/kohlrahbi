@@ -1,6 +1,0 @@
-# specific requirements for the tox tests env
-dictdiffer
-freezegun
-pytest
-pytest-datafiles
-syrupy
