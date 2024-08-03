@@ -12,7 +12,7 @@ on:
      types: [created, edited]
 
 jobs:
-   tests:
+   test:
      if: startsWith(github.ref, 'refs/tags/v')
      runs-on: ${{ matrix.os }}
      strategy:
@@ -29,9 +29,9 @@ jobs:
          run: |
            python -m pip install --upgrade pip
            pip install tox
-       - name: Run tests
+       - name: Run test
          run: |
-           tox -e tests
+           tox -e test
 
    build-n-publish:
      name: Build and publish Python 🐍 distributions 📦 to PyPI and TestPyPI
@@ -42,7 +42,7 @@ jobs:
      permissions:
          # IMPORTANT: this permission is mandatory for trusted publishing
          id-token: write
-     needs: tests
+     needs: test
      steps:
        - uses: actions/checkout@v4
        - name: Set up Python
