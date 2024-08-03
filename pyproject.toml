@@ -21,8 +21,9 @@ dependencies = [
   "pydantic>=2.6.0",
   "tomlkit>=0.11.6",
   "xlsxwriter>=3.0.8",
-  "efoli>=0.0.3"
+  "efoli>=0.0.3",
 ]
+
 name = "kohlrahbi"
 description = "Tool to generate machine readable files from AHB documents"
 license = { text = "GPL" }
@@ -45,6 +46,19 @@ dynamic = ["readme", "version"]
 [project.scripts]
 kohlrahbi = "kohlrahbi:cli"
 
+[project.optional-dependencies]
+coverage = ["coverage>=7.6.0"]
+dev = [
+  "kohlrahbi[coverage]",
+  "kohlrahbi[format]",
+  "kohlrahbi[test]",
+  "kohlrahbi[lint]",
+  "kohlrahbi[typecheck]",
+]
+format = ["black>=24.4.2", "isort>=5.13.2"]
+lint = ["pylint>=3.2.6"]
+test = ["pytest>=7.0.0", "pytest-cov>=3.0.0"]
+typecheck = ["mypy>=0.950"]
 
 [project.urls]
 Changelog = "https://github.com/Hochfrequenz/kohlrahbi/releases"
