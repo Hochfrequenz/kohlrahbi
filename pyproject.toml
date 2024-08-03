@@ -50,12 +50,10 @@ kohlrahbi = "kohlrahbi:cli"
 coverage = ["coverage"]
 dev = [
   "kohlrahbi[coverage]",
-  "kohlrahbi[format]",
   "kohlrahbi[test]",
   "kohlrahbi[lint]",
   "kohlrahbi[typecheck]",
 ]
-format = ["black>=24.4.2", "isort>=5.13.2"]
 lint = ["pylint>=3.2.6"]
 test = [
   "pytest>=7.0.0",
@@ -69,6 +67,7 @@ typecheck = [
   "mypy",
   "networkx-stubs",
   "pandas-stubs",
+  "pytest",
   "types-freezegun",
   "types-requests",
 ]
