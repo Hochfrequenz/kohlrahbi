@@ -1,6 +1,8 @@
 name: "checks"
 
-on: [ push ]
+# Runs your workflow when activity on a pull request in the workflow's repository occurs.
+# If no activity types are specified, the workflow runs when a pull request is opened, reopened, or when the head branch of the pull request is updated.
+on: [ pull_request ]
 jobs:
   formatcheck:
     strategy:
