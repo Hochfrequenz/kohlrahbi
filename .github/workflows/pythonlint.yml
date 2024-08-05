@@ -1,15 +1,15 @@
-name: "Linting"
+name: "lint"
 
 on: [ push ]
 jobs:
-  pylint:
-    name: Python Code Quality and Lint
-    runs-on: ${{ matrix.os }}
+  lint:
     strategy:
       matrix:
         python-version: [ "3.12" ]
         os: [ ubuntu-latest ]
-        linter-env: [ "lint", "typecheck" ]
+        tox-env: [ "lint" ]
+    name: ${{ matrix.tox-env }}
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
@@ -20,6 +20,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install tox
-      - name: Run ${{ matrix.linter-env }} via Tox
+      - name: Run ${{ matrix.tox-env }} via Tox
         run: |
-          tox -e ${{ matrix.linter-env }}
+          tox -e ${{ matrix.tox-env }}

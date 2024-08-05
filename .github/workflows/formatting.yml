@@ -1,23 +1,25 @@
-name: "Formatting"
+name: "formatcheck"
 
-on: [push]
+on: [ push ]
 jobs:
   formatcheck:
-    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ["3.12"]
-        os: [ubuntu-latest]
+        os: [ ubuntu-latest ]
+        python-version: [ "3.12" ]
+        tox-env: [ "lint" ]
+    name: ${{ matrix.tox-env }}
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
+      - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install tox
-      - name: Check Format
+      - name: Run ${{ matrix.tox-env }} via Tox
         run: |
-          tox -e formatcheck
+          tox -e ${{ matrix.tox-env }}

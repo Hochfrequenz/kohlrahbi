@@ -1,4 +1,4 @@
-name: "Packaging Test"
+name: "test_packaging"
 
 on: [pull_request]
 jobs:
