@@ -7,7 +7,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         python-version: [ "3.12" ]
-        tox-env: [ "lint" ]
+        tox-env: [ "formatcheck" ]
     name: ${{ matrix.tox-env }}
     runs-on: ${{ matrix.os }}
     steps:
