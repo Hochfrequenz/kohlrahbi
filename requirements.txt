@@ -6,7 +6,7 @@
 #
 annotated-types==0.7.0
     # via pydantic
-attrs==24.1.0
+attrs==24.2.0
     # via maus
 click==8.1.7
     # via kohlrahbi (pyproject.toml)
