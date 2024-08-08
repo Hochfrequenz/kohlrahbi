@@ -24,7 +24,7 @@ marshmallow==3.21.3
     # via maus
 maus==0.6.0
     # via kohlrahbi (pyproject.toml)
-more-itertools==10.3.0
+more-itertools==10.4.0
     # via maus
 numpy==2.0.1
     # via pandas
