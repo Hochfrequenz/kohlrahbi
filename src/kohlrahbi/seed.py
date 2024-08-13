@@ -60,6 +60,7 @@ class Seed(BaseModel):
             "Segment Gruppe",
             "Segment",
             "Datenelement",
+            "Segment ID",
             "Codes und Qualifier",
             "Beschreibung",
         ]

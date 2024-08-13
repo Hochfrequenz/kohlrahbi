@@ -10,6 +10,8 @@ from pydantic import BaseModel, ConfigDict
 
 _segment_group_pattern = re.compile(r"^SG\d+$")
 _segment_pattern = re.compile(r"^[A-Z]{3}$")
+_data_element_pattern = re.compile(r"^\d{4}$")
+_segment_id_pattern = re.compile(r"^[A-Z\d]\d{4}$")
 
 
 # pylint: disable=too-few-public-methods
@@ -41,15 +43,33 @@ class EdifactStrukturCell(BaseModel):
 
         row_index = ahb_row_dataframe.index.max()
 
+        # todo add check for redundancy
+        for text in splitted_text_at_tabs:
+            if _segment_group_pattern.match(text):
+                ahb_row_dataframe.at[row_index, "Segment Gruppe"] = text
+            elif _segment_pattern.match(text):
+                ahb_row_dataframe.at[row_index, "Segment"] = text
+            elif _data_element_pattern.match(text):
+                ahb_row_dataframe.at[row_index, "Datenelement"] = text
+            elif _segment_id_pattern.match(text):
+                ahb_row_dataframe.at[row_index, "Segment ID"] = text
+            elif text != "":
+                ahb_row_dataframe.at[row_index, "Segment Gruppe"] = text
+            # else:
+            #    raise ValueError(f"Could not parse text: {splitted_text_at_tabs}")
+
         # Check if the line starts on the far left
-        if (
+        """ if (
             self.table_cell.paragraphs[0].paragraph_format.left_indent
             != self.edifact_struktur_cell_left_indent_position
         ):
             if tab_count == 2:
                 ahb_row_dataframe.at[row_index, "Segment Gruppe"] = splitted_text_at_tabs[0]
                 ahb_row_dataframe.at[row_index, "Segment"] = splitted_text_at_tabs[1]
-                ahb_row_dataframe.at[row_index, "Datenelement"] = splitted_text_at_tabs[2]
+                if len(splitted_text_at_tabs[2]) == 5:
+                    ahb_row_dataframe.at[row_index, "Segment ID"] = splitted_text_at_tabs[2]
+                else:
+                    ahb_row_dataframe.at[row_index, "Datenelement"] = splitted_text_at_tabs[2]
             elif tab_count == 1:
                 ahb_row_dataframe.at[row_index, "Segment Gruppe"] = splitted_text_at_tabs[0]
                 ahb_row_dataframe.at[row_index, "Segment"] = splitted_text_at_tabs[1]
@@ -85,4 +105,5 @@ class EdifactStrukturCell(BaseModel):
                 # Example: "UNH"
                 ahb_row_dataframe.at[row_index, "Segment"] = splitted_text_at_tabs[0]
 
+        """
         return ahb_row_dataframe
