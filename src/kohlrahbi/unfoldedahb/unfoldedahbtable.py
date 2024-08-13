@@ -12,7 +12,7 @@ from uuid import uuid4
 
 import attrs
 import pandas as pd
-from maus.edifact import get_format_of_pruefidentifikator
+from efoli import EdifactFormat, get_format_of_pruefidentifikator
 from maus.models.anwendungshandbuch import (
     AhbLine,
     AhbMetaInformation,
@@ -374,11 +374,7 @@ class UnfoldedAhb(BaseModel):
         returns the filepath to where the flat ahb json will be dumped when using dump_flatahb_json()
         raises a value error when the pruefidentifikator is not a valid one
         """
-        edifact_format = get_format_of_pruefidentifikator(self.meta_data.pruefidentifikator)
-        if edifact_format is None:
-            logger.warning("'%s' is not a pruefidentifikator", self.meta_data.pruefidentifikator)
-            raise ValueError(f"'{self.meta_data.pruefidentifikator}' is not a pruefidentifikator")
-
+        edifact_format = self._get_format()
         flatahb_output_directory_path = output_directory_path / str(edifact_format) / "flatahb"
         file_path = flatahb_output_directory_path / f"{self.meta_data.pruefidentifikator}.json"
         return file_path
@@ -441,11 +437,7 @@ class UnfoldedAhb(BaseModel):
         returns the filepath to where the CSV will be dumped when using dump_csv()
         raises a value error when the pruefidentifikator is not a valid one
         """
-        edifact_format = get_format_of_pruefidentifikator(self.meta_data.pruefidentifikator)
-        if edifact_format is None:
-            logger.warning("'%s' is not a pruefidentifikator", self.meta_data.pruefidentifikator)
-            raise ValueError(f"'{self.meta_data.pruefidentifikator}' is not a pruefidentifikator")
-
+        edifact_format = self._get_format()
         csv_output_directory_path = output_directory_path / str(edifact_format) / "csv"
         file_path = csv_output_directory_path / f"{self.meta_data.pruefidentifikator}.csv"
         return file_path
@@ -468,16 +460,20 @@ class UnfoldedAhb(BaseModel):
         logger.info("The csv file for %s is saved at %s", self.meta_data.pruefidentifikator, csv_file_path.absolute())
         del df
 
+    def _get_format(self) -> EdifactFormat:
+        """extract the edifact format from the metadata pruefidentifikator"""
+        edifact_format = get_format_of_pruefidentifikator(self.meta_data.pruefidentifikator)
+        if edifact_format is None:
+            logger.warning("'%s' is not a pruefidentifikator", self.meta_data.pruefidentifikator)
+            raise ValueError(f"'{self.meta_data.pruefidentifikator}' is not a pruefidentifikator")
+        return edifact_format
+
     def get_xlsx_file_path(self, output_directory_path: Path) -> Path:
         """
         returns the filepath to where the xlsx will be dumped when using dump_xlsx()
         raises a value error when the pruefidentifikator is not a valid one
         """
-        edifact_format = get_format_of_pruefidentifikator(self.meta_data.pruefidentifikator)
-        if edifact_format is None:
-            logger.warning("'%s' is not a pruefidentifikator", self.meta_data.pruefidentifikator)
-            raise ValueError(f"'{self.meta_data.pruefidentifikator}' is not a pruefidentifikator")
-
+        edifact_format = self._get_format()
         xlsx_output_directory_path: Path = output_directory_path / str(edifact_format) / "xlsx"
         file_path = xlsx_output_directory_path / f"{self.meta_data.pruefidentifikator}.xlsx"
         return file_path

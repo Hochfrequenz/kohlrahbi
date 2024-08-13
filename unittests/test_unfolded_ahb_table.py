@@ -1,5 +1,5 @@
 import pytest
-from maus.edifact import EdifactFormat
+from efoli import EdifactFormat
 from maus.models.anwendungshandbuch import AhbLine, AhbMetaInformation, FlatAnwendungshandbuch
 
 from kohlrahbi.unfoldedahb import UnfoldedAhbTableMetaData

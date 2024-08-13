@@ -23,7 +23,7 @@ import sys
 from pathlib import Path
 
 import click
-from maus.edifact import EdifactFormatVersion
+from efoli import EdifactFormatVersion
 
 from kohlrahbi.conditions import scrape_conditions
 

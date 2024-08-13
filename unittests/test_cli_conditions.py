@@ -7,8 +7,8 @@ import os
 from pathlib import Path
 
 from click.testing import CliRunner, Result
+from efoli import EdifactFormat
 from freezegun import freeze_time
-from maus.edifact import EdifactFormat
 
 from kohlrahbi.conditions.command import conditions
 from unittests import path_to_test_edi_energy_mirror_repo, path_to_test_files_fv2310

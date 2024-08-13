@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pandas as pd
 from docx.table import Table as DocxTable
-from maus.edifact import EdifactFormat
+from efoli import EdifactFormat
 from pydantic import BaseModel, ConfigDict, Field
 
 from kohlrahbi.ahbtable.ahbcondtions import parse_conditions_from_string

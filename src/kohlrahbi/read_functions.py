@@ -9,7 +9,7 @@ from docx.oxml.table import CT_Tbl
 from docx.oxml.text.paragraph import CT_P
 from docx.table import Table, _Cell
 from docx.text.paragraph import Paragraph
-from maus.edifact import EdifactFormat, get_format_of_pruefidentifikator
+from efoli import EdifactFormat, get_format_of_pruefidentifikator
 
 from kohlrahbi.ahbtable.ahbcondtions import AhbConditions
 from kohlrahbi.ahbtable.ahbpackagetable import AhbPackageTable

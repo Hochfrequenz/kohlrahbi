@@ -5,7 +5,7 @@ import re
 from pathlib import Path
 
 from docx.table import Table as DocxTable
-from maus.edifact import EdifactFormat
+from efoli import EdifactFormat
 from pydantic import BaseModel, ConfigDict, Field
 
 from kohlrahbi.logger import logger

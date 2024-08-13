@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import pytest
-from maus.edifact import EdifactFormat
+from efoli import EdifactFormat
 
 from kohlrahbi.docxfilefinder import DocxFileFinder
 

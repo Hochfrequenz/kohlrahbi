@@ -5,7 +5,7 @@ Command line interface for the changehistory command.
 from pathlib import Path
 
 import click
-from maus.edifact import EdifactFormatVersion
+from efoli import EdifactFormatVersion
 
 from kohlrahbi.ahb.command import check_python_version, validate_path
 from kohlrahbi.changehistory import scrape_change_histories
