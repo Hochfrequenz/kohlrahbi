@@ -77,7 +77,7 @@ six==1.16.0
     # via python-dateutil
 syrupy==4.6.1
     # via kohlrahbi (pyproject.toml)
-tomlkit==0.13.0
+tomlkit==0.13.1
     # via kohlrahbi (pyproject.toml)
 typing-extensions==4.12.2
     # via
