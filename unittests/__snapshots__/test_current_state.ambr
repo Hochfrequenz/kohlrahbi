@@ -1,19 +1,67 @@
 # serializer version: 1
 # name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept]
-  WindowsPath('C:/GitRepos/kohlrahbi/unittests/test-edi-energy-mirror-repo/edi_energy_de/FV2310/actual-output/.gitkeep')
+  '29001.csv'
 # ---
 # name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept].1
-  WindowsPath('C:/GitRepos/kohlrahbi/unittests/test-edi-energy-mirror-repo/edi_energy_de/FV2310/actual-output/2024-03-30_change_histories.xlsx')
+  '29002.csv'
+# ---
+# name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept].10
+  '17209.csv'
+# ---
+# name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept].11
+  '17210.csv'
+# ---
+# name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept].12
+  '17211.csv'
+# ---
+# name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept].13
+  '19204.csv'
+# ---
+# name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept].14
+  '37000.csv'
+# ---
+# name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept].15
+  '37001.csv'
+# ---
+# name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept].16
+  '37002.csv'
+# ---
+# name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept].17
+  '37003.csv'
+# ---
+# name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept].18
+  '37004.csv'
+# ---
+# name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept].19
+  '37005.csv'
 # ---
 # name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept].2
-  WindowsPath('C:/GitRepos/kohlrahbi/unittests/test-edi-energy-mirror-repo/edi_energy_de/FV2310/actual-output/COMDIS')
+  '17201.csv'
+# ---
+# name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept].20
+  '37006.csv'
+# ---
+# name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept].21
+  '37007.csv'
 # ---
 # name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept].3
-  WindowsPath('C:/GitRepos/kohlrahbi/unittests/test-edi-energy-mirror-repo/edi_energy_de/FV2310/actual-output/ORDERS')
+  '17202.csv'
 # ---
 # name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept].4
-  WindowsPath('C:/GitRepos/kohlrahbi/unittests/test-edi-energy-mirror-repo/edi_energy_de/FV2310/actual-output/ORDRSP')
+  '17203.csv'
 # ---
 # name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept].5
-  WindowsPath('C:/GitRepos/kohlrahbi/unittests/test-edi-energy-mirror-repo/edi_energy_de/FV2310/actual-output/PARTIN')
+  '17204.csv'
+# ---
+# name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept].6
+  '17205.csv'
+# ---
+# name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept].7
+  '17206.csv'
+# ---
+# name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept].8
+  '17207.csv'
+# ---
+# name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept].9
+  '17208.csv'
 # ---

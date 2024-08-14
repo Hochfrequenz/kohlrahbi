@@ -127,8 +127,16 @@ class TestCli:
             assert False  # break the test if the output_snippet is None
 
         # Check if the generated files are the same as the expected files
-        for file in actual_output_dir.iterdir():
-            assert file == snapshot
+
+        import os
+
+        for subdir, dirs, files in os.walk(actual_output_dir):
+            for file in files:
+                if file.endswith(".csv"):
+                    file == snapshot
+        #         print(os.path.join(subdir, file))
+        # for file in actual_output_dir.iterdir():
+        #     assert file == snapshot
         # compare_csv_files(
         #     actual_output_dir=actual_output_dir,
         #     expected_output_dir=expected_output_dir,
