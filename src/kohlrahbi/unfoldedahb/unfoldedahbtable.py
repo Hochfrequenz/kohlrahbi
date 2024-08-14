@@ -92,6 +92,7 @@ class UnfoldedAhb(BaseModel):
     meta_data: UnfoldedAhbTableMetaData
     unfolded_ahb_lines: list[UnfoldedAhbLine]
 
+    # pylint: disable=too-many-locals
     @classmethod
     def from_ahb_table(cls, ahb_table: AhbTable, pruefi: str) -> "UnfoldedAhb":
         """
@@ -162,7 +163,7 @@ class UnfoldedAhb(BaseModel):
                     UnfoldedAhbLine(
                         index=index,
                         segment_name=current_section_name,
-                        segment_gruppe=None,
+                        segment_gruppe=row["Segment Gruppe"] or None,
                         segment=row["Segment"] or None,
                         datenelement=None,
                         code=None,
@@ -419,6 +420,7 @@ class UnfoldedAhb(BaseModel):
                 "Segmentgruppe": unfolded_ahb_line.segment_gruppe,
                 "Segment": unfolded_ahb_line.segment,
                 "Datenelement": unfolded_ahb_line.datenelement,
+                "Segment ID": unfolded_ahb_line.segment_id,
                 "Code": unfolded_ahb_line.code,
                 "Qualifier": unfolded_ahb_line.qualifier,
                 "Beschreibung": unfolded_ahb_line.beschreibung,

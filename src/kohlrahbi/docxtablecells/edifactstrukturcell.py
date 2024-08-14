@@ -39,11 +39,9 @@ class EdifactStrukturCell(BaseModel):
 
         joined_text = " ".join(p.text for p in self.table_cell.paragraphs)
         splitted_text_at_tabs = joined_text.split("\t")
-        tab_count = joined_text.count("\t")
 
         row_index = ahb_row_dataframe.index.max()
 
-        # todo add check for redundancy
         for text in splitted_text_at_tabs:
             if _segment_group_pattern.match(text):
                 ahb_row_dataframe.at[row_index, "Segment Gruppe"] = text
@@ -55,55 +53,4 @@ class EdifactStrukturCell(BaseModel):
                 ahb_row_dataframe.at[row_index, "Segment ID"] = text
             elif text != "":
                 ahb_row_dataframe.at[row_index, "Segment Gruppe"] = text
-            # else:
-            #    raise ValueError(f"Could not parse text: {splitted_text_at_tabs}")
-
-        # Check if the line starts on the far left
-        """ if (
-            self.table_cell.paragraphs[0].paragraph_format.left_indent
-            != self.edifact_struktur_cell_left_indent_position
-        ):
-            if tab_count == 2:
-                ahb_row_dataframe.at[row_index, "Segment Gruppe"] = splitted_text_at_tabs[0]
-                ahb_row_dataframe.at[row_index, "Segment"] = splitted_text_at_tabs[1]
-                if len(splitted_text_at_tabs[2]) == 5:
-                    ahb_row_dataframe.at[row_index, "Segment ID"] = splitted_text_at_tabs[2]
-                else:
-                    ahb_row_dataframe.at[row_index, "Datenelement"] = splitted_text_at_tabs[2]
-            elif tab_count == 1:
-                ahb_row_dataframe.at[row_index, "Segment Gruppe"] = splitted_text_at_tabs[0]
-                ahb_row_dataframe.at[row_index, "Segment"] = splitted_text_at_tabs[1]
-            elif tab_count == 0 and joined_text.strip() != "":
-                is_segment_gruppe: bool = bool(self.table_cell.paragraphs[0].runs[0].bold) and bool(
-                    _segment_group_pattern.match(joined_text)
-                )
-
-                is_segment = bool(_segment_pattern.match(joined_text))
-                if is_segment_gruppe:
-                    # Segmentgruppe: SG8
-                    ahb_row_dataframe.at[row_index, "Segment Gruppe"] = splitted_text_at_tabs[0]
-                elif is_segment:
-                    ahb_row_dataframe.at[row_index, "Segment"] = splitted_text_at_tabs[0]
-                else:
-                    # Segmentname: Referenzen auf die ID der\nTranche
-                    _sg_text = ahb_row_dataframe.at[row_index, "Segment Gruppe"]
-                    if _sg_text == "":
-                        # Referenzen auf die ID der
-                        ahb_row_dataframe.at[row_index, "Segment Gruppe"] = splitted_text_at_tabs[0]
-                    else:
-                        # Tranche
-                        ahb_row_dataframe.at[row_index, "Segment Gruppe"] += " " + splitted_text_at_tabs[0]
-
-        # Now the text should start in middle of the EDIFACT Struktur column
-        else:
-            if tab_count == 1:
-                # Example: "UNH\t0062"
-                ahb_row_dataframe.at[row_index, "Segment"] = splitted_text_at_tabs[0]
-                ahb_row_dataframe.at[row_index, "Datenelement"] = splitted_text_at_tabs[1]
-
-            elif tab_count == 0:
-                # Example: "UNH"
-                ahb_row_dataframe.at[row_index, "Segment"] = splitted_text_at_tabs[0]
-
-        """
         return ahb_row_dataframe
