@@ -1,0 +1,19 @@
+# serializer version: 1
+# name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept]
+  WindowsPath('C:/GitRepos/kohlrahbi/unittests/test-edi-energy-mirror-repo/edi_energy_de/FV2310/actual-output/.gitkeep')
+# ---
+# name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept].1
+  WindowsPath('C:/GitRepos/kohlrahbi/unittests/test-edi-energy-mirror-repo/edi_energy_de/FV2310/actual-output/2024-03-30_change_histories.xlsx')
+# ---
+# name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept].2
+  WindowsPath('C:/GitRepos/kohlrahbi/unittests/test-edi-energy-mirror-repo/edi_energy_de/FV2310/actual-output/COMDIS')
+# ---
+# name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept].3
+  WindowsPath('C:/GitRepos/kohlrahbi/unittests/test-edi-energy-mirror-repo/edi_energy_de/FV2310/actual-output/ORDERS')
+# ---
+# name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept].4
+  WindowsPath('C:/GitRepos/kohlrahbi/unittests/test-edi-energy-mirror-repo/edi_energy_de/FV2310/actual-output/ORDRSP')
+# ---
+# name: TestCli.test_kohlrahbi_cli_with_valid_arguments[proof of concept].5
+  WindowsPath('C:/GitRepos/kohlrahbi/unittests/test-edi-energy-mirror-repo/edi_energy_de/FV2310/actual-output/PARTIN')
+# ---
