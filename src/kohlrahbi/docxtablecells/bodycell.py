@@ -10,7 +10,7 @@ from pydantic import BaseModel, ConfigDict
 
 from kohlrahbi.table_header import get_tabstop_positions
 
-INDEX_OF_CODES_AND_QUALIFIER_COLUMN = 3
+INDEX_OF_CODES_AND_QUALIFIER_COLUMN = 4
 
 
 class BodyCell(BaseModel):
@@ -72,12 +72,22 @@ class BodyCell(BaseModel):
                     pass
 
                 ahb_row_dataframe.iat[row_index, INDEX_OF_CODES_AND_QUALIFIER_COLUMN] += splitted_text_at_tabs.pop(0)
-                column_indezes = list(range(4, 4 + len(self.indicator_tabstop_positions)))
+                column_indezes = list(
+                    range(
+                        INDEX_OF_CODES_AND_QUALIFIER_COLUMN + 1,
+                        INDEX_OF_CODES_AND_QUALIFIER_COLUMN + 1 + len(self.indicator_tabstop_positions),
+                    )
+                )
 
             else:
                 if splitted_text_at_tabs[0] == "":
                     del splitted_text_at_tabs[0]
-                column_indezes = list(range(4, 4 + len(self.indicator_tabstop_positions)))
+                column_indezes = list(
+                    range(
+                        INDEX_OF_CODES_AND_QUALIFIER_COLUMN + 1,
+                        INDEX_OF_CODES_AND_QUALIFIER_COLUMN + 1 + len(self.indicator_tabstop_positions),
+                    )
+                )
 
             paragraph_contains_tabstops: bool = self.has_paragraph_tabstops(paragraph=paragraph)
 

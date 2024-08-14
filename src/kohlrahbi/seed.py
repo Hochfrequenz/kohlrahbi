@@ -59,8 +59,8 @@ class Seed(BaseModel):
         base_column_names: list[str] = [
             "Segment Gruppe",
             "Segment",
-            "Datenelement",
             "Segment ID",
+            "Datenelement",
             "Codes und Qualifier",
             "Beschreibung",
         ]

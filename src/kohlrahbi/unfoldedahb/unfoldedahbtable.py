@@ -99,7 +99,7 @@ class UnfoldedAhb(BaseModel):
         """
         unfolded_ahb_lines: list[UnfoldedAhbLine] = []
         current_section_name: str = ""
-
+        current_segment_id: Optional[str] = None
         # we need to peek one iteration in front of us
         iterable_ahb_table = peekable(ahb_table.table.iterrows())
 
@@ -113,7 +113,8 @@ class UnfoldedAhb(BaseModel):
             if UnfoldedAhb._is_section_name(ahb_row=row):
                 _, next_row = iterable_ahb_table.peek()  # pylint: disable=unpacking-non-sequence # it is a tuple indeed
                 ahb_expression = next_row[pruefi]
-
+                if next_row["Segment ID"] != "":
+                    current_segment_id = next_row["Segment ID"]
                 if _segment_group_pattern.match(next_row["Segment Gruppe"]):
                     segment_group_key = next_row["Segment Gruppe"]
                 else:
@@ -131,6 +132,7 @@ class UnfoldedAhb(BaseModel):
                         beschreibung=None,
                         bedingung_ausdruck=ahb_expression or None,
                         bedingung=None,
+                        segment_id=current_segment_id,
                     )
                 )
                 continue
@@ -151,6 +153,7 @@ class UnfoldedAhb(BaseModel):
                         beschreibung=description,
                         bedingung_ausdruck=row[pruefi] or None,
                         bedingung=row["Bedingung"],
+                        segment_id=current_segment_id,
                     )
                 )
 
@@ -167,6 +170,7 @@ class UnfoldedAhb(BaseModel):
                         beschreibung=None,
                         bedingung_ausdruck=row[pruefi] or None,
                         bedingung=row["Bedingung"],
+                        segment_id=current_segment_id,
                     )
                 )
                 continue
@@ -182,7 +186,7 @@ class UnfoldedAhb(BaseModel):
                         segment_gruppe=row["Segment Gruppe"] or None,
                         segment=row["Segment"] or None,
                         datenelement=_split_data_element_and_segment_id(row["Datenelement"])[0],
-                        segment_id=_split_data_element_and_segment_id(row["Datenelement"])[1],
+                        segment_id=current_segment_id,
                         code=value_pool_entry,
                         qualifier="",
                         beschreibung=description,
@@ -214,6 +218,7 @@ class UnfoldedAhb(BaseModel):
                         beschreibung=description,
                         bedingung_ausdruck=row[pruefi] or None,
                         bedingung=row["Bedingung"],
+                        segment_id=current_segment_id,
                     )
                 )
                 continue
