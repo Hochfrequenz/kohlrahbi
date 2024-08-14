@@ -7,7 +7,7 @@ import json
 import re
 from functools import lru_cache
 from pathlib import Path
-from typing import Union
+from typing import Optional, Union
 from uuid import uuid4
 
 import attrs
@@ -113,8 +113,7 @@ class UnfoldedAhb(BaseModel):
             if UnfoldedAhb._is_section_name(ahb_row=row):
                 _, next_row = iterable_ahb_table.peek()  # pylint: disable=unpacking-non-sequence # it is a tuple indeed
                 ahb_expression = next_row[pruefi]
-                if next_row["Segment ID"] != "":
-                    current_segment_id = next_row["Segment ID"]
+                current_segment_id = None
                 if _segment_group_pattern.match(next_row["Segment Gruppe"]):
                     segment_group_key = next_row["Segment Gruppe"]
                 else:
@@ -158,6 +157,7 @@ class UnfoldedAhb(BaseModel):
                 )
 
             if UnfoldedAhb._is_segment_opening_line(ahb_row=row):
+                current_segment_id = row["Segment ID"]
                 unfolded_ahb_lines.append(
                     UnfoldedAhbLine(
                         index=index,
@@ -291,12 +291,7 @@ class UnfoldedAhb(BaseModel):
         The first line in the example is a segment opening line
         """
 
-        if (
-            _segment_group_pattern.match(ahb_row["Segment Gruppe"])
-            and not ahb_row["Segment"]
-            and ahb_row["Segment"]
-            and not ahb_row["Datenelement"]
-        ):
+        if ahb_row["Segment"] and not ahb_row["Datenelement"]:
             return True
         return False
 
