@@ -78,6 +78,8 @@ class TestCli:
 
         path_to_actual_csv_files = get_csv_paths(actual_output_dir)
 
+        actual_csv_dict: dict[str, str] = {}
         for file in path_to_actual_csv_files:
             with open(file, "r", encoding="utf-8") as actual_csv:
-                assert snapshot == actual_csv.read()
+                actual_csv_dict[file.name] = actual_csv.read()
+        assert snapshot == actual_csv_dict
