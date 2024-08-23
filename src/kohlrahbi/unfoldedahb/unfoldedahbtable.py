@@ -7,7 +7,7 @@ import json
 import re
 from functools import lru_cache
 from pathlib import Path
-from typing import Union
+from typing import Optional, Union
 from uuid import uuid4
 
 import attrs
@@ -92,6 +92,7 @@ class UnfoldedAhb(BaseModel):
     meta_data: UnfoldedAhbTableMetaData
     unfolded_ahb_lines: list[UnfoldedAhbLine]
 
+    # pylint: disable=too-many-locals
     @classmethod
     def from_ahb_table(cls, ahb_table: AhbTable, pruefi: str) -> "UnfoldedAhb":
         """
@@ -99,7 +100,7 @@ class UnfoldedAhb(BaseModel):
         """
         unfolded_ahb_lines: list[UnfoldedAhbLine] = []
         current_section_name: str = ""
-
+        current_segment_id: Optional[str] = None
         # we need to peek one iteration in front of us
         iterable_ahb_table = peekable(ahb_table.table.iterrows())
 
@@ -113,7 +114,7 @@ class UnfoldedAhb(BaseModel):
             if UnfoldedAhb._is_section_name(ahb_row=row):
                 _, next_row = iterable_ahb_table.peek()  # pylint: disable=unpacking-non-sequence # it is a tuple indeed
                 ahb_expression = next_row[pruefi]
-
+                current_segment_id = None
                 if _segment_group_pattern.match(next_row["Segment Gruppe"]):
                     segment_group_key = next_row["Segment Gruppe"]
                 else:
@@ -131,6 +132,7 @@ class UnfoldedAhb(BaseModel):
                         beschreibung=None,
                         bedingung_ausdruck=ahb_expression or None,
                         bedingung=None,
+                        segment_id=current_segment_id,
                     )
                 )
                 continue
@@ -151,15 +153,17 @@ class UnfoldedAhb(BaseModel):
                         beschreibung=description,
                         bedingung_ausdruck=row[pruefi] or None,
                         bedingung=row["Bedingung"],
+                        segment_id=current_segment_id,
                     )
                 )
 
             if UnfoldedAhb._is_segment_opening_line(ahb_row=row):
+                current_segment_id = row["Segment ID"]
                 unfolded_ahb_lines.append(
                     UnfoldedAhbLine(
                         index=index,
                         segment_name=current_section_name,
-                        segment_gruppe=None,
+                        segment_gruppe=row["Segment Gruppe"] or None,
                         segment=row["Segment"] or None,
                         datenelement=None,
                         code=None,
@@ -167,6 +171,7 @@ class UnfoldedAhb(BaseModel):
                         beschreibung=None,
                         bedingung_ausdruck=row[pruefi] or None,
                         bedingung=row["Bedingung"],
+                        segment_id=current_segment_id,
                     )
                 )
                 continue
@@ -182,7 +187,7 @@ class UnfoldedAhb(BaseModel):
                         segment_gruppe=row["Segment Gruppe"] or None,
                         segment=row["Segment"] or None,
                         datenelement=_split_data_element_and_segment_id(row["Datenelement"])[0],
-                        segment_id=_split_data_element_and_segment_id(row["Datenelement"])[1],
+                        segment_id=current_segment_id,
                         code=value_pool_entry,
                         qualifier="",
                         beschreibung=description,
@@ -214,6 +219,7 @@ class UnfoldedAhb(BaseModel):
                         beschreibung=description,
                         bedingung_ausdruck=row[pruefi] or None,
                         bedingung=row["Bedingung"],
+                        segment_id=current_segment_id,
                     )
                 )
                 continue
@@ -286,12 +292,7 @@ class UnfoldedAhb(BaseModel):
         The first line in the example is a segment opening line
         """
 
-        if (
-            _segment_group_pattern.match(ahb_row["Segment Gruppe"])
-            and not ahb_row["Segment"]
-            and ahb_row["Segment"]
-            and not ahb_row["Datenelement"]
-        ):
+        if ahb_row["Segment"] and not ahb_row["Datenelement"]:
             return True
         return False
 
@@ -419,6 +420,7 @@ class UnfoldedAhb(BaseModel):
                 "Segmentgruppe": unfolded_ahb_line.segment_gruppe,
                 "Segment": unfolded_ahb_line.segment,
                 "Datenelement": unfolded_ahb_line.datenelement,
+                "Segment ID": unfolded_ahb_line.segment_id,
                 "Code": unfolded_ahb_line.code,
                 "Qualifier": unfolded_ahb_line.qualifier,
                 "Beschreibung": unfolded_ahb_line.beschreibung,

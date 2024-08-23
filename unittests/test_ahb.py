@@ -44,7 +44,8 @@ class TestAhb:
         )
         assert (
             "17201" in pruefis
-            and pruefis["17201"] == "ORDERSORDRSPAHBMaBiS-informatorischeLesefassung2.2c_99991231_20231001.docx"
+            and pruefis["17201"]
+            == "ORDERSORDRSPAHBMaBiS-informatorischeLesefassung2.2c-außerordentlicheVeröffentlichung_20250403_20231001.docx"
         )
         assert (
             "37001" in pruefis
