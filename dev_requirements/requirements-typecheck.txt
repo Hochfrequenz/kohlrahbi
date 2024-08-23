@@ -6,28 +6,22 @@
 #
 annotated-types==0.7.0
     # via pydantic
-attrs==23.2.0
-    # via maus
+attrs==24.2.0
+    # via kohlrahbi (pyproject.toml)
 click==8.1.7
     # via kohlrahbi (pyproject.toml)
 colorlog==6.8.2
     # via kohlrahbi (pyproject.toml)
 efoli==1.1.0
-    # via
-    #   kohlrahbi (pyproject.toml)
-    #   maus
+    # via kohlrahbi (pyproject.toml)
 et-xmlfile==1.1.0
     # via openpyxl
 iniconfig==2.0.0
     # via pytest
-lxml==5.2.2
+lxml==5.3.0
     # via python-docx
-marshmallow==3.21.3
-    # via maus
-maus==0.6.0
+marshmallow==3.22.0
     # via kohlrahbi (pyproject.toml)
-more-itertools==10.3.0
-    # via maus
 mypy==1.11.1
     # via kohlrahbi (pyproject.toml)
 mypy-extensions==1.0.0
@@ -36,7 +30,7 @@ networkx==3.3
     # via networkx-stubs
 networkx-stubs==0.0.1
     # via kohlrahbi (pyproject.toml)
-numpy==2.0.1
+numpy==2.1.0
     # via
     #   pandas
     #   pandas-stubs
@@ -48,7 +42,7 @@ packaging==24.1
     #   pytest
 pandas==2.2.2
     # via kohlrahbi (pyproject.toml)
-pandas-stubs==2.2.2.240603
+pandas-stubs==2.2.2.240807
     # via kohlrahbi (pyproject.toml)
 pluggy==1.5.0
     # via pytest
@@ -69,7 +63,7 @@ pytz==2024.1
     #   pandas
 six==1.16.0
     # via python-dateutil
-tomlkit==0.13.0
+tomlkit==0.13.2
     # via kohlrahbi (pyproject.toml)
 types-freezegun==1.1.10
     # via kohlrahbi (pyproject.toml)
