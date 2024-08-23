@@ -36,6 +36,8 @@ marshmallow==3.22.0
     # via kohlrahbi (pyproject.toml)
 mccabe==0.7.0
     # via pylint
+more-itertools==10.4.0
+    # via kohlrahbi (pyproject.toml)
 mypy==1.11.1
     # via kohlrahbi (pyproject.toml)
 mypy-extensions==1.0.0

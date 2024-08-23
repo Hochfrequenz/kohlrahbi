@@ -28,6 +28,8 @@ marshmallow==3.22.0
     # via kohlrahbi (pyproject.toml)
 mccabe==0.7.0
     # via pylint
+more-itertools==10.4.0
+    # via kohlrahbi (pyproject.toml)
 numpy==2.1.0
     # via pandas
 openpyxl==3.1.5
