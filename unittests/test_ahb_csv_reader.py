@@ -188,9 +188,8 @@ class TestAhbCsvReader:
         assert actual_code == expected_code
         assert actual_beschreibung == expected_beschreibung
 
-    @pytest.mark.datafiles(Path(__file__).parents[1] / "unittests/ahbs/FV2204/UTILMD/11042.csv")
-    def test_csv_file_reading_11042(self, datafiles):
-        path_to_csv: Path = datafiles / "11042.csv"
+    def test_csv_file_reading_11042(self):
+        path_to_csv: Path = Path(__file__).parents[1] / "unittests/ahbs/FV2204/UTILMD/11042.csv"
         reader = FlatAhbCsvReader(file_path=path_to_csv)
         assert len(reader.rows) == 844
         assert (
@@ -251,9 +250,8 @@ class TestAhbCsvReader:
         actual = FlatAhbCsvReader.merge_section_only_lines(input_lines)
         assert actual == expected_lines
 
-    @pytest.mark.datafiles(Path(__file__).parents[1] / "unittests/ahbs/FV2204/UTILMD/11042.csv")
-    def test_is_parsable(self, datafiles):
-        check_file_can_be_parsed_as_ahb_csv(Path(datafiles) / Path("11042.csv"))
+    def test_is_parsable(self):
+        check_file_can_be_parsed_as_ahb_csv(Path(__file__).parents[1] / Path("unittests/ahbs/FV2204/UTILMD/11042.csv"))
         # if no exception is thrown, the test is successful
 
     @pytest.mark.parametrize(
@@ -270,9 +268,8 @@ class TestAhbCsvReader:
         actual = FlatAhbCsvReader._extract_bedingungen(candidate)
         assert actual == expected
 
-    @pytest.mark.datafiles(Path(__file__).parents[1] / "unittests/ahbs/FV2204/UTILMD/11042.csv")
-    def test_extract_bedingungen_from_csv(self, datafiles):
-        path_to_csv: Path = datafiles / "11042.csv"
+    def test_extract_bedingungen_from_csv(self):
+        path_to_csv: Path = Path(__file__).parents[1] / "unittests/ahbs/FV2204/UTILMD/11042.csv"
         reader = FlatAhbCsvReader(file_path=path_to_csv)
         actual = reader.extract_condition_texts()
         for key, value in actual.items():
