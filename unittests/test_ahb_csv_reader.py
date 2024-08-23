@@ -188,7 +188,7 @@ class TestAhbCsvReader:
         assert actual_code == expected_code
         assert actual_beschreibung == expected_beschreibung
 
-    @pytest.mark.datafiles("./unittests/ahbs/FV2204/UTILMD/11042.csv")
+    @pytest.mark.datafiles(Path(__file__).parents[1] / "unittests/ahbs/FV2204/UTILMD/11042.csv")
     def test_csv_file_reading_11042(self, datafiles):
         path_to_csv: Path = datafiles / "11042.csv"
         reader = FlatAhbCsvReader(file_path=path_to_csv)
@@ -251,7 +251,7 @@ class TestAhbCsvReader:
         actual = FlatAhbCsvReader.merge_section_only_lines(input_lines)
         assert actual == expected_lines
 
-    @pytest.mark.datafiles("./unittests/ahbs/FV2204/UTILMD/11042.csv")
+    @pytest.mark.datafiles(Path(__file__).parents[1] / "unittests/ahbs/FV2204/UTILMD/11042.csv")
     def test_is_parsable(self, datafiles):
         check_file_can_be_parsed_as_ahb_csv(Path(datafiles) / Path("11042.csv"))
         # if no exception is thrown, the test is successful
@@ -270,7 +270,7 @@ class TestAhbCsvReader:
         actual = FlatAhbCsvReader._extract_bedingungen(candidate)
         assert actual == expected
 
-    @pytest.mark.datafiles("./unittests/ahbs/FV2204/UTILMD/11042.csv")
+    @pytest.mark.datafiles(Path(__file__).parents[1] / "unittests/ahbs/FV2204/UTILMD/11042.csv")
     def test_extract_bedingungen_from_csv(self, datafiles):
         path_to_csv: Path = datafiles / "11042.csv"
         reader = FlatAhbCsvReader(file_path=path_to_csv)
