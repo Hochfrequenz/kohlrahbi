@@ -28,78 +28,63 @@ _VERSION = "0.3.0"  #: version to be written into the deep ahb
 
 
 # pylint:disable=too-many-instance-attributes
-@attrs.define(auto_attribs=True, kw_only=True)
-class AhbLine:
+class AhbLine(BaseModel):
     """
     An AhbLine is a single line inside the machine-readable, flat AHB.
     """
 
-    guid: Optional[UUID] = attrs.field(
-        validator=attrs.validators.optional(attrs.validators.instance_of(UUID))
-    )  #: optional key
+    guid: Optional[UUID] = Field(default=None, description="optional key")
     # because the combination (segment group, segment, data element, name) is not guaranteed to be unique
     # yes, it's actually that bad already
-    segment_group_key: Optional[str] = attrs.field(
-        validator=attrs.validators.optional(validator=attrs.validators.instance_of(str))
-    )
-    """ the segment group, e.g. 'SG5' """
+    segment_group_key: Optional[str] = Field(default=None, description="the segment group, e.g. 'SG5'")
 
-    segment_code: Optional[str] = attrs.field(
-        validator=attrs.validators.optional(validator=attrs.validators.instance_of(str))
-    )
-    """the segment, e.g. 'IDE'"""
+    segment_code: Optional[str] = Field(default=None, description="the segment, e.g. 'IDE'")
 
-    data_element: Optional[str] = attrs.field(
-        validator=attrs.validators.optional(validator=attrs.validators.instance_of(str))
-    )
-    """ the data element ID, e.g. '3224' """
+    data_element: Optional[str] = Field(default=None, description="the data element ID, e.g. '3224'")
 
-    segment_id: Optional[str] = attrs.field(
-        validator=attrs.validators.optional(validator=attrs.validators.instance_of(str)), default=None
+    segment_id: Optional[str] = Field(
+        default=None,
+        description="the 5 digit segment id, e.g. '00003' for Nachrichten Kopfsegment. This is available since FV2410.",
     )
-    """
-    the 5 digit segment id, e.g. '00003' for Nachrichten Kopfsegment
-    This is available since FV2410.
-    """
 
-    value_pool_entry: Optional[str] = attrs.field(
-        validator=attrs.validators.optional(attrs.validators.instance_of(str))
+    value_pool_entry: Optional[str] = Field(
+        None, description="one of (possible multiple) allowed values, e.g. 'E01' or '293'"
     )
-    """ one of (possible multiple) allowed values, e.g. 'E01' or '293' """
 
-    name: Optional[str] = attrs.field(validator=attrs.validators.optional(validator=attrs.validators.instance_of(str)))
-    """the name, e.g. 'Meldepunkt'. It can be both the description of a field but also its meaning"""
+    name: Optional[str] = Field(
+        None, description="the name, e.g. 'Meldepunkt'. It can be both the description of a field but also its meaning"
+    )
 
     # Check the unittest test_csv_file_reading_11042 to see the different values of name. It's not only the grey fields
     # where user input is expected but also the meanings / values of value pool entries. This means the exact meaning of
     # name can only be determined in the context in which it is used. This is one of many shortcoming of the current AHB
     # structure: Things in the same column don't necessarily mean the same thing.
-    ahb_expression: Optional[str] = attrs.field(
-        validator=attrs.validators.optional(
-            validator=attrs.validators.and_(
-                attrs.validators.instance_of(str), _check_that_string_is_not_whitespace_or_empty
-            )
-        )
+    ahb_expression: Optional[str] = Field(
+        default=None,
+        description=(
+            "a requirement indicator + an optional condition ('ahb expression'),"
+            "e.g. 'Muss [123] O [456]'. Note: to parse expressions from AHBs"
+            "consider using AHBicht: https://github.com/Hochfrequenz/ahbicht/"
+        ),
     )
-    """a requirement indicator + an optional condition ("ahb expression"), e.g. 'Muss [123] O [456]' """
-    # note: to parse expressions from AHBs consider using AHBicht: https://github.com/Hochfrequenz/ahbicht/
-    conditions: Optional[str] = attrs.field(
-        validator=attrs.validators.optional(validator=attrs.validators.instance_of(str)), default=None
+    conditions: Optional[str] = Field(
+        default=None,
+        description=(
+            "The condition text describes the text to the optional condition of the ahb expression."
+            "E.g. '[492] This is a condition text. [999] And this is another one.'"
+        ),
     )
-    """
-    The condition text describes the text to the optional condition of the ahb expression.
-    E.g. '[492] This is a condition text. [999] And this is another one.'
-    """
-    section_name: Optional[str] = attrs.field(
-        validator=attrs.validators.optional(validator=attrs.validators.instance_of(str)), default=None
+
+    section_name: Optional[str] = Field(
+        default=None,
+        description="The section name describes the purpose of a segment, e.g. 'Nachrichten-Kopfsegment' or 'Beginn der Nachricht'",
     )
-    """
-    The section name describes the purpose of a segment, e.g. "Nachrichten-Kopfsegment" or "Beginn der Nachricht"
-    """
-    index: Optional[int] = attrs.field(validator=attrs.validators.optional(attrs.validators.ge(0)), default=None)
-    """
-    index is a number that describes the position of the AHBLine inside the original PDF- and FlatAnwendungshandbuch.
-    """
+
+    index: Optional[int] = Field(
+        default=None,
+        description="index is a number that describes the position of the AHBLine inside the original PDF- and FlatAnwendungshandbuch.",
+        gt=0,
+    )
 
     def holds_any_information(self) -> bool:
         """
