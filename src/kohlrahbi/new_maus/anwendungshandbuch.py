@@ -13,14 +13,15 @@ from uuid import UUID
 import attr.validators
 import attrs
 from marshmallow import Schema, fields, post_load  # type:ignore[import]
-from maus.models.edifact_components import (
+from more_itertools import last, split_when
+
+from kohlrahbi.new_maus.edifact_components import (
     DataElementFreeText,
     DataElementValuePool,
     Segment,
     SegmentGroup,
     SegmentGroupSchema,
 )
-from more_itertools import last, split_when
 
 _VERSION = "0.3.0"  #: version to be written into the deep ahb
 

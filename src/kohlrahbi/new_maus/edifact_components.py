@@ -12,7 +12,8 @@ import attr
 import attrs
 from marshmallow import Schema, fields, post_dump, post_load, pre_dump, pre_load  # type:ignore[import]
 from marshmallow.fields import Enum as MarshmallowEnum
-from maus.models import _check_that_string_is_not_whitespace_or_empty
+
+from kohlrahbi.new_maus.anwendungshandbuch import _check_that_string_is_not_whitespace_or_empty
 
 
 class DataElementDataType(str, Enum):
