@@ -5,7 +5,7 @@ This module contains methods available to all methods in the package.
 
 
 # pylint: disable=unused-argument
-def _check_that_string_is_not_whitespace_or_empty(instance, attribute, value):
+def _check_that_string_is_not_whitespace_or_empty(instance, attribute, value) -> None:  # type:ignore[no-untyped-def]
     """
     Check that string in the instance attribute value is not empty
     """

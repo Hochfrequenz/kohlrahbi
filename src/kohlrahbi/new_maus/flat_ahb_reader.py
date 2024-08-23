@@ -49,7 +49,13 @@ class FlatAhbCsvReader(FlatAhbReader):
     reads csv files and returns AHBs
     """
 
-    def __init__(self, file_path: Path, pruefidentifikator: Optional[str] = None, encoding="utf-8", delimiter=","):
+    def __init__(  # type:ignore[type-arg]
+        self,
+        file_path: Path,
+        pruefidentifikator: Optional[str] = None,
+        encoding="utf-8",
+        delimiter=",",
+    ):
         self.rows: List[AhbLine] = []
         self._logger = logging.getLogger()
         self.current_section_name: Optional[str] = None
@@ -68,7 +74,7 @@ class FlatAhbCsvReader(FlatAhbReader):
             self.rows.append(ahb_line)
 
     @staticmethod
-    def merge_section_only_lines(raw_lines: List[dict]) -> List[dict]:
+    def merge_section_only_lines(raw_lines: List[dict]) -> List[dict]:  # type:ignore[type-arg]
         """
         merges adjacent lines from the CSV source when they only contain an AHB "section" description.
         "Section" headings are the grey lines on the left of the AHB PDF.
@@ -76,7 +82,7 @@ class FlatAhbCsvReader(FlatAhbReader):
         When the section heading spans multiple lines, we don't want to treat them as separate but as a single heading.
         The method consumes a list of dicts and returns a _new_ list of dicts that is of the same length or shorter.
         """
-        result: List[dict] = []
+        result: List[dict] = []  # type:ignore[type-arg]
 
         # imagine the original list to be
         # 0,asd,qwertz,
@@ -94,7 +100,7 @@ class FlatAhbCsvReader(FlatAhbReader):
             "Bedingung",
         }
 
-        def line_only_contains_segment_gruppe(raw_line: dict) -> bool:
+        def line_only_contains_segment_gruppe(raw_line: dict) -> bool:  # type:ignore[type-arg]
             """
             returns true if the given raw line only contains some meaningful data in the "Segment Gruppe" key
             """
@@ -117,7 +123,7 @@ class FlatAhbCsvReader(FlatAhbReader):
             else:
                 # note that AHBs never end with a section heading, so all headings/sections will run into this block
                 if len(merged_section_name) > 0:
-                    artificial_merged_line: dict = {
+                    artificial_merged_line: dict = {  # type:ignore[type-arg]
                         "": str(int(raw_line[""]) - 1),
                         "Segment Gruppe": merged_section_name.strip().replace("  ", " "),
                     }
@@ -131,7 +137,7 @@ class FlatAhbCsvReader(FlatAhbReader):
                 result.append(raw_line)
         return result
 
-    def get_raw_rows(self, file_handle: TextIO) -> List[dict]:
+    def get_raw_rows(self, file_handle: TextIO) -> List[dict]:  # type:ignore[type-arg]
         """
         reads the input file and returns an iterator over raw lines.
         Override this method if your data source is not a CSV file
@@ -143,7 +149,7 @@ class FlatAhbCsvReader(FlatAhbReader):
             raise ValueError("Cannot find column name for ahb expression")
         return list(reader)
 
-    def raw_ahb_row_to_ahbline(self, ahb_row: dict) -> Optional[AhbLine]:
+    def raw_ahb_row_to_ahbline(self, ahb_row: dict) -> Optional[AhbLine]:  # type:ignore[type-arg]
         """
         Converts a row of the raw/scraped AHB into the AhbLine data structure.
         Returns None for rows that are skipped.
