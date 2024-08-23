@@ -10,7 +10,7 @@ from typing import Callable, Dict, Iterable, List, Mapping, Optional, Type
 
 import attr
 import attrs
-from marshmallow import Schema, fields, post_dump, post_load, pre_dump, pre_load  # type:ignore[import]
+from marshmallow import Schema, fields, post_dump, post_load, pre_dump, pre_load
 from marshmallow.fields import Enum as MarshmallowEnum
 
 from kohlrahbi.new_maus import _check_that_string_is_not_whitespace_or_empty
@@ -82,7 +82,7 @@ class DataElementSchema(Schema):
 
     # pylint:disable= unused-argument
     @post_dump
-    def _remove_null_entered_input(self, data: dict, **kwargs) -> dict:
+    def _remove_null_entered_input(self, data: dict, **kwargs) -> dict:  # type:ignore[no-untyped-def,type-arg]
         if "entered_input" in data and data["entered_input"] is None:
             del data["entered_input"]
         return data
@@ -116,7 +116,7 @@ class DataElementFreeTextSchema(DataElementSchema):
 
     # pylint:disable=unused-argument
     @post_load
-    def deserialize(self, data, **kwargs) -> DataElementFreeText:
+    def deserialize(self, data, **kwargs) -> DataElementFreeText:  # type:ignore[no-untyped-def]
         """
         Converts the barely typed data dictionary into an actual :class:`.DataElementFreeText`
         """
@@ -130,7 +130,7 @@ _simple_edifact_qualifier_pattern = re.compile(r"^([A-Z\d]+)|(\d+\.\d+[a-z])$")
 gabi_edifact_qualifier_pattern = re.compile(r"^(?!MP-ID)(GABi)?[A-Z\d\-]+(RLM(o|m)T)?$")
 
 
-def _check_is_edifact_qualifier(instance, attribute, value):
+def _check_is_edifact_qualifier(instance, attribute, value):  # type:ignore[no-untyped-def]
     """
     Checks that the given attribute is a valid EDIFACT qualifier.
     Raises a ValueError if not.
@@ -178,7 +178,7 @@ class ValuePoolEntrySchema(Schema):
 
     # pylint:disable=unused-argument
     @post_load
-    def deserialize(self, data, **kwargs) -> ValuePoolEntry:
+    def deserialize(self, data, **kwargs) -> ValuePoolEntry:  # type:ignore[no-untyped-def]
         """
         Converts the barely typed data dictionary into an actual :class:`.ValuePoolEntry`
         """
@@ -264,7 +264,7 @@ class DataElementValuePoolSchema(DataElementSchema):
 
     # pylint:disable=unused-argument
     @post_load
-    def deserialize(self, data, **kwargs) -> DataElementValuePool:
+    def deserialize(self, data, **kwargs) -> DataElementValuePool:  # type:ignore[no-untyped-def]
         """
         Converts the barely typed data dictionary into an actual :class:`.DataElementValuePool`
         """
@@ -304,7 +304,7 @@ class _FreeTextOrValuePoolSchema(Schema):
 
     # pylint:disable= unused-argument
     @post_load
-    def deserialize(self, data, **kwargs) -> Type[DataElement]:
+    def deserialize(self, data, **kwargs) -> Type[DataElement]:  # type:ignore[no-untyped-def]
         """
         select the correct part of the data to deserialize
         """
@@ -316,7 +316,7 @@ class _FreeTextOrValuePoolSchema(Schema):
 
     # pylint:disable= unused-argument
     @post_dump
-    def post_dump_helper(self, data, **kwargs) -> dict:
+    def post_dump_helper(self, data, **kwargs) -> dict:  # type:ignore[type-arg]
         """
         truncate the part _FreeTextOrValuePool that is not needed
         """
@@ -328,7 +328,7 @@ class _FreeTextOrValuePoolSchema(Schema):
 
     # pylint:disable= unused-argument
     @pre_load
-    def pre_load_helper(self, data, **kwargs) -> dict:
+    def pre_load_helper(self, data, **kwargs) -> dict:  # type:ignore[type-arg]
         """
         Put the untyped data into a structure that is deserializable as _FreeTextOrValuePool
         """
