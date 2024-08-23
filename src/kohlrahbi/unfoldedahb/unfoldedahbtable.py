@@ -13,18 +13,18 @@ from uuid import uuid4
 import attrs
 import pandas as pd
 from efoli import EdifactFormat, get_format_of_pruefidentifikator
-from maus.models.anwendungshandbuch import (
-    AhbLine,
-    AhbMetaInformation,
-    FlatAnwendungshandbuch,
-    FlatAnwendungshandbuchSchema,
-)
 from maus.reader.flat_ahb_reader import FlatAhbCsvReader
 from more_itertools import first_true, peekable
 from pydantic import BaseModel
 
 from kohlrahbi.ahbtable.ahbtable import AhbTable, _column_letter_width_mapping
 from kohlrahbi.logger import logger
+from kohlrahbi.new_maus.anwendungshandbuch import (
+    AhbLine,
+    AhbMetaInformation,
+    FlatAnwendungshandbuch,
+    FlatAnwendungshandbuchSchema,
+)
 from kohlrahbi.unfoldedahb.unfoldedahbline import UnfoldedAhbLine
 from kohlrahbi.unfoldedahb.unfoldedahbtablemetadata import UnfoldedAhbTableMetaData
 
