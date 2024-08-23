@@ -12,7 +12,7 @@ from uuid import UUID
 
 import attr.validators
 import attrs
-from marshmallow import Schema, fields, post_load  # type:ignore[import]
+from marshmallow import Schema, fields, post_load
 from more_itertools import last, split_when
 
 from kohlrahbi.new_maus import _check_that_string_is_not_whitespace_or_empty
@@ -153,7 +153,7 @@ class AhbLineSchema(Schema):
 
     # pylint:disable=unused-argument
     @post_load
-    def deserialize(self, data, **kwargs) -> AhbLine:
+    def deserialize(self, data, **kwargs) -> AhbLine:  # type:ignore[no-untyped-def]
         """
         Converts the barely typed data dictionary into an actual :class:`.AhbLine`
         """
@@ -216,7 +216,7 @@ class AhbMetaInformationSchema(Schema):
 
     # pylint:disable=unused-argument
     @post_load
-    def deserialize(self, data, **kwargs) -> AhbMetaInformation:
+    def deserialize(self, data, **kwargs) -> AhbMetaInformation:  # type:ignore[no-untyped-def]
         """
         Converts the barely typed data dictionary into an actual :class:`.AhbMetaInformation`
         """
@@ -233,7 +233,9 @@ def _remove_grouped_ahb_lines_containing_section_name(
 
 
 # pylint:disable=unused-argument
-def _check_that_nearly_all_lines_have_a_segment_group(instance, attribute, value: List[AhbLine]):
+def _check_that_nearly_all_lines_have_a_segment_group(  # type:ignore[no-untyped-def]
+    instance, attribute, value: List[AhbLine]
+):
     """
     Loops over all provided ahb lines and checks that only at the beginning and the end there are lines without a
     segment group. In between every line has to have a segment group specified. This is necessary for the navigation
@@ -253,7 +255,9 @@ _data_element_pattern = re.compile(r"^\d{4}$|^\d{5}$|^[A-Za-z]+\d{4}$")
 
 
 # pylint:disable=unused-argument
-def _check_that_line_has_either_none_or_d4_data_element(instance, attribute, value: AhbLine):
+def _check_that_line_has_either_none_or_d4_data_element(  # type:ignore[no-untyped-def]
+    instance, attribute, value: AhbLine
+):
     """
     checks that the given line has either a None data element or a data element that matches
     \\d{4},\\ d{5} or [A-Za-z]+\\d{4}.
@@ -270,7 +274,7 @@ _segment_group_key_pattern = re.compile(r"^SG\d+$")
 
 
 # pylint:disable=unused-argument
-def _check_that_line_has_either_none_or_matching_sg(instance, attribute, value: AhbLine):
+def _check_that_line_has_either_none_or_matching_sg(instance, attribute, value: AhbLine):  # type:ignore[no-untyped-def]
     """
     checks that the given line has a segment group key that is either None (for root) or matches SG\\d+
     """
@@ -287,7 +291,9 @@ _segment_code_pattern = re.compile(r"^[A-Z]+$")
 
 
 # pylint:disable=unused-argument
-def _check_that_line_has_either_none_az_segment_code(instance, attribute, value: AhbLine):
+def _check_that_line_has_either_none_az_segment_code(  # type:ignore[no-untyped-def]
+    instance, attribute, value: AhbLine
+):
     """
     checks that the given line has either a None segment code or a segment code that consists of all upper letters
     """
@@ -348,7 +354,7 @@ class FlatAnwendungshandbuch:
                 result.append(line.segment_group_key)
         return result
 
-    def sort_lines_by_segment_groups(self):
+    def sort_lines_by_segment_groups(self):  # type:ignore[no-untyped-def]
         """
         sorts lines by segment groups while preserving the order inside the groups and the order between the groups.
         """
@@ -402,7 +408,7 @@ class FlatAnwendungshandbuchSchema(Schema):
 
     # pylint:disable=unused-argument
     @post_load
-    def deserialize(self, data, **kwargs) -> FlatAnwendungshandbuch:
+    def deserialize(self, data, **kwargs) -> FlatAnwendungshandbuch:  # type:ignore[no-untyped-def]
         """
         Converts the barely typed data dictionary into an actual :class:`.FlatAnwendungshandbuch`
         """
@@ -519,7 +525,7 @@ class DeepAnwendungshandbuch:
         added_discriminators: Set[Optional[str]] = set()
         # checks like "str in set" are way faster than "value pool in list"
 
-        def add_to_result(value_pool: DataElementValuePool):
+        def add_to_result(value_pool: DataElementValuePool):  # type:ignore[no-untyped-def]
             if value_pool.discriminator in added_discriminators:
                 # assumption: the discriminator is truly unique in an AHB
                 return
@@ -586,7 +592,7 @@ class DeepAnwendungshandbuchSchema(Schema):
 
     # pylint:disable=unused-argument
     @post_load
-    def deserialize(self, data, **kwargs) -> DeepAnwendungshandbuch:
+    def deserialize(self, data, **kwargs) -> DeepAnwendungshandbuch:  # type:ignore[no-untyped-def]
         """
         Converts the barely typed data dictionary into an actual :class:`.DeepAnwendungshandbuch`
         """

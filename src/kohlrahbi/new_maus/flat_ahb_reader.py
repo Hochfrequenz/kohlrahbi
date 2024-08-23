@@ -49,7 +49,7 @@ class FlatAhbCsvReader(FlatAhbReader):
     reads csv files and returns AHBs
     """
 
-    def __init__(  # type:ignore[type-arg]
+    def __init__(  # type:ignore[no-untyped-def]
         self,
         file_path: Path,
         pruefidentifikator: Optional[str] = None,

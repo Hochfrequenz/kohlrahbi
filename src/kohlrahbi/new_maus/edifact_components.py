@@ -304,31 +304,31 @@ class _FreeTextOrValuePoolSchema(Schema):
 
     # pylint:disable= unused-argument
     @post_load
-    def deserialize(self, data, **kwargs) -> Type[DataElement]:  # type:ignore[no-untyped-def]
+    def deserialize(self, data, **kwargs) -> DataElement:  # type:ignore[no-untyped-def]
         """
         select the correct part of the data to deserialize
         """
         if "free_text" in data and data["free_text"]:
-            return data["free_text"]
+            return data["free_text"]  # type:ignore[no-any-return]
         if "value_pool" in data and data["value_pool"]:
-            return data["value_pool"]
-        return data
+            return data["value_pool"]  # type:ignore[no-any-return]
+        return data  # type:ignore[no-any-return]
 
     # pylint:disable= unused-argument
     @post_dump
-    def post_dump_helper(self, data, **kwargs) -> dict:  # type:ignore[type-arg]
+    def post_dump_helper(self, data, **kwargs) -> dict:  # type:ignore[no-untyped-def, type-arg]
         """
         truncate the part _FreeTextOrValuePool that is not needed
         """
         if "value_pool" in data and data["value_pool"]:
-            return data["value_pool"]
+            return data["value_pool"]  # type:ignore[no-any-return]
         if "free_text" in data and data["free_text"]:
-            return data["free_text"]
+            return data["free_text"]  # type:ignore[no-any-return]
         raise NotImplementedError(f"Data {data} is not implemented for JSON serialization")
 
     # pylint:disable= unused-argument
     @pre_load
-    def pre_load_helper(self, data, **kwargs) -> dict:  # type:ignore[type-arg]
+    def pre_load_helper(self, data, **kwargs) -> dict:  # type:ignore[no-untyped-def, type-arg]
         """
         Put the untyped data into a structure that is deserializable as _FreeTextOrValuePool
         """
@@ -347,7 +347,7 @@ class _FreeTextOrValuePoolSchema(Schema):
 
     # pylint:disable= unused-argument
     @pre_dump
-    def prepare_for_serialization(self, data, **kwargs) -> _FreeTextOrValuePool:
+    def prepare_for_serialization(self, data, **kwargs) -> _FreeTextOrValuePool:  # type:ignore[no-untyped-def]
         """
         Detect if data are FreeText or ValuePool data elements
         """
@@ -438,7 +438,7 @@ class SegmentSchema(SegmentLevelSchema):
 
     # pylint:disable=unused-argument
     @post_load
-    def deserialize(self, data, **kwargs) -> Segment:
+    def deserialize(self, data, **kwargs) -> Segment:  # type:ignore[no-untyped-def]
         """
         Converts the barely typed data dictionary into an actual :class:`.Segment`
         """
@@ -517,7 +517,7 @@ class SegmentGroupSchema(SegmentLevelSchema):
 
     # pylint:disable=unused-argument
     @post_load
-    def deserialize(self, data, **kwargs) -> SegmentGroup:
+    def deserialize(self, data, **kwargs) -> SegmentGroup:  # type:ignore[no-untyped-def]
         """
         Converts the barely typed data dictionary into an actual :class:`.SegmentGroup`
         """
