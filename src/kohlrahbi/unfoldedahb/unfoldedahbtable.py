@@ -13,7 +13,6 @@ from uuid import uuid4
 import attrs
 import pandas as pd
 from efoli import EdifactFormat, get_format_of_pruefidentifikator
-from maus.reader.flat_ahb_reader import FlatAhbCsvReader
 from more_itertools import first_true, peekable
 from pydantic import BaseModel
 
@@ -25,6 +24,7 @@ from kohlrahbi.new_maus.anwendungshandbuch import (
     FlatAnwendungshandbuch,
     FlatAnwendungshandbuchSchema,
 )
+from kohlrahbi.new_maus.flat_ahb_reader import FlatAhbCsvReader
 from kohlrahbi.unfoldedahb.unfoldedahbline import UnfoldedAhbLine
 from kohlrahbi.unfoldedahb.unfoldedahbtablemetadata import UnfoldedAhbTableMetaData
 
