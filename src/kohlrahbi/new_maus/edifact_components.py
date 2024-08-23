@@ -6,7 +6,7 @@ Components contain not only EDIFACT composits but also segments and segment grou
 import re
 from abc import ABC
 from enum import Enum
-from typing import Callable, Dict, Iterable, List, Mapping, Optional, Type
+from typing import Callable, Dict, Iterable, List, Mapping, Optional
 
 import attr
 import attrs
