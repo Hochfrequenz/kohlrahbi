@@ -7,25 +7,21 @@
 annotated-types==0.7.0
     # via pydantic
 attrs==24.2.0
-    # via maus
+    # via kohlrahbi (pyproject.toml)
 click==8.1.7
     # via kohlrahbi (pyproject.toml)
 colorlog==6.8.2
     # via kohlrahbi (pyproject.toml)
 efoli==1.1.0
-    # via
-    #   kohlrahbi (pyproject.toml)
-    #   maus
+    # via kohlrahbi (pyproject.toml)
 et-xmlfile==1.1.0
     # via openpyxl
 lxml==5.3.0
     # via python-docx
 marshmallow==3.22.0
-    # via maus
-maus==0.6.0
     # via kohlrahbi (pyproject.toml)
 more-itertools==10.4.0
-    # via maus
+    # via kohlrahbi (pyproject.toml)
 numpy==2.1.0
     # via pandas
 openpyxl==3.1.5
@@ -36,7 +32,7 @@ pandas==2.2.2
     # via kohlrahbi (pyproject.toml)
 pydantic==2.8.2
     # via kohlrahbi (pyproject.toml)
-pydantic-core==2.23.0
+pydantic-core==2.20.1
     # via pydantic
 python-dateutil==2.9.0.post0
     # via pandas
