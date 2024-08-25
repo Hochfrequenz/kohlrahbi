@@ -14,6 +14,7 @@ import attr.validators
 import attrs
 from marshmallow import Schema, fields, post_load
 from more_itertools import last, split_when
+from pydantic import BaseModel, Field, field_validator
 
 from kohlrahbi.new_maus import _check_that_string_is_not_whitespace_or_empty
 from kohlrahbi.new_maus.edifact_components import (
