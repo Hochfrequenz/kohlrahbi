@@ -153,48 +153,31 @@ class AhbLineSchema(Schema):
         return AhbLine(**data)
 
 
-@attrs.define(auto_attribs=True, kw_only=True)
-class AhbMetaInformation:
+class AhbMetaInformation(BaseModel):
     """
     Meta information about an AHB like e.g. its title, Prüfidentifikator, possible sender and receiver roles
     """
 
-    pruefidentifikator: str  #: identifies the message type (within a fixed format version) e.g. "11042" or "13012"
-    # there's more to come  but for now we'll leave it as is, because we're just in a proof of concept phase
-    maus_version: Optional[str] = attrs.field(
-        validator=attrs.validators.optional(attrs.validators.instance_of(str)),  # type:ignore[arg-type]
-        # https://github.com/Hochfrequenz/mig_ahb_utility_stack/issues/221
-        default=_VERSION,
+    pruefidentifikator: str = Field(
+        ..., description="identifies the message type (within a fixed format version) e.g. '11042' or '13012'"
     )
-    """
-    semantic version of maus used to create this document
-    """
-    description: Optional[str] = attrs.field(
-        validator=attrs.validators.optional(
-            validator=attrs.validators.and_(
-                attrs.validators.instance_of(str),
-                _check_that_string_is_not_whitespace_or_empty,
-            ),
-        ),
+    maus_version: Optional[str] = Field(
+        default=_VERSION, description="semantic version of maus used to create this document"
+    )
+    description: Optional[str] = Field(
         default=None,
+        description="an optional description of the purpose of the pruefidentifikator; e.g. 'Anmeldung MSB' for 11042",
     )
-    """
-    an optional description of the purpose of the pruefidentifikator; e.g. 'Anmeldung MSB' for 11042
-    """
-    direction: Optional[str] = attrs.field(
-        validator=attrs.validators.optional(
-            validator=attrs.validators.and_(
-                attrs.validators.instance_of(str),
-                _check_that_string_is_not_whitespace_or_empty,
-            )
-        ),
+    direction: Optional[str] = Field(
         default=None,
+        description="a stringly typed description of the roles of sender and receiver of the message (the row name in the AHB is 'Kommunikation von'); e.g. 'MSB an NB' for 11042",
     )
-    """
-    a stringly typed description of the roles of sender and receiver of the message
-    (the row name in the AHB is 'Kommunikation von');
-    e.g. 'MSB an NB' for 11042
-    """
+
+    @field_validator("description", "direction", mode="before")
+    def check_string_is_not_whitespace_or_empty(cls, v):
+        if v is not None:
+            _check_that_string_is_not_whitespace_or_empty(v)
+        return v
 
 
 class AhbMetaInformationSchema(Schema):
