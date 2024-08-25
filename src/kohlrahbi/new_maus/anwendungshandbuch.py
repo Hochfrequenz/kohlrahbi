@@ -86,6 +86,13 @@ class AhbLine(BaseModel):
         gt=0,
     )
 
+    @field_validator("ahb_expression")
+    @classmethod
+    def check_ahb_expression(cls, v):
+        if v is not None:
+            _check_that_string_is_not_whitespace_or_empty(v)
+        return v
+
     def holds_any_information(self) -> bool:
         """
         Returns true iff the line holds any information exception for just a GUID.
