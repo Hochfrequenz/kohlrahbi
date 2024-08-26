@@ -84,7 +84,7 @@ class AhbLine(BaseModel):
     index: Optional[int] = Field(
         default=None,
         description="index is a number that describes the position of the AHBLine inside the original PDF- and FlatAnwendungshandbuch.",
-        gt=0,
+        ge=0,
     )
 
     @field_validator("ahb_expression")
