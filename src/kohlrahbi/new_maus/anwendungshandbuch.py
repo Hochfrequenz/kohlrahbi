@@ -174,6 +174,7 @@ class AhbMetaInformation(BaseModel):
     )
 
     @field_validator("description", "direction", mode="before")
+    @classmethod
     def check_string_is_not_whitespace_or_empty(cls, v):
         if v is not None:
             _check_that_string_is_not_whitespace_or_empty(v)
