@@ -8,7 +8,6 @@ from abc import ABC
 from enum import Enum
 from typing import Callable, Dict, Iterable, List, Mapping, Optional
 
-import attr
 import attrs
 from marshmallow import Schema, fields, post_dump, post_load, pre_dump, pre_load
 from marshmallow.fields import Enum as MarshmallowEnum
