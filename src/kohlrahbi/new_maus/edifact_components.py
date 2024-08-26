@@ -511,7 +511,6 @@ class SegmentSchema(SegmentLevelSchema):
         return Segment(**data)
 
 
-@attrs.define(auto_attribs=True, kw_only=True)
 class SegmentGroup(SegmentLevel):
     """
     A segment group that contains segments and nested groups.
@@ -519,18 +518,32 @@ class SegmentGroup(SegmentLevel):
     This group has the key "root".
     """
 
-    segments: Optional[List[Segment]] = attrs.field(
-        validator=attrs.validators.optional(
-            attrs.validators.deep_iterable(
-                member_validator=attrs.validators.instance_of(Segment),
-                iterable_validator=attrs.validators.instance_of(list),
-            )
-        ),
-        default=None,
-    )  #: the segments inside this very group
-    segment_groups: Optional[List["SegmentGroup"]] = attrs.field(
-        default=None
-    )  #: groups that are nested into this group
+    segments: Optional[List[Segment]] = Field(default=None, description="The segments inside this very group")
+    segment_groups: Optional[List["SegmentGroup"]] = Field(
+        default=None, description="Groups that are nested into this group"
+    )
+
+    @field_validator("segments")
+    @classmethod
+    def validate_segments(cls, v):
+        if v is not None:
+            if not isinstance(v, list):
+                raise ValueError("segments must be a list")
+            for item in v:
+                if not isinstance(item, Segment):
+                    raise ValueError("All items in segments must be instances of Segment")
+        return v
+
+    @field_validator("segment_groups")
+    @classmethod
+    def validate_segment_groups(cls, v):
+        if v is not None:
+            if not isinstance(v, list):
+                raise ValueError("segment_groups must be a list")
+            for item in v:
+                if not isinstance(item, SegmentGroup):
+                    raise ValueError("All items in segment_groups must be instances of SegmentGroup")
+        return v
 
     def reset_ahb_line_index(self) -> None:
         self.ahb_line_index = None
