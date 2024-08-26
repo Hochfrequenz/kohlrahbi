@@ -610,20 +610,13 @@ class EdifactStackLevel(BaseModel):
 _level_pattern = re.compile(r"\[\"(?P<level_name>[^\[\]]+?)\"\](?:\[(?P<index>\d+)\])?")
 
 
-@attrs.define(auto_attribs=True, kw_only=True)
-class EdifactStack:
+class EdifactStack(BaseModel):
     """
     The EdifactStack describes where inside an EDIFACT message data are found.
     The stack is independent of the actual implementation used to create the EDIFACT (be it XML, JSON whatever).
     """
 
-    #: levels describe the nesting inside an edifact message
-    levels: List[EdifactStackLevel] = attrs.field(
-        validator=attrs.validators.deep_iterable(
-            member_validator=attrs.validators.instance_of(EdifactStackLevel),
-            iterable_validator=attrs.validators.instance_of(list),
-        )
-    )
+    levels: List[EdifactStackLevel] = Field(..., description="Levels describe the nesting inside an edifact message")
 
     @staticmethod
     def from_json_path(json_path: str) -> "EdifactStack":
