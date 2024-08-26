@@ -160,23 +160,22 @@ _simple_edifact_qualifier_pattern = re.compile(r"^([A-Z\d]+)|(\d+\.\d+[a-z])$")
 gabi_edifact_qualifier_pattern = re.compile(r"^(?!MP-ID)(GABi)?[A-Z\d\-]+(RLM(o|m)T)?$")
 
 
-def _check_is_edifact_qualifier(instance, attribute, value):  # type:ignore[no-untyped-def]
+def _check_is_edifact_qualifier(value: str) -> str:
     """
     Checks that the given attribute is a valid EDIFACT qualifier.
     Raises a ValueError if not.
     """
-    _check_that_string_is_not_whitespace_or_empty(instance, attribute, value)
+    _check_that_string_is_not_whitespace_or_empty(value)
     simple_match = _simple_edifact_qualifier_pattern.match(value)
     if simple_match is not None:
-        return
+        return value
     gabi_match = gabi_edifact_qualifier_pattern.match(value)
     if gabi_match is not None:
-        return
-    raise ValueError(f"The qualifier {attribute.name} '{value}' is invalid")
+        return value
+    raise ValueError(f"The qualifier '{value}' is invalid")
 
 
-@attrs.define(auto_attribs=True, kw_only=True)
-class ValuePoolEntry:
+class ValuePoolEntry(BaseModel):
     """
     A value pool entry contains the EDIFACT qualifier, a meaning (German text) and an ahb expression.
     A value pool consists of 1 to n ValuePoolEntries.
@@ -188,12 +187,26 @@ class ValuePoolEntry:
     """
 
     #: the qualifier in edifact, might be e.g. "E01", "D", "9", "1.1a", "G_0057"
-    qualifier: str = attr.field(validator=_check_is_edifact_qualifier)
-    #: the meaning as it is written in the AHB (e.g. "Einzug", "Entwurfs-Version", "GS1", "Codeliste Gas G_0057"
-    meaning: str = attr.field(validator=attrs.validators.instance_of(str))
-    #: the ahb expression, in most cases this is a simple "X"; it must not be empty
-    ahb_expression: str = attr.field(validator=_check_that_string_is_not_whitespace_or_empty)
-    # must not be empty (if so, the value pool entry should not be included of the result)
+    qualifier: str = Field(..., description="The qualifier in EDIFACT")
+    meaning: str = Field(
+        ...,
+        description="The meaning as it is written in the AHB,"
+        "e.g. 'Einzug', 'Entwurfs-Version', 'GS1', 'Codeliste Gas G_0057'",
+    )
+    ahb_expression: str = Field(
+        ...,
+        description="The AHB expression, in most cases this is a simple 'X'; it must not be empty",
+    )
+
+    @field_validator("qualifier")
+    @classmethod
+    def validate_qualifier(cls, v):
+        return _check_is_edifact_qualifier(v)
+
+    @field_validator("meaning", "ahb_expression")
+    @classmethod
+    def validate_non_empty_string(cls, v):
+        return _check_that_string_is_not_whitespace_or_empty(v)
 
 
 class ValuePoolEntrySchema(Schema):
