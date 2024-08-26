@@ -407,25 +407,32 @@ class _FreeTextOrValuePoolSchema(Schema):
         raise NotImplementedError(f"Data type of {data} is not implemented for JSON serialization")
 
 
-@attrs.define(auto_attribs=True, kw_only=True)
-class SegmentLevel(ABC):
+class SegmentLevel(BaseModel, ABC):
     """
     SegmentLevel describes @annika: what does it describe?
     """
 
     discriminator: str  # no validator here, because it might be None on initialization and will be set later (trust me)
-    ahb_expression: str = attrs.field(
-        validator=attrs.validators.and_(
-            attrs.validators.instance_of(str), _check_that_string_is_not_whitespace_or_empty
-        )
+    ahb_expression: str = Field(
+        ...,
+        description="AHB expression",
     )
-    ahb_line_index: Optional[int] = attrs.field(
-        validator=attrs.validators.optional(attrs.validators.instance_of(int)), default=None
+    ahb_line_index: Optional[int] = Field(
+        default=None,
+        description="Allows sorting the segments depending on where they occurred in the FlatAnwendungshandbuch. It won't be serialized though.",
     )
-    """
-    Allows sorting the segments depending on where they occured in the FlatAnwendungshandbuch.
-    It won't be serialized though.
-    """
+
+    @field_validator("ahb_expression")
+    @classmethod
+    def validate_ahb_expression(cls, v):
+        return _check_that_string_is_not_whitespace_or_empty(v)
+
+    @field_validator("ahb_line_index")
+    @classmethod
+    def validate_ahb_line_index(cls, v):
+        if v is not None and not isinstance(v, int):
+            raise ValueError("ahb_line_index must be an instance of int")
+        return v
 
     def reset_ahb_line_index(self) -> None:
         """
