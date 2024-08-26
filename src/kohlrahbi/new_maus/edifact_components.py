@@ -603,20 +603,17 @@ class SegmentGroupSchema(SegmentLevelSchema):
         return SegmentGroup(**data)
 
 
-@attrs.define(auto_attribs=True, kw_only=True)
-class EdifactStackLevel:
+class EdifactStackLevel(BaseModel):
     """
     The EDIFACT stack level describes the hierarchy level of information inside an EDIFACT message.
     """
 
-    #: the name of the level, e.g. 'Dokument' or 'Nachricht' or 'Meldepunkt'
-    name: str = attrs.field(validator=attrs.validators.instance_of(str))
-    #: describes if this level is groupable / if there are multiple instances of this level within the same message
-    is_groupable: bool = attrs.field(validator=attrs.validators.instance_of(bool))
-    #: the index if present (e.g. 0)
-    index: Optional[int] = attrs.field(
-        default=None, validator=attrs.validators.optional(attrs.validators.instance_of(int))
+    name: str = Field(..., description="The name of the level, e.g. 'Dokument' or 'Nachricht' or 'Meldepunkt'")
+    is_groupable: bool = Field(
+        ...,
+        description="Describes if this level is groupable / if there are multiple instances of this level within the same message",
     )
+    index: Optional[int] = Field(default=None, description="The index if present (e.g. 0)")
 
 
 #: a pattern that matches parts of the json path: https://regex101.com/r/iQzdXK/1
