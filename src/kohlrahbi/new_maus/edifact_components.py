@@ -105,23 +105,36 @@ class DataElementSchema(Schema):
         return data
 
 
-@attrs.define(auto_attribs=True, kw_only=True)
 class DataElementFreeText(DataElement):
     """
     A DataElementFreeText is a data element that allows entering arbitrary data.
     This is the main difference to the :class:`DataElementValuePool` which has a finite set of allowed values attached.
     """
 
-    value_type: Optional[DataElementDataType] = attrs.field(
-        validator=attrs.validators.optional(attrs.validators.instance_of(DataElementDataType)),  # type:ignore[arg-type]
+    value_type: Optional[DataElementDataType] = Field(
         default=DataElementDataType.TEXT,
+        description=(
+            "The value_type allows to describe which type of data we're expecting to be used within this data element."
+            "The value_type does not discriminate the type of the data element itself."
+        ),
     )
-    ahb_expression: str = attrs.field(
-        validator=attrs.validators.and_(
-            attrs.validators.instance_of(str), _check_that_string_is_not_whitespace_or_empty
-        )
+    ahb_expression: str = Field(
+        ..., description="Any freetext data element has an ahb expression attached. Could be 'X' but also 'M [13]'"
     )
-    """any freetext data element has an ahb expression attached. Could be 'X' but also 'M [13]'"""
+
+    @field_validator("value_type", mode="before", always=True)
+    @classmethod
+    def validate_value_type(cls, v):
+        if v is not None and not isinstance(v, DataElementDataType):
+            raise ValueError("value_type must be an instance of DataElementDataType")
+        return v
+
+    @field_validator("ahb_expression")
+    @classmethod
+    def validate_ahb_expression(cls, v):
+        if not isinstance(v, str) or not v.strip():
+            raise ValueError("ahb_expression must be a non-empty string")
+        return v
 
 
 class DataElementFreeTextSchema(DataElementSchema):
