@@ -237,19 +237,24 @@ class DataElementValuePool(DataElement):
     The set of values allowed according to the AHB is always a subset of the values allowed according to the MIG.
     """
 
-    value_type: Optional[DataElementDataType] = attrs.field(
-        validator=attrs.validators.optional(attrs.validators.instance_of(DataElementDataType)),  # type:ignore[arg-type]
-        default=DataElementDataType.VALUE_POOL,
-    )  #: type of the value, if known
-    value_pool: List[ValuePoolEntry] = attrs.field(
-        validator=attrs.validators.deep_iterable(
-            member_validator=attrs.validators.instance_of(ValuePoolEntry),
-            iterable_validator=attrs.validators.instance_of(list),
-        )
+    value_type: Optional[DataElementDataType] = Field(
+        default=DataElementDataType.VALUE_POOL, description="Type of the value, if known"
     )
-    """
-    The value pool contains at least one value :class:`.ValuePoolEntry`
-    """
+    value_pool: List[ValuePoolEntry] = Field(
+        ..., description="The value pool contains at least one value :class:`.ValuePoolEntry`"
+    )
+
+    @field_validator("value_type", mode="before", always=True)
+    def validate_value_type(cls, v):
+        if v is not None and not isinstance(v, DataElementDataType):
+            raise ValueError("value_type must be an instance of DataElementDataType")
+        return v
+
+    @field_validator("value_pool")
+    def validate_value_pool(cls, v):
+        if not isinstance(v, list) or not all(isinstance(i, ValuePoolEntry) for i in v):
+            raise ValueError("value_pool must be a list of ValuePoolEntry instances")
+        return v
 
     def replace_value_pool(
         self,
