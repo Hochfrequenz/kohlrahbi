@@ -523,10 +523,10 @@ def _remove_irrelevant_lines(lines: list[AhbLine]) -> list[AhbLine]:
     """
     reduced_lines: list[AhbLine] = []
     for line, next_line in zip(lines, lines[1:] + [None]):
-        line_dict = attrs.asdict(line)
+        line_dict = line.model_dump()
         next_line_dict: dict[str, str | None]
         if next_line:
-            next_line_dict = attrs.asdict(next_line)
+            next_line_dict = next_line.model_dump()
         is_next_ahb_line_empty = next_line is None or next_line_dict["ahb_expression"] is None
         is_ahb_line_only_segment_group_header = (
             line_dict["segment_group_key"] is not None
