@@ -4,16 +4,11 @@ from kohlrahbi.new_maus.edifact_components import (
     DataElement,
     DataElementDataType,
     DataElementFreeText,
-    DataElementFreeTextSchema,
-    DataElementSchema,
     DataElementValuePool,
-    DataElementValuePoolSchema,
     EdifactStack,
     EdifactStackLevel,
     Segment,
     SegmentGroup,
-    SegmentGroupSchema,
-    SegmentSchema,
     ValuePoolEntry,
 )
 from unittests.serialization_test_helper import assert_serialization_roundtrip  # type:ignore[import]
@@ -46,7 +41,7 @@ class TestEdifactComponents:
         ],
     )
     def test_free_text_serialization_roundtrip(self, free_text: DataElementFreeText, expected_json_dict: dict):
-        assert_serialization_roundtrip(free_text, DataElementFreeTextSchema(), expected_json_dict)
+        assert_serialization_roundtrip(free_text, expected_json_dict)
 
     @pytest.mark.parametrize(
         "value_pool, expected_json_dict",
@@ -75,10 +70,10 @@ class TestEdifactComponents:
         ],
     )
     def test_value_pool_serialization_roundtrip(self, value_pool: DataElementValuePool, expected_json_dict: dict):
-        assert_serialization_roundtrip(value_pool, DataElementValuePoolSchema(), expected_json_dict)
+        assert_serialization_roundtrip(value_pool, expected_json_dict)
 
     @pytest.mark.parametrize(
-        "data_element, schema",
+        "data_element",
         [
             pytest.param(
                 DataElementValuePool(
@@ -90,7 +85,6 @@ class TestEdifactComponents:
                     data_element_id="0022",
                     entered_input=None,
                 ),
-                DataElementValuePoolSchema(),
             ),
             pytest.param(
                 DataElementFreeText(
@@ -99,15 +93,15 @@ class TestEdifactComponents:
                     discriminator="bar",
                     data_element_id="0330",
                 ),
-                DataElementFreeTextSchema(),
             ),
         ],
     )
-    def test_empty_entered_input_is_not_dumped(self, data_element: DataElement, schema: DataElementSchema):
+    def test_empty_entered_input_is_not_dumped(self, data_element: DataElement):
         assert data_element.entered_input is None
-        schema = DataElementValuePoolSchema()
-        json_dict = schema.dump(data_element)
+
+        json_dict = data_element.model_dump()
         assert "entered_input" not in json_dict
+        # TODO: ask konstantin what is the purpose of this test
 
     @pytest.mark.parametrize(
         "segment, expected_json_dict",
@@ -164,7 +158,7 @@ class TestEdifactComponents:
         ],
     )
     def test_segment_serialization_roundtrip(self, segment: Segment, expected_json_dict: dict):
-        assert_serialization_roundtrip(segment, SegmentSchema(), expected_json_dict)
+        assert_serialization_roundtrip(segment, expected_json_dict)
 
     @pytest.mark.parametrize(
         "segment,expected_result_length",
@@ -298,7 +292,7 @@ class TestEdifactComponents:
         ],
     )
     def test_segment_group_serialization_roundtrip(self, segment_group: SegmentGroup, expected_json_dict: dict):
-        assert_serialization_roundtrip(segment_group, SegmentGroupSchema(), expected_json_dict)
+        assert_serialization_roundtrip(segment_group, expected_json_dict)
 
     @pytest.mark.parametrize(
         "stack_x, stack_y, x_is_sub_stack_of_y, x_is_parent_of_y",

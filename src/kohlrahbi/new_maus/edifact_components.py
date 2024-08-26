@@ -8,9 +8,6 @@ from abc import ABC
 from enum import Enum
 from typing import Callable, Dict, Iterable, List, Mapping, Optional
 
-import attrs
-from marshmallow import Schema, fields, post_dump, post_load, pre_dump, pre_load
-from marshmallow.fields import Enum as MarshmallowEnum
 from pydantic import BaseModel, Field, StringConstraints, field_validator
 from typing_extensions import Annotated
 
@@ -86,24 +83,6 @@ class DataElement(BaseModel, ABC):
         return v
 
 
-class DataElementSchema(Schema):
-    """
-    A Schema to (de-)serialize DataElements
-    """
-
-    discriminator = fields.String(required=False, allow_none=True)
-    data_element_id = fields.String(required=True)
-    entered_input = fields.String(required=False, load_default=None)
-    value_type = MarshmallowEnum(DataElementDataType, required=False)
-
-    # pylint:disable= unused-argument
-    @post_dump
-    def _remove_null_entered_input(self, data: dict, **kwargs) -> dict:  # type:ignore[no-untyped-def,type-arg]
-        if "entered_input" in data and data["entered_input"] is None:
-            del data["entered_input"]
-        return data
-
-
 class DataElementFreeText(DataElement):
     """
     A DataElementFreeText is a data element that allows entering arbitrary data.
@@ -121,7 +100,7 @@ class DataElementFreeText(DataElement):
         ..., description="Any freetext data element has an ahb expression attached. Could be 'X' but also 'M [13]'"
     )
 
-    @field_validator("value_type", mode="before")
+    @field_validator("value_type")
     @classmethod
     def validate_value_type(cls, v):
         if v is not None and not isinstance(v, DataElementDataType):
@@ -134,22 +113,6 @@ class DataElementFreeText(DataElement):
         if not isinstance(v, str) or not v.strip():
             raise ValueError("ahb_expression must be a non-empty string")
         return v
-
-
-class DataElementFreeTextSchema(DataElementSchema):
-    """
-    A Schema to serialize DataElementFreeTexts
-    """
-
-    ahb_expression = fields.String(allow_none=True, required=True)
-
-    # pylint:disable=unused-argument
-    @post_load
-    def deserialize(self, data, **kwargs) -> DataElementFreeText:  # type:ignore[no-untyped-def]
-        """
-        Converts the barely typed data dictionary into an actual :class:`.DataElementFreeText`
-        """
-        return DataElementFreeText(**data)
 
 
 #: a pattern that matches most of the qualifiers we find in the AHBs
@@ -206,25 +169,6 @@ class ValuePoolEntry(BaseModel):
     @classmethod
     def validate_non_empty_string(cls, v):
         return _check_that_string_is_not_whitespace_or_empty(v)
-
-
-class ValuePoolEntrySchema(Schema):
-    """
-    A Schema to serialize ValuePoolEntries
-    """
-
-    # this looks like a plain Dict[str,str] but we prefer typed access over loose string key value pairs
-    qualifier = fields.String(required=True)
-    meaning = fields.String(required=True)
-    ahb_expression = fields.String(required=True)
-
-    # pylint:disable=unused-argument
-    @post_load
-    def deserialize(self, data, **kwargs) -> ValuePoolEntry:  # type:ignore[no-untyped-def]
-        """
-        Converts the barely typed data dictionary into an actual :class:`.ValuePoolEntry`
-        """
-        return ValuePoolEntry(**data)
 
 
 class DataElementValuePool(DataElement):
@@ -303,22 +247,6 @@ class DataElementValuePool(DataElement):
         return all(x.qualifier in entries for x in self.value_pool)
 
 
-class DataElementValuePoolSchema(DataElementSchema):
-    """
-    A Schema to serialize DataElementValuePool
-    """
-
-    value_pool = fields.List(fields.Nested(ValuePoolEntrySchema), required=True)
-
-    # pylint:disable=unused-argument
-    @post_load
-    def deserialize(self, data, **kwargs) -> DataElementValuePool:  # type:ignore[no-untyped-def]
-        """
-        Converts the barely typed data dictionary into an actual :class:`.DataElementValuePool`
-        """
-        return DataElementValuePool(**data)
-
-
 class _FreeTextOrValuePool(BaseModel):
     """
     A class that is easily serializable as dictionary and allows us to _not_ use the marshmallow-union package.
@@ -326,74 +254,6 @@ class _FreeTextOrValuePool(BaseModel):
 
     free_text: Optional[DataElementFreeText] = Field(default=None, description="Optional free text data element")
     value_pool: Optional[DataElementValuePool] = Field(default=None, description="Optional value pool data element")
-
-
-class _FreeTextOrValuePoolSchema(Schema):
-    """
-    A schema that represents data of the kind Union[DataElementFreeText,DataElementValuePool]
-    There is a python package for that: https://github.com/adamboche/python-marshmallow-union
-    but is only has 15 stars; not sure if it's worth the dependency
-    """
-
-    # disable unnecessary lambda warning because of circular imports
-    free_text = fields.Nested("DataElementFreeTextSchema", allow_none=True, required=False)
-    value_pool = fields.Nested("DataElementValuePoolSchema", required=False, allow_none=True)
-    # see https://github.com/fuhrysteve/marshmallow-jsonschema/issues/164
-
-    # pylint:disable= unused-argument
-    @post_load
-    def deserialize(self, data, **kwargs) -> DataElement:  # type:ignore[no-untyped-def]
-        """
-        select the correct part of the data to deserialize
-        """
-        if "free_text" in data and data["free_text"]:
-            return data["free_text"]  # type:ignore[no-any-return]
-        if "value_pool" in data and data["value_pool"]:
-            return data["value_pool"]  # type:ignore[no-any-return]
-        return data  # type:ignore[no-any-return]
-
-    # pylint:disable= unused-argument
-    @post_dump
-    def post_dump_helper(self, data, **kwargs) -> dict:  # type:ignore[no-untyped-def, type-arg]
-        """
-        truncate the part _FreeTextOrValuePool that is not needed
-        """
-        if "value_pool" in data and data["value_pool"]:
-            return data["value_pool"]  # type:ignore[no-any-return]
-        if "free_text" in data and data["free_text"]:
-            return data["free_text"]  # type:ignore[no-any-return]
-        raise NotImplementedError(f"Data {data} is not implemented for JSON serialization")
-
-    # pylint:disable= unused-argument
-    @pre_load
-    def pre_load_helper(self, data, **kwargs) -> dict:  # type:ignore[no-untyped-def, type-arg]
-        """
-        Put the untyped data into a structure that is deserializable as _FreeTextOrValuePool
-        """
-        if "value_pool" in data:
-            return {
-                "free_text": None,
-                "value_pool": data,
-            }
-        if "entered_input" in data:
-            return {
-                "free_text": data,
-                "value_pool": None,
-            }
-        # entered_input may be None and not have been dumped
-        return {"free_text": data, "value_pool": None}
-
-    # pylint:disable= unused-argument
-    @pre_dump
-    def prepare_for_serialization(self, data, **kwargs) -> _FreeTextOrValuePool:  # type:ignore[no-untyped-def]
-        """
-        Detect if data are FreeText or ValuePool data elements
-        """
-        if isinstance(data, DataElementValuePool):
-            return _FreeTextOrValuePool(free_text=None, value_pool=data)
-        if isinstance(data, DataElementFreeText):
-            return _FreeTextOrValuePool(free_text=data, value_pool=None)
-        raise NotImplementedError(f"Data type of {data} is not implemented for JSON serialization")
 
 
 class SegmentLevel(BaseModel, ABC):
@@ -429,16 +289,6 @@ class SegmentLevel(BaseModel, ABC):
         This is to allow comparisons regardless of the index
         """
         self.ahb_line_index = None
-
-
-class SegmentLevelSchema(Schema):
-    """
-    A Schema to serialize SegmentLevels
-    """
-
-    discriminator = fields.String(required=True)
-    ahb_expression = fields.String(allow_none=True, required=True)
-    # ahb_line =
 
 
 class Segment(SegmentLevel):
@@ -481,24 +331,6 @@ class Segment(SegmentLevel):
         :return: a list of all value pools
         """
         return [de for de in self.data_elements if isinstance(de, DataElementValuePool)]
-
-
-class SegmentSchema(SegmentLevelSchema):
-    """
-    A Schema to serialize Segments
-    """
-
-    data_elements = fields.List(fields.Nested(_FreeTextOrValuePoolSchema))
-    section_name = fields.String(required=False)
-    segment_id = fields.String(required=False, allow_none=True)
-
-    # pylint:disable=unused-argument
-    @post_load
-    def deserialize(self, data, **kwargs) -> Segment:  # type:ignore[no-untyped-def]
-        """
-        Converts the barely typed data dictionary into an actual :class:`.Segment`
-        """
-        return Segment(**data)
 
 
 class SegmentGroup(SegmentLevel):
@@ -569,28 +401,6 @@ class SegmentGroup(SegmentLevel):
         for segment in self.find_segments(lambda _: True):
             result += segment.get_all_value_pools()
         return result
-
-
-class SegmentGroupSchema(SegmentLevelSchema):
-    """
-    A Schema to serialize SegmentGroups.
-    """
-
-    segments = fields.List(fields.Nested(SegmentSchema), load_default=None, required=False)
-    segment_groups = fields.List(
-        fields.Nested("SegmentGroupSchema"),
-        # see https://github.com/fuhrysteve/marshmallow-jsonschema/issues/164
-        load_default=None,
-        required=False,
-    )
-
-    # pylint:disable=unused-argument
-    @post_load
-    def deserialize(self, data, **kwargs) -> SegmentGroup:  # type:ignore[no-untyped-def]
-        """
-        Converts the barely typed data dictionary into an actual :class:`.SegmentGroup`
-        """
-        return SegmentGroup(**data)
 
 
 class EdifactStackLevel(BaseModel):

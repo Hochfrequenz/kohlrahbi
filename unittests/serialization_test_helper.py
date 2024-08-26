@@ -1,8 +1,6 @@
 import json
 from typing import TypeVar
 
-from marshmallow import Schema  # type:ignore[import]
-
 T = TypeVar("T")
 
 
