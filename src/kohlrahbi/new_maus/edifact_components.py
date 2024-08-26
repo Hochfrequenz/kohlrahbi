@@ -319,23 +319,13 @@ class DataElementValuePoolSchema(DataElementSchema):
         return DataElementValuePool(**data)
 
 
-class _FreeTextOrValuePool:
+class _FreeTextOrValuePool(BaseModel):
     """
     A class that is easily serializable as dictionary and allows us to _not_ use the marshmallow-union package.
     """
 
-    def __init__(
-        self, free_text: Optional[DataElementFreeText] = None, value_pool: Optional[DataElementValuePool] = None
-    ):
-        self.free_text = free_text
-        self.value_pool = value_pool
-
-    free_text: Optional[DataElementFreeText] = attrs.field(
-        validator=attrs.validators.optional(attrs.validators.instance_of(DataElementFreeText))
-    )
-    value_pool: Optional[DataElementValuePool] = attrs.field(
-        validator=attrs.validators.optional(attrs.validators.instance_of(DataElementValuePool))
-    )
+    free_text: Optional[DataElementFreeText] = Field(default=None, description="Optional free text data element")
+    value_pool: Optional[DataElementValuePool] = Field(default=None, description="Optional value pool data element")
 
 
 class _FreeTextOrValuePoolSchema(Schema):
