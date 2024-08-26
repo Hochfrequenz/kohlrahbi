@@ -228,7 +228,6 @@ class ValuePoolEntrySchema(Schema):
         return ValuePoolEntry(**data)
 
 
-@attrs.define(auto_attribs=True, kw_only=True)
 class DataElementValuePool(DataElement):
     """
     A DataElementValuePool is a data element with a finite set of allowed values.
@@ -244,13 +243,15 @@ class DataElementValuePool(DataElement):
         ..., description="The value pool contains at least one value :class:`.ValuePoolEntry`"
     )
 
-    @field_validator("value_type", mode="before", always=True)
+    @field_validator("value_type", mode="before")
+    @classmethod
     def validate_value_type(cls, v):
         if v is not None and not isinstance(v, DataElementDataType):
             raise ValueError("value_type must be an instance of DataElementDataType")
         return v
 
     @field_validator("value_pool")
+    @classmethod
     def validate_value_pool(cls, v):
         if not isinstance(v, list) or not all(isinstance(i, ValuePoolEntry) for i in v):
             raise ValueError("value_pool must be a list of ValuePoolEntry instances")
