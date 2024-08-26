@@ -10,7 +10,6 @@ from pathlib import Path
 from typing import Optional, Union
 from uuid import uuid4
 
-import attrs
 import pandas as pd
 from efoli import EdifactFormat, get_format_of_pruefidentifikator
 from more_itertools import first_true, peekable
