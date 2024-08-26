@@ -451,28 +451,39 @@ class SegmentLevelSchema(Schema):
     # ahb_line =
 
 
-@attrs.define(auto_attribs=True, kw_only=True)
 class Segment(SegmentLevel):
     """
     A Segment contains multiple data elements.
     """
 
     data_elements: List[DataElement]
-    section_name: Optional[str] = attrs.field(
-        validator=attrs.validators.optional(attrs.validators.instance_of(str)), default=None
+    section_name: Optional[str] = Field(
+        default=None,
+        description="For the MIG matching it might be necessary to know the section in which the data element occured in the AHB. This might be necessary to e.g. distinguish gas and electricity fields which look the same otherwise. See e.g. UTILMD 'Geplante Turnusablesung des MSB (Strom)' vs. 'Geplante Turnusablesung des NB (Gas)'",
     )
-    """
-    For the MIG matching it might be necessary to know the section in which the data element occured in the AHB.
-    This might be necessary to e.g. distinguish gas and electricity fields which look the same otherwise.
-    See e.g. UTILMD 'Geplante Turnusablesung des MSB (Strom)' vs. 'Geplante Turnusablesung des NB (Gas)'
-    """
-    segment_id: Optional[str] = attrs.field(
-        validator=attrs.validators.optional(attrs.validators.matches_re(r"^\d{5}$")), default=None
+    segment_id: Optional[
+        Annotated[str, StringConstraints(strip_whitespace=True, to_upper=True, pattern=r"^\d{5}$")]
+    ] = Field(
+        default=None,
+        description=(
+            "The 5 digit segment id,"
+            "e.g. '00522' for UTILMD Strom SG12, NAD 'Korrespondenzanschrift des Kunden des Lieferanten'"
+        ),
     )
-    """
-    The 5 digit segment id, e.g. '00522' for UTILMD Strom SG12, NAD "Korrespondenzanschrift des
-    Kunden des Lieferanten"
-    """
+
+    @field_validator("section_name")
+    @classmethod
+    def validate_section_name(cls, v):
+        if v is not None and not isinstance(v, str):
+            raise ValueError("section_name must be an instance of str")
+        return v
+
+    @field_validator("segment_id")
+    @classmethod
+    def validate_segment_id(cls, v):
+        if v is not None and not isinstance(v, str):
+            raise ValueError("segment_id must be an instance of str")
+        return v
 
     def get_all_value_pools(self) -> List[DataElementValuePool]:
         """
