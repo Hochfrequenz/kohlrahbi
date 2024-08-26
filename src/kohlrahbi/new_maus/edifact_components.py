@@ -72,7 +72,7 @@ class DataElement(BaseModel, ABC):
         ),
     )
 
-    @field_validator("discriminator", "entered_input", mode="before", always=True)
+    @field_validator("discriminator", "entered_input", mode="before")
     @classmethod
     def check_optional_fields(cls, v):
         if v is not None:
@@ -122,7 +122,7 @@ class DataElementFreeText(DataElement):
         ..., description="Any freetext data element has an ahb expression attached. Could be 'X' but also 'M [13]'"
     )
 
-    @field_validator("value_type", mode="before", always=True)
+    @field_validator("value_type", mode="before")
     @classmethod
     def validate_value_type(cls, v):
         if v is not None and not isinstance(v, DataElementDataType):
