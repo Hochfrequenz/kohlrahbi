@@ -12,6 +12,8 @@ import attr
 import attrs
 from marshmallow import Schema, fields, post_dump, post_load, pre_dump, pre_load
 from marshmallow.fields import Enum as MarshmallowEnum
+from pydantic import BaseModel, Field, StringConstraints, field_validator
+from typing_extensions import Annotated
 
 from kohlrahbi.new_maus import _check_that_string_is_not_whitespace_or_empty
 
@@ -37,37 +39,52 @@ def derive_data_type_from_segment_code(segment_code: str) -> Optional[DataElemen
     return None
 
 
-@attrs.define(auto_attribs=True, kw_only=True)
-class DataElement(ABC):
+class DataElement(BaseModel, ABC):
     """
     A data element holds specific kinds of data. It is defined in EDIFACT.
     At least for the German energy market communication any data element has a 4 digit key.
     For example in UTILMD the data element that holds the 13 digit market partner ID is data element '3039'
     """
 
-    discriminator: Optional[str] = attrs.field(
-        validator=attrs.validators.optional(_check_that_string_is_not_whitespace_or_empty)
+    discriminator: Optional[str] = Field(
+        None,
+        description="The discriminator uniquely identifies the data element. The discriminator is None if the data element was not found in the MIG.",
     )
-    """
-    The discriminator uniquely identifies the data element.
-    The discriminator is None if the data element was not found in the MIG.
-    """
-    # but could also be a reference or a name
-    #: the ID of the data element (e.g. "0062") for the Nachrichten-Referenznummer
-    data_element_id: str = attrs.field(validator=attrs.validators.matches_re(r"^\d{4}$"))
-    #: the type of data expected to be used with this data element
-    entered_input: Optional[str] = attrs.field(validator=attrs.validators.optional(attrs.validators.instance_of(str)))
-    """
-    If the message which is evaluated contains data for this data element, this is set to a value which is not None.
-    The field can either carry a free text or an element from a value pool (depending on the value_type)
-    """
-    value_type: Optional[DataElementDataType] = attrs.field(
-        validator=attrs.validators.optional(attrs.validators.instance_of(DataElementDataType)), default=None
+    data_element_id: Annotated[str, StringConstraints(strip_whitespace=True, to_upper=True, pattern=r"^\d{4}$")] = (
+        Field(
+            ...,
+            description="The ID of the data element (e.g. '0062') for the Nachrichten-Referenznummer",
+        )
     )
-    """
-    The value_type allows to describe which type of data we're expecting to be used within this data element.
-    The value_type does not discriminate the type of the data element itself.
-    """
+    entered_input: Optional[str] = Field(
+        None,
+        description=(
+            "If the message which is evaluated contains data for this data element,"
+            "this is set to a value which is not None."
+            "The field can either carry a free text or an element from a value pool (depending on the value_type)"
+        ),
+    )
+    value_type: Optional[DataElementDataType] = Field(
+        None,
+        description=(
+            "The value_type allows to describe which type of data we're expecting to be used within this data element."
+            "The value_type does not discriminate the type of the data element itself."
+        ),
+    )
+
+    @field_validator("discriminator", "entered_input", mode="before", always=True)
+    @classmethod
+    def check_optional_fields(cls, v):
+        if v is not None:
+            _check_that_string_is_not_whitespace_or_empty(v)
+        return v
+
+    @field_validator("data_element_id")
+    @classmethod
+    def check_data_element_id(cls, v):
+        if not v or not re.match(r"^\d{4}$", v):
+            raise ValueError("data_element_id must be a 4 digit number")
+        return v
 
 
 class DataElementSchema(Schema):
