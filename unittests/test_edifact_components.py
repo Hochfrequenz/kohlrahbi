@@ -99,9 +99,8 @@ class TestEdifactComponents:
     def test_empty_entered_input_is_not_dumped(self, data_element: DataElement):
         assert data_element.entered_input is None
 
-        json_dict = data_element.model_dump()
+        json_dict = data_element.model_dump(exclude_defaults=True)
         assert "entered_input" not in json_dict
-        # TODO: ask konstantin what is the purpose of this test
 
     @pytest.mark.parametrize(
         "segment, expected_json_dict",
@@ -132,6 +131,7 @@ class TestEdifactComponents:
                 {
                     "segment_id": None,
                     "ahb_expression": "X",
+                    "ahb_line_index": None,
                     "section_name": "foo",
                     "data_elements": [
                         {
