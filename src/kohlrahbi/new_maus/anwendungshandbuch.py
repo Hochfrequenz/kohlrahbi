@@ -17,13 +17,7 @@ from more_itertools import last, split_when
 from pydantic import BaseModel, Field, field_validator
 
 from kohlrahbi.new_maus import _check_that_string_is_not_whitespace_or_empty
-from kohlrahbi.new_maus.edifact_components import (
-    DataElementFreeText,
-    DataElementValuePool,
-    Segment,
-    SegmentGroup,
-    SegmentGroupSchema,
-)
+from kohlrahbi.new_maus.edifact_components import DataElementFreeText, DataElementValuePool, Segment, SegmentGroup
 
 _VERSION = "0.3.0"  #: version to be written into the deep ahb
 
@@ -557,20 +551,3 @@ def _replace_inputs_based_on_discriminator(
                     replacement_result = replacement_func(data_element.discriminator)
                     if replacement_result.replacement_found is True:
                         data_element.entered_input = replacement_result.input_replacement
-
-
-class DeepAnwendungshandbuchSchema(Schema):
-    """
-    A schema to (de-)serialize :class:`.DeepAnwendungshandbuch`
-    """
-
-    meta = fields.Nested(AhbMetaInformationSchema)
-    lines = fields.List(fields.Nested(SegmentGroupSchema))
-
-    # pylint:disable=unused-argument
-    @post_load
-    def deserialize(self, data, **kwargs) -> DeepAnwendungshandbuch:  # type:ignore[no-untyped-def]
-        """
-        Converts the barely typed data dictionary into an actual :class:`.DeepAnwendungshandbuch`
-        """
-        return DeepAnwendungshandbuch(**data)
