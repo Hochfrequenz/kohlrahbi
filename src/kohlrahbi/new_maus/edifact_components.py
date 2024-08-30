@@ -49,11 +49,9 @@ class DataElement(BaseModel, ABC):
             "The discriminator is None if the data element was not found in the MIG."
         ),
     )
-    data_element_id: Annotated[str, StringConstraints(strip_whitespace=True, to_upper=True, pattern=r"^\d{4}$")] = (
-        Field(
-            ...,
-            description="The ID of the data element (e.g. '0062') for the Nachrichten-Referenznummer",
-        )
+    data_element_id: Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^\d{4}$")] = Field(
+        ...,
+        description="The ID of the data element (e.g. '0062') for the Nachrichten-Referenznummer",
     )
     value_type: Optional[DataElementDataType] = Field(
         None,
