@@ -72,18 +72,27 @@ class AhbLine(BaseModel):
 
     section_name: Optional[str] = Field(
         default=None,
-        description="The section name describes the purpose of a segment, e.g. 'Nachrichten-Kopfsegment' or 'Beginn der Nachricht'",
+        description=(
+            "The section name describes the purpose of a segment,"
+            "e.g. 'Nachrichten-Kopfsegment' or 'Beginn der Nachricht'"
+        ),
     )
 
     index: Optional[int] = Field(
         default=None,
-        description="index is a number that describes the position of the AHBLine inside the original PDF- and FlatAnwendungshandbuch.",
+        description=(
+            "index is a number that describes the position of the AHBLine"
+            "inside the original PDF- and FlatAnwendungshandbuch."
+        ),
         ge=0,
     )
 
     @field_validator("ahb_expression")
     @classmethod
     def check_ahb_expression(cls, v):
+        """
+        Check that the ahb_expression is not empty or consists only of whitespace.
+        """
         if v is not None:
             _check_that_string_is_not_whitespace_or_empty(v)
         return v
@@ -164,12 +173,18 @@ class AhbMetaInformation(BaseModel):
     )
     direction: Optional[str] = Field(
         default=None,
-        description="a stringly typed description of the roles of sender and receiver of the message (the row name in the AHB is 'Kommunikation von'); e.g. 'MSB an NB' for 11042",
+        description=(
+            "a stringly typed description of the roles of sender and receiver of the message"
+            "(the row name in the AHB is 'Kommunikation von'); e.g. 'MSB an NB' for 11042"
+        ),
     )
 
     @field_validator("description", "direction", mode="before")
     @classmethod
     def check_string_is_not_whitespace_or_empty(cls, v):
+        """
+        Check that the string is not empty or consists only of whitespace.
+        """
         if v is not None:
             _check_that_string_is_not_whitespace_or_empty(v)
         return v

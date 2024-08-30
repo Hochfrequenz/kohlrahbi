@@ -44,7 +44,10 @@ class DataElement(BaseModel, ABC):
 
     discriminator: Optional[str] = Field(
         None,
-        description="The discriminator uniquely identifies the data element. The discriminator is None if the data element was not found in the MIG.",
+        description=(
+            "The discriminator uniquely identifies the data element."
+            "The discriminator is None if the data element was not found in the MIG."
+        ),
     )
     data_element_id: Annotated[str, StringConstraints(strip_whitespace=True, to_upper=True, pattern=r"^\d{4}$")] = (
         Field(
@@ -71,15 +74,11 @@ class DataElement(BaseModel, ABC):
     @field_validator("discriminator", "entered_input", mode="before")
     @classmethod
     def check_optional_fields(cls, v):
+        """
+        Check that the optional fields are either None or not empty.
+        """
         if v is not None:
-            _check_that_string_is_not_whitespace_or_empty(v)
-        return v
-
-    @field_validator("data_element_id")
-    @classmethod
-    def check_data_element_id(cls, v):
-        if not v or not re.match(r"^\d{4}$", v):
-            raise ValueError("data_element_id must be a 4 digit number")
+            _check_that_string_is_not_whitespace_or_empty(v)  # TODO: can get replaced by regex check with r'^\S+$'
         return v
 
 
@@ -100,16 +99,13 @@ class DataElementFreeText(DataElement):
         ..., description="Any freetext data element has an ahb expression attached. Could be 'X' but also 'M [13]'"
     )
 
-    @field_validator("value_type")
-    @classmethod
-    def validate_value_type(cls, v):
-        if v is not None and not isinstance(v, DataElementDataType):
-            raise ValueError("value_type must be an instance of DataElementDataType")
-        return v
-
+    # TODO remove all the checks that are not necessary anymore
     @field_validator("ahb_expression")
     @classmethod
     def validate_ahb_expression(cls, v):
+        """
+        Check that the ahb_expression is a non-empty string
+        """
         if not isinstance(v, str) or not v.strip():
             raise ValueError("ahb_expression must be a non-empty string")
         return v
@@ -163,11 +159,17 @@ class ValuePoolEntry(BaseModel):
     @field_validator("qualifier")
     @classmethod
     def validate_qualifier(cls, v):
+        """
+        Check that the qualifier is a valid EDIFACT qualifier
+        """
         return _check_is_edifact_qualifier(v)
 
     @field_validator("meaning", "ahb_expression")
     @classmethod
     def validate_non_empty_string(cls, v):
+        """
+        Check that the given attribute is a non-empty string
+        """
         return _check_that_string_is_not_whitespace_or_empty(v)
 
 
@@ -189,6 +191,9 @@ class DataElementValuePool(DataElement):
     @field_validator("value_type", mode="before")
     @classmethod
     def validate_value_type(cls, v):
+        """
+        Check that the value_type is a valid DataElement.
+        """
         if v is not None and not isinstance(v, DataElementDataType):
             raise ValueError("value_type must be an instance of DataElementDataType")
         return v
@@ -196,6 +201,9 @@ class DataElementValuePool(DataElement):
     @field_validator("value_pool")
     @classmethod
     def validate_value_pool(cls, v):
+        """
+        Check that the value pool is a list of ValuePoolEntry instances.
+        """
         if not isinstance(v, list) or not all(isinstance(i, ValuePoolEntry) for i in v):
             raise ValueError("value_pool must be a list of ValuePoolEntry instances")
         return v
@@ -268,17 +276,26 @@ class SegmentLevel(BaseModel, ABC):
     )
     ahb_line_index: Optional[int] = Field(
         default=None,
-        description="Allows sorting the segments depending on where they occurred in the FlatAnwendungshandbuch. It won't be serialized though.",
+        description=(
+            "Allows sorting the segments depending on where they occurred in the FlatAnwendungshandbuch."
+            "It won't be serialized though."
+        ),
     )
 
     @field_validator("ahb_expression")
     @classmethod
     def validate_ahb_expression(cls, v):
+        """
+        Check that the ahb_expression is not empty or whitespace.
+        """
         return _check_that_string_is_not_whitespace_or_empty(v)
 
     @field_validator("ahb_line_index")
     @classmethod
     def validate_ahb_line_index(cls, v):
+        """
+        Check that the ahb_line_index is an integer.
+        """
         if v is not None and not isinstance(v, int):
             raise ValueError("ahb_line_index must be an instance of int")
         return v
@@ -299,7 +316,12 @@ class Segment(SegmentLevel):
     data_elements: List[DataElement]
     section_name: Optional[str] = Field(
         default=None,
-        description="For the MIG matching it might be necessary to know the section in which the data element occured in the AHB. This might be necessary to e.g. distinguish gas and electricity fields which look the same otherwise. See e.g. UTILMD 'Geplante Turnusablesung des MSB (Strom)' vs. 'Geplante Turnusablesung des NB (Gas)'",
+        description=(
+            "For the MIG matching it might be necessary to know the section"
+            "in which the data element occured in the AHB."
+            "This might be necessary to e.g. distinguish gas and electricity fields which look the same otherwise."
+            "See e.g. UTILMD 'Geplante Turnusablesung des MSB (Strom)' vs. 'Geplante Turnusablesung des NB (Gas)'"
+        ),
     )
     segment_id: Optional[
         Annotated[str, StringConstraints(strip_whitespace=True, to_upper=True, pattern=r"^\d{5}$")]
@@ -310,20 +332,6 @@ class Segment(SegmentLevel):
             "e.g. '00522' for UTILMD Strom SG12, NAD 'Korrespondenzanschrift des Kunden des Lieferanten'"
         ),
     )
-
-    @field_validator("section_name")
-    @classmethod
-    def validate_section_name(cls, v):
-        if v is not None and not isinstance(v, str):
-            raise ValueError("section_name must be an instance of str")
-        return v
-
-    @field_validator("segment_id")
-    @classmethod
-    def validate_segment_id(cls, v):
-        if v is not None and not isinstance(v, str):
-            raise ValueError("segment_id must be an instance of str")
-        return v
 
     def get_all_value_pools(self) -> List[DataElementValuePool]:
         """
@@ -411,7 +419,10 @@ class EdifactStackLevel(BaseModel):
     name: str = Field(..., description="The name of the level, e.g. 'Dokument' or 'Nachricht' or 'Meldepunkt'")
     is_groupable: bool = Field(
         ...,
-        description="Describes if this level is groupable / if there are multiple instances of this level within the same message",
+        description=(
+            "Describes if this level is groupable / if there are multiple instances of this level"
+            "within the same message"
+        ),
     )
     index: Optional[int] = Field(default=None, description="The index if present (e.g. 0)")
 

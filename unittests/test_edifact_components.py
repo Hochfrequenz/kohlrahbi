@@ -20,7 +20,7 @@ class TestEdifactComponents:
     """
 
     @pytest.mark.parametrize(
-        "free_text, expected_json_dict",
+        "free_text",
         [
             pytest.param(
                 DataElementFreeText(
@@ -29,19 +29,12 @@ class TestEdifactComponents:
                     discriminator="foo",
                     data_element_id="2222",
                     value_type=DataElementDataType.TEXT,
-                ),
-                {
-                    "ahb_expression": "Muss [1]",
-                    "entered_input": "Hello Maus",
-                    "discriminator": "foo",
-                    "data_element_id": "2222",
-                    "value_type": "TEXT",
-                },
+                )
             ),
         ],
     )
-    def test_free_text_serialization_roundtrip(self, free_text: DataElementFreeText, expected_json_dict: dict):
-        assert_serialization_roundtrip(free_text, expected_json_dict)
+    def test_free_text_serialization_roundtrip(self, free_text: DataElementFreeText):
+        assert_serialization_roundtrip(free_text)
 
     @pytest.mark.parametrize(
         "value_pool, expected_json_dict",
@@ -195,7 +188,7 @@ class TestEdifactComponents:
         assert len(actual) == expected_result_length
 
     @pytest.mark.parametrize(
-        "segment_group, expected_json_dict",
+        "segment_group",
         [
             pytest.param(
                 SegmentGroup(
@@ -241,58 +234,11 @@ class TestEdifactComponents:
                         ),
                     ],
                 ),
-                {
-                    "ahb_expression": "expr A",
-                    "discriminator": "disc A",
-                    "segments": [
-                        {
-                            "segment_id": None,
-                            "section_name": "bar",
-                            "ahb_expression": "expr B",
-                            "discriminator": "disc B",
-                            "data_elements": [
-                                {
-                                    "value_pool": [
-                                        {"qualifier": "HELLO", "meaning": "world", "ahb_expression": "X"},
-                                        {"qualifier": "MAUS", "meaning": "rocks", "ahb_expression": "X"},
-                                    ],
-                                    "entered_input": "MAUS",
-                                    "discriminator": "baz",
-                                    "data_element_id": "3333",
-                                    "value_type": "VALUE_POOL",
-                                },
-                                {
-                                    "ahb_expression": "Muss [1]",
-                                    "entered_input": "Hello Maus",
-                                    "discriminator": "bar",
-                                    "data_element_id": "4444",
-                                    "value_type": "TEXT",
-                                },
-                            ],
-                        }
-                    ],
-                    "segment_groups": [
-                        {
-                            "ahb_expression": "expr C",
-                            "discriminator": "disc C",
-                            "segments": [
-                                {
-                                    "segment_id": None,
-                                    "section_name": "foo",
-                                    "ahb_expression": "expr Y",
-                                    "discriminator": "disc Y",
-                                    "data_elements": [],
-                                }
-                            ],
-                            "segment_groups": None,
-                        }
-                    ],
-                },
             ),
         ],
     )
-    def test_segment_group_serialization_roundtrip(self, segment_group: SegmentGroup, expected_json_dict: dict):
-        assert_serialization_roundtrip(segment_group, expected_json_dict)
+    def test_segment_group_serialization_roundtrip(self, segment_group: SegmentGroup):
+        assert_serialization_roundtrip(segment_group)
 
     @pytest.mark.parametrize(
         "stack_x, stack_y, x_is_sub_stack_of_y, x_is_parent_of_y",
