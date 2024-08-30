@@ -6,7 +6,7 @@ Components contain not only EDIFACT composits but also segments and segment grou
 import re
 from abc import ABC
 from enum import Enum
-from typing import Callable, Dict, Iterable, List, Mapping, Optional
+from typing import Callable, Dict, Iterable, List, Literal, Mapping, Optional
 
 from pydantic import BaseModel, Field, StringConstraints, field_validator
 from typing_extensions import Annotated
@@ -55,14 +55,6 @@ class DataElement(BaseModel, ABC):
             description="The ID of the data element (e.g. '0062') for the Nachrichten-Referenznummer",
         )
     )
-    entered_input: Optional[str] = Field(
-        None,
-        description=(
-            "If the message which is evaluated contains data for this data element,"
-            "this is set to a value which is not None."
-            "The field can either carry a free text or an element from a value pool (depending on the value_type)"
-        ),
-    )
     value_type: Optional[DataElementDataType] = Field(
         None,
         description=(
@@ -88,7 +80,7 @@ class DataElementFreeText(DataElement):
     This is the main difference to the :class:`DataElementValuePool` which has a finite set of allowed values attached.
     """
 
-    value_type: Optional[DataElementDataType] = Field(
+    value_type: Literal[DataElementDataType.TEXT] = Field(
         default=DataElementDataType.TEXT,
         description=(
             "The value_type allows to describe which type of data we're expecting to be used within this data element."
@@ -97,6 +89,12 @@ class DataElementFreeText(DataElement):
     )
     ahb_expression: str = Field(
         ..., description="Any freetext data element has an ahb expression attached. Could be 'X' but also 'M [13]'"
+    )
+    free_text: str = Field(
+        ...,
+        description=(
+            "free_text contains the the description of the free text element, e.g. 'Referenz, Identifikation'"
+        ),
     )
 
     # TODO remove all the checks that are not necessary anymore
@@ -181,7 +179,7 @@ class DataElementValuePool(DataElement):
     The set of values allowed according to the AHB is always a subset of the values allowed according to the MIG.
     """
 
-    value_type: Optional[DataElementDataType] = Field(
+    value_type: Literal[DataElementDataType.VALUE_POOL] = Field(
         default=DataElementDataType.VALUE_POOL, description="Type of the value, if known"
     )
     value_pool: List[ValuePoolEntry] = Field(
@@ -255,15 +253,6 @@ class DataElementValuePool(DataElement):
         return all(x.qualifier in entries for x in self.value_pool)
 
 
-class _FreeTextOrValuePool(BaseModel):
-    """
-    A class that is easily serializable as dictionary and allows us to _not_ use the marshmallow-union package.
-    """
-
-    free_text: Optional[DataElementFreeText] = Field(default=None, description="Optional free text data element")
-    value_pool: Optional[DataElementValuePool] = Field(default=None, description="Optional value pool data element")
-
-
 class SegmentLevel(BaseModel, ABC):
     """
     SegmentLevel describes @annika: what does it describe?
@@ -313,7 +302,7 @@ class Segment(SegmentLevel):
     A Segment contains multiple data elements.
     """
 
-    data_elements: List[DataElement]
+    data_elements: list[DataElementValuePool | DataElementFreeText] = Field(discriminator="value_type")
     section_name: Optional[str] = Field(
         default=None,
         description=(
