@@ -120,6 +120,32 @@ class AhbLine(BaseModel):
         return result
 
 
+class AhbLineSchema(Schema):
+    """
+    A schema to (de-)serialize :class:`.AhbLine`
+    """
+
+    guid = fields.UUID(required=False, load_default=None)
+    segment_group_key = fields.String(required=False, load_default=None)
+    segment_code = fields.String(required=False, load_default=None)
+    segment_id = fields.String(required=False, load_default=None)
+    data_element = fields.String(required=False, load_default=None)
+    value_pool_entry = fields.String(required=False, load_default=None)
+    name = fields.String(required=False, load_default=None)
+    ahb_expression = fields.String(required=False, load_default=None)
+    conditions = fields.String(required=False, load_default=None)
+    section_name = fields.String(required=False, load_default=None)
+    index = fields.Int(required=False, load_default=None, dump_default=None)
+
+    # pylint:disable=unused-argument
+    @post_load
+    def deserialize(self, data, **kwargs) -> AhbLine:  # type:ignore[no-untyped-def]
+        """
+        Converts the barely typed data dictionary into an actual :class:`.AhbLine`
+        """
+        return AhbLine(**data)
+
+
 class AhbMetaInformation(BaseModel):
     """
     Meta information about an AHB like e.g. its title, Prüfidentifikator, possible sender and receiver roles
