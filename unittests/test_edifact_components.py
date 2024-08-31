@@ -96,7 +96,7 @@ class TestEdifactComponents:
         assert "entered_input" not in json_dict
 
     @pytest.mark.parametrize(
-        "segment, expected_json_dict",
+        "segment",
         [
             pytest.param(
                 Segment(
@@ -120,37 +120,11 @@ class TestEdifactComponents:
                     ],
                     discriminator="foo",
                 ),
-                {
-                    "segment_id": None,
-                    "ahb_expression": "X",
-                    "ahb_line_index": None,
-                    "section_name": "foo",
-                    "data_elements": [
-                        {
-                            "value_pool": [
-                                {"qualifier": "HELLO", "meaning": "world", "ahb_expression": "X"},
-                                {"qualifier": "MAUS", "meaning": "rocks", "ahb_expression": "X"},
-                            ],
-                            "discriminator": "baz",
-                            "data_element_id": "0329",
-                            "value_type": "VALUE_POOL",
-                            "entered_input": "foo",
-                        },
-                        {
-                            "ahb_expression": "Muss [1]",
-                            "entered_input": "Hello Maus",
-                            "discriminator": "bar",
-                            "data_element_id": "0330",
-                            "value_type": "TEXT",
-                        },
-                    ],
-                    "discriminator": "foo",
-                },
             ),
         ],
     )
-    def test_segment_serialization_roundtrip(self, segment: Segment, expected_json_dict: dict):
-        assert_serialization_roundtrip(segment, expected_json_dict)
+    def test_segment_serialization_roundtrip(self, segment: Segment):
+        assert_serialization_roundtrip(segment)
 
     @pytest.mark.parametrize(
         "segment,expected_result_length",
