@@ -42,7 +42,7 @@ class DataElement(BaseModel, ABC):
     For example in UTILMD the data element that holds the 13 digit market partner ID is data element '3039'
     """
 
-    discriminator: Optional[str] = Field(
+    discriminator: Annotated[Optional[str], StringConstraints(strip_whitespace=True, pattern=r"^\S+$")] = Field(
         None,
         description=(
             "The discriminator uniquely identifies the data element."
@@ -60,16 +60,6 @@ class DataElement(BaseModel, ABC):
             "The value_type does not discriminate the type of the data element itself."
         ),
     )
-
-    @field_validator("discriminator")
-    @classmethod
-    def check_optional_fields(cls, v):
-        """
-        Check that the optional fields are either None or not empty.
-        """
-        if v is not None:
-            _check_that_string_is_not_whitespace_or_empty(v)  # TODO: can get replaced by regex check with r'^\S+$'
-        return v
 
 
 class DataElementFreeText(DataElement):
@@ -142,12 +132,12 @@ class ValuePoolEntry(BaseModel):
 
     #: the qualifier in edifact, might be e.g. "E01", "D", "9", "1.1a", "G_0057"
     qualifier: str = Field(..., description="The qualifier in EDIFACT")
-    meaning: str = Field(
+    meaning: Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^\S+$")] = Field(
         ...,
         description="The meaning as it is written in the AHB,"
         "e.g. 'Einzug', 'Entwurfs-Version', 'GS1', 'Codeliste Gas G_0057'",
     )
-    ahb_expression: str = Field(
+    ahb_expression: Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^\S+$")] = Field(
         ...,
         description="The AHB expression, in most cases this is a simple 'X'; it must not be empty",
     )
@@ -159,14 +149,6 @@ class ValuePoolEntry(BaseModel):
         Check that the qualifier is a valid EDIFACT qualifier
         """
         return _check_is_edifact_qualifier(v)
-
-    @field_validator("meaning", "ahb_expression")
-    @classmethod
-    def validate_non_empty_string(cls, v):
-        """
-        Check that the given attribute is a non-empty string
-        """
-        return _check_that_string_is_not_whitespace_or_empty(v)
 
 
 class DataElementValuePool(DataElement):
@@ -247,7 +229,7 @@ class SegmentLevel(BaseModel, ABC):
     """
 
     discriminator: str  # no validator here, because it might be None on initialization and will be set later (trust me)
-    ahb_expression: str = Field(
+    ahb_expression: Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^\S+$")] = Field(
         ...,
         description="AHB expression",
     )
@@ -258,24 +240,6 @@ class SegmentLevel(BaseModel, ABC):
             "It won't be serialized though."
         ),
     )
-
-    @field_validator("ahb_expression")
-    @classmethod
-    def validate_ahb_expression(cls, v):
-        """
-        Check that the ahb_expression is not empty or whitespace.
-        """
-        return _check_that_string_is_not_whitespace_or_empty(v)
-
-    @field_validator("ahb_line_index")
-    @classmethod
-    def validate_ahb_line_index(cls, v):
-        """
-        Check that the ahb_line_index is an integer.
-        """
-        if v is not None and not isinstance(v, int):
-            raise ValueError("ahb_line_index must be an instance of int")
-        return v
 
     def reset_ahb_line_index(self) -> None:
         """
