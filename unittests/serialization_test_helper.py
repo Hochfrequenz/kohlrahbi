@@ -67,44 +67,5 @@ def assert_serialization_roundtrip(serializable_object: T) -> T:
 
     assert isinstance(deserialized_object, type(serializable_object))
 
-    added, changed, removed = compare_pydantic_models(
-        deserialized_object.segments[0].data_elements[0], serializable_object.segments[0].data_elements[0]
-    )
-
-    assert serializable_object.segments[0].data_elements[0].value_pool is not None
-    assert deserialized_object.segments[0].data_elements[0].value_pool is not None
-
-    serializable_object.segments[0].data_elements[0].value_pool == deserialized_object.segments[0].data_elements[
-        0
-    ].value_pool
-
-    # # Convert Pydantic models to dictionaries
-    # dict1 = serializable_object.model_dump()
-    # dict2 = deserialized_object.model_dump()
-
-    # # Compare the dictionaries
-    # diff = DeepDiff(dict1, dict2, ignore_order=True)
-
-    # # Categorize the differences
-    # added = diff.get("dictionary_item_added", {})
-    # removed = diff.get("dictionary_item_removed", {})
-    # changed = diff.get("values_changed", {})
-
-    # # Output the differences
-    # if added:
-    #     print("Added entries:")
-    #     for key in added:
-    #         print(f"{key}: {added[key]}")
-
-    # if removed:
-    #     print("\nRemoved entries:")
-    #     for key in removed:
-    #         print(f"{key}: {removed[key]}")
-
-    # if changed:
-    #     print("\nChanged entries:")
-    #     for key, value in changed.items():
-    #         print(f"{key}: {value['old_value']} -> {value['new_value']}")
-
     assert deserialized_object == serializable_object
     return deserialized_object
