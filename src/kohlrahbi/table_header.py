@@ -3,7 +3,7 @@ This module contains the TableHeader class.
 """
 
 from enum import StrEnum
-from typing import Dict, List, Mapping, cast
+from typing import Dict, Mapping, cast
 
 from docx.table import _Cell
 from docx.text.paragraph import Paragraph
