@@ -61,7 +61,7 @@ class DataElement(BaseModel, ABC):
         ),
     )
 
-    @field_validator("discriminator", "entered_input", mode="before")
+    @field_validator("discriminator")
     @classmethod
     def check_optional_fields(cls, v):
         """
