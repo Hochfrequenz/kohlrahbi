@@ -14,9 +14,8 @@ import attr.validators
 import attrs
 from marshmallow import Schema, fields, post_load
 from more_itertools import last, split_when
-from pydantic import BaseModel, Field, StringConstraints, field_validator
+from pydantic import BaseModel, Field, StringConstraints
 
-from kohlrahbi.new_maus import _check_that_string_is_not_whitespace_or_empty
 from kohlrahbi.new_maus.edifact_components import DataElementFreeText, DataElementValuePool, Segment, SegmentGroup
 
 _VERSION = "0.3.0"  #: version to be written into the deep ahb
