@@ -380,7 +380,7 @@ class FlatAnwendungshandbuchSchema(Schema):
     """
 
     meta = fields.Nested(AhbMetaInformationSchema)
-    lines = fields.list(fields.Nested(AhbLineSchema))
+    lines = fields.List(fields.Nested(AhbLineSchema))
 
     # pylint:disable=unused-argument
     @post_load
