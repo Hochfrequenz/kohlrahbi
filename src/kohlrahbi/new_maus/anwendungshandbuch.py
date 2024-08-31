@@ -495,13 +495,6 @@ class DeepAnwendungshandbuch:
                         result.append(segment)
         return result
 
-    def replace_inputs_based_on_discriminator(self, replacement_func: Callable[[str], DeepAhbInputReplacement]) -> None:
-        """
-        Replace all the entered_inputs in the entire DeepAnwendungshandbuch using the given replacement_func.
-        Note that this modifies this DeepAnwendungshandbuch instance (self).
-        """
-        _replace_inputs_based_on_discriminator(self.lines, replacement_func)
-
     def get_all_value_pools(self) -> List[DataElementValuePool]:
         """
         recursively find all value pools in the deep ahb
@@ -547,22 +540,3 @@ class DeepAnwendungshandbuch:
             if segment_group.ahb_expression:
                 result.add(segment_group.ahb_expression)
         return sorted(result)
-
-
-def _replace_inputs_based_on_discriminator(
-    segment_groups: List[SegmentGroup], replacement_func: Callable[[str], DeepAhbInputReplacement]
-) -> None:
-    """
-    Replace all the entered_inputs in the entire list of segment groups using the given replacement_func.
-    """
-    for segment_group in segment_groups:
-        if segment_group.segment_groups is not None:
-            _replace_inputs_based_on_discriminator(segment_group.segment_groups, replacement_func)
-        if segment_group.segments is None:
-            continue
-        for segment in segment_group.segments:
-            for data_element in segment.data_elements:
-                if data_element.discriminator is not None:
-                    replacement_result = replacement_func(data_element.discriminator)
-                    if replacement_result.replacement_found is True:
-                        data_element.entered_input = replacement_result.input_replacement
