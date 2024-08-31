@@ -119,8 +119,10 @@ class ValuePoolEntry(BaseModel):
     - (key: "332", meaning: "DE, DVGW", ahb_expression: "X")
     """
 
-    #: the qualifier in edifact, might be e.g. "E01", "D", "9", "1.1a", "G_0057"
-    qualifier: str = Field(..., description="The qualifier in EDIFACT")
+    qualifier: Annotated[
+        str,
+        StringConstraints(strip_whitespace=True, min_length=1),
+    ] = Field(..., description="The qualifier in EDIFACT")
     meaning: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)] = Field(
         ...,
         description="The meaning as it is written in the AHB,"
@@ -136,6 +138,9 @@ class ValuePoolEntry(BaseModel):
     def validate_qualifier(cls, v):
         """
         Check that the qualifier is a valid EDIFACT qualifier
+
+        We can not use the pattern parameter of the StringConstraints here, because look-around,
+        including look-ahead and look-behind, is not supported
         """
         return _check_is_edifact_qualifier(v)
 
@@ -154,16 +159,6 @@ class DataElementValuePool(DataElement):
     value_pool: list[ValuePoolEntry] = Field(
         ..., description="The value pool contains at least one value :class:`.ValuePoolEntry`"
     )
-
-    @field_validator("value_pool")
-    @classmethod
-    def validate_value_pool(cls, v):
-        """
-        Check that the value pool is a list of ValuePoolEntry instances.
-        """
-        if not isinstance(v, list) or not all(isinstance(i, ValuePoolEntry) for i in v):
-            raise ValueError("value_pool must be a list of ValuePoolEntry instances")
-        return v
 
     def replace_value_pool(
         self,
@@ -282,28 +277,6 @@ class SegmentGroup(SegmentLevel):
     segment_groups: Optional[list["SegmentGroup"]] = Field(
         default=None, description="Groups that are nested into this group"
     )
-
-    @field_validator("segments")
-    @classmethod
-    def validate_segments(cls, v):
-        if v is not None:
-            if not isinstance(v, list):
-                raise ValueError("segments must be a list")
-            for item in v:
-                if not isinstance(item, Segment):
-                    raise ValueError("All items in segments must be instances of Segment")
-        return v
-
-    @field_validator("segment_groups")
-    @classmethod
-    def validate_segment_groups(cls, v):
-        if v is not None:
-            if not isinstance(v, list):
-                raise ValueError("segment_groups must be a list")
-            for item in v:
-                if not isinstance(item, SegmentGroup):
-                    raise ValueError("All items in segment_groups must be instances of SegmentGroup")
-        return v
 
     def reset_ahb_line_index(self) -> None:
         self.ahb_line_index = None
