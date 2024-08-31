@@ -157,27 +157,17 @@ class AhbMetaInformation(BaseModel):
     maus_version: Optional[str] = Field(
         default=_VERSION, description="semantic version of maus used to create this document"
     )
-    description: Optional[str] = Field(
+    description: Annotated[Optional[str], StringConstraints(strip_whitespace=True, min_length=1)] = Field(
         default=None,
         description="an optional description of the purpose of the pruefidentifikator; e.g. 'Anmeldung MSB' for 11042",
     )
-    direction: Optional[str] = Field(
+    direction: Annotated[Optional[str], StringConstraints(strip_whitespace=True, min_length=1)] = Field(
         default=None,
         description=(
             "a stringly typed description of the roles of sender and receiver of the message"
             "(the row name in the AHB is 'Kommunikation von'); e.g. 'MSB an NB' for 11042"
         ),
     )
-
-    @field_validator("description", "direction", mode="before")
-    @classmethod
-    def check_string_is_not_whitespace_or_empty(cls, v):
-        """
-        Check that the string is not empty or consists only of whitespace.
-        """
-        if v is not None:
-            _check_that_string_is_not_whitespace_or_empty(v)
-        return v
 
 
 class AhbMetaInformationSchema(Schema):
