@@ -162,7 +162,7 @@ class DataElementValuePool(DataElement):
     value_type: Literal[DataElementDataType.VALUE_POOL] = Field(
         default=DataElementDataType.VALUE_POOL, description="Type of the value, if known"
     )
-    value_pool: List[ValuePoolEntry] = Field(
+    value_pool: list[ValuePoolEntry] = Field(
         ..., description="The value pool contains at least one value :class:`.ValuePoolEntry`"
     )
 
@@ -274,7 +274,7 @@ class Segment(SegmentLevel):
         ),
     )
 
-    def get_all_value_pools(self) -> List[DataElementValuePool]:
+    def get_all_value_pools(self) -> list[DataElementValuePool]:
         """
         find all value pools in this segment
         :return: a list of all value pools
@@ -289,8 +289,8 @@ class SegmentGroup(SegmentLevel):
     This group has the key "root".
     """
 
-    segments: Optional[List[Segment]] = Field(default=None, description="The segments inside this very group")
-    segment_groups: Optional[List["SegmentGroup"]] = Field(
+    segments: Optional[list[Segment]] = Field(default=None, description="The segments inside this very group")
+    segment_groups: Optional[list["SegmentGroup"]] = Field(
         default=None, description="Groups that are nested into this group"
     )
 
@@ -325,12 +325,12 @@ class SegmentGroup(SegmentLevel):
             for segment in self.segments:
                 segment.reset_ahb_line_index()
 
-    def find_segments(self, predicate: Callable[[Segment], bool], search_recursively: bool = True) -> List[Segment]:
+    def find_segments(self, predicate: Callable[[Segment], bool], search_recursively: bool = True) -> list[Segment]:
         """
         Search for a segment that matches the predicate (in this group and subgroups if 'search_recursively' is set),
         Return results, if found. Return empty list otherwise.
         """
-        result: List[Segment] = []
+        result: list[Segment] = []
         if self.segments is not None:
             for segment in self.segments:
                 if predicate(segment):
@@ -341,12 +341,12 @@ class SegmentGroup(SegmentLevel):
                 result += sub_result
         return result
 
-    def get_all_value_pools(self) -> List[DataElementValuePool]:
+    def get_all_value_pools(self) -> list[DataElementValuePool]:
         """
         recursively find all value pools in this segmentgroup
         :return: a list of all value pools
         """
-        result: List[DataElementValuePool] = []
+        result: list[DataElementValuePool] = []
         for segment in self.find_segments(lambda _: True):
             result += segment.get_all_value_pools()
         return result
@@ -378,14 +378,14 @@ class EdifactStack(BaseModel):
     The stack is independent of the actual implementation used to create the EDIFACT (be it XML, JSON whatever).
     """
 
-    levels: List[EdifactStackLevel] = Field(..., description="Levels describe the nesting inside an edifact message")
+    levels: list[EdifactStackLevel] = Field(..., description="Levels describe the nesting inside an edifact message")
 
     @staticmethod
     def from_json_path(json_path: str) -> "EdifactStack":
         """
         reads a json path as it is created by "to_json_path" and returns the corresponding edifact stack
         """
-        levels: List[EdifactStackLevel] = []
+        levels: list[EdifactStackLevel] = []
         for level_match in _level_pattern.finditer(json_path):
             level = EdifactStackLevel(name=level_match["level_name"], is_groupable=level_match["index"] is not None)
             if level.is_groupable:

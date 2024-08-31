@@ -31,7 +31,7 @@ class TestAhbCsvReader:
             pytest.param([], None),
         ],
     )
-    def test_ahb_expression_column_finder(self, field_names: List[str], expected_column_name: Optional[str]):
+    def test_ahb_expression_column_finder(self, field_names: list[str], expected_column_name: Optional[str]):
         actual = FlatAhbCsvReader._get_name_of_expression_column(field_names)
         assert actual == expected_column_name
 
@@ -246,7 +246,7 @@ class TestAhbCsvReader:
             )
         ],
     )
-    def test_merging_of_section_only_lines(self, input_lines: List[dict], expected_lines: List[dict]):
+    def test_merging_of_section_only_lines(self, input_lines: list[dict], expected_lines: list[dict]):
         actual = FlatAhbCsvReader.merge_section_only_lines(input_lines)
         assert actual == expected_lines
 

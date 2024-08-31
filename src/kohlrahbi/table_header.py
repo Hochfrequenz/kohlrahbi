@@ -21,7 +21,7 @@ class HeaderSection(StrEnum):
     PRUEFIDENTIFIKATOR = "pruefidentifikator"
 
 
-def get_tabstop_positions(paragraph: Paragraph) -> List[int]:
+def get_tabstop_positions(paragraph: Paragraph) -> list[int]:
     """Find all tabstop positions in a given paragraph.
 
     Mainly the tabstop positions of cells from the middle column are determined
@@ -30,17 +30,17 @@ def get_tabstop_positions(paragraph: Paragraph) -> List[int]:
         paragraph (Paragraph):
 
     Returns:
-        List[int]: All tabstop positions in the given paragraph
+        list[int]: All tabstop positions in the given paragraph
     """
-    tabstop_positions: List[int] = []
+    tabstop_positions: list[int] = []
     for tabstop in paragraph.paragraph_format.tab_stops:
         tabstop_positions.append(tabstop.position)
     return tabstop_positions
 
 
 def create_mapping_of_tabstop_positions(
-    initial_tabstop_positions: List[int],
-    current_tabstop_positions: List[int],
+    initial_tabstop_positions: list[int],
+    current_tabstop_positions: list[int],
 ) -> Mapping[int, int]:
     """
     Create a mapping of the tabstop positions of the Prüfidentifikatoren columns.
@@ -93,7 +93,7 @@ class TableHeader(BaseModel):
     It contains the information about the Prüfidentifikatoren.
     """
 
-    pruefi_meta_data: List[PruefiMetaData] = Field(default_factory=list)
+    pruefi_meta_data: list[PruefiMetaData] = Field(default_factory=list)
 
     @classmethod
     def from_header_cell(cls, row_cell: _Cell) -> "TableHeader":
@@ -182,7 +182,7 @@ class TableHeader(BaseModel):
         """Inserts a single space between words"""
         return " ".join(text.split())
 
-    def get_pruefidentifikatoren(self) -> List[str]:
+    def get_pruefidentifikatoren(self) -> list[str]:
         """
         Get all Prüfidentifikatoren from the table header.
         The order of the Prüfidentifikatoren is the same as in the docx table headers.
