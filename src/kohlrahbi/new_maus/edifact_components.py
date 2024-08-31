@@ -75,7 +75,7 @@ class DataElementFreeText(DataElement):
             "The value_type does not discriminate the type of the data element itself."
         ),
     )
-    ahb_expression: str = Field(
+    ahb_expression: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)] = Field(
         ..., description="Any freetext data element has an ahb expression attached. Could be 'X' but also 'M [13]'"
     )
     free_text: str = Field(
@@ -84,17 +84,6 @@ class DataElementFreeText(DataElement):
             "free_text contains the the description of the free text element, e.g. 'Referenz, Identifikation'"
         ),
     )
-
-    # TODO remove all the checks that are not necessary anymore
-    @field_validator("ahb_expression")
-    @classmethod
-    def validate_ahb_expression(cls, v):
-        """
-        Check that the ahb_expression is a non-empty string
-        """
-        if not isinstance(v, str) or not v.strip():
-            raise ValueError("ahb_expression must be a non-empty string")
-        return v
 
 
 #: a pattern that matches most of the qualifiers we find in the AHBs
