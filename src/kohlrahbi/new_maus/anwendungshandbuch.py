@@ -7,7 +7,7 @@ structure.
 another segment group)
 """
 import re
-from typing import Callable, List, Optional, Sequence, Set
+from typing import Callable, Optional, Sequence, Set
 from uuid import UUID
 
 import attr.validators

@@ -6,7 +6,7 @@ Components contain not only EDIFACT composits but also segments and segment grou
 import re
 from abc import ABC
 from enum import Enum
-from typing import Callable, Dict, Iterable, List, Literal, Mapping, Optional
+from typing import Callable, Dict, Iterable, Literal, Mapping, Optional
 
 from pydantic import BaseModel, Field, StringConstraints, field_validator
 from typing_extensions import Annotated
