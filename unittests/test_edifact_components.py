@@ -62,6 +62,7 @@ class TestEdifactComponents:
                     section_name="foo",
                     data_elements=[
                         DataElementValuePool(
+                            value_type=DataElementDataType.VALUE_POOL,
                             value_pool=[
                                 ValuePoolEntry(qualifier="HELLO", meaning="world", ahb_expression="X"),
                                 ValuePoolEntry(qualifier="MAUS", meaning="rocks", ahb_expression="X"),
@@ -70,6 +71,7 @@ class TestEdifactComponents:
                             data_element_id="0329",
                         ),
                         DataElementFreeText(
+                            value_type=DataElementDataType.TEXT,
                             ahb_expression="Muss [1]",
                             free_text="Hello Maus",
                             discriminator="bar",
@@ -131,6 +133,7 @@ class TestEdifactComponents:
                             section_name="bar",
                             data_elements=[
                                 DataElementValuePool(
+                                    value_type=DataElementDataType.VALUE_POOL,
                                     value_pool=[
                                         ValuePoolEntry(qualifier="HELLO", meaning="world", ahb_expression="X"),
                                         ValuePoolEntry(qualifier="MAUS", meaning="rocks", ahb_expression="X"),
@@ -139,6 +142,7 @@ class TestEdifactComponents:
                                     data_element_id="3333",
                                 ),
                                 DataElementFreeText(
+                                    value_type=DataElementDataType.TEXT,
                                     ahb_expression="Muss [1]",
                                     free_text="Hello Maus",
                                     discriminator="bar",
