@@ -184,16 +184,6 @@ class DataElementValuePool(DataElement):
         ..., description="The value pool contains at least one value :class:`.ValuePoolEntry`"
     )
 
-    @field_validator("value_type", mode="before")
-    @classmethod
-    def validate_value_type(cls, v):
-        """
-        Check that the value_type is a valid DataElement.
-        """
-        if v is not None and not isinstance(v, DataElementDataType):
-            raise ValueError("value_type must be an instance of DataElementDataType")
-        return v
-
     @field_validator("value_pool")
     @classmethod
     def validate_value_pool(cls, v):
