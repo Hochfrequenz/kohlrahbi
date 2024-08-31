@@ -25,7 +25,7 @@ class TestEdifactComponents:
             pytest.param(
                 DataElementFreeText(
                     ahb_expression="Muss [1]",
-                    entered_input="Hello Maus",
+                    free_text="Hello Maus",
                     discriminator="foo",
                     data_element_id="2222",
                     value_type=DataElementDataType.TEXT,
@@ -110,11 +110,10 @@ class TestEdifactComponents:
                             ],
                             discriminator="baz",
                             data_element_id="0329",
-                            entered_input="foo",
                         ),
                         DataElementFreeText(
                             ahb_expression="Muss [1]",
-                            entered_input="Hello Maus",
+                            free_text="Hello Maus",
                             discriminator="bar",
                             data_element_id="0330",
                         ),
@@ -168,11 +167,10 @@ class TestEdifactComponents:
                             ],
                             discriminator="baz",
                             data_element_id="0329",
-                            entered_input="foo",
                         ),
                         DataElementFreeText(
                             ahb_expression="Muss [1]",
-                            entered_input="Hello Maus",
+                            free_text="Hello Maus",
                             discriminator="bar",
                             data_element_id="0330",
                         ),
@@ -207,11 +205,10 @@ class TestEdifactComponents:
                                     ],
                                     discriminator="baz",
                                     data_element_id="3333",
-                                    entered_input="MAUS",
                                 ),
                                 DataElementFreeText(
                                     ahb_expression="Muss [1]",
-                                    entered_input="Hello Maus",
+                                    free_text="Hello Maus",
                                     discriminator="bar",
                                     data_element_id="4444",
                                 ),
@@ -335,11 +332,10 @@ class TestEdifactComponents:
                                     ],
                                     discriminator="baz",
                                     data_element_id="3333",
-                                    entered_input="MAUS",
                                 ),
                                 DataElementFreeText(
                                     ahb_expression="Muss [1]",
-                                    entered_input="Hello Maus",
+                                    free_text="Hello Maus",
                                     discriminator="bar",
                                     data_element_id="4444",
                                 ),
@@ -363,7 +359,6 @@ class TestEdifactComponents:
                                             ],
                                             discriminator="baz",
                                             data_element_id="3333",
-                                            entered_input="MAUS",
                                         ),
                                     ],
                                 )
@@ -389,7 +384,6 @@ class TestEdifactComponents:
             ],
             discriminator="foo",
             data_element_id="0022",
-            entered_input="asd",
         )
         mapping = {"HELLO": "GOODBYE", "MAUS": "KATZE"}
         data_element.replace_value_pool(mapping)
@@ -409,7 +403,6 @@ class TestEdifactComponents:
             ],
             discriminator="foo",
             data_element_id="0022",
-            entered_input="asd",
         )
         mapping = {"HELLO": "GOODBYE", "MAUS": "KATZE"}
 
@@ -443,6 +436,5 @@ class TestEdifactComponents:
             ],
             discriminator="foo",
             data_element_id="0022",
-            entered_input="asd",
         )
         assert data_element.has_value_pool_which_is_subset_of(candidate) == expected
