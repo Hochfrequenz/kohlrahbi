@@ -8,7 +8,7 @@ import re
 import uuid
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Dict, List, Literal, Optional, Sequence, Set, TextIO, Tuple, overload
+from typing import Dict, Literal, Optional, Sequence, Set, TextIO, Tuple, overload
 
 from kohlrahbi.new_maus.anwendungshandbuch import _VERSION, AhbLine, AhbMetaInformation, FlatAnwendungshandbuch
 from kohlrahbi.new_maus.edifact_components import gabi_edifact_qualifier_pattern
