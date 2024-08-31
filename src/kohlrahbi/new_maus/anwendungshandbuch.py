@@ -7,14 +7,14 @@ structure.
 another segment group)
 """
 import re
-from typing import Callable, Optional, Sequence, Set
+from typing import Annotated, Callable, Optional, Sequence, Set
 from uuid import UUID
 
 import attr.validators
 import attrs
 from marshmallow import Schema, fields, post_load
 from more_itertools import last, split_when
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, StringConstraints, field_validator
 
 from kohlrahbi.new_maus import _check_that_string_is_not_whitespace_or_empty
 from kohlrahbi.new_maus.edifact_components import DataElementFreeText, DataElementValuePool, Segment, SegmentGroup
@@ -54,7 +54,7 @@ class AhbLine(BaseModel):
     # where user input is expected but also the meanings / values of value pool entries. This means the exact meaning of
     # name can only be determined in the context in which it is used. This is one of many shortcoming of the current AHB
     # structure: Things in the same column don't necessarily mean the same thing.
-    ahb_expression: Optional[str] = Field(
+    ahb_expression: Annotated[Optional[str], StringConstraints(strip_whitespace=True, min_length=1)] = Field(
         default=None,
         description=(
             "a requirement indicator + an optional condition ('ahb expression'),"
@@ -86,16 +86,6 @@ class AhbLine(BaseModel):
         ),
         ge=0,
     )
-
-    @field_validator("ahb_expression")
-    @classmethod
-    def check_ahb_expression(cls, v):
-        """
-        Check that the ahb_expression is not empty or consists only of whitespace.
-        """
-        if v is not None:
-            _check_that_string_is_not_whitespace_or_empty(v)
-        return v
 
     def holds_any_information(self) -> bool:
         """
