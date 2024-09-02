@@ -1,85 +1,43 @@
 This is the changelog for the **kohlrahbi** project.
 The changelog follows the [Conventional Commits](https://www.conventionalcommits.org) specification.
 ## [unreleased]
-
 ### 🐛 Bug Fixes
-
 - *(test)* 🚛 rename test file to fix tests ([#412](https://github.com/Hochfrequenz/kohlrahbi/issues/412)) - ([9c48826](https://github.com/Hochfrequenz/kohlrahbi/commit/9c4882655c15f309a1da72b3da35545f38fee893))
 - Criterion for latest file filter ([#417](https://github.com/Hochfrequenz/kohlrahbi/issues/417)) - ([2d21351](https://github.com/Hochfrequenz/kohlrahbi/commit/2d21351bb8f574d191e471d15de3d011a5f930c4))
 - Parsing of segment ids ([#406](https://github.com/Hochfrequenz/kohlrahbi/issues/406)) - ([10ae03a](https://github.com/Hochfrequenz/kohlrahbi/commit/10ae03ab8e5246d24563d13bcc7336904301bddd))
-
 ### 🚜 Refactor
-
 - *(dependencies)* Move MAUS dependencies to kohlrahbi, replace attrs with pydantic, remove marshmallow ([#413](https://github.com/Hochfrequenz/kohlrahbi/issues/413)) - ([b151264](https://github.com/Hochfrequenz/kohlrahbi/commit/b1512645553b7cd63150eda3d3104b17a9f0b21a))
-
-
 ## [1.5.0](https://github.com/Hochfrequenz/kohlrahbi/compare/v1.4.4..v1.5.0) - 2024-08-21
-
 ### ⚙️ Miscellaneous Tasks
-
 - *(gh action)* Add check for conventional commit in PR title ([#401](https://github.com/Hochfrequenz/kohlrahbi/issues/401)) - ([201dc0a](https://github.com/Hochfrequenz/kohlrahbi/commit/201dc0ac41eefede9a483bc87f62379a6c417676))
-
-
 ## [1.4.2](https://github.com/Hochfrequenz/kohlrahbi/compare/v1.4.1..v1.4.2) - 2024-07-31
-
 ### ⚙️ Miscellaneous Tasks
-
 - Improve readability  of dump function ([#387](https://github.com/Hochfrequenz/kohlrahbi/issues/387)) - ([d5573b1](https://github.com/Hochfrequenz/kohlrahbi/commit/d5573b1705a8107c01933276252c7c2e9dab4ac3))
-
-
 ## [1.4.1](https://github.com/Hochfrequenz/kohlrahbi/compare/v1.4.0..v1.4.1) - 2024-07-30
-
 ### 🐛 Bug Fixes
-
 - Add forgotten "xlsx" sub-directory to path ([#385](https://github.com/Hochfrequenz/kohlrahbi/issues/385)) - ([41010f7](https://github.com/Hochfrequenz/kohlrahbi/commit/41010f73a90bb184a4f1ce63d0360664359899a0))
-
-
 ## [1.1.0](https://github.com/Hochfrequenz/kohlrahbi/compare/v1.0.0..v1.1.0) - 2024-05-20
-
 ### ⚙️ Miscellaneous Tasks
-
 - Drop `pip-compile step` from dev env setup; Add `pip-compile-multi` env ([#307](https://github.com/Hochfrequenz/kohlrahbi/issues/307)) - ([d50ac62](https://github.com/Hochfrequenz/kohlrahbi/commit/d50ac62b0cba90734f1d670e78450b3710e70e09))
-
-
 ## [0.4.0](https://github.com/Hochfrequenz/kohlrahbi/compare/v0.3.1..v0.4.0) - 2024-03-27
-
 ### 📚 Documentation
-
 - Mention migmose ([#248](https://github.com/Hochfrequenz/kohlrahbi/issues/248)) - ([55cfe37](https://github.com/Hochfrequenz/kohlrahbi/commit/55cfe379ef1391fd4330c0dcc25f292302943d42))
-
 ### ⚙️ Miscellaneous Tasks
-
 - ⬆ Upgrade `packaging` dependencies ([#255](https://github.com/Hochfrequenz/kohlrahbi/issues/255)) - ([888f736](https://github.com/Hochfrequenz/kohlrahbi/commit/888f73665a8f597cf36364afe7a781ddd52c20db))
 - 📍 pin formatting dependencies and ⬆ bump black to 24.1.1 and isort to 5.13.0 ([#225](https://github.com/Hochfrequenz/kohlrahbi/issues/225)) - ([2e93cee](https://github.com/Hochfrequenz/kohlrahbi/commit/2e93cee1f30c228b5141630b833560254e9d8902))
-
-
 ## [0.3.1](https://github.com/Hochfrequenz/kohlrahbi/compare/v0.3.0..v0.3.1) - 2024-01-20
-
 ### 🐛 Bug Fixes
-
 - 📍 Pin packaging requirements; Fix file path in publish workflow ([#217](https://github.com/Hochfrequenz/kohlrahbi/issues/217)) - ([e3c57f7](https://github.com/Hochfrequenz/kohlrahbi/commit/e3c57f7d87fefd15f0eb2e6778a341d63f1ed90d))
-
-
 ## [0.0.9](https://github.com/Hochfrequenz/kohlrahbi/compare/v0.0.8..v0.0.9) - 2023-07-29
-
 ### 📚 Documentation
-
 - Add link to `machine-readable_anwendungshandbuecher` ([#165](https://github.com/Hochfrequenz/kohlrahbi/issues/165)) - ([313d900](https://github.com/Hochfrequenz/kohlrahbi/commit/313d900620cb283d1e8088fd3aed1f419d9f6ab1))
 - Fixed code block to render reference correctly ([#164](https://github.com/Hochfrequenz/kohlrahbi/issues/164)) - ([fb7f7bb](https://github.com/Hochfrequenz/kohlrahbi/commit/fb7f7bbaa80e03a5b2c496b6c9cf334df26b2e61))
-
-
+## New Contributors ❤️
+* @mj0nez made their first contribution in [#164](https://github.com/Hochfrequenz/kohlrahbi/pull/164)
 ## [0.0.8](https://github.com/Hochfrequenz/kohlrahbi/compare/v0.0.7..v0.0.8) - 2023-07-24
-
 ### Readability
-
 - Use dict comprehension instead of looping over group by ([#159](https://github.com/Hochfrequenz/kohlrahbi/issues/159)) - ([c9143fd](https://github.com/Hochfrequenz/kohlrahbi/commit/c9143fdc134977548199e3374aaa98bd226e1eba))
-
-
 ## [0.0.7](https://github.com/Hochfrequenz/kohlrahbi/compare/v0.0.6..v0.0.7) - 2023-07-24
-
 ### 🐛
-
 - Re-instantiate `ahb_file_finder` for every pruefi ([#161](https://github.com/Hochfrequenz/kohlrahbi/issues/161)) - ([1f717b9](https://github.com/Hochfrequenz/kohlrahbi/commit/1f717b90b7ec93e5f6774f593310b4841cbf2749))
-
-
 <!-- generated by git-cliff -->
