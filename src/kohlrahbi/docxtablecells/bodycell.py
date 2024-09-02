@@ -5,9 +5,9 @@ This module contains the class BodyCell
 import pandas as pd
 from docx.table import _Cell
 from docx.text.paragraph import Paragraph
-from maus.reader.flat_ahb_reader import FlatAhbCsvReader
 from pydantic import BaseModel, ConfigDict
 
+from kohlrahbi.new_maus.flat_ahb_reader import FlatAhbCsvReader
 from kohlrahbi.table_header import get_tabstop_positions
 
 INDEX_OF_CODES_AND_QUALIFIER_COLUMN = 4
@@ -35,7 +35,7 @@ class BodyCell(BaseModel):
             paragraph (Paragraph): Current paragraph in the edifact struktur cell
             dataframe (pd.DataFrame): Contains all infos
             left_indent_position (int): Position of the left indent from the indicator middle cell
-            tabstop_positions (List[int]): All tabstop positions of the indicator middle cell
+            tabstop_positions (list[int]): All tabstop positions of the indicator middle cell
         """
 
         cell_is_empty = self.table_cell.paragraphs[0].text == ""

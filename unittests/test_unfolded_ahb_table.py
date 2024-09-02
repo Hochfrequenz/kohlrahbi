@@ -1,7 +1,6 @@
 import pytest
-from efoli import EdifactFormat
-from maus.models.anwendungshandbuch import AhbLine, AhbMetaInformation, FlatAnwendungshandbuch
 
+from kohlrahbi.new_maus.anwendungshandbuch import AhbLine, AhbMetaInformation, FlatAnwendungshandbuch
 from kohlrahbi.unfoldedahb import UnfoldedAhbTableMetaData
 from kohlrahbi.unfoldedahb.unfoldedahbline import UnfoldedAhbLine
 from kohlrahbi.unfoldedahb.unfoldedahbtable import UnfoldedAhb, _remove_irrelevant_lines

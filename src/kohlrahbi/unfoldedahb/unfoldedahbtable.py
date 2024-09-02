@@ -10,21 +10,15 @@ from pathlib import Path
 from typing import Optional, Union
 from uuid import uuid4
 
-import attrs
 import pandas as pd
 from efoli import EdifactFormat, get_format_of_pruefidentifikator
-from maus.models.anwendungshandbuch import (
-    AhbLine,
-    AhbMetaInformation,
-    FlatAnwendungshandbuch,
-    FlatAnwendungshandbuchSchema,
-)
-from maus.reader.flat_ahb_reader import FlatAhbCsvReader
 from more_itertools import first_true, peekable
 from pydantic import BaseModel
 
 from kohlrahbi.ahbtable.ahbtable import AhbTable, _column_letter_width_mapping
 from kohlrahbi.logger import logger
+from kohlrahbi.new_maus.anwendungshandbuch import AhbLine, AhbMetaInformation, FlatAnwendungshandbuch
+from kohlrahbi.new_maus.flat_ahb_reader import FlatAhbCsvReader
 from kohlrahbi.unfoldedahb.unfoldedahbline import UnfoldedAhbLine
 from kohlrahbi.unfoldedahb.unfoldedahbtablemetadata import UnfoldedAhbTableMetaData
 
@@ -86,7 +80,7 @@ class UnfoldedAhb(BaseModel):
     """
     The UnfoldedAhb contains one Prüfidentifikator.
     Some columns in the AHB documents contain multiple information in one column e.g. Segmentname and Segmentgruppe.
-    The unfolded classes add new columns/attribues to avoid the duplication of information in one column.
+    The unfolded classes add new columns/attributes to avoid the duplication of information in one column.
     """
 
     meta_data: UnfoldedAhbTableMetaData
@@ -395,9 +389,10 @@ class UnfoldedAhb(BaseModel):
         flat_ahb = self.convert_to_flat_ahb()
         if file_path.exists():
             with open(file_path, "r", encoding="utf-8") as file:
-                existing_flat_ahb = FlatAnwendungshandbuchSchema().load(json.load(file))
+                file_content = file.read()
+                existing_flat_ahb = FlatAnwendungshandbuch.model_validate_json(file_content)
             _keep_guids_of_unchanged_lines_stable(flat_ahb, existing_flat_ahb)
-        dump_data = FlatAnwendungshandbuchSchema().dump(flat_ahb)
+        dump_data = FlatAnwendungshandbuch.model_dump_json(flat_ahb)
         with open(file_path, "w", encoding="utf-8") as file:
             json.dump(dump_data, file, ensure_ascii=False, indent=2, sort_keys=True)
         logger.info(
@@ -523,10 +518,10 @@ def _remove_irrelevant_lines(lines: list[AhbLine]) -> list[AhbLine]:
     """
     reduced_lines: list[AhbLine] = []
     for line, next_line in zip(lines, lines[1:] + [None]):
-        line_dict = attrs.asdict(line)
+        line_dict = line.model_dump()
         next_line_dict: dict[str, str | None]
         if next_line:
-            next_line_dict = attrs.asdict(next_line)
+            next_line_dict = next_line.model_dump()
         is_next_ahb_line_empty = next_line is None or next_line_dict["ahb_expression"] is None
         is_ahb_line_only_segment_group_header = (
             line_dict["segment_group_key"] is not None
@@ -562,7 +557,8 @@ def _get_ahb(ahb_model_or_path: Union[FlatAnwendungshandbuch, UnfoldedAhb, Path]
         return ahb_model_or_path.convert_to_flat_ahb()
     if isinstance(ahb_model_or_path, Path):
         with open(ahb_model_or_path, "r", encoding="utf-8") as file:
-            return FlatAnwendungshandbuchSchema().load(json.load(file))  # type:ignore[no-any-return]
+            file_content = file.read()
+            return FlatAnwendungshandbuch.model_validate_json(file_content)
     raise ValueError(
         f"argument must be either a FlatAnwendungshandbuch, UnfoldedAhb or a Path but was {type(ahb_model_or_path)}"
     )

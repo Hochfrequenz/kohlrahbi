@@ -7,7 +7,7 @@ import gc
 import re
 from datetime import date
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Optional
 
 import click
 import docx
@@ -154,7 +154,7 @@ def get_ahb_documents_path(base_path: Path, version: str) -> Path:
     return path
 
 
-def find_pruefidentifikatoren(path: Path) -> Dict[str, str]:
+def find_pruefidentifikatoren(path: Path) -> dict[str, str]:
     """finds pruefis in given dir"""
     pruefis = {}
 
@@ -166,7 +166,7 @@ def find_pruefidentifikatoren(path: Path) -> Dict[str, str]:
     return dict(sorted(pruefis.items()))
 
 
-def extract_pruefis_from_docx(docx_path: Path) -> Dict[str, str]:
+def extract_pruefis_from_docx(docx_path: Path) -> dict[str, str]:
     """Extracts the Prüfidentifikatoren from the given docx file."""
     doc = docx.Document(str(docx_path))
     pruefis: dict[str, str] = {}
@@ -181,7 +181,7 @@ def extract_pruefis_from_docx(docx_path: Path) -> Dict[str, str]:
     return pruefis
 
 
-def save_pruefi_map_to_toml(pruefis: Dict[str, str], version: str) -> None:
+def save_pruefi_map_to_toml(pruefis: dict[str, str], version: str) -> None:
     """Saves the pruefis to file mapping to a toml file."""
     output_filename = f"{version}_pruefi_docx_filename_map.toml"
     output_file_path = Path(__file__).parents[1] / "cache" / output_filename
@@ -198,7 +198,7 @@ def log_no_pruefis_warning(version: str, path: Path) -> None:
     logger.warning("No Prüfidentifikatoren found in the AHB documents for format version %s at %s.", version, path)
 
 
-def get_default_pruefi_map(path: Path) -> Dict[str, str]:
+def get_default_pruefi_map(path: Path) -> dict[str, str]:
     """Returns a default pruefi map if no pruefis were found."""
     return {"⚠️ No Prüfidentifikatoren found": f"No AHB documents found in {path}."}
 
