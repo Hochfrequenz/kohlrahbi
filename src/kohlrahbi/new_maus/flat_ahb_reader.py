@@ -8,7 +8,7 @@ import re
 import uuid
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Dict, Literal, Optional, Sequence, TextIO, Tuple, overload
+from typing import Literal, Optional, Sequence, TextIO, Tuple, overload
 
 from kohlrahbi.new_maus.anwendungshandbuch import _VERSION, AhbLine, AhbMetaInformation, FlatAnwendungshandbuch
 from kohlrahbi.new_maus.edifact_components import gabi_edifact_qualifier_pattern
@@ -61,7 +61,7 @@ class FlatAhbCsvReader(FlatAhbReader):
         self.current_section_name: Optional[str] = None
         self.pruefidentifikator = pruefidentifikator
         self.delimiter = delimiter
-        self.bedingungen: Dict[str, str] = {}
+        self.bedingungen: dict[str, str] = {}
         with open(file_path, "r", encoding=encoding) as infile:
             # current_section_name: Optional[str]
             raw_lines = self.get_raw_rows(infile)
@@ -179,7 +179,7 @@ class FlatAhbCsvReader(FlatAhbReader):
         )
         return result
 
-    def extract_condition_texts(self) -> Dict[str, str]:
+    def extract_condition_texts(self) -> dict[str, str]:
         """
         Extracts all the condition texts found in this AHB.
         :return: a dictionary with the condition key (e.g. "46") as value and the condition text (e.g. "Wenn aus Sparte
@@ -238,7 +238,7 @@ class FlatAhbCsvReader(FlatAhbReader):
     _bedingung_pattern = re.compile(r"\[(?P<key>\d+)\]\s*(?P<text>[^\[\]]+)\s*")  # https://regex101.com/r/hN5x9w/1
 
     @staticmethod
-    def _extract_bedingungen(candidate: Optional[str]) -> Dict[str, str]:
+    def _extract_bedingungen(candidate: Optional[str]) -> dict[str, str]:
         """
         Checks if the given candidate is a bedingung. If no, returns empty dict.
         If yes returns a dictionary where the Bedingung keys (e.g. "494") are dictionary keys and the Bedingung
@@ -295,7 +295,7 @@ def _replace_hardcoded_section_names(section_name: Optional[str]) -> Optional[st
     """
     if not section_name:
         return section_name
-    replacements: Dict[str, str] = {
+    replacements: dict[str, str] = {
         # https://github.com/Hochfrequenz/edifact-templates/issues/82
         # pylint: disable=line-too-long
         "OBIS-Kennzahl der Zähleinrichtung / Mengenumwerter / Smartmeter-Gateway": "OBIS-Kennzahl der Zähleinrichtung / Mengenumwerter",

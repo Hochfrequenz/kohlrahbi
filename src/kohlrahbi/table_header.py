@@ -3,7 +3,7 @@ This module contains the TableHeader class.
 """
 
 from enum import StrEnum
-from typing import Dict, Mapping, cast
+from typing import Mapping, cast
 
 from docx.table import _Cell
 from docx.text.paragraph import Paragraph
@@ -49,10 +49,10 @@ def create_mapping_of_tabstop_positions(
     found to account for changes in tabstop positions between paragraphs.
 
     Returns:
-        Dict[int, int]: All initial tabstop positions mapped to the current tabstop positions
+        dict[int, int]: All initial tabstop positions mapped to the current tabstop positions
     """
     # create a mapping of the tabstop positions
-    mapping: Dict[int, int] = {}
+    mapping: dict[int, int] = {}
     # Sort the lists in ascending order
     initial_tabstop_positions.sort()
     current_tabstop_positions.sort()
@@ -157,13 +157,13 @@ class TableHeader(BaseModel):
         return cls(pruefi_meta_data=pruefi_meta_data)
 
     @staticmethod
-    def initialize_collector(paragraph: Paragraph) -> Dict[str, Dict[str, str | int]]:
+    def initialize_collector(paragraph: Paragraph) -> dict[str, dict[str, str | int]]:
         """Initialize the collector"""
         current_tabstop_positions = get_tabstop_positions(paragraph=paragraph)
         splitted_text = paragraph.text.split("\t")
         splitted_text.remove("Prüfidentifikator")
 
-        collector: Dict[str, Dict[str, str | int]] = {
+        collector: dict[str, dict[str, str | int]] = {
             pruefidentifikator: {
                 HeaderSection.BESCHREIBUNG.value: "",
                 HeaderSection.KOMMUNIKATION_VON.value: "",

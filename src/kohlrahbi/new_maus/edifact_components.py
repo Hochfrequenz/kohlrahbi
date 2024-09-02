@@ -6,7 +6,7 @@ Components contain not only EDIFACT composits but also segments and segment grou
 import re
 from abc import ABC
 from enum import Enum
-from typing import Callable, Dict, Iterable, Literal, Mapping, Optional
+from typing import Callable, Iterable, Literal, Mapping, Optional
 
 from pydantic import BaseModel, Field, StringConstraints, field_validator
 from typing_extensions import Annotated
@@ -191,7 +191,7 @@ class DataElementValuePool(DataElement):
         Provide an optional meaning_qualifier_merger that allows you to 'store' the old qualifier in the meaning.
         This is an _unstructured_ way to save the information that is lost with the replacement.
         """
-        existing_value_pool_entries: Dict[str, ValuePoolEntry] = {x.qualifier: x for x in self.value_pool}
+        existing_value_pool_entries: dict[str, ValuePoolEntry] = {x.qualifier: x for x in self.value_pool}
         for existing_value_pool_qualifier, value_pool_entry in existing_value_pool_entries.items():
             if existing_value_pool_qualifier in edifact_to_domain_mapping:
                 if meaning_qualifier_merger is not None:
