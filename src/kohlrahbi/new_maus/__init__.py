@@ -4,12 +4,12 @@ This module contains methods available to all methods in the package.
 """
 
 
-# pylint: disable=unused-argument
-def _check_that_string_is_not_whitespace_or_empty(instance, attribute, value) -> None:  # type:ignore[no-untyped-def]
+def _check_that_string_is_not_whitespace_or_empty(value: str) -> str:
     """
-    Check that string in the instance attribute value is not empty
+    Check that string value is not empty or consists only of whitespace.
     """
     if not value:
-        raise ValueError(f"The string {attribute.name} must not be None or empty")
+        raise ValueError("The string must not be None or empty")
     if len(value.strip()) == 0:
-        raise ValueError(f"The string {attribute.name} must not consist only of whitespace: '{value}'")
+        raise ValueError(f"The string must not consist only of whitespace: '{value}'")
+    return value

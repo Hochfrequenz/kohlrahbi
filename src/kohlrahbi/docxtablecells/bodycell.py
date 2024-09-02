@@ -35,7 +35,7 @@ class BodyCell(BaseModel):
             paragraph (Paragraph): Current paragraph in the edifact struktur cell
             dataframe (pd.DataFrame): Contains all infos
             left_indent_position (int): Position of the left indent from the indicator middle cell
-            tabstop_positions (List[int]): All tabstop positions of the indicator middle cell
+            tabstop_positions (list[int]): All tabstop positions of the indicator middle cell
         """
 
         cell_is_empty = self.table_cell.paragraphs[0].text == ""

@@ -8,7 +8,7 @@ import re
 import uuid
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Dict, List, Literal, Optional, Sequence, Set, TextIO, Tuple, overload
+from typing import Literal, Optional, Sequence, TextIO, Tuple, overload
 
 from kohlrahbi.new_maus.anwendungshandbuch import _VERSION, AhbLine, AhbMetaInformation, FlatAnwendungshandbuch
 from kohlrahbi.new_maus.edifact_components import gabi_edifact_qualifier_pattern
@@ -56,12 +56,12 @@ class FlatAhbCsvReader(FlatAhbReader):
         encoding="utf-8",
         delimiter=",",
     ):
-        self.rows: List[AhbLine] = []
+        self.rows: list[AhbLine] = []
         self._logger = logging.getLogger()
         self.current_section_name: Optional[str] = None
         self.pruefidentifikator = pruefidentifikator
         self.delimiter = delimiter
-        self.bedingungen: Dict[str, str] = {}
+        self.bedingungen: dict[str, str] = {}
         with open(file_path, "r", encoding=encoding) as infile:
             # current_section_name: Optional[str]
             raw_lines = self.get_raw_rows(infile)
@@ -74,7 +74,7 @@ class FlatAhbCsvReader(FlatAhbReader):
             self.rows.append(ahb_line)
 
     @staticmethod
-    def merge_section_only_lines(raw_lines: List[dict]) -> List[dict]:  # type:ignore[type-arg]
+    def merge_section_only_lines(raw_lines: list[dict]) -> list[dict]:  # type:ignore[type-arg]
         """
         merges adjacent lines from the CSV source when they only contain an AHB "section" description.
         "Section" headings are the grey lines on the left of the AHB PDF.
@@ -82,7 +82,7 @@ class FlatAhbCsvReader(FlatAhbReader):
         When the section heading spans multiple lines, we don't want to treat them as separate but as a single heading.
         The method consumes a list of dicts and returns a _new_ list of dicts that is of the same length or shorter.
         """
-        result: List[dict] = []  # type:ignore[type-arg]
+        result: list[dict] = []  # type:ignore[type-arg]
 
         # imagine the original list to be
         # 0,asd,qwertz,
@@ -92,7 +92,7 @@ class FlatAhbCsvReader(FlatAhbReader):
         # 4,Foo,Bar,Y
         # 5,Baz,Boom,Z
         # we then want to merge the lines with index 1-3 into a single line
-        keys_that_must_no_hold_any_values: Set[str] = {
+        keys_that_must_no_hold_any_values: set[str] = {
             "Segment",
             "Datenelement",
             "Codes und Qualifier",
@@ -137,7 +137,7 @@ class FlatAhbCsvReader(FlatAhbReader):
                 result.append(raw_line)
         return result
 
-    def get_raw_rows(self, file_handle: TextIO) -> List[dict]:  # type:ignore[type-arg]
+    def get_raw_rows(self, file_handle: TextIO) -> list[dict]:  # type:ignore[type-arg]
         """
         reads the input file and returns an iterator over raw lines.
         Override this method if your data source is not a CSV file
@@ -179,7 +179,7 @@ class FlatAhbCsvReader(FlatAhbReader):
         )
         return result
 
-    def extract_condition_texts(self) -> Dict[str, str]:
+    def extract_condition_texts(self) -> dict[str, str]:
         """
         Extracts all the condition texts found in this AHB.
         :return: a dictionary with the condition key (e.g. "46") as value and the condition text (e.g. "Wenn aus Sparte
@@ -238,7 +238,7 @@ class FlatAhbCsvReader(FlatAhbReader):
     _bedingung_pattern = re.compile(r"\[(?P<key>\d+)\]\s*(?P<text>[^\[\]]+)\s*")  # https://regex101.com/r/hN5x9w/1
 
     @staticmethod
-    def _extract_bedingungen(candidate: Optional[str]) -> Dict[str, str]:
+    def _extract_bedingungen(candidate: Optional[str]) -> dict[str, str]:
         """
         Checks if the given candidate is a bedingung. If no, returns empty dict.
         If yes returns a dictionary where the Bedingung keys (e.g. "494") are dictionary keys and the Bedingung
@@ -295,7 +295,7 @@ def _replace_hardcoded_section_names(section_name: Optional[str]) -> Optional[st
     """
     if not section_name:
         return section_name
-    replacements: Dict[str, str] = {
+    replacements: dict[str, str] = {
         # https://github.com/Hochfrequenz/edifact-templates/issues/82
         # pylint: disable=line-too-long
         "OBIS-Kennzahl der Zähleinrichtung / Mengenumwerter / Smartmeter-Gateway": "OBIS-Kennzahl der Zähleinrichtung / Mengenumwerter",

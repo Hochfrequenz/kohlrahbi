@@ -7,99 +7,87 @@ structure.
 another segment group)
 """
 import re
-from typing import Callable, List, Optional, Sequence, Set
+from typing import Annotated, Callable, Optional, Sequence, Union
 from uuid import UUID
 
-import attr.validators
-import attrs
-from marshmallow import Schema, fields, post_load
 from more_itertools import last, split_when
+from pydantic import BaseModel, Field, StringConstraints, field_validator
 
-from kohlrahbi.new_maus import _check_that_string_is_not_whitespace_or_empty
 from kohlrahbi.new_maus.edifact_components import (
     DataElementFreeText,
     DataElementValuePool,
     Segment,
     SegmentGroup,
-    SegmentGroupSchema,
+    ValuePoolEntry,
 )
 
 _VERSION = "0.3.0"  #: version to be written into the deep ahb
 
 
 # pylint:disable=too-many-instance-attributes
-@attrs.define(auto_attribs=True, kw_only=True)
-class AhbLine:
+class AhbLine(BaseModel):
     """
     An AhbLine is a single line inside the machine-readable, flat AHB.
     """
 
-    guid: Optional[UUID] = attrs.field(
-        validator=attrs.validators.optional(attrs.validators.instance_of(UUID))
-    )  #: optional key
+    guid: Optional[UUID] = Field(default=None, description="optional key")
     # because the combination (segment group, segment, data element, name) is not guaranteed to be unique
     # yes, it's actually that bad already
-    segment_group_key: Optional[str] = attrs.field(
-        validator=attrs.validators.optional(validator=attrs.validators.instance_of(str))
-    )
-    """ the segment group, e.g. 'SG5' """
+    segment_group_key: Optional[str] = Field(default=None, description="the segment group, e.g. 'SG5'")
 
-    segment_code: Optional[str] = attrs.field(
-        validator=attrs.validators.optional(validator=attrs.validators.instance_of(str))
-    )
-    """the segment, e.g. 'IDE'"""
+    segment_code: Optional[str] = Field(default=None, description="the segment, e.g. 'IDE'")
 
-    data_element: Optional[str] = attrs.field(
-        validator=attrs.validators.optional(validator=attrs.validators.instance_of(str))
-    )
-    """ the data element ID, e.g. '3224' """
+    data_element: Optional[str] = Field(default=None, description="the data element ID, e.g. '3224'")
 
-    segment_id: Optional[str] = attrs.field(
-        validator=attrs.validators.optional(validator=attrs.validators.instance_of(str)), default=None
+    segment_id: Optional[str] = Field(
+        default=None,
+        description="the 5 digit segment id, e.g. '00003' for Nachrichten Kopfsegment. This is available since FV2410.",
     )
-    """
-    the 5 digit segment id, e.g. '00003' for Nachrichten Kopfsegment
-    This is available since FV2410.
-    """
 
-    value_pool_entry: Optional[str] = attrs.field(
-        validator=attrs.validators.optional(attrs.validators.instance_of(str))
+    value_pool_entry: Optional[str] = Field(
+        None, description="one of (possible multiple) allowed values, e.g. 'E01' or '293'"
     )
-    """ one of (possible multiple) allowed values, e.g. 'E01' or '293' """
 
-    name: Optional[str] = attrs.field(validator=attrs.validators.optional(validator=attrs.validators.instance_of(str)))
-    """the name, e.g. 'Meldepunkt'. It can be both the description of a field but also its meaning"""
+    name: Optional[str] = Field(
+        None, description="the name, e.g. 'Meldepunkt'. It can be both the description of a field but also its meaning"
+    )
 
     # Check the unittest test_csv_file_reading_11042 to see the different values of name. It's not only the grey fields
     # where user input is expected but also the meanings / values of value pool entries. This means the exact meaning of
     # name can only be determined in the context in which it is used. This is one of many shortcoming of the current AHB
     # structure: Things in the same column don't necessarily mean the same thing.
-    ahb_expression: Optional[str] = attrs.field(
-        validator=attrs.validators.optional(
-            validator=attrs.validators.and_(
-                attrs.validators.instance_of(str), _check_that_string_is_not_whitespace_or_empty
-            )
-        )
+    ahb_expression: Annotated[Optional[str], StringConstraints(strip_whitespace=True, min_length=1)] = Field(
+        default=None,
+        description=(
+            "a requirement indicator + an optional condition ('ahb expression'),"
+            "e.g. 'Muss [123] O [456]'. Note: to parse expressions from AHBs"
+            "consider using AHBicht: https://github.com/Hochfrequenz/ahbicht/"
+        ),
     )
-    """a requirement indicator + an optional condition ("ahb expression"), e.g. 'Muss [123] O [456]' """
-    # note: to parse expressions from AHBs consider using AHBicht: https://github.com/Hochfrequenz/ahbicht/
-    conditions: Optional[str] = attrs.field(
-        validator=attrs.validators.optional(validator=attrs.validators.instance_of(str)), default=None
+    conditions: Optional[str] = Field(
+        default=None,
+        description=(
+            "The condition text describes the text to the optional condition of the ahb expression."
+            "E.g. '[492] This is a condition text. [999] And this is another one.'"
+        ),
     )
-    """
-    The condition text describes the text to the optional condition of the ahb expression.
-    E.g. '[492] This is a condition text. [999] And this is another one.'
-    """
-    section_name: Optional[str] = attrs.field(
-        validator=attrs.validators.optional(validator=attrs.validators.instance_of(str)), default=None
+
+    section_name: Optional[str] = Field(
+        default=None,
+        description=(
+            "The section name describes the purpose of a segment,"
+            "e.g. 'Nachrichten-Kopfsegment' or 'Beginn der Nachricht'"
+        ),
     )
-    """
-    The section name describes the purpose of a segment, e.g. "Nachrichten-Kopfsegment" or "Beginn der Nachricht"
-    """
-    index: Optional[int] = attrs.field(validator=attrs.validators.optional(attrs.validators.ge(0)), default=None)
-    """
-    index is a number that describes the position of the AHBLine inside the original PDF- and FlatAnwendungshandbuch.
-    """
+
+    index: Optional[int] = Field(
+        default=None,
+        description=(
+            "index is a number that describes the position of the AHBLine"
+            "inside the original PDF- and FlatAnwendungshandbuch."
+        ),
+        ge=0,
+    )
 
     def holds_any_information(self) -> bool:
         """
@@ -134,98 +122,33 @@ class AhbLine:
         return result
 
 
-class AhbLineSchema(Schema):
-    """
-    A schema to (de-)serialize :class:`.AhbLine`
-    """
-
-    guid = fields.UUID(required=False, load_default=None)
-    segment_group_key = fields.String(required=False, load_default=None)
-    segment_code = fields.String(required=False, load_default=None)
-    segment_id = fields.String(required=False, load_default=None)
-    data_element = fields.String(required=False, load_default=None)
-    value_pool_entry = fields.String(required=False, load_default=None)
-    name = fields.String(required=False, load_default=None)
-    ahb_expression = fields.String(required=False, load_default=None)
-    conditions = fields.String(required=False, load_default=None)
-    section_name = fields.String(required=False, load_default=None)
-    index = fields.Int(required=False, load_default=None, dump_default=None)
-
-    # pylint:disable=unused-argument
-    @post_load
-    def deserialize(self, data, **kwargs) -> AhbLine:  # type:ignore[no-untyped-def]
-        """
-        Converts the barely typed data dictionary into an actual :class:`.AhbLine`
-        """
-        return AhbLine(**data)
-
-
-@attrs.define(auto_attribs=True, kw_only=True)
-class AhbMetaInformation:
+class AhbMetaInformation(BaseModel):
     """
     Meta information about an AHB like e.g. its title, Prüfidentifikator, possible sender and receiver roles
     """
 
-    pruefidentifikator: str  #: identifies the message type (within a fixed format version) e.g. "11042" or "13012"
-    # there's more to come  but for now we'll leave it as is, because we're just in a proof of concept phase
-    maus_version: Optional[str] = attrs.field(
-        validator=attrs.validators.optional(attrs.validators.instance_of(str)),  # type:ignore[arg-type]
-        # https://github.com/Hochfrequenz/mig_ahb_utility_stack/issues/221
-        default=_VERSION,
+    pruefidentifikator: str = Field(
+        ..., description="identifies the message type (within a fixed format version) e.g. '11042' or '13012'"
     )
-    """
-    semantic version of maus used to create this document
-    """
-    description: Optional[str] = attrs.field(
-        validator=attrs.validators.optional(
-            validator=attrs.validators.and_(
-                attrs.validators.instance_of(str),
-                _check_that_string_is_not_whitespace_or_empty,
-            ),
-        ),
+    maus_version: Optional[str] = Field(
+        default=_VERSION, description="semantic version of maus used to create this document"
+    )
+    description: Annotated[Optional[str], StringConstraints(strip_whitespace=True, min_length=1)] = Field(
         default=None,
+        description="an optional description of the purpose of the pruefidentifikator; e.g. 'Anmeldung MSB' for 11042",
     )
-    """
-    an optional description of the purpose of the pruefidentifikator; e.g. 'Anmeldung MSB' for 11042
-    """
-    direction: Optional[str] = attrs.field(
-        validator=attrs.validators.optional(
-            validator=attrs.validators.and_(
-                attrs.validators.instance_of(str),
-                _check_that_string_is_not_whitespace_or_empty,
-            )
-        ),
+    direction: Annotated[Optional[str], StringConstraints(strip_whitespace=True, min_length=1)] = Field(
         default=None,
+        description=(
+            "a stringly typed description of the roles of sender and receiver of the message"
+            "(the row name in the AHB is 'Kommunikation von'); e.g. 'MSB an NB' for 11042"
+        ),
     )
-    """
-    a stringly typed description of the roles of sender and receiver of the message
-    (the row name in the AHB is 'Kommunikation von');
-    e.g. 'MSB an NB' for 11042
-    """
-
-
-class AhbMetaInformationSchema(Schema):
-    """
-    A schema to (de-)serialize :class:`.AhbMetaInformation`
-    """
-
-    pruefidentifikator = fields.String(required=True)
-    maus_version = fields.String(required=False, allow_none=True, dump_default=_VERSION)
-    description = fields.String(required=False, allow_none=True, dump_default=None)
-    direction = fields.String(required=False, allow_none=True, dump_default=None)
-
-    # pylint:disable=unused-argument
-    @post_load
-    def deserialize(self, data, **kwargs) -> AhbMetaInformation:  # type:ignore[no-untyped-def]
-        """
-        Converts the barely typed data dictionary into an actual :class:`.AhbMetaInformation`
-        """
-        return AhbMetaInformation(**data)
 
 
 def _remove_grouped_ahb_lines_containing_section_name(
-    grouped_ahb_lines: List[List[AhbLine]], section_name: str
-) -> List[List[AhbLine]]:
+    grouped_ahb_lines: list[list[AhbLine]], section_name: str
+) -> list[list[AhbLine]]:
     """
     Removes all groups of ahb lines that contain a line with the given section name and returns a new list instance.
     """
@@ -234,7 +157,7 @@ def _remove_grouped_ahb_lines_containing_section_name(
 
 # pylint:disable=unused-argument
 def _check_that_nearly_all_lines_have_a_segment_group(  # type:ignore[no-untyped-def]
-    instance, attribute, value: List[AhbLine]
+    value: list[AhbLine],
 ):
     """
     Loops over all provided ahb lines and checks that only at the beginning and the end there are lines without a
@@ -256,7 +179,7 @@ _data_element_pattern = re.compile(r"^\d{4}$|^\d{5}$|^[A-Za-z]+\d{4}$")
 
 # pylint:disable=unused-argument
 def _check_that_line_has_either_none_or_d4_data_element(  # type:ignore[no-untyped-def]
-    instance, attribute, value: AhbLine
+    value: AhbLine,
 ):
     """
     checks that the given line has either a None data element or a data element that matches
@@ -274,7 +197,7 @@ _segment_group_key_pattern = re.compile(r"^SG\d+$")
 
 
 # pylint:disable=unused-argument
-def _check_that_line_has_either_none_or_matching_sg(instance, attribute, value: AhbLine):  # type:ignore[no-untyped-def]
+def _check_that_line_has_either_none_or_matching_sg(value: AhbLine):  # type:ignore[no-untyped-def]
     """
     checks that the given line has a segment group key that is either None (for root) or matches SG\\d+
     """
@@ -292,7 +215,7 @@ _segment_code_pattern = re.compile(r"^[A-Z]+$")
 
 # pylint:disable=unused-argument
 def _check_that_line_has_either_none_az_segment_code(  # type:ignore[no-untyped-def]
-    instance, attribute, value: AhbLine
+    value: AhbLine,
 ):
     """
     checks that the given line has either a None segment code or a segment code that consists of all upper letters
@@ -304,50 +227,48 @@ def _check_that_line_has_either_none_az_segment_code(  # type:ignore[no-untyped-
         raise ValueError(f"The segment_code '{value.segment_code}' does not match {_segment_code_pattern}")
 
 
-@attrs.define(auto_attribs=True, kw_only=True)
-class FlatAnwendungshandbuch:
+class FlatAnwendungshandbuch(BaseModel):
     """
     A flat Anwendungshandbuch (AHB) models an Anwendungshandbuch as combination of some meta data and an ordered list
     of `.class:`.FlatAhbLine s. Basically a flat Anwendungshandbuch is the result of a simple scraping approach.
     You can create instances of this class without knowing anything about the "under the hood" structure of AHBs or MIGs
     """
 
-    meta: AhbMetaInformation = attrs.field(validator=attrs.validators.instance_of(AhbMetaInformation))
-    """information about this AHB"""
+    meta: AhbMetaInformation = Field(..., description="information about this AHB")
 
-    lines: List[AhbLine] = attrs.field(
-        validator=attrs.validators.deep_iterable(
-            member_validator=attrs.validators.and_(
-                attrs.validators.instance_of(AhbLine),
-                # The following checks are not baked into the AhbLine class itself, because they might be initialized
-                # with raw data that do not yet obey these strict validations. But as soon as we bundle them in a
-                # FlatAnwendungshandbuch, the sanitizations shall be applied.
-                _check_that_line_has_either_none_or_d4_data_element,
-                _check_that_line_has_either_none_or_matching_sg,
-                _check_that_line_has_either_none_az_segment_code,
-            ),
-            iterable_validator=attrs.validators.and_(
-                attrs.validators.instance_of(list),
-                _check_that_nearly_all_lines_have_a_segment_group,
-            ),
-        )
-    )  #: ordered list lines as they occur in the AHB
+    lines: list[AhbLine] = Field(..., description="ordered list lines as they occur in the AHB")
 
-    def get_segment_groups(self) -> List[Optional[str]]:
+    @field_validator("lines")
+    @classmethod
+    def validate_lines(cls, value: list[AhbLine]) -> list[AhbLine]:
+        """
+        The following checks are not baked into the AhbLine class itself, because they might be initialized
+        with raw data that do not yet obey these strict validations. But as soon as we bundle them in a
+        FlatAnwendungshandbuch, the sanitization shall be applied.
+        """
+        if value:
+            _check_that_nearly_all_lines_have_a_segment_group(value)
+
+        for ahb_line in value:
+            _check_that_line_has_either_none_or_d4_data_element(ahb_line)
+            _check_that_line_has_either_none_or_matching_sg(ahb_line)
+            _check_that_line_has_either_none_az_segment_code(ahb_line)
+        return value
+
+    def get_segment_groups(self) -> list[Optional[str]]:
         """
         :return: a set with all segment groups in this AHB in the order in which they occur
         """
         return FlatAnwendungshandbuch._get_available_segment_groups(self.lines)
 
     @staticmethod
-    def _get_available_segment_groups(lines: List[AhbLine]) -> List[Optional[str]]:
+    def _get_available_segment_groups(lines: list[AhbLine]) -> list[Optional[str]]:
         """
         extracts the distinct segment groups from a list of ahb lines
         :param lines:
         :return: distinct segment groups, including None in the order in which they occur
         """
-        # this code is in a static method to make it easily accessible for fine grained unit testing
-        result: List[Optional[str]] = []
+        result: list[Optional[str]] = []
         for line in lines:
             if line.segment_group_key not in result:
                 # an "in" check against a set would be faster but we want to preserve both order and readability
@@ -361,7 +282,7 @@ class FlatAnwendungshandbuch:
         self.lines = FlatAnwendungshandbuch._sorted_lines_by_segment_groups(self.lines, self.get_segment_groups())
 
     @staticmethod
-    def _sorted_lines_by_segment_groups(ahb_lines: Sequence[AhbLine], sg_order: List[Optional[str]]) -> List[AhbLine]:
+    def _sorted_lines_by_segment_groups(ahb_lines: Sequence[AhbLine], sg_order: list[Optional[str]]) -> list[AhbLine]:
         """
         Calls sorted(...) on the provided list and returns a new list.
         Its purpose is, that if a segment group in the AHB (read from top to bottom in the flat ahb/pdf) is interrupted
@@ -393,61 +314,45 @@ class FlatAnwendungshandbuch:
         """
 
         # this code is in a static method to make it easily accessible for fine-grained unit testing
-        result: List[AhbLine] = sorted(ahb_lines, key=lambda x: x.segment_group_key or "")
+        result: list[AhbLine] = sorted(ahb_lines, key=lambda x: x.segment_group_key or "")
         result.sort(key=lambda ahb_line: sg_order.index(ahb_line.segment_group_key))
         return result
 
 
-class FlatAnwendungshandbuchSchema(Schema):
-    """
-    A schema to (de-)serialize :class:`.FlatAnwendungshandbuch`
-    """
-
-    meta = fields.Nested(AhbMetaInformationSchema)
-    lines = fields.List(fields.Nested(AhbLineSchema))
-
-    # pylint:disable=unused-argument
-    @post_load
-    def deserialize(self, data, **kwargs) -> FlatAnwendungshandbuch:  # type:ignore[no-untyped-def]
-        """
-        Converts the barely typed data dictionary into an actual :class:`.FlatAnwendungshandbuch`
-        """
-        return FlatAnwendungshandbuch(**data)
-
-
-@attrs.define(auto_attribs=True, kw_only=True)
-class DeepAhbInputReplacement:
+class DeepAhbInputReplacement(BaseModel):
     """
     A container class that models replacements of inputs in the DeepAnwendungshandbuch
     """
 
     #: true iff a replacement is applicable
-    replacement_found: bool = attrs.field(validator=attrs.validators.instance_of(bool))
-    input_replacement: Optional[str] = attrs.field(
-        validator=attrs.validators.optional(attr.validators.instance_of(str))
+    replacement_found: bool = Field(..., description="True iff a replacement is applicable")
+
+    # replacements for DataElementValuePool
+    value_pool_replacement: Optional[ValuePoolEntry] = Field(
+        default=None,
+        description=(
+            "The replacement for a value pool entry."
+            "Note that the replacements may be None even if replacements are found."
+        ),
     )
-    """
-    The replacement for entered_input itself. Note that the replacement may be None even if a replacement is found.
-    This implies, that you must always check for replacement_found is True first and then, iff true, replace with the
-    replacement, even if it may be None/null.
-    """
+    # replacements for DataElementFreeText
+    free_text_replacement: Optional[DataElementFreeText] = Field(
+        default=None,
+        description=(
+            "The replacement for a DataElementFreeText."
+            "Note that the replacements may be None even if replacements are found."
+        ),
+    )
 
 
-@attrs.define(auto_attribs=True, kw_only=True)
-class DeepAnwendungshandbuch:
+class DeepAnwendungshandbuch(BaseModel):
     """
     The data of the AHB nested as described in the MIG.
     """
 
-    meta: AhbMetaInformation = attrs.field(validator=attrs.validators.instance_of(AhbMetaInformation))
-    """information about this AHB"""
+    meta: AhbMetaInformation = Field(..., description="Information about this AHB")
 
-    lines: List[SegmentGroup] = attrs.field(
-        validator=attrs.validators.deep_iterable(
-            member_validator=attrs.validators.instance_of(SegmentGroup),
-            iterable_validator=attrs.validators.instance_of(list),
-        )
-    )  #: the nested data
+    lines: list[SegmentGroup] = Field(..., description="The nested data")
 
     def reset_ahb_line_index(self) -> None:
         """
@@ -460,12 +365,12 @@ class DeepAnwendungshandbuch:
     @staticmethod
     def _query_segment_group(
         segment_group: SegmentGroup, predicate: Callable[[SegmentGroup], bool]
-    ) -> List[SegmentGroup]:
+    ) -> list[SegmentGroup]:
         """
         recursively search for a segment group that matches the predicate
         :return: return empty list if nothing was found, the matching segment groups otherwise
         """
-        result: List[SegmentGroup] = []
+        result: list[SegmentGroup] = []
         if predicate(segment_group):
             result.append(segment_group)
         if segment_group.segment_groups is not None:
@@ -474,12 +379,12 @@ class DeepAnwendungshandbuch:
                 result += sub_result
         return result
 
-    def find_segment_groups(self, predicate: Callable[[SegmentGroup], bool]) -> List[SegmentGroup]:
+    def find_segment_groups(self, predicate: Callable[[SegmentGroup], bool]) -> list[SegmentGroup]:
         """
         recursively search for segment group in this ahb that meets the predicate.
         :return: list of segment groups that match the predicate; empty list otherwise
         """
-        result: List[SegmentGroup] = []
+        result: list[SegmentGroup] = []
         for line in self.lines:
             if line.segment_groups is not None:
                 for segment_group in line.segment_groups:
@@ -493,13 +398,13 @@ class DeepAnwendungshandbuch:
         self,
         group_predicate: Callable[[SegmentGroup], bool] = lambda _: True,
         segment_predicate: Callable[[Segment], bool] = lambda _: True,
-    ) -> List[Segment]:
+    ) -> list[Segment]:
         """
-        recursively search for segment characterised by the segment_predicate inside a group characterised by the
+        recursively search for segment characterized by the segment_predicate inside a group characterized by the
         group_predicate.
         :return: list of matching segments, empty list if nothing was found
         """
-        result: List[Segment] = []
+        result: list[Segment] = []
         for segment_group in self.find_segment_groups(group_predicate):
             result += segment_group.find_segments(segment_predicate)
         for line in self.lines:
@@ -516,13 +421,13 @@ class DeepAnwendungshandbuch:
         """
         _replace_inputs_based_on_discriminator(self.lines, replacement_func)
 
-    def get_all_value_pools(self) -> List[DataElementValuePool]:
+    def get_all_value_pools(self) -> list[DataElementValuePool]:
         """
         recursively find all value pools in the deep ahb
         :return: a list of all value pools
         """
-        result: List[DataElementValuePool] = []
-        added_discriminators: Set[Optional[str]] = set()
+        result: list[DataElementValuePool] = []
+        added_discriminators: set[Optional[str]] = set()
         # checks like "str in set" are way faster than "value pool in list"
 
         def add_to_result(value_pool: DataElementValuePool):  # type:ignore[no-untyped-def]
@@ -541,11 +446,11 @@ class DeepAnwendungshandbuch:
                 add_to_result(sub_result)
         return list(result)
 
-    def get_all_expressions(self) -> List[str]:
+    def get_all_expressions(self) -> list[str]:
         """
         recursively iterate through the deep ahb and return all distinct expressions found
         """
-        result: Set[str] = set()
+        result: set[str] = set()
         for segment in self.find_segments():
             if segment.ahb_expression:
                 result.add(segment.ahb_expression)
@@ -564,36 +469,31 @@ class DeepAnwendungshandbuch:
 
 
 def _replace_inputs_based_on_discriminator(
-    segment_groups: List[SegmentGroup], replacement_func: Callable[[str], DeepAhbInputReplacement]
+    segment_groups: list[SegmentGroup], replacement_func: Callable[[str], DeepAhbInputReplacement]
 ) -> None:
     """
     Replace all the entered_inputs in the entire list of segment groups using the given replacement_func.
     """
+
+    def process_data_element(
+        data_element: Union[DataElementFreeText, DataElementValuePool], replacement_result: DeepAhbInputReplacement
+    ) -> None:
+        if isinstance(data_element, DataElementFreeText) and replacement_result.free_text_replacement:
+            data_element.free_text = replacement_result.free_text_replacement.free_text
+        elif isinstance(data_element, DataElementValuePool) and replacement_result.value_pool_replacement:
+            data_element.value_pool.append(replacement_result.value_pool_replacement)
+
+    def process_segment(segment: Segment) -> None:
+        for data_element in segment.data_elements:
+            if data_element.discriminator:
+                replacement_result = replacement_func(data_element.discriminator)
+                if replacement_result.replacement_found:
+                    process_data_element(data_element, replacement_result)
+
     for segment_group in segment_groups:
-        if segment_group.segment_groups is not None:
+        if segment_group.segment_groups:
             _replace_inputs_based_on_discriminator(segment_group.segment_groups, replacement_func)
-        if segment_group.segments is None:
-            continue
-        for segment in segment_group.segments:
-            for data_element in segment.data_elements:
-                if data_element.discriminator is not None:
-                    replacement_result = replacement_func(data_element.discriminator)
-                    if replacement_result.replacement_found is True:
-                        data_element.entered_input = replacement_result.input_replacement
 
-
-class DeepAnwendungshandbuchSchema(Schema):
-    """
-    A schema to (de-)serialize :class:`.DeepAnwendungshandbuch`
-    """
-
-    meta = fields.Nested(AhbMetaInformationSchema)
-    lines = fields.List(fields.Nested(SegmentGroupSchema))
-
-    # pylint:disable=unused-argument
-    @post_load
-    def deserialize(self, data, **kwargs) -> DeepAnwendungshandbuch:  # type:ignore[no-untyped-def]
-        """
-        Converts the barely typed data dictionary into an actual :class:`.DeepAnwendungshandbuch`
-        """
-        return DeepAnwendungshandbuch(**data)
+        if segment_group.segments:
+            for segment in segment_group.segments:
+                process_segment(segment)
