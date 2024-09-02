@@ -135,7 +135,7 @@ class ValuePoolEntry(BaseModel):
 
     @field_validator("qualifier")
     @classmethod
-    def validate_qualifier(cls, v: Any) -> str:
+    def validate_qualifier(cls, v: str) -> str:
         """
         Check that the qualifier is a valid EDIFACT qualifier
 
