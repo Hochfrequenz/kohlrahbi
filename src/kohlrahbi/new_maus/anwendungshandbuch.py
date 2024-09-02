@@ -10,8 +10,6 @@ import re
 from typing import Annotated, Callable, Optional, Sequence, Set
 from uuid import UUID
 
-import attr.validators
-import attrs
 from marshmallow import Schema, fields, post_load
 from more_itertools import last, split_when
 from pydantic import BaseModel, Field, StringConstraints, field_validator
