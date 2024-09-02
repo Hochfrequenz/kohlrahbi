@@ -276,11 +276,9 @@ class FlatAnwendungshandbuch(BaseModel):
     You can create instances of this class without knowing anything about the "under the hood" structure of AHBs or MIGs
     """
 
-    meta: AhbMetaInformation = Field(...)
-    """information about this AHB"""
+    meta: AhbMetaInformation = Field(..., description="information about this AHB")
 
-    lines: list[AhbLine] = Field(...)
-    """ordered list lines as they occur in the AHB"""
+    lines: list[AhbLine] = Field(..., description="ordered list lines as they occur in the AHB")
 
     @field_validator("lines")
     @classmethod
