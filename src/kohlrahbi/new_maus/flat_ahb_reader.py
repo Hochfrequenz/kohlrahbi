@@ -8,7 +8,7 @@ import re
 import uuid
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Dict, Literal, Optional, Sequence, Set, TextIO, Tuple, overload
+from typing import Dict, Literal, Optional, Sequence, TextIO, Tuple, overload
 
 from kohlrahbi.new_maus.anwendungshandbuch import _VERSION, AhbLine, AhbMetaInformation, FlatAnwendungshandbuch
 from kohlrahbi.new_maus.edifact_components import gabi_edifact_qualifier_pattern
@@ -92,7 +92,7 @@ class FlatAhbCsvReader(FlatAhbReader):
         # 4,Foo,Bar,Y
         # 5,Baz,Boom,Z
         # we then want to merge the lines with index 1-3 into a single line
-        keys_that_must_no_hold_any_values: Set[str] = {
+        keys_that_must_no_hold_any_values: set[str] = {
             "Segment",
             "Datenelement",
             "Codes und Qualifier",

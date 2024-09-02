@@ -7,7 +7,7 @@ structure.
 another segment group)
 """
 import re
-from typing import Annotated, Callable, Optional, Sequence, Set, Union
+from typing import Annotated, Callable, Optional, Sequence, Union
 from uuid import UUID
 
 from marshmallow import Schema, fields, post_load
@@ -490,7 +490,7 @@ class DeepAnwendungshandbuch(BaseModel):
         :return: a list of all value pools
         """
         result: list[DataElementValuePool] = []
-        added_discriminators: Set[Optional[str]] = set()
+        added_discriminators: set[Optional[str]] = set()
         # checks like "str in set" are way faster than "value pool in list"
 
         def add_to_result(value_pool: DataElementValuePool):  # type:ignore[no-untyped-def]
@@ -513,7 +513,7 @@ class DeepAnwendungshandbuch(BaseModel):
         """
         recursively iterate through the deep ahb and return all distinct expressions found
         """
-        result: Set[str] = set()
+        result: set[str] = set()
         for segment in self.find_segments():
             if segment.ahb_expression:
                 result.add(segment.ahb_expression)
