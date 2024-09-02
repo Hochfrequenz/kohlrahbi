@@ -280,7 +280,7 @@ class FlatAnwendungshandbuch(BaseModel):
 
     @field_validator("lines")
     @classmethod
-    def validate_lines(cls, value: list[AhbLine]):
+    def validate_lines(cls, value: list[AhbLine]) -> list[AhbLine]:
         """
         The following checks are not baked into the AhbLine class itself, because they might be initialized
         with raw data that do not yet obey these strict validations. But as soon as we bundle them in a
