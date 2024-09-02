@@ -6,7 +6,7 @@ Components contain not only EDIFACT composits but also segments and segment grou
 import re
 from abc import ABC
 from enum import Enum
-from typing import Callable, Dict, Iterable, List, Mapping, Optional
+from typing import Callable, Dict, Iterable, Literal, Mapping, Optional
 
 from pydantic import BaseModel, Field, StringConstraints, field_validator
 from typing_extensions import Annotated
@@ -42,26 +42,16 @@ class DataElement(BaseModel, ABC):
     For example in UTILMD the data element that holds the 13 digit market partner ID is data element '3039'
     """
 
-    discriminator: Optional[str] = Field(
+    discriminator: Annotated[Optional[str], StringConstraints(strip_whitespace=True, min_length=1)] = Field(
         None,
         description=(
             "The discriminator uniquely identifies the data element."
             "The discriminator is None if the data element was not found in the MIG."
         ),
     )
-    data_element_id: Annotated[str, StringConstraints(strip_whitespace=True, to_upper=True, pattern=r"^\d{4}$")] = (
-        Field(
-            ...,
-            description="The ID of the data element (e.g. '0062') for the Nachrichten-Referenznummer",
-        )
-    )
-    entered_input: Optional[str] = Field(
-        None,
-        description=(
-            "If the message which is evaluated contains data for this data element,"
-            "this is set to a value which is not None."
-            "The field can either carry a free text or an element from a value pool (depending on the value_type)"
-        ),
+    data_element_id: Annotated[str, StringConstraints(strip_whitespace=True, pattern=r"^\d{4}$")] = Field(
+        ...,
+        description="The ID of the data element (e.g. '0062') for the Nachrichten-Referenznummer",
     )
     value_type: Optional[DataElementDataType] = Field(
         None,
@@ -70,16 +60,6 @@ class DataElement(BaseModel, ABC):
             "The value_type does not discriminate the type of the data element itself."
         ),
     )
-
-    @field_validator("discriminator", "entered_input", mode="before")
-    @classmethod
-    def check_optional_fields(cls, v):
-        """
-        Check that the optional fields are either None or not empty.
-        """
-        if v is not None:
-            _check_that_string_is_not_whitespace_or_empty(v)  # TODO: can get replaced by regex check with r'^\S+$'
-        return v
 
 
 class DataElementFreeText(DataElement):
@@ -88,27 +68,22 @@ class DataElementFreeText(DataElement):
     This is the main difference to the :class:`DataElementValuePool` which has a finite set of allowed values attached.
     """
 
-    value_type: Optional[DataElementDataType] = Field(
+    value_type: Literal[DataElementDataType.TEXT] = Field(
         default=DataElementDataType.TEXT,
         description=(
             "The value_type allows to describe which type of data we're expecting to be used within this data element."
             "The value_type does not discriminate the type of the data element itself."
         ),
     )
-    ahb_expression: str = Field(
+    ahb_expression: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)] = Field(
         ..., description="Any freetext data element has an ahb expression attached. Could be 'X' but also 'M [13]'"
     )
-
-    # TODO remove all the checks that are not necessary anymore
-    @field_validator("ahb_expression")
-    @classmethod
-    def validate_ahb_expression(cls, v):
-        """
-        Check that the ahb_expression is a non-empty string
-        """
-        if not isinstance(v, str) or not v.strip():
-            raise ValueError("ahb_expression must be a non-empty string")
-        return v
+    free_text: str = Field(
+        ...,
+        description=(
+            "free_text contains the the description of the free text element, e.g. 'Referenz, Identifikation'"
+        ),
+    )
 
 
 #: a pattern that matches most of the qualifiers we find in the AHBs
@@ -144,33 +119,30 @@ class ValuePoolEntry(BaseModel):
     - (key: "332", meaning: "DE, DVGW", ahb_expression: "X")
     """
 
-    #: the qualifier in edifact, might be e.g. "E01", "D", "9", "1.1a", "G_0057"
-    qualifier: str = Field(..., description="The qualifier in EDIFACT")
-    meaning: str = Field(
+    qualifier: Annotated[
+        str,
+        StringConstraints(strip_whitespace=True, min_length=1),
+    ] = Field(..., description="The qualifier in EDIFACT")
+    meaning: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)] = Field(
         ...,
         description="The meaning as it is written in the AHB,"
         "e.g. 'Einzug', 'Entwurfs-Version', 'GS1', 'Codeliste Gas G_0057'",
     )
-    ahb_expression: str = Field(
+    ahb_expression: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)] = Field(
         ...,
         description="The AHB expression, in most cases this is a simple 'X'; it must not be empty",
     )
 
     @field_validator("qualifier")
     @classmethod
-    def validate_qualifier(cls, v):
+    def validate_qualifier(cls, v: str) -> str:
         """
         Check that the qualifier is a valid EDIFACT qualifier
+
+        We can not use the pattern parameter of the StringConstraints here, because look-around,
+        including look-ahead and look-behind, is not supported
         """
         return _check_is_edifact_qualifier(v)
-
-    @field_validator("meaning", "ahb_expression")
-    @classmethod
-    def validate_non_empty_string(cls, v):
-        """
-        Check that the given attribute is a non-empty string
-        """
-        return _check_that_string_is_not_whitespace_or_empty(v)
 
 
 class DataElementValuePool(DataElement):
@@ -181,32 +153,12 @@ class DataElementValuePool(DataElement):
     The set of values allowed according to the AHB is always a subset of the values allowed according to the MIG.
     """
 
-    value_type: Optional[DataElementDataType] = Field(
+    value_type: Literal[DataElementDataType.VALUE_POOL] = Field(
         default=DataElementDataType.VALUE_POOL, description="Type of the value, if known"
     )
-    value_pool: List[ValuePoolEntry] = Field(
+    value_pool: list[ValuePoolEntry] = Field(
         ..., description="The value pool contains at least one value :class:`.ValuePoolEntry`"
     )
-
-    @field_validator("value_type", mode="before")
-    @classmethod
-    def validate_value_type(cls, v):
-        """
-        Check that the value_type is a valid DataElement.
-        """
-        if v is not None and not isinstance(v, DataElementDataType):
-            raise ValueError("value_type must be an instance of DataElementDataType")
-        return v
-
-    @field_validator("value_pool")
-    @classmethod
-    def validate_value_pool(cls, v):
-        """
-        Check that the value pool is a list of ValuePoolEntry instances.
-        """
-        if not isinstance(v, list) or not all(isinstance(i, ValuePoolEntry) for i in v):
-            raise ValueError("value_pool must be a list of ValuePoolEntry instances")
-        return v
 
     def replace_value_pool(
         self,
@@ -255,22 +207,13 @@ class DataElementValuePool(DataElement):
         return all(x.qualifier in entries for x in self.value_pool)
 
 
-class _FreeTextOrValuePool(BaseModel):
-    """
-    A class that is easily serializable as dictionary and allows us to _not_ use the marshmallow-union package.
-    """
-
-    free_text: Optional[DataElementFreeText] = Field(default=None, description="Optional free text data element")
-    value_pool: Optional[DataElementValuePool] = Field(default=None, description="Optional value pool data element")
-
-
 class SegmentLevel(BaseModel, ABC):
     """
     SegmentLevel describes @annika: what does it describe?
     """
 
     discriminator: str  # no validator here, because it might be None on initialization and will be set later (trust me)
-    ahb_expression: str = Field(
+    ahb_expression: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)] = Field(
         ...,
         description="AHB expression",
     )
@@ -281,24 +224,6 @@ class SegmentLevel(BaseModel, ABC):
             "It won't be serialized though."
         ),
     )
-
-    @field_validator("ahb_expression")
-    @classmethod
-    def validate_ahb_expression(cls, v):
-        """
-        Check that the ahb_expression is not empty or whitespace.
-        """
-        return _check_that_string_is_not_whitespace_or_empty(v)
-
-    @field_validator("ahb_line_index")
-    @classmethod
-    def validate_ahb_line_index(cls, v):
-        """
-        Check that the ahb_line_index is an integer.
-        """
-        if v is not None and not isinstance(v, int):
-            raise ValueError("ahb_line_index must be an instance of int")
-        return v
 
     def reset_ahb_line_index(self) -> None:
         """
@@ -313,7 +238,7 @@ class Segment(SegmentLevel):
     A Segment contains multiple data elements.
     """
 
-    data_elements: List[DataElement]
+    data_elements: list[DataElementValuePool | DataElementFreeText] = Field(discriminator="value_type")
     section_name: Optional[str] = Field(
         default=None,
         description=(
@@ -333,7 +258,7 @@ class Segment(SegmentLevel):
         ),
     )
 
-    def get_all_value_pools(self) -> List[DataElementValuePool]:
+    def get_all_value_pools(self) -> list[DataElementValuePool]:
         """
         find all value pools in this segment
         :return: a list of all value pools
@@ -348,32 +273,10 @@ class SegmentGroup(SegmentLevel):
     This group has the key "root".
     """
 
-    segments: Optional[List[Segment]] = Field(default=None, description="The segments inside this very group")
-    segment_groups: Optional[List["SegmentGroup"]] = Field(
+    segments: Optional[list[Segment]] = Field(default=None, description="The segments inside this very group")
+    segment_groups: Optional[list["SegmentGroup"]] = Field(
         default=None, description="Groups that are nested into this group"
     )
-
-    @field_validator("segments")
-    @classmethod
-    def validate_segments(cls, v):
-        if v is not None:
-            if not isinstance(v, list):
-                raise ValueError("segments must be a list")
-            for item in v:
-                if not isinstance(item, Segment):
-                    raise ValueError("All items in segments must be instances of Segment")
-        return v
-
-    @field_validator("segment_groups")
-    @classmethod
-    def validate_segment_groups(cls, v):
-        if v is not None:
-            if not isinstance(v, list):
-                raise ValueError("segment_groups must be a list")
-            for item in v:
-                if not isinstance(item, SegmentGroup):
-                    raise ValueError("All items in segment_groups must be instances of SegmentGroup")
-        return v
 
     def reset_ahb_line_index(self) -> None:
         self.ahb_line_index = None
@@ -384,12 +287,12 @@ class SegmentGroup(SegmentLevel):
             for segment in self.segments:
                 segment.reset_ahb_line_index()
 
-    def find_segments(self, predicate: Callable[[Segment], bool], search_recursively: bool = True) -> List[Segment]:
+    def find_segments(self, predicate: Callable[[Segment], bool], search_recursively: bool = True) -> list[Segment]:
         """
         Search for a segment that matches the predicate (in this group and subgroups if 'search_recursively' is set),
         Return results, if found. Return empty list otherwise.
         """
-        result: List[Segment] = []
+        result: list[Segment] = []
         if self.segments is not None:
             for segment in self.segments:
                 if predicate(segment):
@@ -400,12 +303,12 @@ class SegmentGroup(SegmentLevel):
                 result += sub_result
         return result
 
-    def get_all_value_pools(self) -> List[DataElementValuePool]:
+    def get_all_value_pools(self) -> list[DataElementValuePool]:
         """
         recursively find all value pools in this segmentgroup
         :return: a list of all value pools
         """
-        result: List[DataElementValuePool] = []
+        result: list[DataElementValuePool] = []
         for segment in self.find_segments(lambda _: True):
             result += segment.get_all_value_pools()
         return result
@@ -437,14 +340,14 @@ class EdifactStack(BaseModel):
     The stack is independent of the actual implementation used to create the EDIFACT (be it XML, JSON whatever).
     """
 
-    levels: List[EdifactStackLevel] = Field(..., description="Levels describe the nesting inside an edifact message")
+    levels: list[EdifactStackLevel] = Field(..., description="Levels describe the nesting inside an edifact message")
 
     @staticmethod
     def from_json_path(json_path: str) -> "EdifactStack":
         """
         reads a json path as it is created by "to_json_path" and returns the corresponding edifact stack
         """
-        levels: List[EdifactStackLevel] = []
+        levels: list[EdifactStackLevel] = []
         for level_match in _level_pattern.finditer(json_path):
             level = EdifactStackLevel(name=level_match["level_name"], is_groupable=level_match["index"] is not None)
             if level.is_groupable:

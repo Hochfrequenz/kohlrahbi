@@ -8,7 +8,7 @@ import re
 import uuid
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Dict, List, Literal, Optional, Sequence, Set, TextIO, Tuple, overload
+from typing import Dict, Literal, Optional, Sequence, Set, TextIO, Tuple, overload
 
 from kohlrahbi.new_maus.anwendungshandbuch import _VERSION, AhbLine, AhbMetaInformation, FlatAnwendungshandbuch
 from kohlrahbi.new_maus.edifact_components import gabi_edifact_qualifier_pattern
@@ -56,7 +56,7 @@ class FlatAhbCsvReader(FlatAhbReader):
         encoding="utf-8",
         delimiter=",",
     ):
-        self.rows: List[AhbLine] = []
+        self.rows: list[AhbLine] = []
         self._logger = logging.getLogger()
         self.current_section_name: Optional[str] = None
         self.pruefidentifikator = pruefidentifikator
@@ -74,7 +74,7 @@ class FlatAhbCsvReader(FlatAhbReader):
             self.rows.append(ahb_line)
 
     @staticmethod
-    def merge_section_only_lines(raw_lines: List[dict]) -> List[dict]:  # type:ignore[type-arg]
+    def merge_section_only_lines(raw_lines: list[dict]) -> list[dict]:  # type:ignore[type-arg]
         """
         merges adjacent lines from the CSV source when they only contain an AHB "section" description.
         "Section" headings are the grey lines on the left of the AHB PDF.
@@ -82,7 +82,7 @@ class FlatAhbCsvReader(FlatAhbReader):
         When the section heading spans multiple lines, we don't want to treat them as separate but as a single heading.
         The method consumes a list of dicts and returns a _new_ list of dicts that is of the same length or shorter.
         """
-        result: List[dict] = []  # type:ignore[type-arg]
+        result: list[dict] = []  # type:ignore[type-arg]
 
         # imagine the original list to be
         # 0,asd,qwertz,
@@ -137,7 +137,7 @@ class FlatAhbCsvReader(FlatAhbReader):
                 result.append(raw_line)
         return result
 
-    def get_raw_rows(self, file_handle: TextIO) -> List[dict]:  # type:ignore[type-arg]
+    def get_raw_rows(self, file_handle: TextIO) -> list[dict]:  # type:ignore[type-arg]
         """
         reads the input file and returns an iterator over raw lines.
         Override this method if your data source is not a CSV file

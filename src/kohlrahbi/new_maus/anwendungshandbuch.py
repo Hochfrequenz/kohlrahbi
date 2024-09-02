@@ -7,16 +7,15 @@ structure.
 another segment group)
 """
 import re
-from typing import Callable, List, Optional, Sequence, Set
+from typing import Annotated, Callable, Optional, Sequence, Set
 from uuid import UUID
 
 import attr.validators
 import attrs
 from marshmallow import Schema, fields, post_load
 from more_itertools import last, split_when
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, StringConstraints
 
-from kohlrahbi.new_maus import _check_that_string_is_not_whitespace_or_empty
 from kohlrahbi.new_maus.edifact_components import DataElementFreeText, DataElementValuePool, Segment, SegmentGroup
 
 _VERSION = "0.3.0"  #: version to be written into the deep ahb
@@ -54,7 +53,7 @@ class AhbLine(BaseModel):
     # where user input is expected but also the meanings / values of value pool entries. This means the exact meaning of
     # name can only be determined in the context in which it is used. This is one of many shortcoming of the current AHB
     # structure: Things in the same column don't necessarily mean the same thing.
-    ahb_expression: Optional[str] = Field(
+    ahb_expression: Annotated[Optional[str], StringConstraints(strip_whitespace=True, min_length=1)] = Field(
         default=None,
         description=(
             "a requirement indicator + an optional condition ('ahb expression'),"
@@ -86,16 +85,6 @@ class AhbLine(BaseModel):
         ),
         ge=0,
     )
-
-    @field_validator("ahb_expression")
-    @classmethod
-    def check_ahb_expression(cls, v):
-        """
-        Check that the ahb_expression is not empty or consists only of whitespace.
-        """
-        if v is not None:
-            _check_that_string_is_not_whitespace_or_empty(v)
-        return v
 
     def holds_any_information(self) -> bool:
         """
@@ -167,27 +156,17 @@ class AhbMetaInformation(BaseModel):
     maus_version: Optional[str] = Field(
         default=_VERSION, description="semantic version of maus used to create this document"
     )
-    description: Optional[str] = Field(
+    description: Annotated[Optional[str], StringConstraints(strip_whitespace=True, min_length=1)] = Field(
         default=None,
         description="an optional description of the purpose of the pruefidentifikator; e.g. 'Anmeldung MSB' for 11042",
     )
-    direction: Optional[str] = Field(
+    direction: Annotated[Optional[str], StringConstraints(strip_whitespace=True, min_length=1)] = Field(
         default=None,
         description=(
             "a stringly typed description of the roles of sender and receiver of the message"
             "(the row name in the AHB is 'Kommunikation von'); e.g. 'MSB an NB' for 11042"
         ),
     )
-
-    @field_validator("description", "direction", mode="before")
-    @classmethod
-    def check_string_is_not_whitespace_or_empty(cls, v):
-        """
-        Check that the string is not empty or consists only of whitespace.
-        """
-        if v is not None:
-            _check_that_string_is_not_whitespace_or_empty(v)
-        return v
 
 
 class AhbMetaInformationSchema(Schema):
@@ -210,8 +189,8 @@ class AhbMetaInformationSchema(Schema):
 
 
 def _remove_grouped_ahb_lines_containing_section_name(
-    grouped_ahb_lines: List[List[AhbLine]], section_name: str
-) -> List[List[AhbLine]]:
+    grouped_ahb_lines: list[list[AhbLine]], section_name: str
+) -> list[list[AhbLine]]:
     """
     Removes all groups of ahb lines that contain a line with the given section name and returns a new list instance.
     """
@@ -220,7 +199,7 @@ def _remove_grouped_ahb_lines_containing_section_name(
 
 # pylint:disable=unused-argument
 def _check_that_nearly_all_lines_have_a_segment_group(  # type:ignore[no-untyped-def]
-    instance, attribute, value: List[AhbLine]
+    instance, attribute, value: list[AhbLine]
 ):
     """
     Loops over all provided ahb lines and checks that only at the beginning and the end there are lines without a
@@ -301,7 +280,7 @@ class FlatAnwendungshandbuch:
     meta: AhbMetaInformation = attrs.field(validator=attrs.validators.instance_of(AhbMetaInformation))
     """information about this AHB"""
 
-    lines: List[AhbLine] = attrs.field(
+    lines: list[AhbLine] = attrs.field(
         validator=attrs.validators.deep_iterable(
             member_validator=attrs.validators.and_(
                 attrs.validators.instance_of(AhbLine),
@@ -319,21 +298,21 @@ class FlatAnwendungshandbuch:
         )
     )  #: ordered list lines as they occur in the AHB
 
-    def get_segment_groups(self) -> List[Optional[str]]:
+    def get_segment_groups(self) -> list[Optional[str]]:
         """
         :return: a set with all segment groups in this AHB in the order in which they occur
         """
         return FlatAnwendungshandbuch._get_available_segment_groups(self.lines)
 
     @staticmethod
-    def _get_available_segment_groups(lines: List[AhbLine]) -> List[Optional[str]]:
+    def _get_available_segment_groups(lines: list[AhbLine]) -> list[Optional[str]]:
         """
         extracts the distinct segment groups from a list of ahb lines
         :param lines:
         :return: distinct segment groups, including None in the order in which they occur
         """
         # this code is in a static method to make it easily accessible for fine grained unit testing
-        result: List[Optional[str]] = []
+        result: list[Optional[str]] = []
         for line in lines:
             if line.segment_group_key not in result:
                 # an "in" check against a set would be faster but we want to preserve both order and readability
@@ -347,7 +326,7 @@ class FlatAnwendungshandbuch:
         self.lines = FlatAnwendungshandbuch._sorted_lines_by_segment_groups(self.lines, self.get_segment_groups())
 
     @staticmethod
-    def _sorted_lines_by_segment_groups(ahb_lines: Sequence[AhbLine], sg_order: List[Optional[str]]) -> List[AhbLine]:
+    def _sorted_lines_by_segment_groups(ahb_lines: Sequence[AhbLine], sg_order: list[Optional[str]]) -> list[AhbLine]:
         """
         Calls sorted(...) on the provided list and returns a new list.
         Its purpose is, that if a segment group in the AHB (read from top to bottom in the flat ahb/pdf) is interrupted
@@ -379,7 +358,7 @@ class FlatAnwendungshandbuch:
         """
 
         # this code is in a static method to make it easily accessible for fine-grained unit testing
-        result: List[AhbLine] = sorted(ahb_lines, key=lambda x: x.segment_group_key or "")
+        result: list[AhbLine] = sorted(ahb_lines, key=lambda x: x.segment_group_key or "")
         result.sort(key=lambda ahb_line: sg_order.index(ahb_line.segment_group_key))
         return result
 
@@ -428,7 +407,7 @@ class DeepAnwendungshandbuch:
     meta: AhbMetaInformation = attrs.field(validator=attrs.validators.instance_of(AhbMetaInformation))
     """information about this AHB"""
 
-    lines: List[SegmentGroup] = attrs.field(
+    lines: list[SegmentGroup] = attrs.field(
         validator=attrs.validators.deep_iterable(
             member_validator=attrs.validators.instance_of(SegmentGroup),
             iterable_validator=attrs.validators.instance_of(list),
@@ -446,12 +425,12 @@ class DeepAnwendungshandbuch:
     @staticmethod
     def _query_segment_group(
         segment_group: SegmentGroup, predicate: Callable[[SegmentGroup], bool]
-    ) -> List[SegmentGroup]:
+    ) -> list[SegmentGroup]:
         """
         recursively search for a segment group that matches the predicate
         :return: return empty list if nothing was found, the matching segment groups otherwise
         """
-        result: List[SegmentGroup] = []
+        result: list[SegmentGroup] = []
         if predicate(segment_group):
             result.append(segment_group)
         if segment_group.segment_groups is not None:
@@ -460,12 +439,12 @@ class DeepAnwendungshandbuch:
                 result += sub_result
         return result
 
-    def find_segment_groups(self, predicate: Callable[[SegmentGroup], bool]) -> List[SegmentGroup]:
+    def find_segment_groups(self, predicate: Callable[[SegmentGroup], bool]) -> list[SegmentGroup]:
         """
         recursively search for segment group in this ahb that meets the predicate.
         :return: list of segment groups that match the predicate; empty list otherwise
         """
-        result: List[SegmentGroup] = []
+        result: list[SegmentGroup] = []
         for line in self.lines:
             if line.segment_groups is not None:
                 for segment_group in line.segment_groups:
@@ -479,13 +458,13 @@ class DeepAnwendungshandbuch:
         self,
         group_predicate: Callable[[SegmentGroup], bool] = lambda _: True,
         segment_predicate: Callable[[Segment], bool] = lambda _: True,
-    ) -> List[Segment]:
+    ) -> list[Segment]:
         """
         recursively search for segment characterised by the segment_predicate inside a group characterised by the
         group_predicate.
         :return: list of matching segments, empty list if nothing was found
         """
-        result: List[Segment] = []
+        result: list[Segment] = []
         for segment_group in self.find_segment_groups(group_predicate):
             result += segment_group.find_segments(segment_predicate)
         for line in self.lines:
@@ -495,19 +474,12 @@ class DeepAnwendungshandbuch:
                         result.append(segment)
         return result
 
-    def replace_inputs_based_on_discriminator(self, replacement_func: Callable[[str], DeepAhbInputReplacement]) -> None:
-        """
-        Replace all the entered_inputs in the entire DeepAnwendungshandbuch using the given replacement_func.
-        Note that this modifies this DeepAnwendungshandbuch instance (self).
-        """
-        _replace_inputs_based_on_discriminator(self.lines, replacement_func)
-
-    def get_all_value_pools(self) -> List[DataElementValuePool]:
+    def get_all_value_pools(self) -> list[DataElementValuePool]:
         """
         recursively find all value pools in the deep ahb
         :return: a list of all value pools
         """
-        result: List[DataElementValuePool] = []
+        result: list[DataElementValuePool] = []
         added_discriminators: Set[Optional[str]] = set()
         # checks like "str in set" are way faster than "value pool in list"
 
@@ -527,7 +499,7 @@ class DeepAnwendungshandbuch:
                 add_to_result(sub_result)
         return list(result)
 
-    def get_all_expressions(self) -> List[str]:
+    def get_all_expressions(self) -> list[str]:
         """
         recursively iterate through the deep ahb and return all distinct expressions found
         """
@@ -547,22 +519,3 @@ class DeepAnwendungshandbuch:
             if segment_group.ahb_expression:
                 result.add(segment_group.ahb_expression)
         return sorted(result)
-
-
-def _replace_inputs_based_on_discriminator(
-    segment_groups: List[SegmentGroup], replacement_func: Callable[[str], DeepAhbInputReplacement]
-) -> None:
-    """
-    Replace all the entered_inputs in the entire list of segment groups using the given replacement_func.
-    """
-    for segment_group in segment_groups:
-        if segment_group.segment_groups is not None:
-            _replace_inputs_based_on_discriminator(segment_group.segment_groups, replacement_func)
-        if segment_group.segments is None:
-            continue
-        for segment in segment_group.segments:
-            for data_element in segment.data_elements:
-                if data_element.discriminator is not None:
-                    replacement_result = replacement_func(data_element.discriminator)
-                    if replacement_result.replacement_found is True:
-                        data_element.entered_input = replacement_result.input_replacement

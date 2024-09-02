@@ -1,7 +1,6 @@
 import pytest  # type:ignore[import]
 
 from kohlrahbi.new_maus.edifact_components import (
-    DataElement,
     DataElementDataType,
     DataElementFreeText,
     DataElementValuePool,
@@ -25,7 +24,7 @@ class TestEdifactComponents:
             pytest.param(
                 DataElementFreeText(
                     ahb_expression="Muss [1]",
-                    entered_input="Hello Maus",
+                    free_text="Hello Maus",
                     discriminator="foo",
                     data_element_id="2222",
                     value_type=DataElementDataType.TEXT,
@@ -37,7 +36,7 @@ class TestEdifactComponents:
         assert_serialization_roundtrip(free_text)
 
     @pytest.mark.parametrize(
-        "value_pool, expected_json_dict",
+        "value_pool",
         [
             pytest.param(
                 DataElementValuePool(
@@ -47,56 +46,15 @@ class TestEdifactComponents:
                     ],
                     discriminator="foo",
                     data_element_id="0022",
-                    entered_input="asd",
-                ),
-                {
-                    "value_pool": [
-                        {"qualifier": "HELLO", "meaning": "world", "ahb_expression": "X"},
-                        {"qualifier": "MAUS", "meaning": "rocks", "ahb_expression": "X"},
-                    ],
-                    "discriminator": "foo",
-                    "data_element_id": "0022",
-                    "value_type": "VALUE_POOL",
-                    "entered_input": "asd",
-                },
-            ),
-        ],
-    )
-    def test_value_pool_serialization_roundtrip(self, value_pool: DataElementValuePool, expected_json_dict: dict):
-        assert_serialization_roundtrip(value_pool, expected_json_dict)
-
-    @pytest.mark.parametrize(
-        "data_element",
-        [
-            pytest.param(
-                DataElementValuePool(
-                    value_pool=[
-                        ValuePoolEntry(qualifier="HELLO", meaning="world", ahb_expression="X"),
-                        ValuePoolEntry(qualifier="MAUS", meaning="rocks", ahb_expression="X"),
-                    ],
-                    discriminator="foo",
-                    data_element_id="0022",
-                    entered_input=None,
-                ),
-            ),
-            pytest.param(
-                DataElementFreeText(
-                    ahb_expression="Muss [1]",
-                    entered_input=None,
-                    discriminator="bar",
-                    data_element_id="0330",
                 ),
             ),
         ],
     )
-    def test_empty_entered_input_is_not_dumped(self, data_element: DataElement):
-        assert data_element.entered_input is None
-
-        json_dict = data_element.model_dump(exclude_defaults=True)
-        assert "entered_input" not in json_dict
+    def test_value_pool_serialization_roundtrip(self, value_pool: DataElementValuePool):
+        assert_serialization_roundtrip(value_pool)
 
     @pytest.mark.parametrize(
-        "segment, expected_json_dict",
+        "segment",
         [
             pytest.param(
                 Segment(
@@ -104,54 +62,29 @@ class TestEdifactComponents:
                     section_name="foo",
                     data_elements=[
                         DataElementValuePool(
+                            value_type=DataElementDataType.VALUE_POOL,
                             value_pool=[
                                 ValuePoolEntry(qualifier="HELLO", meaning="world", ahb_expression="X"),
                                 ValuePoolEntry(qualifier="MAUS", meaning="rocks", ahb_expression="X"),
                             ],
                             discriminator="baz",
                             data_element_id="0329",
-                            entered_input="foo",
                         ),
                         DataElementFreeText(
+                            value_type=DataElementDataType.TEXT,
                             ahb_expression="Muss [1]",
-                            entered_input="Hello Maus",
+                            free_text="Hello Maus",
                             discriminator="bar",
                             data_element_id="0330",
                         ),
                     ],
                     discriminator="foo",
                 ),
-                {
-                    "segment_id": None,
-                    "ahb_expression": "X",
-                    "ahb_line_index": None,
-                    "section_name": "foo",
-                    "data_elements": [
-                        {
-                            "value_pool": [
-                                {"qualifier": "HELLO", "meaning": "world", "ahb_expression": "X"},
-                                {"qualifier": "MAUS", "meaning": "rocks", "ahb_expression": "X"},
-                            ],
-                            "discriminator": "baz",
-                            "data_element_id": "0329",
-                            "value_type": "VALUE_POOL",
-                            "entered_input": "foo",
-                        },
-                        {
-                            "ahb_expression": "Muss [1]",
-                            "entered_input": "Hello Maus",
-                            "discriminator": "bar",
-                            "data_element_id": "0330",
-                            "value_type": "TEXT",
-                        },
-                    ],
-                    "discriminator": "foo",
-                },
             ),
         ],
     )
-    def test_segment_serialization_roundtrip(self, segment: Segment, expected_json_dict: dict):
-        assert_serialization_roundtrip(segment, expected_json_dict)
+    def test_segment_serialization_roundtrip(self, segment: Segment):
+        assert_serialization_roundtrip(segment)
 
     @pytest.mark.parametrize(
         "segment,expected_result_length",
@@ -168,11 +101,10 @@ class TestEdifactComponents:
                             ],
                             discriminator="baz",
                             data_element_id="0329",
-                            entered_input="foo",
                         ),
                         DataElementFreeText(
                             ahb_expression="Muss [1]",
-                            entered_input="Hello Maus",
+                            free_text="Hello Maus",
                             discriminator="bar",
                             data_element_id="0330",
                         ),
@@ -201,17 +133,18 @@ class TestEdifactComponents:
                             section_name="bar",
                             data_elements=[
                                 DataElementValuePool(
+                                    value_type=DataElementDataType.VALUE_POOL,
                                     value_pool=[
                                         ValuePoolEntry(qualifier="HELLO", meaning="world", ahb_expression="X"),
                                         ValuePoolEntry(qualifier="MAUS", meaning="rocks", ahb_expression="X"),
                                     ],
                                     discriminator="baz",
                                     data_element_id="3333",
-                                    entered_input="MAUS",
                                 ),
                                 DataElementFreeText(
+                                    value_type=DataElementDataType.TEXT,
                                     ahb_expression="Muss [1]",
-                                    entered_input="Hello Maus",
+                                    free_text="Hello Maus",
                                     discriminator="bar",
                                     data_element_id="4444",
                                 ),
@@ -335,11 +268,10 @@ class TestEdifactComponents:
                                     ],
                                     discriminator="baz",
                                     data_element_id="3333",
-                                    entered_input="MAUS",
                                 ),
                                 DataElementFreeText(
                                     ahb_expression="Muss [1]",
-                                    entered_input="Hello Maus",
+                                    free_text="Hello Maus",
                                     discriminator="bar",
                                     data_element_id="4444",
                                 ),
@@ -363,7 +295,6 @@ class TestEdifactComponents:
                                             ],
                                             discriminator="baz",
                                             data_element_id="3333",
-                                            entered_input="MAUS",
                                         ),
                                     ],
                                 )
@@ -389,7 +320,6 @@ class TestEdifactComponents:
             ],
             discriminator="foo",
             data_element_id="0022",
-            entered_input="asd",
         )
         mapping = {"HELLO": "GOODBYE", "MAUS": "KATZE"}
         data_element.replace_value_pool(mapping)
@@ -409,7 +339,6 @@ class TestEdifactComponents:
             ],
             discriminator="foo",
             data_element_id="0022",
-            entered_input="asd",
         )
         mapping = {"HELLO": "GOODBYE", "MAUS": "KATZE"}
 
@@ -443,6 +372,5 @@ class TestEdifactComponents:
             ],
             discriminator="foo",
             data_element_id="0022",
-            entered_input="asd",
         )
         assert data_element.has_value_pool_which_is_subset_of(candidate) == expected
