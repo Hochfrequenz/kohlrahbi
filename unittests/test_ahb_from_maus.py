@@ -5,9 +5,7 @@ import pytest  # type:ignore[import]
 
 from kohlrahbi.new_maus.anwendungshandbuch import (
     AhbLine,
-    AhbLineSchema,
     AhbMetaInformation,
-    AhbMetaInformationSchema,
     DeepAhbInputReplacement,
     DeepAnwendungshandbuch,
     FlatAnwendungshandbuch,
@@ -70,7 +68,9 @@ class TestAhb:
     @pytest.mark.parametrize(
         "ahb_x, ahb_y, are_equal",
         [
-            pytest.param(meta_x, AhbMetaInformationSchema().loads(AhbMetaInformationSchema().dumps(meta_x)), True),
+            pytest.param(
+                meta_x, AhbMetaInformation.model_validate_json(AhbMetaInformation.model_dump_json(meta_x)), True
+            ),
             pytest.param(meta_x, meta_y, False),
         ],
     )
@@ -118,7 +118,7 @@ class TestAhb:
     @pytest.mark.parametrize(
         "line_x, line_y, are_equal",
         [
-            pytest.param(line_x, AhbLineSchema().loads(AhbLineSchema().dumps(line_x)), True),
+            pytest.param(line_x, AhbLine.model_validate_json(AhbLine.model_dump_json(line_x)), True),
             pytest.param(line_x, line_y, False),
         ],
     )
