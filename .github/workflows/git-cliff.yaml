@@ -11,6 +11,15 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install Rust (to use cargo)
+        uses: actions-rs/toolchain@v1
+        with:
+            toolchain: stable
+            override: true
+
+      - name: Install typos CLI
+        run: cargo install typos-cli
+
       - name: Generate a changelog
         uses: orhun/git-cliff-action@v4
         id: git-cliff
