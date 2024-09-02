@@ -105,27 +105,49 @@ class DocxFileFinder(BaseModel):
     @staticmethod
     def filter_latest_version(groups: dict[str, list[Path]]) -> list[Path]:
         """
-        This function filters the latest version of the AHB or MIG docx files.
+        Filters and returns the latest version of the AHB or MIG .docx files
+        from the provided groups based on specific criteria.
+
+        The latest version is determined based on the presence of specific
+        keywords in the filename and the numerical suffix in the filename.
+
+        Parameters:
+        - groups (Dict[str, List[Path]]): A dictionary where keys are group identifiers
+        and values are lists of Path objects representing the file paths.
+
+        Returns:
+        - List[Path]: A list of Path objects representing the latest version of the files.
         """
         result = []
+
         for group_items in groups.values():
             if len(group_items) == 1:
                 result.append(group_items[0])
             else:
-                most_recent_file = max(
-                    (
-                        path
-                        for path in group_items
-                        if "konsolidiertelesefassungmitfehlerkorrekturen" in path.name.lower()
-                        or "außerordentlicheveröffentlichung" in path.name.lower()
-                    ),
-                    key=lambda path: (int(path.stem.split("_")[-1])),
-                )
-                for path in group_items:
-                    if path != most_recent_file:
-                        logger.debug("Ignoring file %s", path.name)
-                    else:
-                        result.append(most_recent_file)
+                try:
+                    # Define the keywords to filter relevant files
+                    keywords = ["konsolidiertelesefassungmitfehlerkorrekturen", "außerordentlicheveröffentlichung"]
+
+                    # Find the most recent file based on keywords and date suffixes
+                    most_recent_file = max(
+                        (path for path in group_items if any(keyword in path.name.lower() for keyword in keywords)),
+                        key=lambda path: (
+                            int(path.stem.split("_")[-1]),  # "gültig von" date
+                            int(path.stem.split("_")[-2]),  # "gültig bis" date
+                        ),
+                    )
+
+                    # Add the most recent file to the result and log ignored files
+                    for path in group_items:
+                        if path != most_recent_file:
+                            logger.debug("Ignoring file %s", path.name)
+                        else:
+                            result.append(most_recent_file)
+
+                except ValueError as e:
+                    logger.error("Error processing group items: %s", e)
+                    continue
+
         return result
 
     def filter_for_latest_mig_and_ahb_docx_files(self) -> None:
