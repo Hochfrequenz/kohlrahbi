@@ -558,7 +558,7 @@ def _get_ahb(ahb_model_or_path: Union[FlatAnwendungshandbuch, UnfoldedAhb, Path]
     if isinstance(ahb_model_or_path, Path):
         with open(ahb_model_or_path, "r", encoding="utf-8") as file:
             file_content = file.read()
-            return FlatAnwendungshandbuch.model_validate_json(file_content)  # type:ignore[no-any-return]
+            return FlatAnwendungshandbuch.model_validate_json(file_content)
     raise ValueError(
         f"argument must be either a FlatAnwendungshandbuch, UnfoldedAhb or a Path but was {type(ahb_model_or_path)}"
     )
