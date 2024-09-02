@@ -378,22 +378,20 @@ class FlatAnwendungshandbuchSchema(Schema):
         return FlatAnwendungshandbuch(**data)
 
 
-@attrs.define(auto_attribs=True, kw_only=True)
-class DeepAhbInputReplacement:
+class DeepAhbInputReplacement(BaseModel):
     """
     A container class that models replacements of inputs in the DeepAnwendungshandbuch
     """
 
     #: true iff a replacement is applicable
-    replacement_found: bool = attrs.field(validator=attrs.validators.instance_of(bool))
-    input_replacement: Optional[str] = attrs.field(
-        validator=attrs.validators.optional(attr.validators.instance_of(str))
+    replacement_found: bool = Field(..., description="True iff a replacement is applicable")
+    input_replacement: Optional[str] = Field(
+        None,
+        description=(
+            "The replacement for entered_input itself."
+            "Note that the replacement may be None even if a replacement is found."
+        ),
     )
-    """
-    The replacement for entered_input itself. Note that the replacement may be None even if a replacement is found.
-    This implies, that you must always check for replacement_found is True first and then, iff true, replace with the
-    replacement, even if it may be None/null.
-    """
 
 
 @attrs.define(auto_attribs=True, kw_only=True)
