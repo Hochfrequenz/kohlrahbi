@@ -295,7 +295,7 @@ class TestAhb:
         assert actual == are_equal
 
     @pytest.mark.parametrize(
-        "deep_ahb, expected_json_dict",
+        "deep_ahb",
         [
             pytest.param(
                 DeepAnwendungshandbuch(
@@ -345,67 +345,10 @@ class TestAhb:
                         ),
                     ],
                 ),
-                {
-                    "meta": {
-                        "pruefidentifikator": "11042",
-                        "maus_version": "0.2.3",
-                        "description": None,
-                        "direction": None,
-                    },
-                    "lines": [
-                        {
-                            "ahb_expression": "expr A",
-                            "discriminator": "disc A",
-                            "segments": [
-                                {
-                                    "section_name": "foo",
-                                    "segment_id": None,
-                                    "ahb_expression": "expr B",
-                                    "discriminator": "disc B",
-                                    "data_elements": [
-                                        {
-                                            "value_pool": [
-                                                {"qualifier": "HELLO", "meaning": "world", "ahb_expression": "X"},
-                                                {"qualifier": "MAUS", "meaning": "rocks", "ahb_expression": "X"},
-                                            ],
-                                            "discriminator": "baz",
-                                            "data_element_id": "0123",
-                                            "value_type": "VALUE_POOL",
-                                            "entered_input": "HELLO",
-                                        },
-                                        {
-                                            "ahb_expression": "Muss [1]",
-                                            "entered_input": "Hello Maus",
-                                            "discriminator": "bar",
-                                            "data_element_id": "4567",
-                                            "value_type": "TEXT",
-                                        },
-                                    ],
-                                }
-                            ],
-                            "segment_groups": [
-                                {
-                                    "ahb_expression": "expr C",
-                                    "discriminator": "disc C",
-                                    "segments": [
-                                        {
-                                            "segment_id": None,
-                                            "section_name": "bar",
-                                            "ahb_expression": "expr Y",
-                                            "discriminator": "disc Y",
-                                            "data_elements": [],
-                                        }
-                                    ],
-                                    "segment_groups": None,
-                                }
-                            ],
-                        },
-                    ],
-                },
             ),
         ],
     )
-    def test_deep_ahb_serialization_roundtrip(self, deep_ahb: DeepAnwendungshandbuch, expected_json_dict: dict):
+    def test_deep_ahb_serialization_roundtrip(self, deep_ahb: DeepAnwendungshandbuch):
         assert_serialization_roundtrip(deep_ahb)
 
     @pytest.mark.parametrize(
