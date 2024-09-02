@@ -80,7 +80,7 @@ class UnfoldedAhb(BaseModel):
     """
     The UnfoldedAhb contains one Prüfidentifikator.
     Some columns in the AHB documents contain multiple information in one column e.g. Segmentname and Segmentgruppe.
-    The unfolded classes add new columns/attribues to avoid the duplication of information in one column.
+    The unfolded classes add new columns/attributes to avoid the duplication of information in one column.
     """
 
     meta_data: UnfoldedAhbTableMetaData
