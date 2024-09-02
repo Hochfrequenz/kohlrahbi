@@ -394,21 +394,14 @@ class DeepAhbInputReplacement(BaseModel):
     )
 
 
-@attrs.define(auto_attribs=True, kw_only=True)
-class DeepAnwendungshandbuch:
+class DeepAnwendungshandbuch(BaseModel):
     """
     The data of the AHB nested as described in the MIG.
     """
 
-    meta: AhbMetaInformation = attrs.field(validator=attrs.validators.instance_of(AhbMetaInformation))
-    """information about this AHB"""
+    meta: AhbMetaInformation = Field(..., description="Information about this AHB")
 
-    lines: list[SegmentGroup] = attrs.field(
-        validator=attrs.validators.deep_iterable(
-            member_validator=attrs.validators.instance_of(SegmentGroup),
-            iterable_validator=attrs.validators.instance_of(list),
-        )
-    )  #: the nested data
+    lines: list[SegmentGroup] = Field(..., description="The nested data")
 
     def reset_ahb_line_index(self) -> None:
         """
@@ -456,7 +449,7 @@ class DeepAnwendungshandbuch:
         segment_predicate: Callable[[Segment], bool] = lambda _: True,
     ) -> list[Segment]:
         """
-        recursively search for segment characterised by the segment_predicate inside a group characterised by the
+        recursively search for segment characterized by the segment_predicate inside a group characterized by the
         group_predicate.
         :return: list of matching segments, empty list if nothing was found
         """
