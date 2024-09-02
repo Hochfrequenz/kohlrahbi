@@ -5,6 +5,7 @@ The changelog follows the [Conventional Commits](https://www.conventionalcommits
 ### 🐛 Bug Fixes
 
 - *(test)* 🚛 rename test file to fix tests ([#412](https://github.com/orhun/git-cliff/issues/412)) - ([9c48826](https://github.com/Hochfrequenz/kohlrahbi/commit/9c4882655c15f309a1da72b3da35545f38fee893))
+- Criterion for latest file filter ([#417](https://github.com/orhun/git-cliff/issues/417)) - ([2d21351](https://github.com/Hochfrequenz/kohlrahbi/commit/2d21351bb8f574d191e471d15de3d011a5f930c4))
 - Parsing of segment ids ([#406](https://github.com/orhun/git-cliff/issues/406)) - ([10ae03a](https://github.com/Hochfrequenz/kohlrahbi/commit/10ae03ab8e5246d24563d13bcc7336904301bddd))
 
 ### 🚜 Refactor
@@ -66,6 +67,9 @@ The changelog follows the [Conventional Commits](https://www.conventionalcommits
 - Add link to `machine-readable_anwendungshandbuecher` ([#165](https://github.com/orhun/git-cliff/issues/165)) - ([313d900](https://github.com/Hochfrequenz/kohlrahbi/commit/313d900620cb283d1e8088fd3aed1f419d9f6ab1))
 - Fixed code block to render reference correctly ([#164](https://github.com/orhun/git-cliff/issues/164)) - ([fb7f7bb](https://github.com/Hochfrequenz/kohlrahbi/commit/fb7f7bbaa80e03a5b2c496b6c9cf334df26b2e61))
 
+## New Contributors ❤️
+
+* @mj0nez made their first contribution in [#164](https://github.com/Hochfrequenz/kohlrahbi/pull/164)
 
 ## [0.0.8](https://github.com/Hochfrequenz/kohlrahbi/compare/v0.0.7..v0.0.8) - 2023-07-24
 
