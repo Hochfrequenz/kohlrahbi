@@ -11,11 +11,9 @@ build-backend = "hatchling.build"
 
 [project]
 dependencies = [
-  "attrs>=23.2.0",
   "click>=8.0.0",
   "colorlog>=6.7.0",
   "more_itertools>=10.4.0",
-  "marshmallow>=3.21.3",
   "openpyxl>=3.1.1",
   "pandas>=1.5.3",
   "python-docx>=1.0.0",

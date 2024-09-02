@@ -8,8 +8,6 @@ annotated-types==0.7.0
     # via pydantic
 astroid==3.2.4
     # via pylint
-attrs==24.2.0
-    # via kohlrahbi (pyproject.toml)
 click==8.1.7
     # via kohlrahbi (pyproject.toml)
 colorlog==6.8.2
@@ -32,8 +30,6 @@ isort==5.13.2
     # via pylint
 lxml==5.3.0
     # via python-docx
-marshmallow==3.22.0
-    # via kohlrahbi (pyproject.toml)
 mccabe==0.7.0
     # via pylint
 more-itertools==10.4.0
@@ -53,9 +49,7 @@ numpy==2.1.0
 openpyxl==3.1.5
     # via kohlrahbi (pyproject.toml)
 packaging==24.1
-    # via
-    #   marshmallow
-    #   pytest
+    # via pytest
 pandas==2.2.2
     # via kohlrahbi (pyproject.toml)
 pandas-stubs==2.2.2.240807
