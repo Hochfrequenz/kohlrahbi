@@ -537,27 +537,24 @@ def _replace_inputs_based_on_discriminator(
     """
     Replace all the entered_inputs in the entire list of segment groups using the given replacement_func.
     """
+
+    def process_data_element(data_element, replacement_result):
+        if isinstance(data_element, DataElementFreeText) and replacement_result.free_text_replacement:
+            data_element.free_text = replacement_result.free_text_replacement.free_text
+        elif isinstance(data_element, DataElementValuePool) and replacement_result.value_pool_replacement:
+            data_element.value_pool.append(replacement_result.value_pool_replacement)
+
+    def process_segment(segment):
+        for data_element in segment.data_elements:
+            if data_element.discriminator:
+                replacement_result = replacement_func(data_element.discriminator)
+                if replacement_result.replacement_found:
+                    process_data_element(data_element, replacement_result)
+
     for segment_group in segment_groups:
-        if segment_group.segment_groups is not None:
+        if segment_group.segment_groups:
             _replace_inputs_based_on_discriminator(segment_group.segment_groups, replacement_func)
-        if segment_group.segments is None:
-            continue
-        for segment in segment_group.segments:
-            for data_element in segment.data_elements:
-                if data_element.discriminator is not None:
-                    replacement_result = replacement_func(data_element.discriminator)
 
-                    found_replacement: bool = replacement_result.replacement_found is True and (
-                        replacement_result.free_text_replacement is not None
-                        or replacement_result.value_pool_replacement is not None
-                    )
-
-                    if found_replacement:
-                        if isinstance(data_element, DataElementFreeText):
-                            if replacement_result.free_text_replacement is None:
-                                continue
-                            data_element.free_text = replacement_result.free_text_replacement.free_text
-                        elif isinstance(data_element, DataElementValuePool):
-                            if replacement_result.value_pool_replacement is None:
-                                continue
-                            data_element.value_pool.append(replacement_result.value_pool_replacement)
+        if segment_group.segments:
+            for segment in segment_group.segments:
+                process_segment(segment)
