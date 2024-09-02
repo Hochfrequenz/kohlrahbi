@@ -11,7 +11,6 @@ from kohlrahbi.new_maus.anwendungshandbuch import (
     DeepAhbInputReplacement,
     DeepAnwendungshandbuch,
     FlatAnwendungshandbuch,
-    FlatAnwendungshandbuchSchema,
 )
 from kohlrahbi.new_maus.edifact_components import (
     DataElementFreeText,
@@ -586,170 +585,186 @@ class TestAhb:
         actual = FlatAnwendungshandbuch._sorted_lines_by_segment_groups(unsorted_input, sg_order)
         assert actual == expected_result
 
-    # @pytest.mark.parametrize(
-    #     "original,expected",
-    #     [
-    #         pytest.param(
-    #             DeepAnwendungshandbuch(
-    #                 meta=AhbMetaInformation(pruefidentifikator="11042"),
-    #                 lines=[
-    #                     SegmentGroup(
-    #                         ahb_expression="expr A",
-    #                         discriminator="disc A",
-    #                         segments=[
-    #                             Segment(
-    #                                 ahb_expression="expr B",
-    #                                 discriminator="disc B",
-    #                                 section_name="foo",
-    #                                 data_elements=[
-    #                                     DataElementFreeText(
-    #                                         ahb_expression="Muss [1]",
-    #                                         free_text="Hello Maus",
-    #                                         discriminator="foo",
-    #                                         data_element_id="4567",
-    #                                     ),
-    #                                 ],
-    #                             ),
-    #                         ],
-    #                         segment_groups=[
-    #                             SegmentGroup(
-    #                                 discriminator="disc C",
-    #                                 ahb_expression="expr C",
-    #                                 segments=[
-    #                                     Segment(
-    #                                         section_name="bar",
-    #                                         ahb_expression="expr Y",
-    #                                         discriminator="disc Y",
-    #                                         data_elements=[
-    #                                             DataElementFreeText(
-    #                                                 ahb_expression="Muss [1]",
-    #                                                 free_text="Hello Elefant",
-    #                                                 discriminator="abc",
-    #                                                 data_element_id="4567",
-    #                                             ),
-    #                                             DataElementValuePool(
-    #                                                 value_pool=[
-    #                                                     ValuePoolEntry(
-    #                                                         qualifier="Hallo Ente", meaning="world", ahb_expression="X"
-    #                                                     ),
-    #                                                     ValuePoolEntry(
-    #                                                         qualifier="MAUS", meaning="rocks", ahb_expression="X"
-    #                                                     ),
-    #                                                 ],
-    #                                                 discriminator="ente",
-    #                                                 data_element_id="4567",
-    #                                             ),
-    #                                             DataElementFreeText(
-    #                                                 ahb_expression="Muss [1]",
-    #                                                 free_text="this should stay untouched",
-    #                                                 discriminator="qwert",
-    #                                                 data_element_id="4567",
-    #                                             ),
-    #                                             DataElementFreeText(
-    #                                                 ahb_expression="Muss [1]",
-    #                                                 free_text="Not none",
-    #                                                 discriminator="replace_with_none_here",
-    #                                                 data_element_id="4567",
-    #                                             ),
-    #                                         ],
-    #                                     )
-    #                                 ],
-    #                                 segment_groups=None,
-    #                             ),
-    #                         ],
-    #                     ),
-    #                 ],
-    #             ),
-    #             DeepAnwendungshandbuch(
-    #                 meta=AhbMetaInformation(pruefidentifikator="11042"),
-    #                 lines=[
-    #                     SegmentGroup(
-    #                         ahb_expression="expr A",
-    #                         discriminator="disc A",
-    #                         segments=[
-    #                             Segment(
-    #                                 ahb_expression="expr B",
-    #                                 discriminator="disc B",
-    #                                 section_name="foo",
-    #                                 data_elements=[
-    #                                     DataElementFreeText(
-    #                                         ahb_expression="Muss [1]",
-    #                                         free_text="bar",
-    #                                         discriminator="foo",
-    #                                         data_element_id="4567",
-    #                                     ),
-    #                                 ],
-    #                             ),
-    #                         ],
-    #                         segment_groups=[
-    #                             SegmentGroup(
-    #                                 discriminator="disc C",
-    #                                 ahb_expression="expr C",
-    #                                 segments=[
-    #                                     Segment(
-    #                                         section_name="bar",
-    #                                         ahb_expression="expr Y",
-    #                                         discriminator="disc Y",
-    #                                         data_elements=[
-    #                                             DataElementFreeText(
-    #                                                 ahb_expression="Muss [1]",
-    #                                                 free_text="xyz",
-    #                                                 discriminator="abc",
-    #                                                 data_element_id="4567",
-    #                                             ),
-    #                                             DataElementValuePool(
-    #                                                 value_pool=[
-    #                                                     ValuePoolEntry(
-    #                                                         qualifier="Hallo Ente", meaning="world", ahb_expression="X"
-    #                                                     ),
-    #                                                     ValuePoolEntry(
-    #                                                         qualifier="MAUS", meaning="rocks", ahb_expression="X"
-    #                                                     ),
-    #                                                 ],
-    #                                                 discriminator="ente",
-    #                                                 data_element_id="4567",
-    #                                             ),
-    #                                             DataElementFreeText(
-    #                                                 ahb_expression="Muss [1]",
-    #                                                 free_text="this should stay untouched",
-    #                                                 discriminator="qwert",
-    #                                                 data_element_id="4567",
-    #                                             ),
-    #                                             DataElementFreeText(
-    #                                                 ahb_expression="Muss [1]",
-    #                                                 # free_text=None,
-    #                                                 free_text="None",
-    #                                                 discriminator="replace_with_none_here",
-    #                                                 data_element_id="4567",
-    #                                             ),
-    #                                         ],
-    #                                     )
-    #                                 ],
-    #                                 segment_groups=None,
-    #                             ),
-    #                         ],
-    #                     ),
-    #                 ],
-    #             ),
-    #         )
-    #     ],
-    # )
-    # def test_replacing_data_element_inputs(self, original: DeepAnwendungshandbuch, expected: DeepAnwendungshandbuch):
-    #     assert original != expected
+    @pytest.mark.parametrize(
+        "original,expected",
+        [
+            pytest.param(
+                DeepAnwendungshandbuch(
+                    meta=AhbMetaInformation(pruefidentifikator="11042"),
+                    lines=[
+                        SegmentGroup(
+                            ahb_expression="expr A",
+                            discriminator="disc A",
+                            segments=[
+                                Segment(
+                                    ahb_expression="expr B",
+                                    discriminator="disc B",
+                                    section_name="foo",
+                                    data_elements=[
+                                        DataElementFreeText(
+                                            ahb_expression="Muss [1]",
+                                            free_text="Hello Maus",
+                                            discriminator="foo",
+                                            data_element_id="4567",
+                                        ),
+                                    ],
+                                ),
+                            ],
+                            segment_groups=[
+                                SegmentGroup(
+                                    discriminator="disc C",
+                                    ahb_expression="expr C",
+                                    segments=[
+                                        Segment(
+                                            section_name="bar",
+                                            ahb_expression="expr Y",
+                                            discriminator="disc Y",
+                                            data_elements=[
+                                                DataElementFreeText(
+                                                    ahb_expression="Muss [1]",
+                                                    free_text="Hello Elefant",
+                                                    discriminator="abc",
+                                                    data_element_id="4567",
+                                                ),
+                                                DataElementValuePool(
+                                                    value_pool=[
+                                                        ValuePoolEntry(
+                                                            qualifier="Hallo Ente", meaning="world", ahb_expression="X"
+                                                        ),
+                                                        ValuePoolEntry(
+                                                            qualifier="MAUS", meaning="rocks", ahb_expression="X"
+                                                        ),
+                                                    ],
+                                                    discriminator="ente",
+                                                    data_element_id="4567",
+                                                ),
+                                                DataElementFreeText(
+                                                    ahb_expression="Muss [1]",
+                                                    free_text="this should stay untouched",
+                                                    discriminator="qwert",
+                                                    data_element_id="4567",
+                                                ),
+                                            ],
+                                        )
+                                    ],
+                                    segment_groups=None,
+                                ),
+                            ],
+                        ),
+                    ],
+                ),
+                DeepAnwendungshandbuch(
+                    meta=AhbMetaInformation(pruefidentifikator="11042"),
+                    lines=[
+                        SegmentGroup(
+                            ahb_expression="expr A",
+                            discriminator="disc A",
+                            segments=[
+                                Segment(
+                                    ahb_expression="expr B",
+                                    discriminator="disc B",
+                                    section_name="foo",
+                                    data_elements=[
+                                        DataElementFreeText(
+                                            ahb_expression="Muss [1]",
+                                            free_text="bar",
+                                            discriminator="foo",
+                                            data_element_id="4567",
+                                        ),
+                                    ],
+                                ),
+                            ],
+                            segment_groups=[
+                                SegmentGroup(
+                                    discriminator="disc C",
+                                    ahb_expression="expr C",
+                                    segments=[
+                                        Segment(
+                                            section_name="bar",
+                                            ahb_expression="expr Y",
+                                            discriminator="disc Y",
+                                            data_elements=[
+                                                DataElementFreeText(
+                                                    ahb_expression="Muss [1]",
+                                                    free_text="xyz",
+                                                    discriminator="abc",
+                                                    data_element_id="4567",
+                                                ),
+                                                DataElementValuePool(
+                                                    value_pool=[
+                                                        ValuePoolEntry(
+                                                            qualifier="Hallo Ente", meaning="world", ahb_expression="X"
+                                                        ),
+                                                        ValuePoolEntry(
+                                                            qualifier="MAUS", meaning="rocks", ahb_expression="X"
+                                                        ),
+                                                    ],
+                                                    discriminator="ente",
+                                                    data_element_id="4567",
+                                                ),
+                                                DataElementFreeText(
+                                                    ahb_expression="Muss [1]",
+                                                    free_text="this should stay untouched",
+                                                    discriminator="qwert",
+                                                    data_element_id="4567",
+                                                ),
+                                            ],
+                                        )
+                                    ],
+                                    segment_groups=None,
+                                ),
+                            ],
+                        ),
+                    ],
+                ),
+            )
+        ],
+    )
+    def test_replacing_data_element_inputs(self, original: DeepAnwendungshandbuch, expected: DeepAnwendungshandbuch):
+        assert original != expected
 
-    #     def replacement_func(discriminator: str) -> DeepAhbInputReplacement:
-    #         if discriminator == "foo":
-    #             return DeepAhbInputReplacement(replacement_found=True, input_replacement="bar")
-    #         if discriminator == "abc":
-    #             return DeepAhbInputReplacement(replacement_found=True, input_replacement="xyz")
-    #         if discriminator == "ente":
-    #             return DeepAhbInputReplacement(replacement_found=True, input_replacement="quack")
-    #         if discriminator == "replace_with_none_here":
-    #             return DeepAhbInputReplacement(replacement_found=True, input_replacement=None)
-    #         return DeepAhbInputReplacement(replacement_found=False, input_replacement=None)
+        def replacement_func(discriminator: str) -> DeepAhbInputReplacement:
+            if discriminator == "foo":
+                return DeepAhbInputReplacement(
+                    replacement_found=True,
+                    free_text_replacement=DataElementFreeText(
+                        ahb_expression="Muss [1]",
+                        free_text="bar",
+                        discriminator="qwert",
+                        data_element_id="4567",
+                    ),
+                )
+            if discriminator == "ente":
+                return DeepAhbInputReplacement(
+                    replacement_found=True,
+                    free_text_replacement=DataElementFreeText(
+                        ahb_expression="Muss [1]",
+                        free_text="quack",
+                        discriminator="quack",
+                        data_element_id="8910",
+                    ),
+                )
+            if discriminator == "abc":
+                return DeepAhbInputReplacement(
+                    replacement_found=True,
+                    free_text_replacement=DataElementFreeText(
+                        ahb_expression="Muss [1]",
+                        free_text="xyz",
+                        discriminator="abc",
+                        data_element_id="4567",
+                    ),
+                )
+            if discriminator == "replace_with_none_here":
+                return DeepAhbInputReplacement(
+                    replacement_found=True,
+                    value_pool_replacement=ValuePoolEntry(qualifier="Hallo Ente", meaning="world", ahb_expression="X"),
+                )
+            return DeepAhbInputReplacement(
+                replacement_found=False, free_text_replacement=None, value_pool_replacement=None
+            )
 
-    #     original.replace_inputs_based_on_discriminator(replacement_func)
-    #     assert original == expected
+        original.replace_inputs_based_on_discriminator(replacement_func)
+        assert original == expected
 
     @pytest.mark.parametrize(
         "deep_ahb, expected_result_length",
