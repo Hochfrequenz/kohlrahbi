@@ -7,7 +7,7 @@ structure.
 another segment group)
 """
 import re
-from typing import Annotated, Callable, Optional, Sequence, Set
+from typing import Annotated, Callable, Optional, Sequence, Set, Union
 from uuid import UUID
 
 from marshmallow import Schema, fields, post_load
@@ -538,13 +538,15 @@ def _replace_inputs_based_on_discriminator(
     Replace all the entered_inputs in the entire list of segment groups using the given replacement_func.
     """
 
-    def process_data_element(data_element, replacement_result):
+    def process_data_element(
+        data_element: Union[DataElementFreeText, DataElementValuePool], replacement_result: DeepAhbInputReplacement
+    ) -> None:
         if isinstance(data_element, DataElementFreeText) and replacement_result.free_text_replacement:
             data_element.free_text = replacement_result.free_text_replacement.free_text
         elif isinstance(data_element, DataElementValuePool) and replacement_result.value_pool_replacement:
             data_element.value_pool.append(replacement_result.value_pool_replacement)
 
-    def process_segment(segment):
+    def process_segment(segment: Segment) -> None:
         for data_element in segment.data_elements:
             if data_element.discriminator:
                 replacement_result = replacement_func(data_element.discriminator)
