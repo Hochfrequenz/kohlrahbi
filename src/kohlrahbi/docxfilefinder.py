@@ -119,7 +119,7 @@ class DocxFileFinder(BaseModel):
                         if "konsolidiertelesefassungmitfehlerkorrekturen" in path.name.lower()
                         or "außerordentlicheveröffentlichung" in path.name.lower()
                     ),
-                    key=lambda path: (int(path.stem.split("_")[-1])),
+                    key=lambda path: (int(path.stem.split("_")[-1]), int(path.stem.split("_")[-2])),
                 )
                 for path in group_items:
                     if path != most_recent_file:
