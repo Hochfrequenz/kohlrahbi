@@ -50,7 +50,7 @@ kohlrahbi = "kohlrahbi:cli"
 
 [project.optional-dependencies]
 dev = ["kohlrahbi[test]", "kohlrahbi[lint]", "kohlrahbi[typecheck]"]
-lint = ["pylint"]
+lint = ["pylint", "pylint-pydantic"]
 test = [
   "coverage",
   "dictdiffer",
@@ -99,6 +99,7 @@ profile = "black"
 [tool.pylint."MESSAGES CONTROL"]
 max-line-length = 120
 good-names = ["i", "j", "k", "ex", "Run", "_", "df"]
+load-plugins = "pylint_pydantic"
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
