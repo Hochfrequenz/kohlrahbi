@@ -14,7 +14,7 @@ import attr.validators
 import attrs
 from marshmallow import Schema, fields, post_load
 from more_itertools import last, split_when
-from pydantic import BaseModel, Field, StringConstraints
+from pydantic import BaseModel, Field, StringConstraints, field_validator
 
 from kohlrahbi.new_maus.edifact_components import DataElementFreeText, DataElementValuePool, Segment, SegmentGroup
 
@@ -199,7 +199,7 @@ def _remove_grouped_ahb_lines_containing_section_name(
 
 # pylint:disable=unused-argument
 def _check_that_nearly_all_lines_have_a_segment_group(  # type:ignore[no-untyped-def]
-    instance, attribute, value: list[AhbLine]
+    value: list[AhbLine],
 ):
     """
     Loops over all provided ahb lines and checks that only at the beginning and the end there are lines without a
@@ -221,7 +221,7 @@ _data_element_pattern = re.compile(r"^\d{4}$|^\d{5}$|^[A-Za-z]+\d{4}$")
 
 # pylint:disable=unused-argument
 def _check_that_line_has_either_none_or_d4_data_element(  # type:ignore[no-untyped-def]
-    instance, attribute, value: AhbLine
+    value: AhbLine,
 ):
     """
     checks that the given line has either a None data element or a data element that matches
@@ -239,7 +239,7 @@ _segment_group_key_pattern = re.compile(r"^SG\d+$")
 
 
 # pylint:disable=unused-argument
-def _check_that_line_has_either_none_or_matching_sg(instance, attribute, value: AhbLine):  # type:ignore[no-untyped-def]
+def _check_that_line_has_either_none_or_matching_sg(value: AhbLine):  # type:ignore[no-untyped-def]
     """
     checks that the given line has a segment group key that is either None (for root) or matches SG\\d+
     """
@@ -257,7 +257,7 @@ _segment_code_pattern = re.compile(r"^[A-Z]+$")
 
 # pylint:disable=unused-argument
 def _check_that_line_has_either_none_az_segment_code(  # type:ignore[no-untyped-def]
-    instance, attribute, value: AhbLine
+    value: AhbLine,
 ):
     """
     checks that the given line has either a None segment code or a segment code that consists of all upper letters
@@ -269,34 +269,35 @@ def _check_that_line_has_either_none_az_segment_code(  # type:ignore[no-untyped-
         raise ValueError(f"The segment_code '{value.segment_code}' does not match {_segment_code_pattern}")
 
 
-@attrs.define(auto_attribs=True, kw_only=True)
-class FlatAnwendungshandbuch:
+class FlatAnwendungshandbuch(BaseModel):
     """
     A flat Anwendungshandbuch (AHB) models an Anwendungshandbuch as combination of some meta data and an ordered list
     of `.class:`.FlatAhbLine s. Basically a flat Anwendungshandbuch is the result of a simple scraping approach.
     You can create instances of this class without knowing anything about the "under the hood" structure of AHBs or MIGs
     """
 
-    meta: AhbMetaInformation = attrs.field(validator=attrs.validators.instance_of(AhbMetaInformation))
+    meta: AhbMetaInformation = Field(...)
     """information about this AHB"""
 
-    lines: list[AhbLine] = attrs.field(
-        validator=attrs.validators.deep_iterable(
-            member_validator=attrs.validators.and_(
-                attrs.validators.instance_of(AhbLine),
-                # The following checks are not baked into the AhbLine class itself, because they might be initialized
-                # with raw data that do not yet obey these strict validations. But as soon as we bundle them in a
-                # FlatAnwendungshandbuch, the sanitizations shall be applied.
-                _check_that_line_has_either_none_or_d4_data_element,
-                _check_that_line_has_either_none_or_matching_sg,
-                _check_that_line_has_either_none_az_segment_code,
-            ),
-            iterable_validator=attrs.validators.and_(
-                attrs.validators.instance_of(list),
-                _check_that_nearly_all_lines_have_a_segment_group,
-            ),
-        )
-    )  #: ordered list lines as they occur in the AHB
+    lines: list[AhbLine] = Field(...)
+    """ordered list lines as they occur in the AHB"""
+
+    @field_validator("lines")
+    @classmethod
+    def validate_lines(cls, value: list[AhbLine]):
+        """
+        The following checks are not baked into the AhbLine class itself, because they might be initialized
+        with raw data that do not yet obey these strict validations. But as soon as we bundle them in a
+        FlatAnwendungshandbuch, the sanitization shall be applied.
+        """
+        if value:
+            _check_that_nearly_all_lines_have_a_segment_group(value)
+
+        for ahb_line in value:
+            _check_that_line_has_either_none_or_d4_data_element(ahb_line)
+            _check_that_line_has_either_none_or_matching_sg(ahb_line)
+            _check_that_line_has_either_none_az_segment_code(ahb_line)
+        return value
 
     def get_segment_groups(self) -> list[Optional[str]]:
         """
@@ -311,7 +312,6 @@ class FlatAnwendungshandbuch:
         :param lines:
         :return: distinct segment groups, including None in the order in which they occur
         """
-        # this code is in a static method to make it easily accessible for fine grained unit testing
         result: list[Optional[str]] = []
         for line in lines:
             if line.segment_group_key not in result:
