@@ -14,7 +14,13 @@ from marshmallow import Schema, fields, post_load
 from more_itertools import last, split_when
 from pydantic import BaseModel, Field, StringConstraints, field_validator
 
-from kohlrahbi.new_maus.edifact_components import DataElementFreeText, DataElementValuePool, Segment, SegmentGroup
+from kohlrahbi.new_maus.edifact_components import (
+    DataElementFreeText,
+    DataElementValuePool,
+    Segment,
+    SegmentGroup,
+    ValuePoolEntry,
+)
 
 _VERSION = "0.3.0"  #: version to be written into the deep ahb
 
@@ -383,11 +389,21 @@ class DeepAhbInputReplacement(BaseModel):
 
     #: true iff a replacement is applicable
     replacement_found: bool = Field(..., description="True iff a replacement is applicable")
-    input_replacement: Optional[str] = Field(
-        None,
+
+    # replacements for DataElementValuePool
+    value_pool_replacement: Optional[ValuePoolEntry] = Field(
+        default=None,
         description=(
-            "The replacement for entered_input itself."
-            "Note that the replacement may be None even if a replacement is found."
+            "The replacement for a value pool entry."
+            "Note that the replacements may be None even if replacements are found."
+        ),
+    )
+    # replacements for DataElementFreeText
+    free_text_replacement: Optional[DataElementFreeText] = Field(
+        default=None,
+        description=(
+            "The replacement for a DataElementFreeText."
+            "Note that the replacements may be None even if replacements are found."
         ),
     )
 
@@ -461,6 +477,13 @@ class DeepAnwendungshandbuch(BaseModel):
                         result.append(segment)
         return result
 
+    def replace_inputs_based_on_discriminator(self, replacement_func: Callable[[str], DeepAhbInputReplacement]) -> None:
+        """
+        Replace all the entered_inputs in the entire DeepAnwendungshandbuch using the given replacement_func.
+        Note that this modifies this DeepAnwendungshandbuch instance (self).
+        """
+        _replace_inputs_based_on_discriminator(self.lines, replacement_func)
+
     def get_all_value_pools(self) -> list[DataElementValuePool]:
         """
         recursively find all value pools in the deep ahb
@@ -506,3 +529,35 @@ class DeepAnwendungshandbuch(BaseModel):
             if segment_group.ahb_expression:
                 result.add(segment_group.ahb_expression)
         return sorted(result)
+
+
+def _replace_inputs_based_on_discriminator(
+    segment_groups: list[SegmentGroup], replacement_func: Callable[[str], DeepAhbInputReplacement]
+) -> None:
+    """
+    Replace all the entered_inputs in the entire list of segment groups using the given replacement_func.
+    """
+    for segment_group in segment_groups:
+        if segment_group.segment_groups is not None:
+            _replace_inputs_based_on_discriminator(segment_group.segment_groups, replacement_func)
+        if segment_group.segments is None:
+            continue
+        for segment in segment_group.segments:
+            for data_element in segment.data_elements:
+                if data_element.discriminator is not None:
+                    replacement_result = replacement_func(data_element.discriminator)
+
+                    found_replacement: bool = replacement_result.replacement_found is True and (
+                        replacement_result.free_text_replacement is not None
+                        or replacement_result.value_pool_replacement is not None
+                    )
+
+                    if found_replacement:
+                        if isinstance(data_element, DataElementFreeText):
+                            if replacement_result.free_text_replacement is None:
+                                continue
+                            data_element.free_text = replacement_result.free_text_replacement.free_text
+                        elif isinstance(data_element, DataElementValuePool):
+                            if replacement_result.value_pool_replacement is None:
+                                continue
+                            data_element.value_pool.append(replacement_result.value_pool_replacement)
