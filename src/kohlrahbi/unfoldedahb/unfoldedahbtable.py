@@ -152,7 +152,7 @@ class UnfoldedAhb(BaseModel):
                 )
 
             if UnfoldedAhb._is_segment_opening_line(ahb_row=row):
-                current_segment_id = row["Segment ID"]
+                current_segment_id = row["Segment ID"] or None
                 unfolded_ahb_lines.append(
                     UnfoldedAhbLine(
                         index=index,
