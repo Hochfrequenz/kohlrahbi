@@ -152,7 +152,7 @@ class UnfoldedAhb(BaseModel):
                 )
 
             if UnfoldedAhb._is_segment_opening_line(ahb_row=row):
-                current_segment_id = row["Segment ID"]
+                current_segment_id = row["Segment ID"].strip() or None
                 unfolded_ahb_lines.append(
                     UnfoldedAhbLine(
                         index=index,
@@ -345,7 +345,7 @@ class UnfoldedAhb(BaseModel):
                     segment_group_key=unfolded_ahb_line.segment_gruppe,
                     segment_code=unfolded_ahb_line.segment,
                     data_element=unfolded_ahb_line.datenelement,
-                    segment_id=unfolded_ahb_line.segment_id,
+                    segment_id=unfolded_ahb_line.segment_id or None,
                     value_pool_entry=unfolded_ahb_line.code,
                     name=unfolded_ahb_line.beschreibung or unfolded_ahb_line.qualifier,
                     ahb_expression=unfolded_ahb_line.bedingung_ausdruck,
