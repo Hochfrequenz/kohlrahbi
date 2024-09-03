@@ -106,29 +106,7 @@ class UnfoldedAhb(BaseModel):
             )
 
             if UnfoldedAhb._is_section_name(ahb_row=row):
-                _, next_row = iterable_ahb_table.peek()  # pylint: disable=unpacking-non-sequence # it is a tuple indeed
-                # ahb_expression = next_row[pruefi]
                 current_segment_id = None
-                # if _segment_group_pattern.match(next_row["Segment Gruppe"]):
-                #    segment_group_key = next_row["Segment Gruppe"]
-                # else:
-                #    segment_group_key = None
-
-                # unfolded_ahb_lines.append(
-                #     UnfoldedAhbLine(
-                #         index=index,
-                #         segment_name=current_section_name,
-                #         segment_gruppe=None,#segment_group_key,
-                #         segment=None,
-                #         datenelement=None,
-                #         code=None,
-                #         qualifier=None,
-                #         beschreibung=None,
-                #         bedingung_ausdruck=None,#ahb_expression or None,
-                #         bedingung=None,
-                #         segment_id=None,#current_segment_id,
-                #     )
-                # )
                 continue
 
             if UnfoldedAhb._is_segment_group(ahb_row=row):
@@ -355,7 +333,6 @@ class UnfoldedAhb(BaseModel):
                         index=unfolded_ahb_line.index,
                     )
                 )
-        # lines = _remove_irrelevant_lines(lines)
         try:
             return FlatAnwendungshandbuch(meta=meta, lines=lines)
         except ValueError:
@@ -513,42 +490,10 @@ class UnfoldedAhb(BaseModel):
         )
 
 
-def _remove_irrelevant_lines(lines: list[AhbLine]) -> list[AhbLine]:
-    """
-    Removes lines that are irrelevant for the AHB.
-    """
-    reduced_lines: list[AhbLine] = []
-    for line, next_line in zip(lines, lines[1:] + [None]):
-        line_dict = line.model_dump()
-        next_line_dict: dict[str, str | None]
-        if next_line:
-            next_line_dict = next_line.model_dump()
-        is_next_ahb_line_empty = next_line is None or next_line_dict["ahb_expression"] is None
-        is_ahb_line_only_segment_group_header = (
-            line_dict["segment_group_key"] is not None
-            and line_dict["segment_code"] is None
-            and line_dict["ahb_expression"] is None
-        )
-        is_empty_ahb_line = (
-            line_dict["segment_code"] is not None
-            and line_dict["section_name"] is not None
-            and line_dict["ahb_expression"] is None
-        ) or (is_ahb_line_only_segment_group_header and is_next_ahb_line_empty)
-
-        is_double_line = (
-            line_dict["data_element"] is None
-            and line_dict["name"] == ""
-            and line_dict["segment_code"] is None
-            and line_dict["value_pool_entry"] is None
-            and line_dict["segment_group_key"] is not None
-            and line_dict["section_name"] is not None
-        )
-        if not is_double_line and not is_empty_ahb_line:
-            reduced_lines.append(line)
-    return reduced_lines
-
-
 def _line_is_flatahb_line(unfolded_ahb_line: UnfoldedAhbLine) -> bool:
+    """
+    returns true if the unfolded_ahb_line is a valid line for a flat AHB
+    """
     return (
         unfolded_ahb_line.segment is not None or unfolded_ahb_line.segment_gruppe is not None
     ) and unfolded_ahb_line.bedingung_ausdruck is not None
