@@ -392,16 +392,16 @@ class UnfoldedAhb(BaseModel):
                 file_content = file.read()
                 existing_flat_ahb = FlatAnwendungshandbuch.model_validate_json(file_content)
             _keep_guids_of_unchanged_lines_stable(flat_ahb, existing_flat_ahb)
-        dump_data = FlatAnwendungshandbuch.model_dump_json(flat_ahb)
+        json_dict = flat_ahb.model_dump(mode="json")
         with open(file_path, "w", encoding="utf-8") as file:
-            json.dump(dump_data, file, ensure_ascii=False, indent=2, sort_keys=True)
+            json.dump(json_dict, file, ensure_ascii=False, indent=2, sort_keys=True)
         logger.info(
             "The flatahb file for %s is saved at %s",
             self.meta_data.pruefidentifikator,
             file_path.absolute(),
         )
         del flat_ahb
-        del dump_data
+        del json_dict
         if "existing_flat_ahb" in locals():
             del existing_flat_ahb
 
