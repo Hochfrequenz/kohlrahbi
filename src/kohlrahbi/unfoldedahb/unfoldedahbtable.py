@@ -345,7 +345,7 @@ class UnfoldedAhb(BaseModel):
                     segment_group_key=unfolded_ahb_line.segment_gruppe,
                     segment_code=unfolded_ahb_line.segment,
                     data_element=unfolded_ahb_line.datenelement,
-                    segment_id=unfolded_ahb_line.segment_id or None,
+                    segment_id=unfolded_ahb_line.segment_id.strip() or None,
                     value_pool_entry=unfolded_ahb_line.code,
                     name=unfolded_ahb_line.beschreibung or unfolded_ahb_line.qualifier,
                     ahb_expression=unfolded_ahb_line.bedingung_ausdruck,

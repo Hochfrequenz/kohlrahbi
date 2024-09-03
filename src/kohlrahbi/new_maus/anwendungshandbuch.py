@@ -42,6 +42,7 @@ class AhbLine(BaseModel):
     segment_id: Optional[str] = Field(
         default=None,
         description="the 5 digit segment id, e.g. '00003' for Nachrichten Kopfsegment. This is available since FV2410.",
+        pattern=r"^\d{5}$",
     )
 
     value_pool_entry: Optional[str] = Field(
