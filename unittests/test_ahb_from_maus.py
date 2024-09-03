@@ -3,14 +3,14 @@ from typing import Optional
 
 import pytest  # type:ignore[import]
 
-from kohlrahbi.new_maus.anwendungshandbuch import (
+from kohlrahbi.models.anwendungshandbuch import (
     AhbLine,
     AhbMetaInformation,
     DeepAhbInputReplacement,
     DeepAnwendungshandbuch,
     FlatAnwendungshandbuch,
 )
-from kohlrahbi.new_maus.edifact_components import (
+from kohlrahbi.models.edifact_components import (
     DataElementFreeText,
     DataElementValuePool,
     Segment,

@@ -7,7 +7,7 @@ from docx.table import _Cell
 from docx.text.paragraph import Paragraph
 from pydantic import BaseModel, ConfigDict
 
-from kohlrahbi.new_maus.flat_ahb_reader import FlatAhbCsvReader
+from kohlrahbi.models.flat_ahb_reader import FlatAhbCsvReader
 from kohlrahbi.table_header import get_tabstop_positions
 
 INDEX_OF_CODES_AND_QUALIFIER_COLUMN = 4

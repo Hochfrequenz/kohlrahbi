@@ -3,7 +3,7 @@ from typing import Optional
 
 import pytest  # type:ignore[import]
 
-from kohlrahbi.new_maus.flat_ahb_reader import FlatAhbCsvReader, check_file_can_be_parsed_as_ahb_csv
+from kohlrahbi.models.flat_ahb_reader import FlatAhbCsvReader, check_file_can_be_parsed_as_ahb_csv
 
 
 class TestAhbCsvReader:
