@@ -1,0 +1,3 @@
+[submodule "edi_energy_mirror"]
+	path = edi_energy_mirror
+	url = https://github.com/Hochfrequenz/edi_energy_mirror
