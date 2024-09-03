@@ -401,7 +401,7 @@ class UnfoldedAhb(BaseModel):
             file_path.absolute(),
         )
         del flat_ahb
-        del dump_data
+        del json_dict
         if "existing_flat_ahb" in locals():
             del existing_flat_ahb
 
