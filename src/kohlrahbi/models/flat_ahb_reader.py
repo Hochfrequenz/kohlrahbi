@@ -10,8 +10,8 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Literal, Optional, Sequence, TextIO, Tuple, overload
 
-from kohlrahbi.new_maus.anwendungshandbuch import _VERSION, AhbLine, AhbMetaInformation, FlatAnwendungshandbuch
-from kohlrahbi.new_maus.edifact_components import gabi_edifact_qualifier_pattern
+from kohlrahbi.models.anwendungshandbuch import _VERSION, AhbLine, AhbMetaInformation, FlatAnwendungshandbuch
+from kohlrahbi.models.edifact_components import gabi_edifact_qualifier_pattern
 
 _pruefi_pattern = re.compile(r"^\d{5}$")  #: five digits
 _value_pool_entry_pattern = re.compile(r"^(?!MP-ID)[A-Z0-9\-i]{2,}$")  # i for GABi -- why?

@@ -1,6 +1,6 @@
 import pytest  # type:ignore[import]
 
-from kohlrahbi.new_maus.edifact_components import (
+from kohlrahbi.models.edifact_components import (
     DataElementDataType,
     DataElementFreeText,
     DataElementValuePool,

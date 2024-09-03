@@ -11,7 +11,7 @@ from typing import Callable, Iterable, Literal, Mapping, Optional
 from pydantic import BaseModel, Field, StringConstraints, field_validator
 from typing_extensions import Annotated
 
-from kohlrahbi.new_maus import _check_that_string_is_not_whitespace_or_empty
+from kohlrahbi.models import _check_that_string_is_not_whitespace_or_empty
 
 
 class DataElementDataType(str, Enum):

@@ -13,7 +13,7 @@ from uuid import UUID
 from more_itertools import last, split_when
 from pydantic import BaseModel, Field, StringConstraints, field_validator
 
-from kohlrahbi.new_maus.edifact_components import (
+from kohlrahbi.models.edifact_components import (
     DataElementFreeText,
     DataElementValuePool,
     Segment,

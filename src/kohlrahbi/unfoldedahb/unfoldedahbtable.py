@@ -17,8 +17,8 @@ from pydantic import BaseModel
 
 from kohlrahbi.ahbtable.ahbtable import AhbTable, _column_letter_width_mapping
 from kohlrahbi.logger import logger
-from kohlrahbi.new_maus.anwendungshandbuch import AhbLine, AhbMetaInformation, FlatAnwendungshandbuch
-from kohlrahbi.new_maus.flat_ahb_reader import FlatAhbCsvReader
+from kohlrahbi.models.anwendungshandbuch import AhbLine, AhbMetaInformation, FlatAnwendungshandbuch
+from kohlrahbi.models.flat_ahb_reader import FlatAhbCsvReader
 from kohlrahbi.unfoldedahb.unfoldedahbline import UnfoldedAhbLine
 from kohlrahbi.unfoldedahb.unfoldedahbtablemetadata import UnfoldedAhbTableMetaData
 

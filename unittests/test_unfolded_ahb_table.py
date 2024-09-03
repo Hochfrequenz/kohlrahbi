@@ -1,6 +1,6 @@
 import pytest
 
-from kohlrahbi.new_maus.anwendungshandbuch import AhbLine, AhbMetaInformation, FlatAnwendungshandbuch
+from kohlrahbi.models.anwendungshandbuch import AhbLine, AhbMetaInformation, FlatAnwendungshandbuch
 from kohlrahbi.unfoldedahb import UnfoldedAhbTableMetaData
 from kohlrahbi.unfoldedahb.unfoldedahbline import UnfoldedAhbLine
 from kohlrahbi.unfoldedahb.unfoldedahbtable import UnfoldedAhb, _remove_irrelevant_lines
