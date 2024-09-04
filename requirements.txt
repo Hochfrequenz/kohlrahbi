@@ -8,6 +8,10 @@ annotated-types==0.7.0
     # via pydantic
 click==8.1.7
     # via kohlrahbi (pyproject.toml)
+colorama==0.4.6
+    # via
+    #   click
+    #   colorlog
 colorlog==6.8.2
     # via kohlrahbi (pyproject.toml)
 efoli==1.1.0
@@ -26,7 +30,7 @@ pandas==2.2.2
     # via kohlrahbi (pyproject.toml)
 pydantic==2.8.2
     # via kohlrahbi (pyproject.toml)
-pydantic-core==2.23.1
+pydantic-core==2.20.1
     # via pydantic
 python-dateutil==2.9.0.post0
     # via pandas
