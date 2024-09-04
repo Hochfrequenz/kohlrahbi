@@ -227,7 +227,7 @@ class TestCli:
         argument_options.extend(
             [
                 "--edi-energy-mirror-path",
-                str("edi_energy_mirror"),  # path_to_test_edi_energy_mirror_repo),
+                str(Path(__file__).parents[1] / "edi_energy_mirror"),  # path_to_test_edi_energy_mirror_repo),
                 "--output-path",
                 str(actual_output_dir),
             ]

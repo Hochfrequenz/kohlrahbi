@@ -17,7 +17,7 @@ class TestAhb:
         """
         test find_pruefidentifikatoren.
         """
-        pruefis = find_pruefidentifikatoren(Path("edi_energy_mirror/edi_energy_de/FV2310"))
+        pruefis = find_pruefidentifikatoren(Path(__file__).parents[1] / "edi_energy_mirror/edi_energy_de/FV2310")
         assert pruefis == snapshot
 
     def test_get_ahb_documents_path(self):
