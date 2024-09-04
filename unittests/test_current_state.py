@@ -3,9 +3,6 @@ This test will check if we get the same results during the refactoring process.
 """
 
 import logging
-import os
-import pathlib
-import shutil
 from pathlib import Path
 from typing import Union
 
@@ -13,7 +10,6 @@ import pytest
 from click.testing import CliRunner, Result
 
 from kohlrahbi import cli
-from unittests import path_to_test_edi_energy_mirror_repo, path_to_test_files_fv2310
 
 # Setup basic configuration for logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -39,8 +35,9 @@ class TestCli:
             pytest.param(
                 [
                     "ahb",
+                    "--assume-yes",
                     "--format-version",
-                    "FV2310",
+                    "FV2404",
                     "--file-type",
                     "csv",
                     "-p",
@@ -220,13 +217,12 @@ class TestCli:
         ],
     )
     def test_kohlrahbi_cli_with_valid_arguments(
-        self, argument_options: list[str], expected_response: dict[str, Union[str, int]], snapshot
+        self, argument_options: list[str], expected_response: dict[str, Union[str, int]], snapshot, tmp_path
     ):
         """
         This test runs the CLI tool with valid arguments and checks if the output is as expected.
         """
-        shutil.rmtree("./src/kohlrahbi/cache/")  # only temporary
-        actual_output_dir = path_to_test_files_fv2310 / "actual-output"
+        actual_output_dir = tmp_path / "actual-output"
 
         argument_options.extend(
             [
