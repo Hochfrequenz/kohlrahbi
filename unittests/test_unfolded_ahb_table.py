@@ -284,5 +284,5 @@ class TestUnfoldedAhbTable:
             ),
         ],
     )
-    def test_line_is_flatahb_line(self, line: AhbLine, expected: bool):
+    def test_line_is_flatahb_line(self, line: UnfoldedAhbLine, expected: bool):
         assert _line_is_flatahb_line(line) == expected
