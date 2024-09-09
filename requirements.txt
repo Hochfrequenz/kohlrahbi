@@ -24,7 +24,7 @@ openpyxl==3.1.5
     # via kohlrahbi (pyproject.toml)
 pandas==2.2.2
     # via kohlrahbi (pyproject.toml)
-pydantic==2.9.0
+pydantic==2.8.1
     # via kohlrahbi (pyproject.toml)
 pydantic-core==2.20.1
     # via pydantic
