@@ -12,6 +12,7 @@ from kohlrahbi.ahb import (
 from unittests import path_to_test_edi_energy_mirror_repo, path_to_test_files_fv2310
 
 
+@pytest.mark.snapshot
 class TestAhb:
     def test_find_pruefidentifikatoren(self, snapshot):
         """
