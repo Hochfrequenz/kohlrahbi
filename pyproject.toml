@@ -81,7 +81,7 @@ source = "vcs"
 version-file = "src/kohlrahbi/version.py"
 
 [tool.hatch.build.targets.sdist]
-exclude = ["/unittests"]
+exclude = ["/unittests", "/edi_energy_mirror"]
 
 [tool.hatch.build.targets.wheel]
 only-include = ["src"]
