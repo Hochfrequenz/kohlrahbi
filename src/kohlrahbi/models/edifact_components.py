@@ -6,7 +6,7 @@ Components contain not only EDIFACT composits but also segments and segment grou
 import re
 from abc import ABC
 from enum import Enum
-from typing import Callable, Iterable, Literal, Mapping, Optional
+from typing import Callable, Iterable, Literal, Mapping, Optional, Union
 
 from pydantic import BaseModel, Field, StringConstraints, field_validator
 from typing_extensions import Annotated
@@ -238,7 +238,7 @@ class Segment(SegmentLevel):
     A Segment contains multiple data elements.
     """
 
-    data_elements: list[DataElementValuePool | DataElementFreeText] = Field(discriminator="value_type")
+    data_elements: list[Union[DataElementValuePool, DataElementFreeText]] = Field(discriminator="value_type")
     section_name: Optional[str] = Field(
         default=None,
         description=(
