@@ -238,7 +238,7 @@ class Segment(SegmentLevel):
     A Segment contains multiple data elements.
     """
 
-    data_elements: list[Union[DataElementValuePool, DataElementFreeText]] = Field(discriminator="value_type")
+    data_elements: list[Annotated[Union[DataElementValuePool, DataElementFreeText], Field(discriminator="value_type")]]
     section_name: Optional[str] = Field(
         default=None,
         description=(
