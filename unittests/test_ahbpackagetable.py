@@ -1,10 +1,11 @@
 import json
 import shutil
 from pathlib import Path
+from typing import Optional
 
 import pytest
 
-from kohlrahbi.ahbtable.ahbpackagetable import AhbPackageTable
+from kohlrahbi.ahbtable.ahbpackagetable import AhbPackageTable, extract_number
 from unittests import path_to_test_files_fv2310
 
 
@@ -13,12 +14,12 @@ class TestAhbPackageTable:
         test_package_dict = AhbPackageTable(
             package_dict={
                 "PARTIN": {
-                    "2": "[1]u[2]",
-                    "3": "[3]u[4]",
+                    "2P": "[1]u[2]",
+                    "3P": "[3]u[4]",
                 },
                 "COMDIS": {
-                    "2": "[10]u[12]",
-                    "3": "[13]u[14]",
+                    "2P": "[10]u[12]",
+                    "3P": "[13]u[14]",
                 },
             }
         )
@@ -70,3 +71,17 @@ class TestAhbPackageTable:
         test_package_dict = AhbPackageTable(package_dict=dict1)
         test_package_dict.include_package_dict(dict2)
         assert test_package_dict.package_dict == expected
+
+    @pytest.mark.parametrize(
+        "key, expected",
+        [
+            pytest.param("UB1", -99999, id="UB1"),
+            pytest.param("UB10", -99990, id="UB10"),
+            pytest.param("1P", 1, id="1P"),
+            pytest.param("10P", 10, id="10P"),
+            pytest.param("XYZ", None, id="XYZ"),
+            pytest.param("UB", None, id="UB"),
+        ],
+    )
+    def test_extract_number(self, key: str, expected: Optional[int]):
+        assert extract_number(key) == expected
