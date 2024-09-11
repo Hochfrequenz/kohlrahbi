@@ -5,7 +5,6 @@ class which contains AHB package condition table
 import json
 import re
 from pathlib import Path
-from typing import Optional
 
 import pandas as pd
 from docx.table import Table as DocxTable
