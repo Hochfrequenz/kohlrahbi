@@ -61,12 +61,12 @@ class AhbPackageTable(BaseModel):
             for _, row in self.table.iterrows():
                 package = row["Paket"]
                 # Use re.search to find the first match
-                match = re.search(r"\[(\d+)P\]", package)
+                match = re.search(r"\[(\d+P)\]", package)
                 if not match:
                     raise ValueError("No valid package key found in the package column.")
                     # Extract the matched digits
                 package = match.group(1)
-                if package != "1":
+                if package != "1P":
                     package_conditions = row["Paketvoraussetzung(en)"].strip()
                     # check whether package was already collected:
                     existing_text = package_dict[edifact_format].get(package)
@@ -110,9 +110,9 @@ class AhbPackageTable(BaseModel):
             package_json_output_directory_path.mkdir(parents=True, exist_ok=True)
             file_path = package_json_output_directory_path / "packages.json"
             # resort  PackageKeyConditionTextMappings for output
-            sorted_package_dict = {k: format_pkg_dict[k] for k in sorted(format_pkg_dict, key=int)}
+            sorted_package_dict = {k: format_pkg_dict[k] for k in sorted(format_pkg_dict, key=extract_number)}
             array = [
-                {"package_key": i + "P", "package_expression": sorted_package_dict[i], "edifact_format": edifact_format}
+                {"package_key": i, "package_expression": sorted_package_dict[i], "edifact_format": edifact_format}
                 for i in sorted_package_dict
             ]
             with open(file_path, "w", encoding="utf-8") as file:
@@ -123,3 +123,11 @@ class AhbPackageTable(BaseModel):
                 edifact_format,
                 file_path,
             )
+
+
+def extract_number(key):
+    if key.startswith("UB"):
+        match = re.match(r"UB(\d+)", key)
+        return int(match.group(1)) - 100000 if match else float("inf")
+    match = re.match(r"(\d+)P", key)
+    return int(match.group(1)) if match else float("inf")
