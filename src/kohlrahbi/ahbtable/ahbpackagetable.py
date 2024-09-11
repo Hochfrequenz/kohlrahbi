@@ -126,12 +126,12 @@ class AhbPackageTable(BaseModel):
             )
 
 
-def extract_number(key: str) -> Optional[int]:
+def extract_number(key: str) -> float:
     """
     Sort packages by their keys numerically.
     """
     if key.startswith("UB"):
         match = re.match(r"UB(\d+)", key)
-        return int(match.group(1)) - 100000 if match else None
+        return float(match.group(1)) - 100000 if match else float("inf")
     match = re.match(r"(\d+)P", key)
-    return int(match.group(1)) if match else None
+    return float(match.group(1)) if match else float("inf")

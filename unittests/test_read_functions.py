@@ -79,11 +79,15 @@ class TestReadFunctions:
         collected_packages: AhbPackageTable = AhbPackageTable()
         all_format_files = find_all_files_from_all_pruefis(pruefi_to_file_mapping)
 
-        for file in all_format_files.get(edifact_format):
+        files = all_format_files.get(edifact_format)
+        assert files is not None
+
+        for file in files:
             # type: ignore[call-arg, arg-type]
-            doc = docx.Document(edi_repo_path / "edi_energy_de" / "FV2404" / Path(file))
+            doc = docx.Document(str(edi_repo_path / "edi_energy_de/FV2404" / Path(file)))
             assert doc
             packages, cond_table = get_all_conditions_from_doc(doc, edifact_format)
+            assert packages is not None
             if packages.table is not None:
                 collected_conditions.include_condition_dict(packages.provide_conditions(edifact_format))
             collected_conditions.include_condition_dict(cond_table.conditions_dict)

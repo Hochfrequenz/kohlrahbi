@@ -79,8 +79,8 @@ class TestAhbPackageTable:
             pytest.param("UB10", -99990, id="UB10"),
             pytest.param("1P", 1, id="1P"),
             pytest.param("10P", 10, id="10P"),
-            pytest.param("XYZ", None, id="XYZ"),
-            pytest.param("UB", None, id="UB"),
+            pytest.param("XYZ", float("inf"), id="XYZ"),
+            pytest.param("UB", float("inf"), id="UB"),
         ],
     )
     def test_extract_number(self, key: str, expected: Optional[int]):
