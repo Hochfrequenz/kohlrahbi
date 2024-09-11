@@ -12,45 +12,14 @@ from kohlrahbi.ahb import (
 from unittests import path_to_test_edi_energy_mirror_repo, path_to_test_files_fv2310
 
 
+@pytest.mark.snapshot
 class TestAhb:
-    def test_extract_pruefis_from_docx(self) -> None:
-        """
-        extract_pruefis_from_docx.
-        """
-        input_path = path_to_test_files_fv2310 / Path(
-            "COMDISAHB-informatorischeLesefassung1.0dKonsolidierteLesefassungmitFehlerkorrekturenStand19.06.2023_20230719_20231001.docx"
-        )
-        pruefis = extract_pruefis_from_docx(input_path)
-        assert (
-            "29001" in pruefis
-            and pruefis["29001"]
-            == "COMDISAHB-informatorischeLesefassung1.0dKonsolidierteLesefassungmitFehlerkorrekturenStand19.06.2023_20230719_20231001.docx"
-        )
-        assert (
-            "29002" in pruefis
-            and pruefis["29002"]
-            == "COMDISAHB-informatorischeLesefassung1.0dKonsolidierteLesefassungmitFehlerkorrekturenStand19.06.2023_20230719_20231001.docx"
-        )
-
-    def test_find_pruefidentifikatoren(self):
+    def test_find_pruefidentifikatoren(self, snapshot):
         """
         test find_pruefidentifikatoren.
         """
-        pruefis = find_pruefidentifikatoren(path_to_test_files_fv2310)
-        assert (
-            "29001" in pruefis
-            and pruefis["29001"]
-            == "COMDISAHB-informatorischeLesefassung1.0dKonsolidierteLesefassungmitFehlerkorrekturenStand19.06.2023_20230719_20231001.docx"
-        )
-        assert (
-            "17201" in pruefis
-            and pruefis["17201"] == "ORDERSORDRSPAHBMaBiS-informatorischeLesefassung2.2c_99991231_20231001.docx"
-        )
-        assert (
-            "37001" in pruefis
-            and pruefis["37001"]
-            == "PARTINAHB-informatorischeLesefassung1.0cKonsolidierteLesefassungmitFehlerkorrekturenStand29.09.2023_20240402_20231001.docx"
-        )
+        pruefis = find_pruefidentifikatoren(Path(__file__).parents[1] / "edi_energy_mirror/edi_energy_de/FV2310")
+        assert pruefis == snapshot
 
     def test_get_ahb_documents_path(self):
         """

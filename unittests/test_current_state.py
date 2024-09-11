@@ -10,7 +10,7 @@ import pytest
 from click.testing import CliRunner, Result
 
 from kohlrahbi import cli
-from unittests import path_to_test_edi_energy_mirror_repo, path_to_test_files_fv2310
+from unittests import current_state_pruefis
 
 # Setup basic configuration for logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -25,6 +25,7 @@ def get_csv_paths(root_dir) -> list[Path]:
     return [path for path in root_path.rglob("*.csv")]
 
 
+@pytest.mark.snapshot
 class TestCli:
     """
     This class contains the unit tests for the CLI tool.
@@ -36,29 +37,32 @@ class TestCli:
             pytest.param(
                 [
                     "ahb",
+                    "--assume-yes",
                     "--format-version",
-                    "FV2310",
+                    "FV2404",
                     "--file-type",
                     "csv",
+                    "-p",
+                    pruefi,
                 ],
                 {"exit_code": 0, "output_snippet": ""},
-                id="proof of concept",
+                id=pruefi,
             )
+            for pruefi in current_state_pruefis
         ],
     )
     def test_kohlrahbi_cli_with_valid_arguments(
-        self, argument_options: list[str], expected_response: dict[str, Union[str, int]], snapshot
+        self, argument_options: list[str], expected_response: dict[str, Union[str, int]], snapshot, tmp_path
     ):
         """
         This test runs the CLI tool with valid arguments and checks if the output is as expected.
         """
-
-        actual_output_dir = path_to_test_files_fv2310 / "actual-output"
+        actual_output_dir = tmp_path / "actual-output"
 
         argument_options.extend(
             [
                 "--edi-energy-mirror-path",
-                str(path_to_test_edi_energy_mirror_repo),
+                str(Path(__file__).parents[1] / "edi_energy_mirror"),
                 "--output-path",
                 str(actual_output_dir),
             ]
@@ -76,10 +80,7 @@ class TestCli:
 
         # Check if the generated files are the same as the expected files
 
-        path_to_actual_csv_files = get_csv_paths(actual_output_dir)
+        path_to_actual_csv_file = get_csv_paths(actual_output_dir)
 
-        actual_csv_dict: dict[str, str] = {}
-        for file in path_to_actual_csv_files:
-            with open(file, "r", encoding="utf-8") as actual_csv:
-                actual_csv_dict[file.name] = actual_csv.read()
-        assert snapshot == actual_csv_dict
+        with open(path_to_actual_csv_file[0], "r", encoding="utf-8") as actual_csv:
+            assert snapshot == actual_csv.read()
