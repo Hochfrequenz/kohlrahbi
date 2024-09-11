@@ -1,3 +1,7 @@
+# pylint: disable=line-too-long
+"""
+Contains conditions for times in allgemeine Festlegungen.
+"""
 time_packages = {
     "UB1": "([931] ∧ [932] [490]) ⊻ ([931] ∧ [933] [491])",
     "UB2": "([931] ∧ [934] [490]) ⊻ ([931] ∧ [935] [491])",

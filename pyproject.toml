@@ -101,3 +101,4 @@ load-plugins = "pylint_pydantic"
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
+markers = ["snapshot: mark a test as a snapshot test"]
