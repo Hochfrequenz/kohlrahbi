@@ -26,13 +26,13 @@ pandas==2.2.2
     # via kohlrahbi (pyproject.toml)
 pydantic==2.8.1
     # via kohlrahbi (pyproject.toml)
-pydantic-core==2.20.1
+pydantic-core==2.23.3
     # via pydantic
 python-dateutil==2.9.0.post0
     # via pandas
 python-docx==1.1.2
     # via kohlrahbi (pyproject.toml)
-pytz==2024.1
+pytz==2024.2
     # via
     #   efoli
     #   kohlrahbi (pyproject.toml)
