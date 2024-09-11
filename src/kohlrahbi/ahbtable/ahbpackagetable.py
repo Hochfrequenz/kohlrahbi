@@ -61,12 +61,12 @@ class AhbPackageTable(BaseModel):
             for _, row in self.table.iterrows():
                 package = row["Paket"]
                 # Use re.search to find the first match
-                match = re.search(r"\[(\d+)P\]", package)
+                match = re.search(r"\[(\d+P)\]", package)
                 if not match:
                     raise ValueError("No valid package key found in the package column.")
                     # Extract the matched digits
                 package = match.group(1)
-                if package != "1":
+                if package != "1P":
                     package_conditions = row["Paketvoraussetzung(en)"].strip()
                     # check whether package was already collected:
                     existing_text = package_dict[edifact_format].get(package)
@@ -105,14 +105,25 @@ class AhbPackageTable(BaseModel):
         The file will be stored in the directory:
             'output_directory_path/<edifact_format>/conditions.json'
         """
+        package_suffix = "P"
+        package_prefix = "UB"
         for edifact_format, format_pkg_dict in self.package_dict.items():
             package_json_output_directory_path = output_directory_path / str(edifact_format)
             package_json_output_directory_path.mkdir(parents=True, exist_ok=True)
             file_path = package_json_output_directory_path / "packages.json"
             # resort  PackageKeyConditionTextMappings for output
-            sorted_package_dict = {k: format_pkg_dict[k] for k in sorted(format_pkg_dict, key=int)}
+            package_dict_p = {k: v for k, v in format_pkg_dict.items() if k.endswith(package_suffix)}
+            package_dict_ub = {k: v for k, v in format_pkg_dict.items() if k.startswith(package_prefix)}
+            sorted_package_dict_p = {
+                k: package_dict_p[k] for k in sorted(package_dict_p, key=lambda x: int(x[: -len(package_suffix)]))
+            }
+            sorted_package_dict_ub = {
+                k: package_dict_ub[k] for k in sorted(package_dict_ub, key=lambda x: int(x[len(package_prefix) :]))
+            }
+
+            sorted_package_dict = {**sorted_package_dict_ub, **sorted_package_dict_p}
             array = [
-                {"package_key": i + "P", "package_expression": sorted_package_dict[i], "edifact_format": edifact_format}
+                {"package_key": i, "package_expression": sorted_package_dict[i], "edifact_format": edifact_format}
                 for i in sorted_package_dict
             ]
             with open(file_path, "w", encoding="utf-8") as file:

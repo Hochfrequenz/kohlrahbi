@@ -1,11 +1,9 @@
 import json
-import shutil
 from pathlib import Path
 
 import pytest
 
 from kohlrahbi.ahbtable.ahbpackagetable import AhbPackageTable
-from unittests import path_to_test_files_fv2310
 
 
 class TestAhbPackageTable:
@@ -13,12 +11,12 @@ class TestAhbPackageTable:
         test_package_dict = AhbPackageTable(
             package_dict={
                 "PARTIN": {
-                    "2": "[1]u[2]",
-                    "3": "[3]u[4]",
+                    "2P": "[1]u[2]",
+                    "3P": "[3]u[4]",
                 },
                 "COMDIS": {
-                    "2": "[10]u[12]",
-                    "3": "[13]u[14]",
+                    "2P": "[10]u[12]",
+                    "3P": "[13]u[14]",
                 },
             }
         )

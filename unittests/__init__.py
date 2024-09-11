@@ -5,6 +5,8 @@ Further reading: https://docs.pytest.org/en/6.2.x/goodpractices.html#tests-outsi
 
 from pathlib import Path
 
+from efoli import EdifactFormat
+
 path_to_test_edi_energy_mirror_repo: Path = Path(__file__).parent / "test-edi-energy-mirror-repo"
 path_to_test_files_fv2310 = path_to_test_edi_energy_mirror_repo / "edi_energy_de" / Path("FV2310")
 # list of pruefis to check against in test_current_state
@@ -95,3 +97,4 @@ current_state_pruefis = [
     "55213",
     "55555",
 ]
+test_formats = [EdifactFormat.ORDCHG, EdifactFormat.ORDRSP, EdifactFormat.IFTSTA, EdifactFormat.IFTSTA]
