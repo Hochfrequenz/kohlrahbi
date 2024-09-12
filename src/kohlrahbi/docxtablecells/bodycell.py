@@ -98,7 +98,10 @@ class BodyCell(BaseModel):
                     for indicator_tabstop_position, column_index in zip(
                         self.indicator_tabstop_positions, column_indezes
                     ):
-                        if tabstop == indicator_tabstop_position:
+                        if (
+                            tabstop == indicator_tabstop_position
+                            or paragraph.paragraph_format.left_indent == indicator_tabstop_position
+                        ):
                             ahb_row_dataframe.iat[row_index, column_index] += splitted_text_at_tabs.pop(0)
 
             elif not paragraph_contains_tabstops and splitted_text_at_tabs:
