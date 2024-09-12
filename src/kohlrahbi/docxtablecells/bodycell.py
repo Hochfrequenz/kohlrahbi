@@ -38,7 +38,9 @@ class BodyCell(BaseModel):
             tabstop_positions (list[int]): All tabstop positions of the indicator middle cell
         """
 
-        def handle_code_or_qualifier_entry(splitted_text_at_tabs, row_index, is_first_iteration):
+        def handle_code_or_qualifier_entry(
+            splitted_text_at_tabs: list[str], row_index: int, is_first_iteration: bool
+        ) -> int:
             if (  # pylint: disable=protected-access
                 FlatAhbCsvReader._is_value_pool_entry(candidate=splitted_text_at_tabs[0])
                 and len(splitted_text_at_tabs) >= 2
@@ -49,7 +51,9 @@ class BodyCell(BaseModel):
             ahb_row_dataframe.iat[row_index, INDEX_OF_CODES_AND_QUALIFIER_COLUMN] += splitted_text_at_tabs.pop(0)
             return row_index
 
-        def handle_tab_stops(paragraph, splitted_text_at_tabs, row_index, column_indezes):
+        def handle_tab_stops(
+            paragraph: Paragraph, splitted_text_at_tabs: list[str], row_index: int, column_indezes: list[int]
+        ) -> None:
             tab_stops_in_current_paragraph = get_tabstop_positions(paragraph=paragraph)
             for tabstop in tab_stops_in_current_paragraph:
                 for indicator_tabstop_position, column_index in zip(self.indicator_tabstop_positions, column_indezes):
@@ -60,7 +64,7 @@ class BodyCell(BaseModel):
                         if tabstop == indicator_tabstop_position:
                             ahb_row_dataframe.iat[row_index, column_index] += splitted_text_at_tabs.pop(0)
 
-        def handle_no_tab_stops(splitted_text_at_tabs, row_index):
+        def handle_no_tab_stops(splitted_text_at_tabs: list[str], row_index: int) -> None:
             if splitted_text_at_tabs:
                 ahb_row_dataframe.at[row_index, "Beschreibung"] += splitted_text_at_tabs.pop(0)
 
