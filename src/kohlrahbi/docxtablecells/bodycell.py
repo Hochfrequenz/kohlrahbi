@@ -39,7 +39,7 @@ class BodyCell(BaseModel):
         """
 
         def handle_code_or_qualifier_entry(splitted_text_at_tabs, row_index, is_first_iteration):
-            if (
+            if (  # pylint: disable=protected-access
                 FlatAhbCsvReader._is_value_pool_entry(candidate=splitted_text_at_tabs[0])
                 and len(splitted_text_at_tabs) >= 2
             ):
@@ -54,10 +54,7 @@ class BodyCell(BaseModel):
             for tabstop in tab_stops_in_current_paragraph:
                 for indicator_tabstop_position, column_index in zip(self.indicator_tabstop_positions, column_indezes):
                     if len(tab_stops_in_current_paragraph) == 1:
-                        if (
-                            tabstop == indicator_tabstop_position
-                            or paragraph.paragraph_format.left_indent == indicator_tabstop_position
-                        ):
+                        if indicator_tabstop_position in (tabstop, paragraph.paragraph_format.left_indent):
                             ahb_row_dataframe.iat[row_index, column_index] += splitted_text_at_tabs.pop(0)
                     else:
                         if tabstop == indicator_tabstop_position:
