@@ -2375,8 +2375,8 @@
   107,Gerätestatus,SG7,STS,9013,00020,Z75,,Kommunikationsstörung,,
   108,Gerätestatus,SG7,STS,9013,,Z78,,Gerätewechsel,,
   109,Gerätestatus,SG7,STS,9013,,Z81,,Messeinrichtunggestört/defekt,,
-  110,Gerätestatus,SG7,STS,9013,,ZB8,,keine Störung,,
-  111,Gerätestatus,SG7,STS,9013,,ZC1,,Störungsbehebung,,"[6] Wenn keine Störung festgestellt werden konnte. 
+  110,Gerätestatus,SG7,STS,9013,,ZB8,,keine Störungfeststellbar,,
+  111,Gerätestatus,SG7,STS,9013,,ZC1,,Störungsbehebungnicht möglich,,"[6] Wenn keine Störung festgestellt werden konnte. 
   [10] Wenn in diesem STS DE4405 = Z09 
   [11] Wenn in diesem STS DE4405 = Z10 
   [12] Wenn eine Störung festgestellt wurde, die durch den"
@@ -3279,7 +3279,7 @@
   6,Nachrichten-Kopfsegment,,UNH,0057,00001,2.0c,,Versionsnummer derzugrundeliegendenBDEW-Nachrichtenbeschreibung,x,
   7,Beginn der Nachricht,,BGM,,00002,,,,Muss,
   8,Beginn der Nachricht,,BGM,1001,00002,Z04,,Ausgleichsenergiepreis,X,
-  9,Beginn der Nachricht,,BGM,1001,,Z32,,Preisblatt,,
+  9,Beginn der Nachricht,,BGM,1001,,Z32,,PreisblattMessstellenbetrieb,,
   10,Beginn der Nachricht,,BGM,1001,,Z77,,PreisblattKonfigurationen,,"[30] wenn MP-ID in SG2 NAD+MR in der Rolle LF 
   [33] wenn der Zeitpunkt im DTM+157 DE2380 ≥ 01.01. 2024 00:00 Uhr gesetzlicher deutscher Zeit 
   [36] wenn MP-ID in SG2 NAD+MR in der Rolle NB"
@@ -3592,7 +3592,7 @@
   64,Begründung der Korrektheit,SG3,AJT,1082,,E_0516,,EBD Nr. E_0516,X [492] ∧ [23] ∧[26],
   65,Begründung der Korrektheit,SG3,AJT,1082,,E_0520,,EBD Nr. E_0520,X [492] ∧ [23] ∧[25],
   66,Begründung der Korrektheit,SG3,AJT,1082,,E_0567,,EBD Nr. E_0567,X [492] ∧ [23] ∧[26],
-  67,Begründung der Korrektheit,SG3,AJT,1082,,E_1008S_0108S_0109,,EBD Nr. E_1008Codeliste Strom Nr.S_0108Codeliste Strom Nr.,X [493] ∧ [27] ∧[25]X [492] ∧ [27] ∧S_0109,"[23] Wenn MP-ID in NAD+MS (Nachrichtensender) mit Rolle MSB vorhanden 
+  67,Begründung der Korrektheit,SG3,AJT,1082,,E_1008S_0108S_0109,,EBD Nr. E_1008Codeliste Strom Nr.S_0108Codeliste Strom Nr.S_0109,X [493] ∧ [27] ∧[25]X [492] ∧ [27] ∧[25],"[23] Wenn MP-ID in NAD+MS (Nachrichtensender) mit Rolle MSB vorhanden 
   [24] Wenn MP-ID in NAD+MR (Nachrichtenempfänger) mit Rolle ESA vorhanden 
   [25] Wenn MP-ID in NAD+MR (Nachrichtenempfänger) mit Rolle LF vorhanden 
   [26] Wenn MP-ID in NAD+MR (Nachrichtenempfänger) mit Rolle NB vorhanden 
@@ -3710,7 +3710,7 @@
   64,Begründung der Korrektheit,SG3,AJT,1082,,E_0516,,EBD Nr. E_0516,,
   65,Begründung der Korrektheit,SG3,AJT,1082,,E_0520,,EBD Nr. E_0520,,
   66,Begründung der Korrektheit,SG3,AJT,1082,,E_0567,,EBD Nr. E_0567,,
-  67,Begründung der Korrektheit,SG3,AJT,1082,,E_1008S_0108S_0109,,EBD Nr. E_1008Codeliste Strom Nr.S_0108Codeliste Strom Nr.,X [492],"[23] Wenn MP-ID in NAD+MS (Nachrichtensender) mit Rolle MSB vorhanden 
+  67,Begründung der Korrektheit,SG3,AJT,1082,,E_1008S_0108S_0109,,EBD Nr. E_1008Codeliste Strom Nr.S_0108Codeliste Strom Nr.S_0109,X [492],"[23] Wenn MP-ID in NAD+MS (Nachrichtensender) mit Rolle MSB vorhanden 
   [24] Wenn MP-ID in NAD+MR (Nachrichtenempfänger) mit Rolle ESA vorhanden 
   [25] Wenn MP-ID in NAD+MR (Nachrichtenempfänger) mit Rolle LF vorhanden 
   [26] Wenn MP-ID in NAD+MR (Nachrichtenempfänger) mit Rolle NB vorhanden 
@@ -3946,7 +3946,7 @@
   149,energetische Mengenangaben,SG26,QTY,6411,,KWH,,Kilowattstunde,,
   150,energetische Mengenangaben,SG26,QTY,6411,,KWT,,Kilowatt,,
   151,energetische Mengenangaben,SG26,QTY,6411,,KVR,,kilovar,,
-  152,energetische Mengenangaben,SG26,QTY,6411,,K3,,kilovolt ampere,,
+  152,energetische Mengenangaben,SG26,QTY,6411,,K3,,kilovolt amperereactive hour,,
   153,energetische Mengenangaben,SG26,QTY,6411,,H87,,Stück,X,"[51] Wenn SG26 DTM+156 (Positionsbezogener Abrechnungszeitraum Ende) ≤ 1.1.2023 0:00 gesetzlicher deutscher Zeit 
   [492] Wenn MP-ID in NAD+MR (Nachrichtenempfäng er) aus Sparte Strom"
   154,zeitliche Mengenangaben,SG26,QTY,,,,,,,[8] Bei zeitabhängigen Preisen
@@ -4280,7 +4280,7 @@
   149,energetische Mengenangaben,SG26,QTY,6411,,KWH,,Kilowattstunde,,
   150,energetische Mengenangaben,SG26,QTY,6411,,KWT,,Kilowatt,,
   151,energetische Mengenangaben,SG26,QTY,6411,,KVR,,kilovar,,
-  152,energetische Mengenangaben,SG26,QTY,6411,,K3,,kilovolt ampere,,
+  152,energetische Mengenangaben,SG26,QTY,6411,,K3,,kilovolt amperereactive hour,,
   153,energetische Mengenangaben,SG26,QTY,6411,,H87,,Stück,X,"[51] Wenn SG26 DTM+156 (Positionsbezogener Abrechnungszeitraum Ende) ≤ 1.1.2023 0:00 gesetzlicher deutscher Zeit 
   [492] Wenn MP-ID in NAD+MR (Nachrichtenempfäng er) aus Sparte Strom"
   154,zeitliche Mengenangaben,SG26,QTY,,,,,,Soll [8],[8] Bei zeitabhängigen Preisen
@@ -6597,7 +6597,7 @@
   63,Transaktionsgrund,SG4,STS,9013,00026,E01,,Ein-/Auszug (Umzug),X,
   64,Transaktionsgrund,SG4,STS,9013,,E02,,Einzug in Neuanlage,X,
   65,Transaktionsgrund,SG4,STS,9013,,E03,,Wechsel,X,
-  66,Transaktionsgrund,SG4,STS,9013,,ZD2,,Lieferbeginn und, beiAbmeldung aus derErsatzversorgungDrittlieferant wird keine,
+  66,Transaktionsgrund,SG4,STS,9013,,ZD2,,Lieferbeginn undAbmeldung aus derErsatzversorgung, beizugeordnetemDrittlieferant wird keine,
   67,Transaktionsgrundergänzun g für Lieferende bei befristeter Anmeldung,SG4,STS,,00027,,,,Soll [37],[37] Wenn Anmeldung/ Änderung befristet
   68,Transaktionsgrundergänzun g für Lieferende bei befristeter Anmeldung,SG4,STS,9015,00027,Z17,,Transaktionsgrundergänzung für befristeteAnmeldung,X,
   69,Transaktionsgrundergänzun g für Lieferende bei befristeter Anmeldung,SG4,STS,9013,00027,E01,,Ein-/Auszug (Umzug),X,
@@ -9404,7 +9404,7 @@
   71,Transaktionsgrund,SG4,STS,9013,00037,E01,,Ein-/Auszug (Umzug),X,
   72,Transaktionsgrund,SG4,STS,9013,,E02,,Einzug in Neuanlage,X,
   73,Transaktionsgrund,SG4,STS,9013,,E03,,Wechsel,X,
-  74,Transaktionsgrund,SG4,STS,9013,,ZD2,,Lieferbeginn und,X,
+  74,Transaktionsgrund,SG4,STS,9013,,ZD2,,Lieferbeginn undAbmeldung aus derErsatzversorgung,X,
   75,Transaktionsgrundergänzun g für Lieferende bei befristeter Anmeldung,SG4,STS,,00038,,,,Soll [37],[37] Wenn Anmeldung/ Änderung befristet
   76,Transaktionsgrundergänzun g für Lieferende bei befristeter Anmeldung,SG4,STS,9015,00038,Z17,,Transaktionsgrundergänzung für befristeteAnmeldung,X,
   77,Transaktionsgrundergänzun g für Lieferende bei befristeter Anmeldung,SG4,STS,9013,00038,E01,,Ein-/Auszug (Umzug),X,
@@ -9811,7 +9811,7 @@
   427,OBIS Daten für Lieferant relevant,SG10,CCI,,00207,,,,,
   428,OBIS Daten für Lieferant relevant,SG10,CCI,7037,00207,ZA7,,LF,,
   429,Verwendungszweck der Werte,SG10,CAV,,00208,,,,,
-  430,Verwendungszweck der Werte,SG10,CAV,7111,00208,Z84,,Netznutzungsabrechnun,,
+  430,Verwendungszweck der Werte,SG10,CAV,7111,00208,Z84,,Netznutzungsabrechnung,,
   431,Verwendungszweck der Werte,SG10,CAV,7111,,Z85,,Bilanzkreisabrechnung,,
   432,Verwendungszweck der Werte,SG10,CAV,7111,,Z86,,Mehrmindermengenabrechnung,,
   433,Verwendungszweck der Werte,SG10,CAV,7111,,Z47,,Endkundenabrechnung,,
@@ -11807,8 +11807,8 @@
   269,Aggregationsverantwortung in MaBiS,SG10,CCI,7037,,ZA9,,ÜNB,X,
   270,Prognosegrundlage der Marktlokation,SG10,,,,,,,Muss,
   271,Prognosegrundlage der Marktlokation,SG10,CCI,,00130,,,,Muss,
-  272,Prognosegrundlage der Marktlokation,SG10,CCI,7037,00130,ZC0,,Prognose auf Basis von,X,
-  273,Prognosegrundlage der Marktlokation,SG10,CCI,7037,,ZA6,,Prognose auf Basis von,X,
+  272,Prognosegrundlage der Marktlokation,SG10,CCI,7037,00130,ZC0,,Prognose auf Basis vonWerten,X,
+  273,Prognosegrundlage der Marktlokation,SG10,CCI,7037,,ZA6,,Prognose auf Basis vonProfilen,X,
   274,Details der Prognosegrundlage,SG10,CAV,,00131,,,,Muss [21] ∧([2182] ⊻ ([90]∧ [2183])),"[21] Wenn SG10 CCI+++ZA6 (Prognose auf Basis von Profilen) in dieser SG8 vorhanden  
   [90] Wenn SG10 CCI+++ZA6 (Prognosegrundlage der Marktlokation: Prognose auf Basis von Profilen) einmal mit CAV+E14 (TLP/TEP) und einmal mit CAV+E02 (SLP/SEP)"
   275,Details der Prognosegrundlage,SG10,CAV,7111,00131,E02,,SLP/SEP,X [6P0..1] ⊻[7P1..1],
@@ -11948,7 +11948,7 @@
   385,OBIS Daten für Lieferant relevant,SG10,CCI,,00207,,,,Muss,
   386,OBIS Daten für Lieferant relevant,SG10,CCI,7037,00207,ZA7,,LF,X,
   387,Verwendungszweck der Werte,SG10,CAV,,00208,,,,Muss,
-  388,Verwendungszweck der Werte,SG10,CAV,7111,00208,Z84,,Netznutzungsabrechnun,X [29P0..1] ⊻g[32P0..1] ⊻[36P0..1],
+  388,Verwendungszweck der Werte,SG10,CAV,7111,00208,Z84,,Netznutzungsabrechnung,X [29P0..1] ⊻[30P0..1] ⊻[32P0..1] ⊻[36P0..1],
   389,Verwendungszweck der Werte,SG10,CAV,7111,,Z85,,Bilanzkreisabrechnung,X [31P1..1] ⊻[32P1..1],
   390,Verwendungszweck der Werte,SG10,CAV,7111,,Z86,,Mehrmindermengenabrechnung,X [30P1..1],
   391,Verwendungszweck der Werte,SG10,CAV,7111,,Z47,,Endkundenabrechnung,X [28P0..1] ⊻[29P1..1] ⊻[30P0..1] ⊻[32P1..1] ⊻[36P0..1],
