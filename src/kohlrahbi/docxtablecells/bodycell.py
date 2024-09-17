@@ -7,6 +7,7 @@ from docx.table import _Cell
 from docx.text.paragraph import Paragraph
 from pydantic import BaseModel, ConfigDict
 
+from kohlrahbi.docxtablecells import KNOW_SUFFIXES
 from kohlrahbi.models.flat_ahb_reader import FlatAhbCsvReader
 from kohlrahbi.table_header import get_tabstop_positions
 
@@ -38,6 +39,13 @@ class BodyCell(BaseModel):
             tabstop_positions (list[int]): All tabstop positions of the indicator middle cell
         """
 
+        def add_text_to_column(row_index: int, column_index: int, text: str) -> None:
+            starts_with_known_suffix = any([text.startswith(suffix) for suffix in KNOW_SUFFIXES])
+            if len(text) > 0:
+                if len(ahb_row_dataframe.iat[row_index, column_index]) > 0 and not starts_with_known_suffix:
+                    text = " " + text
+                ahb_row_dataframe.iat[row_index, column_index] += text
+
         def handle_code_or_qualifier_entry(
             splitted_text_at_tabs: list[str], row_index: int, is_first_iteration: bool
         ) -> int:
@@ -48,7 +56,8 @@ class BodyCell(BaseModel):
                 if not is_first_iteration:
                     ahb_row_dataframe.loc[ahb_row_dataframe.index.max() + 1, :] = ""
                     row_index += 1
-            ahb_row_dataframe.iat[row_index, INDEX_OF_CODES_AND_QUALIFIER_COLUMN] += splitted_text_at_tabs.pop(0)
+            add_text_to_column(row_index, INDEX_OF_CODES_AND_QUALIFIER_COLUMN, splitted_text_at_tabs.pop(0))
+            # ahb_row_dataframe.iat[row_index, INDEX_OF_CODES_AND_QUALIFIER_COLUMN] += splitted_text_at_tabs.pop(0)
             return row_index
 
         def handle_tab_stops(
@@ -59,14 +68,19 @@ class BodyCell(BaseModel):
                 for indicator_tabstop_position, column_index in zip(self.indicator_tabstop_positions, column_indezes):
                     if len(tab_stops_in_current_paragraph) == 1:
                         if indicator_tabstop_position in (tabstop, paragraph.paragraph_format.left_indent):
-                            ahb_row_dataframe.iat[row_index, column_index] += splitted_text_at_tabs.pop(0)
+                            add_text_to_column(row_index, column_index, splitted_text_at_tabs.pop(0))
+                            # ahb_row_dataframe.iat[row_index, column_index] += splitted_text_at_tabs.pop(0)
                     else:
                         if tabstop == indicator_tabstop_position:
-                            ahb_row_dataframe.iat[row_index, column_index] += splitted_text_at_tabs.pop(0)
+                            add_text_to_column(row_index, column_index, splitted_text_at_tabs.pop(0))
+                            # ahb_row_dataframe.iat[row_index, column_index] += splitted_text_at_tabs.pop(0)
 
         def handle_no_tab_stops(splitted_text_at_tabs: list[str], row_index: int) -> None:
             if splitted_text_at_tabs:
-                ahb_row_dataframe.at[row_index, "Beschreibung"] += splitted_text_at_tabs.pop(0)
+                add_text_to_column(
+                    row_index, ahb_row_dataframe.columns.get_loc("Beschreibung"), splitted_text_at_tabs.pop(0)
+                )
+                # ahb_row_dataframe.at[row_index, "Beschreibung"] += splitted_text_at_tabs.pop(0)
 
         cell_is_empty = self.table_cell.paragraphs[0].text == ""
         if cell_is_empty:
