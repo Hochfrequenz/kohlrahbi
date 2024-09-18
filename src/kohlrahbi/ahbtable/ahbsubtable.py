@@ -10,9 +10,12 @@ from docx.table import _Cell, _Row
 from pydantic import BaseModel, ConfigDict
 
 from kohlrahbi.ahbtable.ahbtablerow import AhbTableRow
+from kohlrahbi.docxtablecells import BedingungCell
 from kohlrahbi.enums import RowType
 from kohlrahbi.row_type_checker import get_row_type
 from kohlrahbi.seed import Seed
+
+CONDITIONS_OPERATORS = ["M", "K", "S", "X"]
 
 
 class AhbSubTable(BaseModel):
@@ -67,8 +70,9 @@ class AhbSubTable(BaseModel):
                     bedingung_cell=bedingung_cell,
                 )
 
-                ahb_table_row.parse(row_type=table_meta_data.last_two_row_types[1])
-
+                ahb_table_row_dataframe = ahb_table_row.parse(row_type=table_meta_data.last_two_row_types[1])
+                if ahb_table_row_dataframe is not None:
+                    ahb_table_dataframe = AhbSubTable.merge_with_last_row(ahb_table_dataframe, ahb_table_row_dataframe)
             # An AhbSubTable can span over two pages.
             # But after every page break, even if we're still in the same subtable,
             # there'll be the header at the top of every page.
@@ -131,3 +135,85 @@ class AhbSubTable(BaseModel):
         table_row = row._tr  # pylint:disable=protected-access
         for table_column in table_row.tc_lst:
             yield _Cell(table_column, row.table)
+
+    @staticmethod
+    def merge_with_last_row(ahb_table_dataframe: pd.DataFrame, ahb_table_row_dataframe: pd.DataFrame) -> pd.DataFrame:
+        """
+        Merges the last row of the dataframe with the current row.
+        """
+        # deal with the case of added conditions which will be added to the last condition block in the table
+        contains_condition_texts = any(
+            ahb_table_dataframe["Bedingung"].notna()
+        )  # conditions are always at the top of a dataelement
+
+        contains_beschreibung_but_no_qualifier = (
+            ahb_table_row_dataframe["Beschreibung"][0] != "" and ahb_table_row_dataframe["Codes und Qualifier"][0] == ""
+        )
+        BESCHREIBUNG_INDEX = 6
+        condition_does_not_start_with_operator = any(
+            ahb_table_row_dataframe.iat[0, i]
+            and not any(ahb_table_row_dataframe.iat[0, i].startswith(operator) for operator in CONDITIONS_OPERATORS)
+            for i in range(BESCHREIBUNG_INDEX + 1, ahb_table_row_dataframe.shape[1] - 1)
+        )  # check for cases with conditions which do not start with an operator like M, K, S, X (this also covers cases with "Muss" etc)
+        last_condition_ends_incomplete = any(
+            ahb_table_dataframe.iat[-1, i] and ahb_table_dataframe.iat[-1, i].endswith(" ")
+            for i in range(BESCHREIBUNG_INDEX + 1, ahb_table_dataframe.shape[1] - 1)
+        )
+        is_empty_except_conditions_text = all(
+            ahb_table_row_dataframe.at[0, column] == ""
+            for column in ahb_table_row_dataframe.columns
+            if column != "Bedingung"
+        )
+        is_broken_row = (
+            contains_beschreibung_but_no_qualifier
+            or condition_does_not_start_with_operator
+            or last_condition_ends_incomplete
+            or is_empty_except_conditions_text
+        )
+
+        # add condition texts
+        if contains_condition_texts:
+            conditions_text = " " + " ".join(
+                ahb_table_row_dataframe["Bedingung"].apply(lambda x: x if x != "" else None).dropna()
+            )
+            last_valid_index = ahb_table_dataframe["Bedingung"].last_valid_index()
+            conditions_text = ahb_table_dataframe.at[last_valid_index, "Bedingung"] + conditions_text
+            conditions_text = BedingungCell.beautify_bedingungen(conditions_text)
+            ahb_table_dataframe.at[last_valid_index, "Bedingung"] = conditions_text
+
+        row = ahb_table_row_dataframe.iloc[0]
+        # add broken row
+        if is_broken_row:
+            for column in ahb_table_row_dataframe[:-1]:
+                add_text = row[column]
+                is_empty_addtext = len(add_text) == 0
+                is_empty_last_row_cell = len(ahb_table_dataframe[column].iloc[-1]) == 0
+                if is_empty_addtext:
+                    continue
+                if not is_empty_last_row_cell:
+                    add_text = " " + add_text
+                ahb_table_dataframe.at[ahb_table_dataframe.index[-1], column] += add_text
+        else:
+            ahb_table_dataframe = pd.concat([ahb_table_dataframe, row], ignore_index=True)
+
+        if ahb_table_row_dataframe.index.max() > 0:
+            pd.concat([ahb_table_dataframe, ahb_table_row_dataframe.iloc[1:]], ignore_index=True)
+
+        # for _, row in ahb_table_row_dataframe.iterrows():
+        #    is_broken_row = True
+
+        #   for column in ahb_table_row_dataframe:
+        #      add_text = row[column]
+        #     is_empty_addtext = len(add_text) == 0
+        #    is_empty_last_row_cell = len(ahb_table_dataframe[column].iloc[-1]) == 0
+        #   if is_empty_addtext:
+        #      continue
+        # if not is_empty_last_row_cell:
+        #    add_text = " " + add_text
+        # if column == "Bedingung":
+        #    bedingung = ahb_table_dataframe[column].iloc[-1] + add_text
+        #    bedingung = BedingungCell.beautify_bedingungen(bedingung)
+        #    ahb_table_dataframe[column].iloc[-1] = bedingung
+        # else:
+        #    ahb_table_dataframe[column].iloc[-1] + add_text
+        return ahb_table_dataframe
