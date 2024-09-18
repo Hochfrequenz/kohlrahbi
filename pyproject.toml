@@ -48,22 +48,39 @@ kohlrahbi = "kohlrahbi:cli"
 
 [project.optional-dependencies]
 dev = ["kohlrahbi[test]", "kohlrahbi[lint]", "kohlrahbi[typecheck]"]
-lint = ["pylint", "pylint-pydantic"]
+lint = [
+  "pylint==3.2.7",
+  "pylint-pydantic==0.3.2",
+]
 test = [
-  "coverage",
-  "dictdiffer",
-  "freezegun",
-  "pytest-datafiles",
-  "pytest",
-  "syrupy",
+  "coverage==7.6.1",
+  "dictdiffer==0.9.0",
+  "freezegun==1.5.1",
+  "pytest-datafiles==3.0.0",
+  "pytest==8.3.3",
+  "syrupy==4.7.1",
 ]
 typecheck = [
-  "mypy",
-  "networkx-stubs",
-  "pandas-stubs",
-  "pytest",
-  "types-freezegun",
-  "types-requests",
+  "mypy==1.11.2",
+  "networkx-stubs==0.0.1",
+  "pandas-stubs==2.2.2.240909",
+  "pytest==8.3.3",
+  "types-freezegun==1.1.10",
+  "types-requests==2.32.0.20240914 ",
+]
+spell_check = [
+    "codespell==2.3.0"
+]
+coverage = [
+    "coverage==7.6.1"
+]
+formatting = [
+    "black==24.8.0",
+    "isort==5.13.2"
+]
+test_packaging = [
+    "build==1.2.2",
+    "twine==5.1.1"
 ]
 
 [project.urls]

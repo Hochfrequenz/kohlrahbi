@@ -64,7 +64,7 @@ def process_ahb_table(
         return
     pruefi_did_change_since_last_scraping: bool = True  # we assume it yes, if we can't compare or unless we know better
     if AhbExportFileFormat.FLATAHB in file_type and json_file_path.exists():
-        # the flat ahb ist the only file format from which we can READ to compare our current with previous results
+        # the flat ahb is the only file format from which we can READ to compare our current with previous results
         pruefi_did_change_since_last_scraping = not are_equal_except_for_guids(unfolded_ahb, json_file_path)
         logger.info("Pruefi '%s' did change since last scraping: %s", pruefi, pruefi_did_change_since_last_scraping)
     # ⚠ here we assume that the csv/json/xlsx files are in sync, if they exist.
