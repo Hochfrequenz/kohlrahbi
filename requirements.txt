@@ -26,7 +26,7 @@ numpy==2.1.1
     # via pandas
 openpyxl==3.1.5
     # via kohlrahbi (pyproject.toml)
-pandas==2.2.2
+pandas==2.2.3
     # via kohlrahbi (pyproject.toml)
 pydantic==2.9.2
     # via kohlrahbi (pyproject.toml)
