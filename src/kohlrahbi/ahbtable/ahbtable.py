@@ -104,7 +104,7 @@ class AhbTable(BaseModel):
 
     def sanitize(self) -> None:
         """
-        In some cases there is the content of one cell splitted in two.
+        In some cases there is the content of one cell splits in two.
         We need to merge the content into one cell and delete the deprecated cell afterwards.
         """
         index_of_lines_to_drop: list[int] = []

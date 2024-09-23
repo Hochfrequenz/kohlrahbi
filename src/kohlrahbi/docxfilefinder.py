@@ -207,7 +207,7 @@ class DocxFileFinder(BaseModel):
 
     def get_all_docx_files_which_contain_change_histories(self) -> list[Path]:
         """
-        This function returns a list of docx fils which probably contain a change history.
+        This function returns a list of docx files which probably contain a change history.
         Only format documents like UTILMD, MSCONS etc. contain a change history.
         """
 
