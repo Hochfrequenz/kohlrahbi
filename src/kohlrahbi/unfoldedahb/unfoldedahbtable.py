@@ -329,7 +329,7 @@ class UnfoldedAhb(BaseModel):
                         name=unfolded_ahb_line.beschreibung or unfolded_ahb_line.qualifier,
                         ahb_expression=unfolded_ahb_line.bedingung_ausdruck,
                         conditions=unfolded_ahb_line.bedingung,
-                        section_name=unfolded_ahb_line.segment_name,  # if unfolded_ahb_line.segment else None,
+                        section_name=unfolded_ahb_line.segment_name,
                         index=unfolded_ahb_line.index,
                     )
                 )
@@ -401,6 +401,7 @@ class UnfoldedAhb(BaseModel):
                 "Bedingung": unfolded_ahb_line.bedingung,
             }
             for unfolded_ahb_line in self.unfolded_ahb_lines
+            if _line_is_flatahb_line(unfolded_ahb_line)
         ]
 
         df = pd.DataFrame(unfolded_ahb_lines)
