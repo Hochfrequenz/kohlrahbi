@@ -57,7 +57,7 @@ We're all hoping for the day of true digitization on which this repository will 
 ## Installation
 
 Kohlrahbi is a Python based tool.
-Therefor you have to make sure, that Python is running on your machine.
+Therefore you have to make sure, that Python is running on your machine.
 
 We recommend to use virtual environments to keep your system clean.
 
