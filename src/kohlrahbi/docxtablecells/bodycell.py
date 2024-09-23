@@ -11,7 +11,7 @@ from kohlrahbi.models.flat_ahb_reader import FlatAhbCsvReader
 from kohlrahbi.table_header import get_tabstop_positions
 
 INDEX_OF_CODES_AND_QUALIFIER_COLUMN = 4
-KNOW_SUFFIXES = [
+KNOW_SUFFIXES = {
     "g",
     "ung",
     "gs-",
@@ -21,7 +21,7 @@ KNOW_SUFFIXES = [
     "t",
     "rage",
     "sgrund",
-]  # only a temporary and incomplete list to  filter some cases, not intended as NLP
+}  # only a temporary and incomplete list to  filter some cases, not intended as NLP
 
 
 class BodyCell(BaseModel):
