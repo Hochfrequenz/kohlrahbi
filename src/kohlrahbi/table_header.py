@@ -45,7 +45,7 @@ def create_mapping_of_tabstop_positions(
     """
     Create a mapping of the tabstop positions of the Prüfidentifikatoren columns.
 
-    For the current tabstop positions, the intial ones with the least difference are
+    For the current tabstop positions, the initial ones with the least difference are
     found to account for changes in tabstop positions between paragraphs.
 
     Returns:

@@ -1,7 +1,7 @@
 # pylint:disable=too-few-public-methods
 """
 EDIFACT components are data structures on different hierarchical levels inside an EDIFACT message.
-Components contain not only EDIFACT composits but also segments and segment groups.
+Components contain not only EDIFACT composites but also segments and segment groups.
 """
 import re
 from abc import ABC
@@ -243,7 +243,7 @@ class Segment(SegmentLevel):
         default=None,
         description=(
             "For the MIG matching it might be necessary to know the section"
-            "in which the data element occured in the AHB."
+            "in which the data element occurred in the AHB."
             "This might be necessary to e.g. distinguish gas and electricity fields which look the same otherwise."
             "See e.g. UTILMD 'Geplante Turnusablesung des MSB (Strom)' vs. 'Geplante Turnusablesung des NB (Gas)'"
         ),
