@@ -50,7 +50,7 @@ typing-extensions==4.12.2
     #   pydantic
     #   pydantic-core
     #   python-docx
-tzdata==2024.1
+tzdata==2024.2
     # via pandas
 xlsxwriter==3.2.0
     # via kohlrahbi (pyproject.toml)
