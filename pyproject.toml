@@ -49,7 +49,7 @@ kohlrahbi = "kohlrahbi:cli"
 [project.optional-dependencies]
 dev = ["kohlrahbi[test]", "kohlrahbi[lint]", "kohlrahbi[typecheck]"]
 lint = [
-  "pylint==3.2.7",
+  "pylint==3.3.0",
   "pylint-pydantic==0.3.2",
 ]
 test = [
