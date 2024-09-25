@@ -47,7 +47,7 @@ dynamic = ["readme", "version"]
 kohlrahbi = "kohlrahbi:cli"
 
 [project.optional-dependencies]
-dev = ["kohlrahbi[test]", "kohlrahbi[lint]", "kohlrahbi[typecheck]"]
+dev = ["kohlrahbi[test]", "kohlrahbi[lint]", "kohlrahbi[typecheck]", "kohlrahbi[formatting]"]
 lint = [
   "pylint==3.3.1",
   "pylint-pydantic==0.3.2",
