@@ -30,6 +30,7 @@ class AhbTableRow(BaseModel):
     def parse(
         self,
         row_type: RowType,
+        is_pagebreak_row: bool = False,
     ) -> Optional[pd.DataFrame]:
         """
         Writes the current row of the current table into the DataFrame depending on the type of the row.
@@ -67,7 +68,7 @@ class AhbTableRow(BaseModel):
             left_indent_position=self.seed.middle_cell_left_indent_position,
             indicator_tabstop_positions=self.seed.tabstop_positions,
         )
-        ahb_row_dataframe = boc.parse(ahb_row_dataframe=ahb_row_dataframe)
+        ahb_row_dataframe = boc.parse(ahb_row_dataframe=ahb_row_dataframe, is_first_iteration=not is_pagebreak_row)
 
         # BEDINGUNG
         bec: BedingungCell = BedingungCell(table_cell=self.bedingung_cell)

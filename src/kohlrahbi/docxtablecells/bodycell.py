@@ -39,7 +39,7 @@ class BodyCell(BaseModel):
 
     # I see why pylint is not happy about this many branches, but at the moment I have no clue how to avoid them.
     # pylint: disable=too-many-branches
-    def parse(self, ahb_row_dataframe: pd.DataFrame) -> pd.DataFrame:
+    def parse(self, ahb_row_dataframe: pd.DataFrame, is_first_iteration: bool = True) -> pd.DataFrame:
         """Parses a paragraph in the middle column and puts the information into the appropriate columns
 
         Args:
@@ -92,7 +92,7 @@ class BodyCell(BaseModel):
         if cell_is_empty:
             return ahb_row_dataframe
 
-        is_first_iteration = True
+        # is_first_iteration = True
 
         for paragraph in self.table_cell.paragraphs:
             row_index = ahb_row_dataframe.index.max()

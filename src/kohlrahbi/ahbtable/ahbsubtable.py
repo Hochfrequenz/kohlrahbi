@@ -7,6 +7,7 @@ from typing import Generator
 import pandas as pd
 from docx.table import Table as DocxTable
 from docx.table import _Cell, _Row
+from more_itertools import windowed
 from pydantic import BaseModel, ConfigDict
 
 from kohlrahbi.ahbtable.ahbtablerow import AhbTableRow
@@ -33,9 +34,26 @@ class AhbSubTable(BaseModel):
     def _parse_docx_table(
         table_meta_data: Seed, ahb_table_dataframe: pd.DataFrame, docx_table: DocxTable
     ) -> pd.DataFrame:
+        # for row, next_row, next_next_row in windowed(
+        #    docx_table.rows,
+        #    n=3,
+        #    fillvalue=None,
+        #    step=1,
+        # ):
         for row in docx_table.rows:
             sanitized_cells = list(AhbSubTable.iter_visible_cells(row=row))
-
+            # if next_row is not None:
+            #    next_sanitized_cells = list(AhbSubTable.iter_visible_cells(row=next_row))
+            #    next_row_type = get_row_type(
+            #        edifact_struktur_cell=next_sanitized_cells[0],
+            #        left_indent_position=table_meta_data.edifact_struktur_left_indent_position,
+            #    )
+            # if next_next_row is not None:
+            #    next_next_sanitized_cells = list(AhbSubTable.iter_visible_cells(row=next_next_row))
+            #    next_next_row_type = get_row_type(
+            #        edifact_struktur_cell=next_next_sanitized_cells[0],
+            #        left_indent_position=table_meta_data.edifact_struktur_left_indent_position,
+            #    )
             current_edifact_struktur_cell = sanitized_cells[0]
 
             # check for row type
@@ -70,9 +88,11 @@ class AhbSubTable(BaseModel):
                     bedingung_cell=bedingung_cell,
                 )
 
-                ahb_table_row_dataframe = ahb_table_row.parse(row_type=table_meta_data.last_two_row_types[1])
-                if ahb_table_row_dataframe is not None:
-                    ahb_table_dataframe = AhbSubTable.merge_with_last_row(ahb_table_dataframe, ahb_table_row_dataframe)
+                ahb_table_row_dataframe = ahb_table_row.parse(
+                    row_type=table_meta_data.last_two_row_types[1], is_pagebreak_row=True
+                )
+                # if ahb_table_row_dataframe is not None:
+                #    ahb_table_dataframe = AhbSubTable.merge_with_last_row(ahb_table_dataframe, ahb_table_row_dataframe)
             # An AhbSubTable can span over two pages.
             # But after every page break, even if we're still in the same subtable,
             # there'll be the header at the top of every page.
