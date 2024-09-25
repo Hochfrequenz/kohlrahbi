@@ -87,7 +87,7 @@ class TestCliConditions:
             assert response.exit_code == 0, "failed to run CLI conditions command"
         conditions_path = shared_tmp_path / str(edifact_format) / "conditions.json"
         packages_path = shared_tmp_path / str(edifact_format) / "packages.json"
-        # asssert that all files which should be generated do really exist
+        # assert that all files which should be generated do really exist
         assert conditions_path.exists(), "No matching file found for conditions"
         assert packages_path.exists() == snapshot  # not every format has packages
         # compare the generated files with the expected files
