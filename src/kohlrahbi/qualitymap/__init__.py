@@ -18,10 +18,10 @@ from kohlrahbi.read_functions import get_all_paragraphs_and_tables
 
 def find_docx_files(input_path: Path) -> list[Path]:
     """
-    Find all .docx files containing change histories.
+    Find all .docx files containing quality maps.
     """
     docx_file_finder = DocxFileFinder.from_input_path(input_path=input_path)
-    return docx_file_finder.get_all_docx_files_which_contain_change_histories()
+    return docx_file_finder.get_docx_files_which_contain_quality_map()
 
 
 def is_quality_map_table(table: Table) -> bool:
@@ -65,12 +65,11 @@ def process_docx_file(file_path: Path) -> Optional[QualityMapTable]:
 
 def scrape_quality_map(input_path: Path, output_path: Path) -> None:
     """
-    starts the scraping process of the change histories
+    starts the scraping process of the quality maps.
     """
-    logger.info("👀 Start looking for change histories")
+    logger.info("👀 Start looking for quality maps")
     ahb_file_paths = find_docx_files(input_path)
 
-    # change_history_collection = {}
     for file_path in ahb_file_paths:
         quality_map_table = process_docx_file(file_path)
         logger.info("Done with %s", file_path)
