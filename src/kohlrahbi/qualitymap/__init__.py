@@ -29,7 +29,7 @@ def is_quality_map_table(table: Table) -> bool:
     Checks if the given table is quality map table.
     """
     try:
-        return table.cell(row_idx=0, col_idx=0).text.strip() == "Änd-ID"
+        return table.cell(row_idx=0, col_idx=0).text.strip() == "Qualität\n\nSegmentgruppe"
     except IndexError:
         return False
 
@@ -50,7 +50,7 @@ def get_quality_map_table(document: Document) -> Optional[QualityMapTable]:
     return None
 
 
-def process_docx_file(file_path: Path) -> Optional[pd.DataFrame]:
+def process_docx_file(file_path: Path) -> Optional[QualityMapTable]:
     """
     Read and process quality map from a .docx file.
     """
@@ -59,8 +59,7 @@ def process_docx_file(file_path: Path) -> Optional[pd.DataFrame]:
     quality_map_table = get_quality_map_table(document=doc)
 
     if quality_map_table is not None:
-        # quality_map_table.sanitize_table()
-        return quality_map_table.table
+        return quality_map_table
     return None
 
 
@@ -73,5 +72,10 @@ def scrape_quality_map(input_path: Path, output_path: Path) -> None:
 
     # change_history_collection = {}
     for file_path in ahb_file_paths:
-        df = process_docx_file(file_path)
+        quality_map_table = process_docx_file(file_path)
         logger.info("Done with %s", file_path)
+        if quality_map_table is None:
+            logger.warning("No quality map table found in %s", file_path)
+            continue
+        quality_map_table.save_to_csv(output_path / Path(f"{file_path.stem}_quality_map.csv"))
+        quality_map_table.save_to_xlsx(output_path / Path(f"{file_path.stem}_quality_map.xlsx"))
