@@ -15,6 +15,17 @@ from kohlrahbi.logger import logger
 class QualityMapTable(BaseModel):
     """
     This class contains the quality map table.
+
+    Die SG für die Datenübermittlung haben in den Segmenten DE1153 SG6 RFF, DE1229 SG8 SEQ und DE3035 SG12 NAD
+    verschiedene Codes, die die Qualität der enthaltenen Daten festlegen.
+    Die Qualitätsstufen sind:
+        •   Bestellte Daten: Konfiguration, die der Absender beim Empfänger bestellt.
+        •   Gültige Daten: Verbindliche Stammdaten, die vom Verantwortlichen bereitgestellt und
+                           vom Berechtigten übernommen werden müssen.
+        •   Informative Daten: Datenstand des Absenders zum Zeitpunkt der Nachricht, ohne Gültigkeitszeitraum, nur zur Information im entsprechenden Use-Case.
+        •   Erwartete Daten: Erwartung des Berechtigten, nur für Abrechnungsdaten, Stammdatenänderungen und
+                             Datenclearing relevant.
+        •   Im System vorhandene Daten: Datenstand des Berechtigten, ausschließlich für das Datenclearing.
     """
 
     table: pd.DataFrame
