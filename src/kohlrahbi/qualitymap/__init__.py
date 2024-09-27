@@ -66,7 +66,15 @@ def process_docx_file(file_path: Path) -> Optional[QualityMapTable]:
 def scrape_quality_map(input_path: Path, output_path: Path) -> None:
     """
     starts the scraping process of the quality maps.
+
+    Args:
+        input_path (Path): The path to the input **directory** containing the docx files with quality maps.
+        output_path (Path): The path to the output **directory** to save the scraped quality maps
     """
+    if input_path.is_dir() is False:
+        logger.error("The input path '%s' is not a directory.", input_path)
+        raise NotADirectoryError(f"The input path '{input_path}' is not a directory.")
+
     logger.info("👀 Start looking for quality maps")
     ahb_file_paths = find_docx_files(input_path)
 
