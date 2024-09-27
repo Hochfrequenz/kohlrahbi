@@ -22,7 +22,8 @@ class QualityMapTable(BaseModel):
         •   Bestellte Daten: Konfiguration, die der Absender beim Empfänger bestellt.
         •   Gültige Daten: Verbindliche Stammdaten, die vom Verantwortlichen bereitgestellt und
                            vom Berechtigten übernommen werden müssen.
-        •   Informative Daten: Datenstand des Absenders zum Zeitpunkt der Nachricht, ohne Gültigkeitszeitraum, nur zur Information im entsprechenden Use-Case.
+        •   Informative Daten: Datenstand des Absenders zum Zeitpunkt der Nachricht, ohne Gültigkeitszeitraum,
+                               nur zur Information im entsprechenden Use-Case.
         •   Erwartete Daten: Erwartung des Berechtigten, nur für Abrechnungsdaten, Stammdatenänderungen und
                              Datenclearing relevant.
         •   Im System vorhandene Daten: Datenstand des Berechtigten, ausschließlich für das Datenclearing.
