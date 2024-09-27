@@ -32,6 +32,9 @@ class MockTable:
 
 @pytest.mark.snapshot
 class TestQualityMap:
+    """
+    This class contains the unit tests for the quality map
+    """
 
     def test_is_quality_map_table_true(self):
         table = MockTable("Qualität\n\nSegmentgruppe")
@@ -56,7 +59,7 @@ class TestQualityMap:
                     "FV2504",
                 ],
                 {"exit_code": 0, "output_snippet": ""},
-                id="check",
+                id="check command for quality map table",
             )
         ],
     )
