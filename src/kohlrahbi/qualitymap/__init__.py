@@ -82,7 +82,7 @@ def scrape_quality_map(input_path: Path, output_path: Path) -> None:
         quality_map_table = process_docx_file(file_path)
         logger.info("Done with %s", file_path)
         if quality_map_table is None:
-            logger.warning("No quality map table found in %s", file_path)
+            logger.info("No quality map table found in %s", file_path)
             continue
         quality_map_table.save_to_csv(output_path / Path(f"{file_path.stem}_quality_map.csv"))
         quality_map_table.save_to_xlsx(output_path / Path(f"{file_path.stem}_quality_map.xlsx"))
