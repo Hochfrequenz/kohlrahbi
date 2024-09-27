@@ -1,5 +1,5 @@
 # serializer version: 1
-# name: TestQualityMap.test_cli_quality_map_table[check]
+# name: TestQualityMap.test_cli_quality_map_table[check command for quality map table]
   '''
   Qualität \ Segmentgruppe,Bestellte Daten,Gültige Daten,Informative Daten,Erwartete Daten,Im System vorhandene Daten
   "SG6 RFF DE1153 
