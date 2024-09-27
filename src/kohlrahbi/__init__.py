@@ -7,6 +7,7 @@ import click
 from kohlrahbi.ahb.command import ahb
 from kohlrahbi.changehistory.command import changehistory
 from kohlrahbi.conditions.command import conditions
+from kohlrahbi.qualitymap.command import qualitymap
 from kohlrahbi.version import version
 
 
@@ -20,6 +21,7 @@ def cli() -> None:
 cli.add_command(ahb)
 cli.add_command(changehistory)
 cli.add_command(conditions)
+cli.add_command(qualitymap)
 
 if __name__ == "__main__":
     # the parameter arguments gets provided over the CLI
