@@ -14,7 +14,7 @@ colorama==0.4.6
     #   colorlog
 colorlog==6.8.2
     # via kohlrahbi (pyproject.toml)
-efoli==1.1.0
+efoli==1.2.0
     # via kohlrahbi (pyproject.toml)
 et-xmlfile==1.1.0
     # via openpyxl
