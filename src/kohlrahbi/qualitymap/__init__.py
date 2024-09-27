@@ -43,7 +43,7 @@ def get_quality_map_table(document: Document) -> Optional[QualityMapTable]:
     # Iterate through the whole word document
     logger.info("🔁 Start iterating through paragraphs and tables")
     for table in document.tables:
-        if isinstance(table, Table) and is_quality_map_table(table=table):
+        if is_quality_map_table(table=table):
             change_history_table = QualityMapTable.from_docx_quality_map_table(docx_table=table)
             return change_history_table
 
