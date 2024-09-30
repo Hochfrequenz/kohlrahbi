@@ -3,7 +3,7 @@ This module contains the AhbSubTable class.
 """
 
 from itertools import chain
-from typing import Generator
+from typing import Generator, Optional
 
 import pandas as pd
 from docx.table import Table as DocxTable
@@ -64,63 +64,35 @@ class AhbSubTable(BaseModel):
 
                 if ahb_table_row_dataframe is not None:
                     ahb_table_dataframe = pd.concat([ahb_table_dataframe, ahb_table_row_dataframe], ignore_index=True)
-            # this case covers the page break situation
             else:
+                # this case covers the page break situation
                 # check last_last row for left indent
                 last_last_sanitized_cells = list(AhbSubTable.iter_visible_cells(row=last_last_row))
                 last_last_middle_cell = last_last_sanitized_cells[1]
 
-                ### check for broken lines
+                # check for conditions_text
                 contains_condition_texts = any(paragraph.text != "" for paragraph in bedingung_cell.paragraphs)
                 # conditions are always at the top of a dataelement
-
-                number_of_pruefi_columns = len(table_meta_data.pruefidentifikatoren)
-                beschreibung_index = ahb_table_dataframe.columns.get_loc("Beschreibung")
-                min_row_index_to_add = 0
                 # add condition texts
                 if contains_condition_texts:
                     AhbSubTable.add_condition_text(ahb_table_dataframe, bedingung_cell)
+
+                number_of_pruefi_columns = len(table_meta_data.pruefidentifikatoren)
+
+                min_row_index_to_add = 0
+
                 # loop over all lines in middle cell to fix broken lines
                 for paragraph in middle_cell.paragraphs:
-                    row_tablsplit = paragraph.text.split("\t")
-                    is_empty_line, are_only_conditions_in_row, is_left_indent_different, is_broken_line = (
-                        AhbSubTable.check_broken_lines(
-                            previous_cell=last_last_middle_cell,
-                            table_meta_data=table_meta_data,
-                            paragraph=paragraph,
-                            tabsplit_text=row_tablsplit,
-                            current_row_type=current_row_type,
-                            number_of_pruefi_columns=number_of_pruefi_columns,
-                        )
-                    )
 
-                    is_empty_line = all(text == "" for text in row_tablsplit)
-                    are_only_conditions_in_row = (
-                        current_row_type == RowType.EMPTY
-                        and any(text != "" for text in row_tablsplit[-number_of_pruefi_columns:])
-                        and all(text == "" for text in row_tablsplit[:-number_of_pruefi_columns])
+                    is_broken_line = AhbSubTable.check_broken_lines(
+                        table=ahb_table_dataframe,
+                        table_meta_data=table_meta_data,
+                        paragraph=paragraph,
+                        number_of_pruefi_columns=number_of_pruefi_columns,
                     )
-                    is_left_indent_different = (
-                        paragraph.paragraph_format.left_indent
-                        != last_last_middle_cell.paragraphs[-1].paragraph_format.left_indent
-                        and paragraph.paragraph_format.left_indent != table_meta_data.middle_cell_left_indent_position
-                    )
-                    is_broken_line = are_only_conditions_in_row or is_left_indent_different or is_empty_line
                     if is_broken_line:
                         min_row_index_to_add = 1
 
-                    if is_left_indent_different and not are_only_conditions_in_row and not is_empty_line:
-                        assert (
-                            len(row_tablsplit) == number_of_pruefi_columns + 1
-                        ), "more tabsplits than expected for broken row"
-                        AhbSubTable.add_text_to_last_row(ahb_table_dataframe, -1, beschreibung_index, row_tablsplit[0])
-
-                    if are_only_conditions_in_row or is_left_indent_different:
-                        # add conditions
-                        for index, condition in enumerate(row_tablsplit[-number_of_pruefi_columns:]):
-                            AhbSubTable.add_text_to_last_row(
-                                ahb_table_dataframe, -1, beschreibung_index + index + 1, condition
-                            )
                     else:
                         # add new row regularly
                         ahb_table_row = AhbTableRow(
@@ -131,12 +103,10 @@ class AhbSubTable(BaseModel):
                         )
                         ahb_table_row_dataframe = ahb_table_row.parse(row_type=current_row_type)
                         if ahb_table_row_dataframe is not None:
-                            ahb_table_row_dataframe["Bedingung"] = ""
-                            if ahb_table_row_dataframe.index.max() > 0:
-                                ahb_table_dataframe = pd.concat(
-                                    [ahb_table_dataframe, ahb_table_row_dataframe.iloc[min_row_index_to_add:]],
-                                    ignore_index=True,
-                                )
+                            ahb_table_dataframe = pd.concat(
+                                [ahb_table_dataframe, ahb_table_row_dataframe.iloc[min_row_index_to_add:]],
+                                ignore_index=True,
+                            )
                         break
 
             # An AhbSubTable can span over two pages.
@@ -222,26 +192,43 @@ class AhbSubTable(BaseModel):
 
     @staticmethod
     def check_broken_lines(
-        previous_cell: _Cell,
+        table: pd.DataFrame,
         table_meta_data: Seed,
         paragraph: _Cell,
-        tabsplit_text: list[str],
-        current_row_type: RowType,
         number_of_pruefi_columns: int,
-    ) -> tuple[bool, bool, bool, bool]:
+    ) -> bool:
         """
         Check for broken lines in the middle cell
         """
-        is_empty_line = all(text == "" for text in tabsplit_text)
-        are_only_conditions_in_row = (
-            current_row_type == RowType.EMPTY
-            and any(text != "" for text in tabsplit_text[-number_of_pruefi_columns:])
-            and all(text == "" for text in tabsplit_text[:-number_of_pruefi_columns])
-        )
-        is_left_indent_different = (
-            paragraph.paragraph_format.left_indent != previous_cell.paragraphs[-1].paragraph_format.left_indent
+        condition_text = ""
+        pruefi_conditions = []
+        tabsplit_text = paragraph.text.split("\t")
+        beschreibung_index = table.columns.get_loc("Beschreibung")
+        is_empty_middle_line = all(text == "" for text in tabsplit_text)
+        ##broken beschreibungstext
+        if (
+            paragraph.paragraph_format.left_indent is not None
             and paragraph.paragraph_format.left_indent != table_meta_data.middle_cell_left_indent_position
-        )
-        is_broken_line = are_only_conditions_in_row or is_left_indent_different or is_empty_line
+            and table.iat[-1, beschreibung_index] != 0
+            and table.iloc[-1, beschreibung_index + 1 :].ne("").any()
+        ):
+            condition_text = tabsplit_text[0]
 
-        return is_empty_line, are_only_conditions_in_row, is_left_indent_different, is_broken_line
+            if len(tabsplit_text) == 1:
+                # only beschreibungstext
+                assert (
+                    table.iat[-1, beschreibung_index] != 0 and table.iloc[-1, beschreibung_index + 1 :].ne("").any()
+                ), "no condition expected in broken line"
+            AhbSubTable.add_text_to_last_row(table, -1, beschreibung_index, condition_text)
+        if (
+            len(tabsplit_text) > 1
+            and paragraph.paragraph_format.left_indent != table_meta_data.middle_cell_left_indent_position
+        ):
+            # we have conditions
+            pruefi_conditions = [condition_text for condition_text in tabsplit_text[-number_of_pruefi_columns:]]
+            for index, condition in enumerate(pruefi_conditions):
+                AhbSubTable.add_text_to_last_row(table, -1, beschreibung_index + index + 1, condition)
+
+        is_broken_line = is_empty_middle_line or condition_text != "" or pruefi_conditions != []
+
+        return is_broken_line
