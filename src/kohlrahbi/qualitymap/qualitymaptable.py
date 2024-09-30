@@ -15,7 +15,9 @@ from kohlrahbi.ahbtable.ahbsubtable import AhbSubTable
 from kohlrahbi.logger import logger
 
 StrippedStr = Annotated[str, PlainValidator(str.strip)]
-Description = Annotated[str, PlainValidator(str.strip), PlainValidator(lambda value: re.sub(r"\n+", " ", value))]
+Description = Annotated[
+    str, PlainValidator(str.strip), PlainValidator(lambda value: re.sub(r"\n+", " ", re.sub(r"-\n+", "-", value)))
+]
 HEADERS = OrderedDict(
     [
         ("segment_group", "Qualität \\ Segmentgruppe"),
