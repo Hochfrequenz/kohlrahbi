@@ -27,11 +27,7 @@ class AhbTableRow(BaseModel):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    def parse(
-        self,
-        row_type: RowType,
-        is_pagebreak_row: bool = False,
-    ) -> Optional[pd.DataFrame]:
+    def parse(self, row_type: RowType) -> Optional[pd.DataFrame]:
         """
         Writes the current row of the current table into the DataFrame depending on the type of the row.
         If the row is a header row, it will be skipped and None will be returned.
@@ -68,7 +64,7 @@ class AhbTableRow(BaseModel):
             left_indent_position=self.seed.middle_cell_left_indent_position,
             indicator_tabstop_positions=self.seed.tabstop_positions,
         )
-        ahb_row_dataframe = boc.parse(ahb_row_dataframe=ahb_row_dataframe, is_first_iteration=not is_pagebreak_row)
+        ahb_row_dataframe = boc.parse(ahb_row_dataframe=ahb_row_dataframe)
 
         # BEDINGUNG
         bec: BedingungCell = BedingungCell(table_cell=self.bedingung_cell)
