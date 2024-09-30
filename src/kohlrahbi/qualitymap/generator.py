@@ -4,11 +4,24 @@ Contains logic to generate code from the quality map (data model).
 
 import itertools
 import re
-from dataclasses import replace
 
 from pydantic import BaseModel
 
 from kohlrahbi.qualitymap.qualitymaptable import HEADERS, QualityMapTable
+
+HEADER_TO_ENUM_VALUES = {
+    "gueltige_daten": "null",
+    "informative_daten": "BO4E.ENUM.Qualitaet.INFORMATIV",
+    "erwartete_daten": "BO4E.ENUM.Qualitaet.ERWARTET",
+    "im_system_vorhandene_daten": "BO4E.ENUM.Qualitaet.IM_SYSTEM_VORHANDEN",
+}
+
+
+HEADER_TO_WORD_STEMS = {
+    "informative_daten": "informativ",
+    "erwartete_daten": "erwartet",
+    "im_system_vorhandene_daten": "im system vorhanden",
+}
 
 
 class CellOutput(BaseModel):
@@ -48,12 +61,16 @@ def rename_qualifier(qualifier: str, description: str) -> str:
     return f"{qualifier}_{'_'.join(first_three_words).replace('-', '_')}"
 
 
-HEADER_TO_ENUM_VALUES = {
-    "gueltige_daten": "null",
-    "informative_daten": "BO4E.ENUM.Qualitaet.INFORMATIV",
-    "erwartete_daten": "BO4E.ENUM.Qualitaet.ERWARTET",
-    "im_system_vorhandene_daten": "BO4E.ENUM.Qualitaet.IM_SYSTEM_VORHANDEN",
-}
+def remove_prefix_from_description(description: str, column_attr: str) -> str:
+    """
+    Remove the prefix from the description according to the column attribute.
+    """
+    if column_attr == "gueltige_daten":
+        return description
+    prefix_word_stem = HEADER_TO_WORD_STEMS[column_attr]
+    if description.lower().startswith(prefix_word_stem):
+        return " ".join(description.split()[len(prefix_word_stem.split()) :])
+    return description
 
 
 def enum_value(column_attr: str) -> str:
@@ -80,7 +97,9 @@ def preprocess_table(table: QualityMapTable) -> dict[str, list[CellOutput]]:
                     cell_dict[cell.qualifier] = []
                     cell_dict[cell.qualifier].append(
                         CellOutput(
-                            qualifier=cell.qualifier, description=cell.description, enum_value=enum_value(header)
+                            qualifier=cell.qualifier,
+                            description=remove_prefix_from_description(cell.description, header),
+                            enum_value=enum_value(header),
                         )
                     )
                 else:
@@ -98,7 +117,9 @@ def preprocess_table(table: QualityMapTable) -> dict[str, list[CellOutput]]:
                     )
                     cell_dict[cell.qualifier].append(
                         CellOutput(
-                            qualifier=renamed_qualifier, description=cell.description, enum_value=enum_value(header)
+                            qualifier=renamed_qualifier,
+                            description=remove_prefix_from_description(cell.description, header),
+                            enum_value=enum_value(header),
                         )
                     )
     return cell_dict
