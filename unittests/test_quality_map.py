@@ -7,7 +7,7 @@ import pytest
 from click.testing import CliRunner, Result
 
 from kohlrahbi import cli
-from kohlrahbi.qualitymap import is_quality_map_table
+from kohlrahbi.qualitymap.extract import is_quality_map_table
 
 runner: CliRunner = CliRunner()
 
