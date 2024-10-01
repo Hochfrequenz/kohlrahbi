@@ -7,6 +7,7 @@ from typing import Generator
 import pandas as pd
 from docx.table import Table as DocxTable
 from docx.table import _Cell, _Row
+from docx.text.paragraph import Paragraph
 from pydantic import BaseModel, ConfigDict
 
 from kohlrahbi.ahbtable.ahbtablerow import AhbTableRow
@@ -86,22 +87,23 @@ class AhbSubTable(BaseModel):
                 # look at first line to determine if it is broken
                 first_paragraph = middle_cell.paragraphs[0]
 
-                if AhbSubTable.is_broken_line(
-                    table=ahb_table_dataframe,
-                    table_meta_data=table_meta_data,
-                    paragraph=first_paragraph,
-                ):
-                    AhbSubTable.add_broken_line(ahb_table_dataframe, ahb_table_row_dataframe.iloc[0])
-                    # we have a broken line
-                    ahb_table_dataframe = pd.concat(
-                        [ahb_table_dataframe, ahb_table_row_dataframe.iloc[1:]],
-                        ignore_index=True,
-                    )
-                else:
-                    ahb_table_dataframe = pd.concat(
-                        [ahb_table_dataframe, ahb_table_row_dataframe],
-                        ignore_index=True,
-                    )
+                if ahb_table_row_dataframe is not None:
+                    if AhbSubTable.is_broken_line(
+                        table=ahb_table_dataframe,
+                        table_meta_data=table_meta_data,
+                        paragraph=first_paragraph,
+                    ):
+                        AhbSubTable.add_broken_line(ahb_table_dataframe, ahb_table_row_dataframe.iat[0])
+                        # we have a broken line
+                        ahb_table_dataframe = pd.concat(
+                            [ahb_table_dataframe, ahb_table_row_dataframe.iloc[1:]],
+                            ignore_index=True,
+                        )
+                    else:
+                        ahb_table_dataframe = pd.concat(
+                            [ahb_table_dataframe, ahb_table_row_dataframe],
+                            ignore_index=True,
+                        )
 
             # An AhbSubTable can span over two pages.
             # But after every page break, even if we're still in the same subtable,
@@ -183,7 +185,7 @@ class AhbSubTable(BaseModel):
             start=INDEX_OF_CODES_AND_QUALIFIER_COLUMN,
         ):
             AhbSubTable.add_text_to_last_row(
-                ahb_table_dataframe, ahb_table_dataframe.index.max(), col_index, broken_line[column]
+                ahb_table_dataframe, ahb_table_dataframe.index.max(), col_index, str(broken_line[column])
             )
 
     @staticmethod
@@ -201,7 +203,7 @@ class AhbSubTable(BaseModel):
     def is_broken_line(
         table: pd.DataFrame,
         table_meta_data: Seed,
-        paragraph: _Cell,
+        paragraph: Paragraph,
     ) -> bool:
         """
         Check for broken lines in the middle cell.
@@ -212,13 +214,13 @@ class AhbSubTable(BaseModel):
         is_broken_code_qualifier = (
             paragraph.paragraph_format.left_indent is not None
             and paragraph.paragraph_format.left_indent != table_meta_data.middle_cell_left_indent_position
-            and table.iat[-1, beschreibung_index] != 0
-            and table.iloc[-1, beschreibung_index + 1 :].ne("").any()
+            and table.iat[-1, beschreibung_index] != ""
+            and (table.iloc[-1:, beschreibung_index + 1 :]).ne("").any()
         )
         if is_broken_code_qualifier and len(tabsplit_text) == 1:
             # only broken code / qualifier
             assert (
-                table.iat[-1, beschreibung_index] != 0 and table.iloc[-1, beschreibung_index + 1 :].ne("").any()
+                table.iat[-1, beschreibung_index] != "" and (table.iloc[-1:, beschreibung_index + 1 :]).ne("").any()
             ), "no condition expected in broken line"
         there_are_conditions = (
             len(tabsplit_text) > 1
