@@ -1,6 +1,6 @@
 import click.testing
 
-from kohlrahbi import cli
+from kohlrahbi.__main__ import cli
 
 
 def test_version_flag():
