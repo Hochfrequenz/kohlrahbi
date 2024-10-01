@@ -1,7 +1,7 @@
 from typing import Optional
 
 from docx.shared import Length
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class CellParagraph(BaseModel):
@@ -18,8 +18,7 @@ class CellParagraph(BaseModel):
     tabstop_positions: Optional[list[Length]] = Field(None)
     left_indent_length: Length = Field(...)
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @model_validator(mode="after")
     def check_text(self):

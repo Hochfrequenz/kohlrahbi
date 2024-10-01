@@ -215,3 +215,16 @@ class DocxFileFinder(BaseModel):
         self.remove_temporary_files()
 
         return self.paths_to_docx_files
+
+    def get_docx_files_which_contain_quality_map(self) -> list[Path]:
+        """
+        This function returns a list of docx files which contain a quality map.
+        """
+
+        self.filter_for_latest_ahb_docx_files()
+        self.remove_temporary_files()
+
+        indicator_string = "UTILMDAHBStrom"
+        self.paths_to_docx_files = [path for path in self.paths_to_docx_files if indicator_string in path.name]
+
+        return self.paths_to_docx_files

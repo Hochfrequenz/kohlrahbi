@@ -1,0 +1,380 @@
+# serializer version: 1
+# name: TestQualityMap.test_cli_quality_map_table[check command for quality map table]
+  '''
+  Qualität \ Segmentgruppe,Bestellte Daten,Gültige Daten,Informative Daten,Erwartete Daten,Im System vorhandene Daten
+  "SG6 RFF DE1153 
+  Termine der Marktlokation",--,"Z50
+  „Termindaten der Marktlokation“",--,"Z51
+  „Erwartete Termindaten der Marktlokation“","Z52
+  „Im System vorhandene Termindaten der Marktlokation“"
+  "SG8 SEQ DE1229
+  Referenz auf die Lokationsbündelstruktur",--,"Z78
+  „Referenz auf die Lokationsbündelstruktur“","ZD5
+  „Informative Referenz auf die Lokationsbündelstruktur“","ZC7
+  „Erwartete Referenz auf die Lokationsbündelstruktur“","ZC8
+  „Im System vorhandene Referenz auf die Lokationsbündelstruktur“"
+  "SG8 SEQ DE1229
+  Objektcode der Lokation in der Lokationsbündelstruktur",--,"Z58
+  „Zuordnung Lokation zum Objektcode des Lokationsbündels“","ZD6
+  „Informative Zuordnung Lokation zum Objektcode des Lokationsbündels“","ZC9
+  „Erwartete Zuordnung Lokation zum Objektcode des Lokationsbündels“","ZD0
+  „Im System vorhandene Zuordnung Lokation zum Objektcode des Lokationsbündels“"
+  "SG8 SEQ DE1229
+  Bestandteil eines Produktpakets","Z79
+  „Bestandteil eines Produktpakets“",--,--,--,--
+  "SG8 SEQ DE1229
+  Priorisierung erforderliches Produktpaket","ZH0
+  „Priorisierung erforderliches Produktpaket“",--,--,--,--
+  "SG8 SEQ DE1229
+  Daten der Netzlokation",--,"Z51 
+  „Daten der Netzlokation“","ZD7 
+  „Informative Daten der Netzlokation“","ZA9 
+  „Erwartete Daten der Netzlokation“","ZB0 
+  „Im System vorhandene Daten der Netzlokation“"
+  "SG8 SEQ DE1229
+  Abrechnungsdaten der Netzlokation",--,"Z71
+  „Abrechnungsdaten der Netzlokation“","ZD8
+  „Informative Abrechnungsdaten der
+  Netzlokation“","ZH1 
+  „Erwartete Abrechnungsdaten der Netzlokation“","ZH2 
+  „Im System vorhandene Abrechnungsdaten der Netzlokation“"
+  "SG8 SEQ DE1229
+  OBIS-Daten der Netzlokation",--,"Z57
+  „OBIS-Daten der Netzlokation“","ZD9
+  „Informative OBIS-Daten der Netzlokation“","ZA7
+  „Erwartete OBIS-Daten der Netzlokation“","ZA8
+  „Im System vorhandene OBIS-Daten der
+  Netzlokation“"
+  "SG8 SEQ DE1229
+  Produkt-Daten der Netzlokation",--,"Z60
+  „Produkt-Daten der Netzlokation“","ZE0
+  „Informative Produkt-Daten der Netzlokation“","ZG8
+  „Erwartete Produkt-Daten der NeLo“","ZG9
+  „Im System vorhandene Produkt-Daten der
+  NeLo“"
+  "SG8 SEQ DE1229
+  Daten der Marktlokation",--,"Z01
+  „Daten der Marktlokation“","Z98
+  „Informative Daten der Marktlokation“","Z80
+  „Erwartete Daten der Marktlokation“","Z81
+  „Im System vorhandene Daten der
+  Marktlokation“"
+  "SG8 SEQ DE1229
+  Daten der Marktlokation der beteiligten Marktrolle",--,--,--,--,"Z29
+  „Daten der Marktlokation der beteiligten
+  Marktrolle“"
+  "SG8 SEQ DE1229
+  Netznutzungsabrechnungsdaten der Marktlokation",--,"Z45
+  „Netznutzungsabrechnungsdaten der
+  Marktlokation“
+  
+  Z84
+  „Differenz-Netznutzungsabrechnungsdaten der
+  Marktlokation“","ZE1 
+  „Informative Netznutzungsabrechnungsdaten
+  der Marktlokation“","Z82
+  „Erwartete Netznutzungsabrechnungsdaten der
+  Marktlokation“
+  
+  Z96 
+  „Erwartete Differenz-
+  Netznutzungsabrechnungsdaten der
+  Marktlokation“","Z83 
+  „Im System vorhandene
+  Netznutzungsabrechnungsdaten der
+  Marktlokation“
+  
+  Z97 
+  „Im System vorhandene Differenz-
+  Netznutzungsabrechnungsdaten der
+  Marktlokation“"
+  "SG8 SEQ DE1229
+  Messstellenbetriebsabrechnungsdaten der Marktlokation",--,"Z76
+  „Messstellenbetriebsabrechnungsdaten der
+  Marktlokation“
+  ",--,"ZC5
+  „Erwartete
+  Messstellenbetriebsabrechnungsdaten der
+  Marktlokation“","ZC6
+  „Im System vorhandene
+  Messstellenbetriebsabrechnungsdaten der
+  Marktlokation“"
+  "SG8 SEQ DE1229
+  Erforderliches Messprodukt der Marktlokation","Z27
+  „Erforderliches Messprodukt der Marktlokation“",--,"ZE2
+  „Informative Erforderliches Messprodukt der
+  Marktlokation“",--,--
+  "SG8 SEQ DE1229
+  OBIS-Daten der Marktlokation",--,"Z02
+  „OBIS-Daten der Marktlokation“","ZE3
+  „Informative OBIS-Daten der Marktlokation“","ZA1
+  „Erwartete OBIS-Daten der Marktlokation“","ZA2
+  „Im System vorhandene OBIS-Daten der
+  Marktlokation“"
+  "SG8 SEQ DE1229
+  Produkt-Daten der Marktlokation",--,"Z59
+  „Produkt-Daten der Marktlokation“","ZE4
+  „Informative Produkt-Daten der Marktlokation“","ZB5
+  „Erwartete Produkt-Daten der Marktlokation“","ZB6
+  „Im System vorhandene Produkt-Daten der
+  Marktlokation“"
+  "SG8 SEQ DE1229
+  Verbrauchsart und Nutzung der OBIS-Kennzahl an der Marktlokation",--,"Z44
+  „Verbrauchsart und Nutzung der OBIS-Kennzahl
+  an der Marktlokation“","ZE5
+  „Informative Verbrauchsart und Nutzung der
+  OBIS-Kennzahl an der Marktlokation“","ZD1
+  „Erwartete Verbrauchsart und Nutzung der
+  OBIS-Kennzahl der Marktlokation“","ZD2
+  „Im System vorhandene Verbrauchsart und
+  Nutzung der OBIS-Kennzahl der Marktlokation“"
+  "SG8 SEQ DE1229
+  OBIS-Daten der Marktlokation der beteiligten Marktrolle",--,--,--,--,"Z30
+  „OBIS-Daten der Marktlokation der beteiligten
+  Marktrolle“"
+  "SG8 SEQ DE1229
+  Produkt-Daten der Marktlokation des NB",--,"Z40
+  „Produkt-Daten der Marktlokation des NB“","ZE6
+  „Informative Produkt-Daten der Marktlokation
+  des NB“","ZD3
+  „Erwartete Produkt-Daten der Marktlokation
+  des NB“","ZD4
+  „Im System vorhandene Produkt-Daten der
+  Marktlokation des NB“"
+  "SG8 SEQ DE1229
+  Daten der Tranche",--,"Z15
+  „Daten der Tranche“","ZE7
+  „Informative Daten der Tranche“","Z94
+  „Erwartete Daten der Tranche“","Z95
+  „Im System vorhandene Daten der Tranche“"
+  "SG8 SEQ DE1229
+  Daten der Tranche der beteiligten Marktrolle",--,--,--,--,"Z31
+  „Daten der Tranche der beteiligten Marktrolle“"
+  "SG8 SEQ DE1229
+  Erforderliches Messprodukt der Tranche","Z16
+  „Erforderliches Produkt der Tranche“",--,"ZE8
+  „Informative Erforderliches Produkt der
+  Tranche“",--,--
+  "SG8 SEQ DE1229
+  OBIS-Daten der Tranche",--,"Z17
+  „OBIS-Daten der Tranche“","ZE9
+  „Informative OBIS-Daten der Tranche“","Z99
+  „Erwartete OBIS-Daten der Tranche“","ZA0
+  „Im System vorhandene OBIS-Daten der
+  Tranche“"
+  "SG8 SEQ DE1229
+  OBIS-Daten der Tranche der beteiligten Marktrolle",--,--,--,--,"Z32
+  „OBIS-Daten der Tranche der beteiligten
+  Marktrolle“"
+  "SG8 SEQ DE1229
+  Daten der Technischen Ressource",--,"Z52
+  „Daten der Technischen Ressource“","ZF0
+  „Informative Daten der Technischen Ressource“","ZG4
+  „Erwartete Daten der Technischen Ressource“","ZG5
+  „Im System vorhandene Daten der Technischen
+  Ressource“"
+  "SG8 SEQ DE1229
+  Daten der Steuerbaren Ressource",--,"Z62
+  „Daten der Steuerbaren Ressource“","ZF1
+  „Informative Daten der Steuerbaren Ressource“","ZB1
+  „Erwartete Daten der Steuerbaren Ressource“","ZB2
+  „Im System vorhandene Daten der Steuerbaren Ressource“"
+  "SG8 SEQ DE1229
+  Produkt-Daten der Steuerbaren Ressource",--,"Z61
+  „Produkt-Daten der Steuerbaren Ressource“","ZF2
+  „Informative Produkt-Daten der Steuerbaren
+  Ressource“","ZB3
+  „Erwartete Produkt-Daten der Steuerbaren
+  Ressource“","ZB4
+  „Im System vorhandene Produkt-Daten der
+  Steuerbaren Ressource“"
+  "SG8 SEQ DE1229
+  Daten der Messlokation",--,"Z18
+  „Daten der Messlokation“","ZF3
+  „Informative Daten der Messlokation“","ZG6
+  „Erwartete Daten der Messlokation“","ZG7
+  „Im System vorhandene Daten der
+  Messlokation“"
+  "SG8 SEQ DE1229
+  Erforderliches Messprodukt der Messlokation","Z19
+  „Erforderliches Produkt der Messlokation“",--,"ZF4
+  „Informative Erforderliches Produkt der
+  Messlokation“",--,--
+  "SG8 SEQ DE1229
+  Zähleinrichtungsdaten",--,"Z03
+  „Zähleinrichtungsdaten“","ZF5
+  „Informative Zähleinrichtungsdaten“","ZA3
+  „Erwartete Zähleinrichtungsdaten“","ZA4
+  „Im System vorhandene Zähleinrichtungsdaten“"
+  "SG8 SEQ DE1229
+  OBIS-Daten der Zähleinrichtung / Smartmeter-Gateway",--,"Z20
+  „OBIS-Daten der Zähleinrichtung“","ZF6
+  „Informative OBIS-Daten der Zähleinrichtung“","ZA5
+  „Erwartete OBIS-Daten der Zähleinrichtung“","ZA6
+  „Im System vorhandene OBIS-Daten der
+  Zähleinrichtung“"
+  "SG8 SEQ DE1229
+  Wandlerdaten",--,"Z04
+  „Wandlerdaten“","ZF7
+  „Informative Wandlerdaten“","ZB9
+  „Erwartete Wandlerdaten“","ZC0
+  „Im System vorhandene Wandlerdaten“"
+  "SG8 SEQ DE1229
+  Kommunikationseinrichtungsdaten",--,"Z05
+  „Kommunikationseinrichtungsdaten“","ZF8
+  „Informative
+  Kommunikationseinrichtungsdaten“","ZB7
+  „Erwartete Kommunikationseinrichtungsdaten“","ZB8
+  „Im System vorhandene
+  Kommunikationseinrichtungsdaten“"
+  "SG8 SEQ DE1229
+  Daten der technischen Steuereinrichtung",--,"Z06
+  „Daten der technischen Steuereinrichtung“","ZF9
+  „Informative Daten der technischen
+  Steuereinrichtung“","ZC1
+  „Erwartete Daten der technischen
+  Steuereinrichtung“","ZC2
+  „Im System vorhandene Daten der technischen
+  Steuereinrichtung“"
+  "SG8 SEQ DE1229
+  Smartmeter-Gateway",--,"Z13
+  „Smartmeter-Gateway“","ZG0
+  „Informative Smartmeter-Gateway“","ZC3
+  „Erwartetes Smartmeter-Gateway“","ZC4
+  „Im System vorhandenes Smartmeter-Gateway“"
+  "SG8 SEQ DE1229
+  Daten der Steuerbox",--,"Z14
+  „Steuerbox“",--,"ZH3 
+  „Erwartete Daten der Steuerbox“","ZH4
+  „Im System vorhandene Daten der Steuerbox“"
+  "SG8 SEQ DE1229
+  Profildaten",--,"Z21
+  „Profildaten“","ZG1
+  „Informative Profildaten“","Z85
+  „Erwartete Profildaten“","Z86
+  „Im System vorhandene Profildaten“"
+  "SG8 SEQ DE1229
+  Profildaten der beteiligten Marktrolle",--,--,--,--,"Z33
+  „Profildaten der beteiligten Marktrolle“"
+  "SG8 SEQ DE1229
+  Profilschardaten",--,"Z08
+  „Profilschardaten“","ZG2
+  „Informative Profilschardaten“","Z87
+  „Erwartete Profilschardaten“","Z88
+  „Im System vorhandene Profilschardaten“"
+  "SG8 SEQ DE1229
+  Referenzprofildaten",--,"Z38
+  „Referenzprofildaten“","ZG3
+  „Informative Referenzprofildaten“","Z89
+  „Erwartete Referenzprofildaten“","Z90
+  „Im System vorhandene Referenzprofildaten“"
+  "SG8 SEQ DE1229
+  Daten der Summenzeitreihe",--,"Z22
+  „Daten der Summenzeitreihe“",--,--,--
+  "SG8 SEQ DE1229
+  Produkt-Daten der Summenzeitreihe",--,"Z23
+  „Produkt-Daten der Summenzeitreihe“",--,--,--
+  "SG8 SEQ DE1229
+  „Daten der Überführungszeitreihe“",--,"Z24
+  „Daten der Überführungszeitreihe“",--,--,--
+  "SG8 SEQ DE1229
+  Produkt-Daten der Überführungszeitreihe",--,"Z25
+  „Produkt-Daten der Überführungszeitreihe“",--,--,--
+  "SG8 SEQ DE1229
+  Datenstand des ÜNB",--,--,--,--,"Z47
+  „Datenstand des ÜNB“"
+  "SG8 SEQ DE1229
+  Datenstand des NB",--,--,--,--,"Z72
+  „Datenstand des NB“"
+  "SG8 SEQ DE1229
+  Abgerechnete Daten der
+  Bilanzkreissummenzeitreihe",--,"Z48
+  „Abgerechnete Daten der
+  Bilanzkreissummenzeitreihe des ÜNB“",--,--,--
+  "SG8 SEQ DE1229
+  Abgerechnete Daten der
+  Bilanzierungsgebietssummenzeitreihe",--,"Z49
+  „Abgerechnete Daten der
+  Bilanzierungsgebietssummenzeitreihe des
+  ÜNB“",--,--,--
+  "SG8 SEQ DE1229
+  Daten des Kunden des Lieferanten",--,"Z75
+  „Daten des Kunden des Lieferanten“",--,"Z92
+  „Erwartete Daten des Kunden des Lieferanten“","Z93
+  „Im System vorhandene Daten des Kunden des
+  Lieferanten“"
+  "SG12 NAD DE3035
+  Kunde des Lieferanten",--,"Z09
+  „Kunde des LF“","Z65
+  „Informativer Kunden des LF“","Z47
+  „Erwarteter Kunde des LF“","Z48
+  „Im System vorhandener Kunde des LF“"
+  "SG12 NAD DE3035
+  Korrespondenzanschrift des Kunden des Lieferanten",--,"Z04
+  „Korrespondenzanschrift des Kunden des LF“","Z66
+  „Informative Korrespondenzanschrift des Kunden des LF“","Z49
+  „Erwartete Korrespondenzanschrift des Kunden des LF“","Z50
+  „Im System vorhandene
+  Korrespondenzanschrift des Kunden des LF“"
+  "SG12 NAD DE3035
+  Kunde des Messstellenbetreibers",--,"Z07
+  „Kunde des MSB“",--,"Z39
+  „Erwarteter Kunde des MSB“","Z40
+  „Im System vorhandener Kunde des MSB“"
+  "SG12 NAD DE3035
+  Korrespondenzanschrift des Kunden des Messstellenbetreibers",--,"Z08
+  „Korrespondenzanschrift des Kunden des MSB“",--,"Z41
+  „Erwartete Korrespondenzanschrift des Kunden des MSB“","Z42
+  „Im System vorhandene
+  Korrespondenzanschrift des Kunden des MSB“"
+  "SG12 NAD DE3035
+  Kunde des Netzbetreibers",--,"Z25
+  „Kunde des NB“","Z67
+  „Informativer Kundenname des NB“","Z51
+  „Erwarteter Kunde des Netzbetreibers“","Z52
+  „Im System vorhandener Kunde des
+  Netzbetreibers“"
+  "SG12 NAD DE3035
+  Korrespondenzanschrift des Kunden des Netzbetreibers",--,"Z26
+  „Korrespondenzanschrift des Kunden des NB“","Z68
+  „Informative Korrespondenzanschrift des Kunde des NB“","Z53
+  „Erwartete Korrespondenzanschrift des Kunden des Netzbetreibers“","Z54
+  „Im System vorhandene
+  Korrespondenzanschrift des Kunden des Netzbetreibers“"
+  "SG12 NAD DE3035
+  Anschlussnehmer",--,"EO
+  „Anschlussnehmer“","Z69
+  „Informative Daten des Anschlussnehmers“","Z55
+  „Erwarteter Anschlussnehmer“","Z56
+  „Im System vorhandener Anschlussnehmer“"
+  "SG12 NAD DE3035
+  Beteiligter Marktpartner MP-ID",--,--,"VY
+  „andere zugehörige Partei“",--,--
+  "SG12 NAD DE3035
+  Hausverwalter",--,"DDO
+  „Hausverwalter“
+  ","Z70
+  „Informative Daten des Hausverwalters“","Z57
+  „Erwarteter Hausverwalter“","Z58
+  „Im System vorhandener Hausverwalter“"
+  "SG12 NAD DE3035
+  Marktlokationsanschrift",--,"DP
+  „Lieferanschrift“","Z63
+  „Informative Marktlokationsanschrift“","Z59
+  „Erwartete Marktlokationsanschrift“","Z60
+  „Im System vorhandene
+  Marktlokationsanschrift“"
+  "SG12 NAD DE3035
+  Messlokationsadresse",--,"Z03
+  „Messlokationsadresse“","Z64
+  „Informative Messlokationsadresse“","Z43
+  „Erwartete Messlokationsadresse“","Z44
+  „Im System vorhandene Messlokationsadresse“"
+  "SG12 NAD DE3035
+  Name und Adresse für die Ablesekarte",--,"Z05
+  „Name und Adresse für die Ablesekarte“",--,"Z45
+  „Erwarteter Name und Adresse für die Ablesekarte“","Z46
+  „Im System vorhandener Name und Adresse für die Ablesekarte“"
+  
+  '''
+# ---

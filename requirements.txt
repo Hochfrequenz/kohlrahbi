@@ -14,7 +14,7 @@ colorama==0.4.6
     #   colorlog
 colorlog==6.8.2
     # via kohlrahbi (pyproject.toml)
-efoli==1.1.0
+efoli==1.2.0
     # via kohlrahbi (pyproject.toml)
 et-xmlfile==1.1.0
     # via openpyxl
@@ -30,7 +30,7 @@ pandas==2.2.3
     # via kohlrahbi (pyproject.toml)
 pydantic==2.9.2
     # via kohlrahbi (pyproject.toml)
-pydantic-core==2.23.4
+pydantic-core==2.24.0
     # via pydantic
 python-dateutil==2.9.0.post0
     # via pandas
