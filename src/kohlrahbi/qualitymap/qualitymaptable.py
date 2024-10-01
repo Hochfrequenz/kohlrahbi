@@ -9,7 +9,7 @@ from typing import Annotated
 
 import pandas as pd
 from docx.table import Table
-from pydantic import BaseModel, ConfigDict, Field, PlainValidator
+from pydantic import BaseModel, Field, PlainValidator
 
 from kohlrahbi.ahbtable.ahbsubtable import AhbSubTable
 from kohlrahbi.logger import logger
@@ -31,7 +31,9 @@ HEADERS = OrderedDict(
 
 
 class Cell(BaseModel):
-    """Here some docstring
+    """Represents a set of a qualifier and its description.
+
+    A table cell can contain multiple cells.
 
     Attributes:
         qualifier: Qualifier for the Edifact message e.g "Z50"
@@ -43,11 +45,29 @@ class Cell(BaseModel):
 
 
 class SegmentGroup(BaseModel):
+    """Represents a table cell of the left most column of the quality map table.
+
+    Attributes:
+        path_to_data_element: Path to the data element
+        description: Description
+    """
+
     path_to_data_element: StrippedStr
     description: Description
 
 
 class Row(BaseModel):
+    """Represents a row in the quality map table.
+
+    Attributes:
+        segment_group: 1st column of the quality map table
+        bestellte_daten: 2nd column of the quality map table
+        gueltige_daten: 3rd column of the quality map table
+        informative_daten: 4th column of the quality map table
+        erwartete_daten: 5th column of the quality map table
+        im_system_vorhandene_daten: Last column of the quality map table
+    """
+
     segment_group: SegmentGroup
     bestellte_daten: list[Cell] = Field(default_factory=list)
     gueltige_daten: list[Cell] = Field(default_factory=list)

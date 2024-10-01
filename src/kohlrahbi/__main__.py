@@ -1,3 +1,7 @@
+"""
+This module is the entry point for the Kohlrahbi CLI tool.
+"""
+
 import click
 
 from kohlrahbi.ahb.command import ahb

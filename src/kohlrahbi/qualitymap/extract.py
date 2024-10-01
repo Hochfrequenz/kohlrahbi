@@ -1,3 +1,7 @@
+"""
+This module contains the functions to extract quality maps from .docx files.
+"""
+
 from pathlib import Path
 from typing import Optional
 
