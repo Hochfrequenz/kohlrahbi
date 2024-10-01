@@ -2,12 +2,14 @@
 This module contains the AhbSubTable class.
 """
 
-from typing import Generator
+from typing import Generator, Union, cast
 
+import numpy as np
 import pandas as pd
 from docx.table import Table as DocxTable
 from docx.table import _Cell, _Row
 from docx.text.paragraph import Paragraph
+from numpy.typing import NDArray
 from pydantic import BaseModel, ConfigDict
 
 from kohlrahbi.ahbtable.ahbtablerow import AhbTableRow
@@ -209,7 +211,17 @@ class AhbSubTable(BaseModel):
         Check for broken lines in the middle cell.
         """
         tabsplit_text = paragraph.text.split("\t")
-        beschreibung_index = table.columns.get_loc("Beschreibung")
+
+        loc: Union[int, slice, NDArray[np.bool_]] = table.columns.get_loc("Beschreibung")
+
+        # Ensure loc is an int
+        if isinstance(loc, int):
+            # Proceed with loc as an int
+            beschreibung_index: int = loc
+        else:
+            # Handle the case where loc is not an int
+            raise ValueError("The location of the column 'Beschreibung' is not an integer.")
+
         is_empty_middle_line = all(text == "" for text in tabsplit_text)
         is_broken_code_qualifier = (
             paragraph.paragraph_format.left_indent is not None
