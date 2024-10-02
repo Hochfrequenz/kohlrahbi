@@ -95,7 +95,7 @@ class AhbSubTable(BaseModel):
                         table_meta_data=table_meta_data,
                         paragraph=first_paragraph,
                     ):
-                        AhbSubTable.add_broken_line(ahb_table_dataframe, ahb_table_row_dataframe.iat[0])
+                        AhbSubTable.add_broken_line(ahb_table_dataframe, ahb_table_row_dataframe)
                         # we have a broken line
                         ahb_table_dataframe = pd.concat(
                             [ahb_table_dataframe, ahb_table_row_dataframe.iloc[1:]],
@@ -182,12 +182,9 @@ class AhbSubTable(BaseModel):
     @staticmethod
     def add_broken_line(ahb_table_dataframe: pd.DataFrame, broken_line: pd.DataFrame) -> None:
         """Add a broken line to the dataframe."""
-        for col_index, column in enumerate(
-            ahb_table_dataframe.columns[INDEX_OF_CODES_AND_QUALIFIER_COLUMN:-1],
-            start=INDEX_OF_CODES_AND_QUALIFIER_COLUMN,
-        ):
+        for col_index in range(INDEX_OF_CODES_AND_QUALIFIER_COLUMN, len(ahb_table_dataframe.columns) - 1):
             AhbSubTable.add_text_to_last_row(
-                ahb_table_dataframe, ahb_table_dataframe.index.max(), col_index, str(broken_line[column])
+                ahb_table_dataframe, ahb_table_dataframe.index.max(), col_index, str(broken_line.iat[0, col_index])
             )
 
     @staticmethod
