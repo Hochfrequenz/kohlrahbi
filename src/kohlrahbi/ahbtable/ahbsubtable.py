@@ -216,10 +216,8 @@ class AhbSubTable(BaseModel):
 
         # Ensure loc is an int
         if isinstance(loc, int):
-            # Proceed with loc as an int
             beschreibung_index: int = loc
         else:
-            # Handle the case where loc is not an int
             raise ValueError("The location of the column 'Beschreibung' is not an integer.")
 
         is_empty_middle_line = all(text == "" for text in tabsplit_text)
