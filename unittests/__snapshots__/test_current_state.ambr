@@ -222,8 +222,7 @@
   162,Grund der Ersatzwertbildung,SG10,STS,9013,,Z76,,Netzausfall,X [4P0..1],
   163,Grund der Ersatzwertbildung,SG10,STS,9013,,Z78,,Gerätewechsel,X [4P0..1],
   164,Grund der Ersatzwertbildung,SG10,STS,9013,,Z80,,Gerät arbeitet außerhalb der Betriebsbedingungen,X [4P0..1],
-  165,Grund der Ersatzwertbildung,SG10,STS,9013,,Z81,,Messeinrichtung gestört/defekt,X [4P0..1],"[46] Wenn Wert in SG6 LOC+172 DE3225 genau 11 Stellen
-  [570] Hinweis: Verwendung ist nur zulässig, wenn es sich um 1:n Beziehung zwischen Markt- und Messlokation handelt und auf Ebene der Messlokation unterschiedliche Gründe für die Ersatzwertbildung vorliegen und kommuniziert wurden."
+  165,Grund der Ersatzwertbildung,SG10,STS,9013,,Z81,,Messeinrichtung gestört/defekt,X [4P0..1],
   166,Grund der Ersatzwertbildung,SG10,STS,9013,,Z82,,Unsicherheit Messung,X [4P0..1],
   167,Grund der Ersatzwertbildung,SG10,STS,9013,,Z98,,Berücksichtigung Störmengenzählwerk,X [4P0..1],
   168,Grund der Ersatzwertbildung,SG10,STS,9013,,Z99,,Mengenumwertung unvollständig,X [4P0..1],
@@ -239,7 +238,8 @@
   178,Grund der Ersatzwertbildung,SG10,STS,9013,,ZR2,,gestörte Werte,X [4P0..1],
   179,Grund der Ersatzwertbildung,SG10,STS,9013,,ZR3,,Wartungsarbeiten an eichrechtskonformen Messgeräten,X [4P0..1],
   180,Grund der Ersatzwertbildung,SG10,STS,9013,,ZR4,,Konsistenz- und Synchronprüfung,X [4P0..1],
-  181,Grund der Ersatzwertbildung,SG10,STS,9013,,ZT8,,"Anforderung in die Vergangenheit, zum angeforderten Zeitpunkt liegt kein Wert vor.",X [4P0..1],    
+  181,Grund der Ersatzwertbildung,SG10,STS,9013,,ZT8,,"Anforderung in die Vergangenheit, zum angeforderten Zeitpunkt liegt kein Wert vor.",X [4P0..1],"[46] Wenn Wert in SG6 LOC+172 DE3225 genau 11 Stellen
+  [570] Hinweis: Verwendung ist nur zulässig, wenn es sich um 1:n Beziehung zwischen Markt- und Messlokation handelt und auf Ebene der Messlokation unterschiedliche Gründe für die Ersatzwertbildung vorliegen und kommuniziert wurden."
   182,Gasqualität,SG10,STS,,00039,,,,Soll [97],[97] Wenn es sich um die Übermittlung eines Wertes aufgrund der Umstellung der Gasqualität handelt
   183,Gasqualität,SG10,STS,9015,00039,Z31,,Gasqualität,X,
   184,Gasqualität,SG10,STS,9013,00039,ZG3,,Umstellung Gasqualität,X,
@@ -2422,14 +2422,14 @@
   91,Operator / Operation,SG9,CAV,,00030,,,,Muss,
   92,Operator / Operation,SG9,CAV,7111,00030,Z69,,Addition,X [11] ⊻ [15],
   93,Operator / Operation,SG9,CAV,7111,,Z70,,Subtraktion,X [11],
-  94,Operator / Operation,SG9,CAV,7111,,Z80,,Divisor,X [13],"[11] Wenn in SG8 SEQ+Z37 SG9 CCI+++Z86 CAV+Z69/Z70 (Addition / Subtraktion) vorhanden, darf es in dem Vorgang beliebig viele weitere SG8 SEQ+Z37 mit identischem Rechenschrittidentifikato r geben, die jedoch ausschließlich die Operatoren Z69/Z70 enthalten dürfen
+  94,Operator / Operation,SG9,CAV,7111,,Z80,,Divisor,X [13],
+  95,Operator / Operation,SG9,CAV,7111,,Z81,,Dividend,X [13],
+  96,Operator / Operation,SG9,CAV,7111,,Z82,,Faktor,X [14],
+  97,Operator / Operation,SG9,CAV,7111,,Z83,,Positivwert,X [12],"[11] Wenn in SG8 SEQ+Z37 SG9 CCI+++Z86 CAV+Z69/Z70 (Addition / Subtraktion) vorhanden, darf es in dem Vorgang beliebig viele weitere SG8 SEQ+Z37 mit identischem Rechenschrittidentifikato r geben, die jedoch ausschließlich die Operatoren Z69/Z70 enthalten dürfen
   [12] Wenn in SG8 SEQ+Z37 SG9 CCI+++Z86 CAV+Z83 (Positivwert) vorhanden, darf es in dem Vorgang keine weitere SG8 SEQ+Z37 mit identischem Rechenschrittidentifikato r geben
   [13] Wenn in SG8 SEQ+Z37 SG9 CCI+++Z86 CAV+Z80/Z81 (Divisor / Dividend) vorhanden, muss in diesem Vorgang genau eine zweite SG8 SEQ+Z37 mit identischen Rechenschrittidentifikato r vorhanden sein, sodass das eine SG8 SEQ+Z37 den Operator Z80 (Divisor) und das andere SG8 SEQ+Z37 den Operator Z81 (Dividend) enthält
   [14] Wenn in SG8 SEQ+Z37 SG9 CCI+++Z86 CAV+Z82 (Faktor) vorhanden, darf es in dem Vorgang beliebig viele weitere SG8 SEQ+Z37 mit identischem Rechenschrittidentifikato r geben, die jedoch ausschließlich CAV+Z82 enthalten
   [15] Wenn in einem SG5 IDE+24 nur eine SEQ+Z37 mit einer SG8 RFF+Z19 (Messlokation) vorhanden ist"
-  95,Operator / Operation,SG9,CAV,7111,,Z81,,Dividend,X [13],
-  96,Operator / Operation,SG9,CAV,7111,,Z82,,Faktor,X [14],
-  97,Operator / Operation,SG9,CAV,7111,,Z83,,Positivwert,X [12],                                                      
   98,Energieflussrichtung,SG9,,,,,,,Muss [7],[7] Wenn in derselben SG8 SEQ+Z37 das SG8 RFF+Z19 (Referenz auf eine Messlokation) vorhanden
   99,Energieflussrichtung,SG9,CCI,,00031,,,,Muss,
   100,Energieflussrichtung,SG9,CCI,7037,00031,Z87,,Energieflussrichtung,X,
@@ -2938,10 +2938,7 @@
   [941] Format: Artikelnummer
   [942] Format: n1-n2-n1-n3
   [959] Format: n13-n2"
-  60,Positionsdaten,SG36,LIN,7143,00015,Z01,,Artikelnummer,X,"[31] wenn BGM DE1001 = Z32
-  [32] wenn der Zeitpunkt im DTM+157 DE2380 < 01.01. 2024 00:00 Uhr gesetzlicher deutscher Zeit
-  [33] wenn der Zeitpunkt im DTM+157 DE2380 ≥ 01.01. 2024 00:00 Uhr gesetzlicher deutscher Zeit
-  [34] wenn BGM DE1001 = Z77"
+  60,Positionsdaten,SG36,LIN,7143,00015,Z01,,Artikelnummer,X,
   61,Preisangaben,SG40,,,,,,,Muss,
   62,Preisangaben,SG40,PRI,,00018,,,,Muss,
   63,Preisangaben,SG40,PRI,5125,00018,CAL,,Berechnungspreis,X,
@@ -3299,12 +3296,7 @@
   26,vorläufiger Abrechnungszeitraum Ende,,DTM,2380,,,,"Datum oder Uhrzeit oder Zeitspanne, Wert",X [UB3],
   27,vorläufiger Abrechnungszeitraum Ende,,DTM,2379,,303,,CCYYMMDDHHMMZ ZZ,X,
   28,Rechnungstyp,,IMD,,,,,,Muss,
-  29,Rechnungstyp,,IMD,7081,,ABS,,Abschlagsrechnung,X,"[56] Wenn DTM+137 (Nachrichtendatum ≥ 1.1.2023 0:00 gesetzlicher deutscher Zeit
-  [57] Wenn DTM+156 (Abrechnungszeitraum Ende) ≤ 1.1.2023 0:00 gesetzlicher deutscher Zeit
-  [72] Wenn MP-ID in NAD+MR in der Rolle LF
-  [76] Wenn MP-ID in NAD+MR in der Rolle NB
-  [492] Wenn MP-ID in NAD+MR (Nachrichtenempfäng er) aus Sparte Strom
-  [493] Wenn MP-ID in NAD+MR (Nachrichtenempfäng er) aus Sparte Gas"
+  29,Rechnungstyp,,IMD,7081,,ABS,,Abschlagsrechnung,X,
   30,Meldeinformationen,,FTX,,,,,,Soll [4],[4] Wenn Steuerschuldnerschaft des Leistungsempfängers vorliegt
   31,Meldeinformationen,,FTX,4451,,REG,,Meldeinformatione n,X,
   32,Meldeinformationen,,FTX,4441,,RCH,,Reverse Charge gemäß §13b UStG / Steuerschuldnerscha ft des Leistungsempfänger s,X,
@@ -4017,9 +4009,9 @@
   104,Adresse der Leistungserbringung,SG2,NAD,,,,,,Muss,
   105,Adresse der Leistungserbringung,SG2,NAD,3035,,,,,DP,
   106,Adresse der Leistungserbringung,SG2,NAD,3124,,,,Zusatzinformation zur Identifizierung,K,
-  107,Adresse der Leistungserbringung,SG2,NAD,3042,,,,Straße und Hausnummer oder,S [22],"[22] Wenn vorhanden
+  107,Adresse der Leistungserbringung,SG2,NAD,3042,,,,Straße und Hausnummer oder,S [22],
+  108,Adresse der Leistungserbringung,SG2,NAD,3042,,Postfach,,,M [23],"[22] Wenn vorhanden
   [23] Wenn im selben NAD DE3124 nicht vorhanden"
-  108,Adresse der Leistungserbringung,SG2,NAD,3042,,Postfach,,,M [23], 
   109,Adresse der Leistungserbringung,SG2,NAD,3164,,,,Ort,M,
   110,Adresse der Leistungserbringung,SG2,NAD,3251,,,,"Postleitzahl, Code",X,
   111,Adresse der Leistungserbringung,SG2,NAD,3207,,,,"Ländername, Code",X,
@@ -5411,7 +5403,7 @@
   144,Ansprechpartner,SG7,,,,,,,Muss,
   145,Ansprechpartner,SG7,CTA,,00034,,,,Muss,
   146,Ansprechpartner,SG7,CTA,3139,00034,IC,,Informationskontakt,X,
-  147,Ansprechpartner,SG7,CTA,3412,00034,,,Name der organisatorischen,X [501],"[501] Hinweis: Es darf kein Name einer natürlichen Person übermittelt werden, stattdessen ist die organisatorische Einheit im Unternehmen zu nennen."
+  147,Ansprechpartner,SG7,CTA,3412,00034,,,Name der organisatorischen,X [501],
   148,Kommunikationsverbindung,SG7,COM,,00035,,,,Muss,
   149,Kommunikationsverbindung,SG7,COM,3148,00035,,,Nummer / Adresse,X (([939][6]) ∨ ([940][8])) ∧ [502],"[6] wenn im DE3155 im demselben COM der Code EM vorhanden ist
   [8] wenn im DE3155 im demselben COM der Code TE / FX vorhanden ist
@@ -8076,12 +8068,12 @@
   59,Transaktionsgrund,SG4,STS,9013,00037,E06,,Ersatzbelieferung,X [580],
   60,Transaktionsgrund,SG4,STS,9013,,Z02,,Kündigung Lieferantenrahmenvertra g,X,
   61,Transaktionsgrund,SG4,STS,9013,,Z36,,EoG aus Ein-/Auszug (Umzug),X,
-  62,Transaktionsgrund,SG4,STS,9013,,Z37,,EoG wegen Einzug in Neuanlage,X,"[580] Hinweis:  Ersatzbelieferung gibt es nur bei  - Marktlokationen in der  Niederspannung, die kein Haushaltskunde gem. EnWG sind und die nicht mehr der gesetzlichen Ersatzversorgung (drei Monate) unterliegen und - für Marktlokationen, die in Mittelspannung/ Hochspannung einer Versorgung zugeführt werden sollen. Grundlage für eine Ersatzbelieferung ist die bilaterale Vereinbarung."
+  62,Transaktionsgrund,SG4,STS,9013,,Z37,,EoG wegen Einzug in Neuanlage,X,
   63,Transaktionsgrund,SG4,STS,9013,,Z39,,EoG aus vorübergehendem Anschluss,X,
   64,Transaktionsgrund,SG4,STS,9013,,ZC6,,EoG aus Bilanzkreisschließung,X,
   65,Transaktionsgrund,SG4,STS,9013,,ZC7,,EoG aufgrund Erlöschen der Zuordnungsermächtigun g,X,
   66,Transaktionsgrund,SG4,STS,9013,,ZT6,,EoG wegen Kündigung durch LF,X,
-  67,Transaktionsgrund,SG4,STS,9013,,ZT7,,EoG wegen Kündigung durch Kunde/LFN,X,          
+  67,Transaktionsgrund,SG4,STS,9013,,ZT7,,EoG wegen Kündigung durch Kunde/LFN,X,"[580] Hinweis:  Ersatzbelieferung gibt es nur bei  - Marktlokationen in der  Niederspannung, die kein Haushaltskunde gem. EnWG sind und die nicht mehr der gesetzlichen Ersatzversorgung (drei Monate) unterliegen und - für Marktlokationen, die in Mittelspannung/ Hochspannung einer Versorgung zugeführt werden sollen. Grundlage für eine Ersatzbelieferung ist die bilaterale Vereinbarung."
   68,Transaktionsgrundergänzun g für Lieferende bei befristeter Anmeldung,SG4,STS,,00038,,,,Soll [37],[37] Wenn Anmeldung/ Änderung befristet
   69,Transaktionsgrundergänzun g für Lieferende bei befristeter Anmeldung,SG4,STS,9015,00038,Z17,,Transaktionsgrundergänzung für befristete Anmeldung,X,
   70,Transaktionsgrundergänzun g für Lieferende bei befristeter Anmeldung,SG4,STS,9013,00038,E01,,Ein-/Auszug (Umzug),X,
@@ -8745,10 +8737,10 @@
   641,Zählertyp,SG10,CAV,7111,,IVA,,Individuelle Abstimmung (Sonderausstattung),X,
   642,Zählertyp,SG10,CAV,7110,00330,Z01,,EDL40,X [136],
   643,Zählertyp,SG10,CAV,7110,,Z02,,EDL21,X [136],
-  644,Zählertyp,SG10,CAV,7110,,Z03,,sonstiger EHZ,X [136],"[136] Wenn SG10 CCI+++E13 (Zählertyp) CAV+EHZ (elektronischer Haushaltszähler) vorhanden
-  [346] Wenn SG10 CCI+++E13 (Zählertyp) CAV+MME (mME) vorhanden"
+  644,Zählertyp,SG10,CAV,7110,,Z03,,sonstiger EHZ,X [136],
   645,Zählertyp,SG10,CAV,7110,,Z04,,Standard,X [346],
-  646,Zählertyp,SG10,CAV,7110,,Z05,,MeDa-Zähler,X [346],      
+  646,Zählertyp,SG10,CAV,7110,,Z05,,MeDa-Zähler,X [346],"[136] Wenn SG10 CCI+++E13 (Zählertyp) CAV+EHZ (elektronischer Haushaltszähler) vorhanden
+  [346] Wenn SG10 CCI+++E13 (Zählertyp) CAV+MME (mME) vorhanden"
   647,Identifikation / Nummer des Gerätes,SG10,CAV,,00331,,,,Muss,
   648,Identifikation / Nummer des Gerätes,SG10,CAV,7111,00331,Z30,,Gerätenummer,X,
   649,Identifikation / Nummer des Gerätes,SG10,CAV,7110,00331,,,Gerätenummer,X,

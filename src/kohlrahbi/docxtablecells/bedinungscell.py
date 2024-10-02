@@ -49,4 +49,4 @@ class BedingungCell(BaseModel):
             index = beautified_bedingung.find(match)
             beautified_bedingung = beautified_bedingung[:index].rstrip() + "\n" + beautified_bedingung[index:]
 
-        return beautified_bedingung
+        return beautified_bedingung.lstrip()

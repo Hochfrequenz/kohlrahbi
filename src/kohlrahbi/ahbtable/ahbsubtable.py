@@ -72,10 +72,7 @@ class AhbSubTable(BaseModel):
                 # conditions are always at the top of a dataelement
                 # add condition texts
                 if contains_condition_texts:
-                    AhbSubTable.add_condition_text(ahb_table_dataframe, bedingung_cell)
-                    # remove remaining text to avoid misplacements
-                    for paragraph in bedingung_cell.paragraphs:
-                        paragraph.text = ""
+                    AhbSubTable.combine_condition_text(ahb_table_dataframe, bedingung_cell)
 
                 # add new row regularly
                 ahb_table_row = AhbTableRow(
@@ -182,21 +179,25 @@ class AhbSubTable(BaseModel):
     @staticmethod
     def add_broken_line(ahb_table_dataframe: pd.DataFrame, broken_line: pd.DataFrame) -> None:
         """Add a broken line to the dataframe."""
-        for col_index in range(INDEX_OF_CODES_AND_QUALIFIER_COLUMN, len(ahb_table_dataframe.columns) - 1):
+        for col_index in range(INDEX_OF_CODES_AND_QUALIFIER_COLUMN, len(ahb_table_dataframe.columns)):
             AhbSubTable.add_text_to_last_row(
                 ahb_table_dataframe, ahb_table_dataframe.index.max(), col_index, str(broken_line.iat[0, col_index])
             )
 
     @staticmethod
-    def add_condition_text(ahb_table_dataframe: pd.DataFrame, bedingung_cell: _Cell) -> None:
+    def combine_condition_text(ahb_table_dataframe: pd.DataFrame, bedingung_cell: _Cell) -> None:
         """Add the condition text to the dataframe."""
         conditions_text = " " + " ".join(
             paragraph.text for paragraph in bedingung_cell.paragraphs if paragraph.text != ""
         )
         last_valid_row = ahb_table_dataframe["Bedingung"].last_valid_index()
         conditions_text = ahb_table_dataframe.at[last_valid_row, "Bedingung"] + conditions_text
-        conditions_text = BedingungCell.beautify_bedingungen(conditions_text)
-        ahb_table_dataframe.at[last_valid_row, "Bedingung"] = conditions_text
+        # remove existing text
+        ahb_table_dataframe.at[last_valid_row, "Bedingung"] = ""
+        # remove remaining text to avoid misplacements
+        for paragraph in bedingung_cell.paragraphs:
+            paragraph.text = ""
+        bedingung_cell.paragraphs[-1].text = conditions_text
 
     @staticmethod
     def is_broken_line(

@@ -30,7 +30,7 @@ class TestBedingungCell:
                         "11017": [""],
                         "11018": [""],
                         "Bedingung": [
-                            "[494] Das hier genannte Datum muss der Zeitpunkt sein, zu dem das Dokument erstellt wurde, oder ein Zeitpunkt, der davor liegt  \n[931] Format: ZZZ = +00"
+                            "[494] Das hier genannte Datum muss der Zeitpunkt sein, zu dem das Dokument erstellt wurde, oder ein Zeitpunkt, der davor liegt\n[931] Format: ZZZ = +00"
                         ],
                     }
                 ),
