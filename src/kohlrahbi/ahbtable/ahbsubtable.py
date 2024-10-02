@@ -222,12 +222,12 @@ class AhbSubTable(BaseModel):
             paragraph.paragraph_format.left_indent is not None
             and paragraph.paragraph_format.left_indent != table_meta_data.middle_cell_left_indent_position
             and table.iat[-1, beschreibung_index] != ""
-            and any(value != "" for value in table.iloc[-1:, beschreibung_index + 1 :])
+            and table.iloc[-1, beschreibung_index + 1 :].ne("").any()
         )
         if is_broken_code_qualifier and len(tabsplit_text) == 1:
             # only broken code / qualifier
-            assert table.iat[-1, beschreibung_index] != "" and any(
-                value != "" for value in table.iloc[-1:, beschreibung_index + 1 :]
+            assert (
+                table.iat[-1, beschreibung_index] != "" and table.iloc[-1, beschreibung_index + 1 :].ne("").any()
             ), "no condition expected in broken line"
         there_are_conditions = (
             len(tabsplit_text) > 1
