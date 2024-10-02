@@ -2,7 +2,7 @@
 This module contains the AhbSubTable class.
 """
 
-from typing import Generator, Union, cast
+from typing import Generator, Union  # , cast
 
 import numpy as np
 import pandas as pd
@@ -180,7 +180,7 @@ class AhbSubTable(BaseModel):
             ahb_table_dataframe.iat[row_index, column_index] += text
 
     @staticmethod
-    def add_broken_line(ahb_table_dataframe: pd.DataFrame, broken_line: pd.Series) -> None:
+    def add_broken_line(ahb_table_dataframe: pd.DataFrame, broken_line: pd.DataFrame) -> None:
         """Add a broken line to the dataframe."""
         for col_index, column in enumerate(
             ahb_table_dataframe.columns[INDEX_OF_CODES_AND_QUALIFIER_COLUMN:-1],
@@ -225,12 +225,12 @@ class AhbSubTable(BaseModel):
             paragraph.paragraph_format.left_indent is not None
             and paragraph.paragraph_format.left_indent != table_meta_data.middle_cell_left_indent_position
             and table.iat[-1, beschreibung_index] != ""
-            and (table.iloc[-1:, beschreibung_index + 1 :]).ne("").any()
+            and any(value != "" for value in table.iloc[-1:, beschreibung_index + 1 :])
         )
         if is_broken_code_qualifier and len(tabsplit_text) == 1:
             # only broken code / qualifier
-            assert (
-                table.iat[-1, beschreibung_index] != "" and (table.iloc[-1:, beschreibung_index + 1 :]).ne("").any()
+            assert table.iat[-1, beschreibung_index] != "" and any(
+                value != "" for value in table.iloc[-1:, beschreibung_index + 1 :]
             ), "no condition expected in broken line"
         there_are_conditions = (
             len(tabsplit_text) > 1
