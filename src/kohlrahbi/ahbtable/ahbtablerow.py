@@ -27,10 +27,7 @@ class AhbTableRow(BaseModel):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    def parse(
-        self,
-        row_type: RowType,
-    ) -> Optional[pd.DataFrame]:
+    def parse(self, row_type: RowType) -> Optional[pd.DataFrame]:
         """
         Writes the current row of the current table into the DataFrame depending on the type of the row.
         If the row is a header row, it will be skipped and None will be returned.

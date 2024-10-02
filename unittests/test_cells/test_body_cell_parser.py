@@ -324,7 +324,7 @@ class TestBodyCell:
                         "Segment": [""],
                         "Datenelement": [""],
                         "Segment ID": [""],
-                        "Codes und Qualifier": ["ORDER S"],
+                        "Codes und Qualifier": ["ORDERS"],
                         "Beschreibung": ["Bestellung"],
                         "17001": ["X"],
                         "Bedingung": [""],
