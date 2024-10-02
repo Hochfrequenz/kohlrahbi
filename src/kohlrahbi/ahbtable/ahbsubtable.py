@@ -35,7 +35,7 @@ class AhbSubTable(BaseModel):
         table_meta_data: Seed, ahb_table_dataframe: pd.DataFrame, docx_table: DocxTable
     ) -> pd.DataFrame:
         """Parse the docx table and add the information to the dataframe."""
-        for row in docx_table.rows:  # docx_table.rows:
+        for row in docx_table.rows:
             sanitized_cells = list(AhbSubTable.iter_visible_cells(row=row))
 
             current_edifact_struktur_cell = sanitized_cells[0]
