@@ -2,7 +2,7 @@
 This module contains the AhbSubTable class.
 """
 
-from typing import Generator, Union  # , cast
+from typing import Generator, Union
 
 import numpy as np
 import pandas as pd
