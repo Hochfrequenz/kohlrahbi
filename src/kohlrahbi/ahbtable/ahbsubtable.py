@@ -13,7 +13,6 @@ from numpy.typing import NDArray
 from pydantic import BaseModel, ConfigDict
 
 from kohlrahbi.ahbtable.ahbtablerow import AhbTableRow
-from kohlrahbi.docxtablecells import BedingungCell
 from kohlrahbi.docxtablecells.bodycell import INDEX_OF_CODES_AND_QUALIFIER_COLUMN, KNOW_SUFFIXES
 from kohlrahbi.enums import RowType
 from kohlrahbi.row_type_checker import get_row_type
