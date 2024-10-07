@@ -38,17 +38,31 @@ class EdiEnergyDocument(BaseModel):
             valid_until_date=int(valid_until_date),
         )
 
-    def __lt__(self, other: "EdiEnergyDocuement") -> bool:
+    def __lt__(self, other: "EdiEnergyDocument") -> bool:
         """
-        Compare two EdiEnergyDocuement instances based on their document_version and valid_until_date.
+        Compare two EdiEnergyDocument instances based on their document_version, valid_until_date, and valid_from_date.
+
+        I did not know how the tuple comparison works in Python, so I looked it up:
+
+        Python compares tuples lexicographically, meaning it compares the elements one by one from left to right.
+        The comparison starts with the first elements of both tuples:
+          If self.document_version is less than other.document_version, the entire expression evaluates to True.
+          If self.document_version is greater than other.document_version, the entire expression evaluates to False.
+          If self.document_version is equal to other.document_version, Python moves to the next elements in the tuples.
+        This process continues with self.valid_until_date vs. other.valid_until_date and then self.valid_from_date vs.
+        other.valid_from_date.
+
+        Args:
+            other (EdiEnergyDocument): The other document to compare against.
+
+        Returns:
+            bool: True if this document is considered less than the other document, False otherwise.
         """
-
-        if self.document_version == other.document_version:
-            if self.valid_until_date == other.valid_until_date:
-                return self.valid_from_date < other.valid_from_date
-            return self.valid_until_date < other.valid_until_date
-
-        return self.document_version < other.document_version
+        return (self.document_version, self.valid_until_date, self.valid_from_date) < (
+            other.document_version,
+            other.valid_until_date,
+            other.valid_from_date,
+        )
 
 
 def extract_document_version_and_valid_dates(filename: str) -> tuple[str, str, str]:
