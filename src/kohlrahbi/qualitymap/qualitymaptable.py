@@ -104,7 +104,7 @@ class QualityMapTable(BaseModel):
         for row in raw_table:
             path_to_data_element, description = row[0].strip().split("\n", 1)
             segment_group = SegmentGroup(path_to_data_element=path_to_data_element, description=description)
-            row_dict = {
+            row_dict: dict[str, SegmentGroup | list[Cell]] = {
                 "segment_group": segment_group,
                 **{header: [] for header in HEADERS if header != "segment_group"},
             }
@@ -121,7 +121,9 @@ class QualityMapTable(BaseModel):
                     qualifier, description = raw_cell.split("\n", 1)
                     description = description.strip('"„“')
                     cell = Cell(qualifier=qualifier, description=description)
-                    row_dict[column_name].append(cell)
+                    if isinstance(row_dict[column_name], SegmentGroup):
+                        raise ValueError(f"Expected a list for column '{column_name}'")
+                    row_dict[column_name].append(cell)  # type: ignore[union-attr]
 
             rows.append(Row.model_validate(row_dict))
         return cls(rows=rows)
