@@ -1,8 +1,8 @@
-from pathlib import Path
+from pathlib import Path, PosixPath
 
 import pytest
 
-from kohlrahbi.docxfilefinder import DocxFileFinder
+from kohlrahbi.docxfilefinder import DocxFileFinder, get_most_recent_file
 
 
 class TestDocxFileFinder:
@@ -61,3 +61,29 @@ class TestDocxFileFinder:
     )
     def test_filter_latest_version(self, group_items, expected):
         assert DocxFileFinder.filter_latest_version(group_items) == expected
+
+    @pytest.mark.parametrize(
+        ["group_items", "expected"],
+        [
+            pytest.param(
+                [
+                    PosixPath("APERAKCONTRLAHB-informatorischeLesefassung2.4a_99991231_20250404.docx"),
+                    PosixPath("APERAKCONTRLAHB-informatorischeLesefassung2.4_99991231_20250404.docx"),
+                ],
+                Path("APERAKCONTRLAHB-informatorischeLesefassung2.4a_99991231_20250404.docx"),
+                id="Two versions of the same file",
+            ),
+            pytest.param(
+                [
+                    PosixPath("CodelistederKonfigurationen-informatorischeLesefassung1.3_99991231_20250404.docx"),
+                    PosixPath("CodelistederKonfigurationen-informatorischeLesefassung1.1_99991231_20231001.docx"),
+                    PosixPath("CodelistederKonfigurationen-informatorischeLesefassung1.3a_99991231_20250404.docx"),
+                    PosixPath("CodelistederKonfigurationen-informatorischeLesefassung1.3b_99991231_20250404.docx"),
+                ],
+                Path("CodelistederKonfigurationen-informatorischeLesefassung1.3b_99991231_20250404.docx"),
+                id="Four versions of the same file",
+            ),
+        ],
+    )
+    def test_get_most_recent(self, group_items: list[Path], expected: Path):
+        assert get_most_recent_file(group_items) == expected

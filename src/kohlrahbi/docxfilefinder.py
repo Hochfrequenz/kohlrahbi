@@ -2,6 +2,7 @@
 This module contains the DocxFileFinder class.
 """
 
+import re
 from itertools import groupby
 from pathlib import Path
 
@@ -9,6 +10,106 @@ from efoli import EdifactFormat, get_format_of_pruefidentifikator
 from pydantic import BaseModel
 
 from kohlrahbi.logger import logger
+
+
+class EdiEnergyDocuement(BaseModel):
+    """
+    This class represents an EDI Energy document.
+    """
+
+    filename: Path
+    document_version: str
+    valid_from_date: int
+    valid_until_date: int
+
+    @classmethod
+    def from_path(cls, path: Path) -> "EdiEnergyDocuement":
+        """
+        Create an EdiEnergyDocuement object from a file path.
+        """
+
+        document_version, valid_from_date, valid_until_date = extract_document_version_and_valid_dates(path.name)
+
+        return cls(
+            filename=path,
+            document_version=document_version,
+            valid_from_date=int(valid_from_date),
+            valid_until_date=int(valid_until_date),
+        )
+
+    def __lt__(self, other: "EdiEnergyDocuement") -> bool:
+        """
+        Compare two EdiEnergyDocuement instances based on their document_version and valid_until_date.
+        """
+
+        if self.document_version == other.document_version:
+            return self.valid_until_date < other.valid_until_date
+
+        return self.document_version < other.document_version
+
+
+def extract_document_version_and_valid_dates(filename: str) -> tuple[str, str, str]:
+    """Extract the document version and valid dates from the filename.
+
+    Parameters:
+    - filename (str): The filename of the document.
+
+    Returns:
+    - tuple[str, str, str]: A tuple containing the document version, valid from date, and valid until date.
+    """
+
+    # Pattern to extract version number after '-informatorischeLesefassung'
+    docment_version_pattern = r"-informatorischeLesefassung([A-Za-z0-9.]+)"
+    # Pattern to extract the two dates at the end
+    date_pattern = r"_(\d{8})_(\d{8})\.docx$"
+
+    # Extract version
+    version_match = re.search(docment_version_pattern, filename)
+    document_version = version_match.group(1) if version_match else ""
+
+    # Extract dates
+    date_match = re.search(date_pattern, filename)
+    if date_match:
+        valid_from_date = date_match.group(1)
+        valid_until_date = date_match.group(2)
+    else:
+        valid_from_date = ""
+        valid_until_date = ""
+
+    return document_version, valid_from_date, valid_until_date
+
+
+def get_most_recent_file(group_items: list[Path]) -> Path | None:
+    """
+    Find the most recent file in a group of files based on specific criteria.
+
+    Parameters:
+    - group_items (List[Path]): A list of Path objects representing the file paths.
+
+    Returns:
+    - Path: A Path object representing the most recent file.
+    """
+
+    try:
+        # Define the keywords to filter relevant files
+        keywords = [
+            "konsolidiertelesefassungmitfehlerkorrekturen",
+            "außerordentlicheveröffentlichung",
+            "informatorischelesefassung",
+        ]
+
+        # Find the most recent file based on keywords and date suffixes
+        list_of_paths = [path for path in group_items if any(keyword in path.name.lower() for keyword in keywords)]
+
+        list_of_edi_energy_documents = [EdiEnergyDocuement.from_path(path) for path in list_of_paths]
+
+        most_recent_file = max(list_of_edi_energy_documents)
+
+        return most_recent_file.filename
+
+    except ValueError as e:
+        logger.error("Error processing group items: %s", e)
+        return None
 
 
 class DocxFileFinder(BaseModel):
@@ -126,11 +227,18 @@ class DocxFileFinder(BaseModel):
             else:
                 try:
                     # Define the keywords to filter relevant files
-                    keywords = ["konsolidiertelesefassungmitfehlerkorrekturen", "außerordentlicheveröffentlichung"]
+                    keywords = [
+                        "konsolidiertelesefassungmitfehlerkorrekturen",
+                        "außerordentlicheveröffentlichung",
+                        "informatorischelesefassung",
+                    ]
 
                     # Find the most recent file based on keywords and date suffixes
+                    list_of_paths = [
+                        path for path in group_items if any(keyword in path.name.lower() for keyword in keywords)
+                    ]
                     most_recent_file = max(
-                        (path for path in group_items if any(keyword in path.name.lower() for keyword in keywords)),
+                        list_of_paths,
                         key=lambda path: (
                             int(path.stem.split("_")[-1]),  # "gültig von" date
                             int(path.stem.split("_")[-2]),  # "gültig bis" date
