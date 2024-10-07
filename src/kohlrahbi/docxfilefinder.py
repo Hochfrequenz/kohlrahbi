@@ -7,6 +7,7 @@ from itertools import groupby
 from pathlib import Path
 
 from efoli import EdifactFormat, get_format_of_pruefidentifikator
+from more_itertools import last
 from pydantic import BaseModel
 
 from kohlrahbi.logger import logger
@@ -43,6 +44,8 @@ class EdiEnergyDocuement(BaseModel):
         """
 
         if self.document_version == other.document_version:
+            if self.valid_until_date == other.valid_until_date:
+                return self.valid_from_date < other.valid_from_date
             return self.valid_until_date < other.valid_until_date
 
         return self.document_version < other.document_version
@@ -219,38 +222,27 @@ class DocxFileFinder(BaseModel):
         Returns:
         - List[Path]: A list of Path objects representing the latest version of the files.
         """
-        result = []
+        result: list[Path] = []
 
         for group_items in groups.values():
             if len(group_items) == 1:
                 result.append(group_items[0])
             else:
                 try:
-                    # Define the keywords to filter relevant files
-                    keywords = [
-                        "konsolidiertelesefassungmitfehlerkorrekturen",
-                        "außerordentlicheveröffentlichung",
-                        "informatorischelesefassung",
-                    ]
 
-                    # Find the most recent file based on keywords and date suffixes
-                    list_of_paths = [
-                        path for path in group_items if any(keyword in path.name.lower() for keyword in keywords)
-                    ]
-                    most_recent_file = max(
-                        list_of_paths,
-                        key=lambda path: (
-                            int(path.stem.split("_")[-1]),  # "gültig von" date
-                            int(path.stem.split("_")[-2]),  # "gültig bis" date
-                        ),
-                    )
+                    list_of_edi_energy_documents = [EdiEnergyDocuement.from_path(path) for path in group_items]
+
+                    # sort list to get easy to read log messages
+                    list_of_edi_energy_documents.sort()
+                    most_recent_file_name = last(list_of_edi_energy_documents).filename
 
                     # Add the most recent file to the result and log ignored files
                     for path in group_items:
-                        if path != most_recent_file:
+                        if path != most_recent_file_name:
                             logger.debug("Ignoring file %s", path.name)
                         else:
-                            result.append(most_recent_file)
+                            logger.info("Will read file %s", path.name)
+                            result.append(most_recent_file_name)
 
                 except ValueError as e:
                     logger.error("Error processing group items: %s", e)
