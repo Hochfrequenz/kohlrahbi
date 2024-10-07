@@ -46,15 +46,19 @@ class TestDocxFileFinder:
             ),
             pytest.param(
                 {
-                    "UTILTSAHB": [
-                        Path("UTILTSAHB-konsolidiertelesefassungmitfehlerkorrekturen_20240701_20240401.docx"),
-                        Path("UTILTSAHB_20250731_20240901.docx"),
-                        Path("UTILTSAHB-außerordentlicheveröffentlichung_20240930_20240401.docx"),
-                        Path("UTILTSAHB-konsolidiertelesefassungmitfehlerkorrekturen_20240930_20240701.docx"),
-                        Path("UTILTSAHB-konsolidiertelesefassungmitfehlerkorrekturen_20240930_20240501.docx"),
+                    "UTILMDAHBMaBiS": [
+                        Path("UTILMDAHBMaBiS-informatorischeLesefassung4.0_99991231_20231001.docx"),
+                        Path(
+                            "UTILMDAHBMaBiS-informatorischeLesefassung4.1aKonsolidierteLesefassungmitFehlerkorrekturenStand11.03.2024_20250403_20240403.docx"
+                        ),
+                        Path("UTILMDAHBMaBiS-informatorischeLesefassung4.1a_20250403_20240403.docx"),
                     ]
                 },
-                [Path("UTILTSAHB-konsolidiertelesefassungmitfehlerkorrekturen_20240930_20240701.docx")],
+                [
+                    Path(
+                        "UTILMDAHBMaBiS-informatorischeLesefassung4.1aKonsolidierteLesefassungmitFehlerkorrekturenStand11.03.2024_20250403_20240403.docx"
+                    )
+                ],
                 id="different names",
             ),
         ],
