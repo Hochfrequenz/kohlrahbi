@@ -13,7 +13,7 @@ from pydantic import BaseModel
 from kohlrahbi.logger import logger
 
 
-class EdiEnergyDocuement(BaseModel):
+class EdiEnergyDocument(BaseModel):
     """
     This class represents an EDI Energy document.
     """
@@ -24,9 +24,9 @@ class EdiEnergyDocuement(BaseModel):
     valid_until_date: int
 
     @classmethod
-    def from_path(cls, path: Path) -> "EdiEnergyDocuement":
+    def from_path(cls, path: Path) -> "EdiEnergyDocument":
         """
-        Create an EdiEnergyDocuement object from a file path.
+        Create an EdiEnergyDocument object from a file path.
         """
 
         document_version, valid_from_date, valid_until_date = extract_document_version_and_valid_dates(path.name)
@@ -104,7 +104,7 @@ def get_most_recent_file(group_items: list[Path]) -> Path | None:
         # Find the most recent file based on keywords and date suffixes
         list_of_paths = [path for path in group_items if any(keyword in path.name.lower() for keyword in keywords)]
 
-        list_of_edi_energy_documents = [EdiEnergyDocuement.from_path(path) for path in list_of_paths]
+        list_of_edi_energy_documents = [EdiEnergyDocument.from_path(path) for path in list_of_paths]
 
         most_recent_file = max(list_of_edi_energy_documents)
 
@@ -230,7 +230,7 @@ class DocxFileFinder(BaseModel):
             else:
                 try:
 
-                    list_of_edi_energy_documents = [EdiEnergyDocuement.from_path(path) for path in group_items]
+                    list_of_edi_energy_documents = [EdiEnergyDocument.from_path(path) for path in group_items]
 
                     # sort list to get easy to read log messages
                     list_of_edi_energy_documents.sort()
