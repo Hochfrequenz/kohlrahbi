@@ -79,7 +79,7 @@ formatting = [
     "isort==5.13.2"
 ]
 test_packaging = [
-    "build==1.2.2",
+    "build==1.2.2.post1",
     "twine==5.1.1"
 ]
 
