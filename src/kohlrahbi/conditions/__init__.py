@@ -10,7 +10,7 @@ from efoli import EdifactFormat, EdifactFormatVersion, get_format_of_pruefidenti
 from kohlrahbi.ahb import get_pruefi_to_file_mapping
 from kohlrahbi.ahbtable.ahbcondtions import AhbConditions
 from kohlrahbi.ahbtable.ahbpackagetable import AhbPackageTable
-from kohlrahbi.conditions.allgemeine_festlegungen import time_conditions, time_packages
+from kohlrahbi.conditions.allgemeine_festlegungen import time_conditions
 from kohlrahbi.logger import logger
 from kohlrahbi.read_functions import get_all_conditions_from_doc
 
@@ -57,6 +57,5 @@ def scrape_conditions(
                 collected_packages.include_package_dict(packages.package_dict)
             collected_conditions.include_condition_dict(cond_table.conditions_dict)
         collected_conditions.include_condition_dict({edifact_format: time_conditions})
-        collected_packages.include_package_dict({edifact_format: time_packages})
     collected_conditions.dump_as_json(output_path)
     collected_packages.dump_as_json(output_path)

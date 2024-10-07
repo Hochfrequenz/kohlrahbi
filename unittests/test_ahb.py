@@ -3,12 +3,7 @@ from pathlib import Path
 import pytest
 from freezegun import freeze_time
 
-from kohlrahbi.ahb import (
-    extract_pruefis_from_docx,
-    find_pruefidentifikatoren,
-    get_ahb_documents_path,
-    save_pruefi_map_to_toml,
-)
+from kohlrahbi.ahb import find_pruefidentifikatoren, get_ahb_documents_path, save_pruefi_map_to_toml
 from unittests import path_to_test_edi_energy_mirror_repo, path_to_test_files_fv2310
 
 

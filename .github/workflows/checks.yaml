@@ -9,7 +9,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         python-version: [ "3.12" ]
-        tox-env: [ "test", "lint", "formatcheck", "typecheck", "test_packaging" ]
+        tox-env: [ "test", "lint", "formatcheck", "typecheck", "test_packaging", "dev" ]
     name: ${{ matrix.tox-env }}
     runs-on: ${{ matrix.os }}
     steps:

@@ -50,9 +50,13 @@ class BodyCell(BaseModel):
         """
 
         def add_text_to_column(row_index: int, column_index: int, text: str) -> None:
-            starts_with_known_suffix = any(text.startswith(suffix) for suffix in KNOW_SUFFIXES)
+            starts_with_known_suffix = any(text.startswith(suffix + " ") for suffix in KNOW_SUFFIXES)
             if len(text) > 0:
-                if len(ahb_row_dataframe.iat[row_index, column_index]) > 0 and not starts_with_known_suffix:
+                if (
+                    len(ahb_row_dataframe.iat[row_index, column_index]) > 0
+                    and not starts_with_known_suffix
+                    and len(text) > 1
+                ):
                     text = " " + text
                 ahb_row_dataframe.iat[row_index, column_index] += text
 
@@ -73,14 +77,16 @@ class BodyCell(BaseModel):
             paragraph: Paragraph, splitted_text_at_tabs: list[str], row_index: int, column_indezes: list[int]
         ) -> None:
             tab_stops_in_current_paragraph = get_tabstop_positions(paragraph=paragraph)
+            if len(tab_stops_in_current_paragraph) == len(splitted_text_at_tabs) - 1:
+                # we have remaining parts from a qualifier or code
+                tab_stops_in_current_paragraph = [
+                    paragraph.paragraph_format.left_indent,
+                    *tab_stops_in_current_paragraph,
+                ]
             for tabstop in tab_stops_in_current_paragraph:
                 for indicator_tabstop_position, column_index in zip(self.indicator_tabstop_positions, column_indezes):
-                    if len(tab_stops_in_current_paragraph) == 1:
-                        if indicator_tabstop_position in (tabstop, paragraph.paragraph_format.left_indent):
-                            add_text_to_column(row_index, column_index, splitted_text_at_tabs.pop(0))
-                    else:
-                        if tabstop == indicator_tabstop_position:
-                            add_text_to_column(row_index, column_index, splitted_text_at_tabs.pop(0))
+                    if tabstop == indicator_tabstop_position:
+                        add_text_to_column(row_index, column_index, splitted_text_at_tabs.pop(0))
 
         def handle_no_tab_stops(splitted_text_at_tabs: list[str], row_index: int) -> None:
             if splitted_text_at_tabs:
