@@ -58,7 +58,7 @@ test = [
   "freezegun==1.5.1",
   "pytest-datafiles==3.0.0",
   "pytest==8.3.3",
-  "syrupy==4.7.1",
+  "syrupy==4.7.2",
 ]
 typecheck = [
   "mypy==1.11.2",
@@ -79,7 +79,7 @@ formatting = [
     "isort==5.13.2"
 ]
 test_packaging = [
-    "build==1.2.2",
+    "build==1.2.2.post1",
     "twine==5.1.1"
 ]
 
