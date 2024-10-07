@@ -129,24 +129,16 @@ class DocxFileFinder(BaseModel):
                 files_containing_keywords = [
                     path for path in group_items if any(keyword in path.name.lower() for keyword in keywords)
                 ]
-                if files_containing_keywords != []:
+                if any(files_containing_keywords):
                     # Find the most recent file based on keywords and date suffixes
                     most_recent_file = max(
                         (path for path in files_containing_keywords),
-                        key=lambda path: (
-                            int(path.stem.split("_")[-1]),  # "gültig von" date
-                            int(path.stem.split("_")[-2]),  # "gültig bis" date
-                            _extract_document_version(path.stem.split("_")[-3]),  # version number
-                        ),
+                        key=_get_sort_key,
                     )
                 else:  # different versions but no kosildierte Lesefassung or außerordentliche Veröffentlichung at all
                     most_recent_file = max(
                         (path for path in group_items),
-                        key=lambda path: (
-                            int(path.stem.split("_")[-1]),  # "gültig von" date
-                            int(path.stem.split("_")[-2]),  # "gültig bis" date
-                            _extract_document_version(path.stem.split("_")[-3]),  # version number
-                        ),
+                        key=_get_sort_key,
                     )
 
                 # Add the most recent file to the result and log ignored files
@@ -243,15 +235,36 @@ class DocxFileFinder(BaseModel):
 
 
 _pattern = re.compile(
-    r"AHB(?:Strom|Gas)?-?informatorischeLesefassung?(.*?)",
+    r"AHB(?:Strom|Gas)?-?informatorischeLesefassung?((\d+)\.(\d+)([a-z]?))",
     re.IGNORECASE,
 )
 
 
-def _extract_document_version(path: Path) -> str:
-    document_str = str(path)
+def _extract_document_version(path: Path | str) -> tuple[str, int | None, int | None, str]:
+    """Returns the document version, major, minor, and suffix from the given file path."""
+    if isinstance(path, str):
+        document_str = path
+    else:
+        document_str = str(path)
     matches = _pattern.search(document_str)
     if matches:
-        document_version = matches.group(1)
-        return document_version
-    return ""
+        document_version, major, minor, suffix = matches.groups()
+        return document_version or "", int(major) or 0, int(minor) or 0, suffix or ""
+    return "", None, None, ""
+
+
+def _get_sort_key(path: Path) -> tuple[int, int, int | None, int | None, str]:
+    """
+    Extracts the sort key from the given path.
+
+    Parameters:
+    - path (Path): The path object to extract the sort key from.
+
+    Returns:
+    - tuple: A tuple containing the "gültig von" date, "gültig bis" date, and version number.
+    """
+    parts = path.stem.split("_")
+    gueltig_von_date = int(parts[-1])
+    gueltig_bis_date = int(parts[-2])
+    _, major, minor, suffix = _extract_document_version(parts[-3])
+    return gueltig_von_date, gueltig_bis_date, major, minor, suffix
