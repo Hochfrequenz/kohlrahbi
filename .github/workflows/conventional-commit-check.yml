@@ -4,6 +4,9 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, edited]
 
+permissions:
+  pull-requests: write
+
 jobs:
   validate-pr-title:
     runs-on: ubuntu-latest
@@ -14,4 +17,3 @@ jobs:
           task_types: '["feat","fix","docs","style","refactor","perf","test","build","ci","chore","revert"]'
           add_label: 'true'
           custom_labels: '{"feat": "feature", "fix": "fix", "docs": "documentation", "test": "test", "ci": "CI/CD", "refactor": "refactor", "perf": "performance", "chore": "chore", "revert": "revert", "wip": "WIP"}'
-          # ticket_key_regex: '^PROJECT-\\d{2,5}$'
