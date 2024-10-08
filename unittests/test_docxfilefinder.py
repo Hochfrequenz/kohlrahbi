@@ -71,18 +71,18 @@ class TestDocxFileFinder:
         [
             pytest.param(
                 [
-                    PosixPath("APERAKCONTRLAHB-informatorischeLesefassung2.4a_99991231_20250404.docx"),
-                    PosixPath("APERAKCONTRLAHB-informatorischeLesefassung2.4_99991231_20250404.docx"),
+                    Path("APERAKCONTRLAHB-informatorischeLesefassung2.4a_99991231_20250404.docx"),
+                    Path("APERAKCONTRLAHB-informatorischeLesefassung2.4_99991231_20250404.docx"),
                 ],
                 Path("APERAKCONTRLAHB-informatorischeLesefassung2.4a_99991231_20250404.docx"),
                 id="Two versions of the same file",
             ),
             pytest.param(
                 [
-                    PosixPath("CodelistederKonfigurationen-informatorischeLesefassung1.3_99991231_20250404.docx"),
-                    PosixPath("CodelistederKonfigurationen-informatorischeLesefassung1.1_99991231_20231001.docx"),
-                    PosixPath("CodelistederKonfigurationen-informatorischeLesefassung1.3a_99991231_20250404.docx"),
-                    PosixPath("CodelistederKonfigurationen-informatorischeLesefassung1.3b_99991231_20250404.docx"),
+                    Path("CodelistederKonfigurationen-informatorischeLesefassung1.3_99991231_20250404.docx"),
+                    Path("CodelistederKonfigurationen-informatorischeLesefassung1.1_99991231_20231001.docx"),
+                    Path("CodelistederKonfigurationen-informatorischeLesefassung1.3a_99991231_20250404.docx"),
+                    Path("CodelistederKonfigurationen-informatorischeLesefassung1.3b_99991231_20250404.docx"),
                 ],
                 Path("CodelistederKonfigurationen-informatorischeLesefassung1.3b_99991231_20250404.docx"),
                 id="Four versions of the same file",

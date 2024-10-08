@@ -7,7 +7,6 @@ from itertools import groupby
 from pathlib import Path
 
 from efoli import EdifactFormat, get_format_of_pruefidentifikator
-from more_itertools import last
 from pydantic import BaseModel
 
 from kohlrahbi.logger import logger
@@ -20,8 +19,11 @@ class EdiEnergyDocument(BaseModel):
 
     filename: Path
     document_version: str
-    valid_from_date: int
-    valid_until_date: int
+    version_major: int
+    version_minor: int
+    version_suffix: str
+    valid_from: int
+    valid_until: int
 
     @classmethod
     def from_path(cls, path: Path) -> "EdiEnergyDocument":
@@ -29,28 +31,31 @@ class EdiEnergyDocument(BaseModel):
         Create an EdiEnergyDocument object from a file path.
         """
 
-        document_version, valid_from_date, valid_until_date = extract_document_version_and_valid_dates(path.name)
+        file_name = extract_document_version_and_valid_dates(path.name)
 
         return cls(
             filename=path,
-            document_version=document_version,
-            valid_from_date=int(valid_from_date),
-            valid_until_date=int(valid_until_date),
+            document_version=file_name["document_version"],
+            version_major=int(file_name["version_major"]),
+            version_minor=int(file_name["version_minor"]),
+            version_suffix=file_name["version_suffix"],
+            valid_from=int(file_name["valid_from"]),
+            valid_until=int(file_name["valid_until"]),
         )
 
-    def __lt__(self, other: "EdiEnergyDocument") -> bool:
+    def __lt__(self, other: "EdiEnergyDocument") -> bool:  # pylint: disable=inconsistent-return-statements
         """
-        Compare two EdiEnergyDocument instances based on their document_version, valid_until_date, and valid_from_date.
+        Compare two EdiEnergyDocument instances based on
+        their document_version(major, minor and suffix), valid_until, and valid_from.
 
         I did not know how the tuple comparison works in Python, so I looked it up:
 
         Python compares tuples lexicographically, meaning it compares the elements one by one from left to right.
         The comparison starts with the first elements of both tuples:
-          If self.document_version is less than other.document_version, the entire expression evaluates to True.
-          If self.document_version is greater than other.document_version, the entire expression evaluates to False.
-          If self.document_version is equal to other.document_version, Python moves to the next elements in the tuples.
-        This process continues with self.valid_until_date vs. other.valid_until_date and then self.valid_from_date vs.
-        other.valid_from_date.
+          If self.valid_from is less than other.valid_from, the entire expression evaluates to True.
+          If self.valid_from is greater than other.valid_from, the entire expression evaluates to False.
+          If self.valid_from is equal to other.valid_from, Python moves to the next elements in the tuples.
+        This process continues with self.valid_until vs. other.valid_until and then with the version numbers.
 
         Args:
             other (EdiEnergyDocument): The other document to compare against.
@@ -58,14 +63,28 @@ class EdiEnergyDocument(BaseModel):
         Returns:
             bool: True if this document is considered less than the other document, False otherwise.
         """
-        return (self.document_version, self.valid_until_date, self.valid_from_date) < (
-            other.document_version,
-            other.valid_until_date,
-            other.valid_from_date,
+        is_less_than = (self.valid_from, self.valid_until, self.version_major, self.version_minor) < (
+            other.valid_from,
+            other.valid_until,
+            other.version_major,
+            other.version_minor,
+        ) or (
+            (self.valid_from, self.valid_until, self.version_major, self.version_minor)
+            == (
+                other.valid_from,
+                other.valid_until,
+                other.version_major,
+                other.version_minor,
+            )
+            and self.version_suffix < other.version_suffix
         )
+        assert isinstance(is_less_than, bool)
+        return is_less_than
 
 
-def extract_document_version_and_valid_dates(filename: str) -> tuple[str, str, str]:
+def extract_document_version_and_valid_dates(
+    filename: str,
+) -> dict[str, str]:
     """Extract the document version and valid dates from the filename.
 
     Parameters:
@@ -75,25 +94,21 @@ def extract_document_version_and_valid_dates(filename: str) -> tuple[str, str, s
     - tuple[str, str, str]: A tuple containing the document version, valid from date, and valid until date.
     """
 
-    # Pattern to extract version number after '-informatorischeLesefassung'
-    docment_version_pattern = r"-informatorischeLesefassung([A-Za-z0-9.]+)"
-    # Pattern to extract the two dates at the end
-    date_pattern = r"_(\d{8})_(\d{8})\.docx$"
-
-    # Extract version
-    version_match = re.search(docment_version_pattern, filename)
-    document_version = version_match.group(1) if version_match else ""
-
-    # Extract dates
-    date_match = re.search(date_pattern, filename)
-    if date_match:
-        valid_from_date = date_match.group(1)
-        valid_until_date = date_match.group(2)
-    else:
-        valid_from_date = ""
-        valid_until_date = ""
-
-    return document_version, valid_from_date, valid_until_date
+    # Pattern to extract detailed version number, valid until and valid from dates
+    document_name_pattern = re.compile(
+        r"-informatorischeLesefassung"
+        r"(?P<document_version>(?:S|G)?(?P<version_major>\d+)\.(?P<version_minor>\d+)(?P<version_suffix>[a-z]?))"
+        r"(?:_|KonsolidierteLesefassung|-AußerordentlicheVeröffentlichung)?"
+        r"([A-Za-z0-9.]+)?"
+        r"_(?P<valid_until>\d{8})_(?P<valid_from>\d{8})\.docx$",
+        re.IGNORECASE,
+    )
+    matches = document_name_pattern.search(filename)
+    try:
+        if matches:
+            return matches.groupdict()
+    except ValueError as e:
+        logger.error("Error extracting document version and valid dates: %s", e)
 
 
 def get_most_recent_file(group_items: list[Path]) -> Path | None:
@@ -109,22 +124,20 @@ def get_most_recent_file(group_items: list[Path]) -> Path | None:
 
     try:
         # Define the keywords to filter relevant files
-        keywords = [
-            "konsolidiertelesefassungmitfehlerkorrekturen",
-            "außerordentlicheveröffentlichung",
-            "informatorischelesefassung",
+        keywords = ["konsolidiertelesefassungmitfehlerkorrekturen", "außerordentlicheveröffentlichung"]
+        files_containing_keywords = [
+            path for path in group_items if any(keyword in path.name.lower() for keyword in keywords)
         ]
-
-        # Find the most recent file based on keywords and date suffixes
-        list_of_paths = [path for path in group_items if any(keyword in path.name.lower() for keyword in keywords)]
-
-        list_of_edi_energy_documents = [EdiEnergyDocument.from_path(path) for path in list_of_paths]
-
+        if any(files_containing_keywords):
+            list_of_edi_energy_documents = [EdiEnergyDocument.from_path(path) for path in files_containing_keywords]
+        else:
+            list_of_edi_energy_documents = [EdiEnergyDocument.from_path(path) for path in group_items]
         most_recent_file = max(list_of_edi_energy_documents)
 
         return most_recent_file.filename
 
     except ValueError as e:
+
         logger.error("Error processing group items: %s", e)
         return None
 
@@ -239,37 +252,7 @@ class DocxFileFinder(BaseModel):
         result: list[Path] = []
 
         for group_items in groups.values():
-
-            try:
-                # Define the keywords to filter relevant files
-                keywords = ["konsolidiertelesefassungmitfehlerkorrekturen", "außerordentlicheveröffentlichung"]
-                files_containing_keywords = [
-                    path for path in group_items if any(keyword in path.name.lower() for keyword in keywords)
-                ]
-                if any(files_containing_keywords):
-                    # Find the most recent file based on keywords and date suffixes
-                    most_recent_file = max(
-                        (path for path in files_containing_keywords),
-                        key=_get_sort_key,
-                    )
-                else:  # different versions but no kosildierte Lesefassung or außerordentliche Veröffentlichung at all
-                    most_recent_file = max(
-                        (path for path in group_items),
-                        key=_get_sort_key,
-                    )
-
-                # Add the most recent file to the result and log ignored files
-                for path in group_items:
-                    if path != most_recent_file:
-                        logger.debug("Ignoring file %s", path.name)
-                    else:
-                        result.append(most_recent_file)
-
-            except ValueError as e:
-                logger.error("Error processing group items: %s", e)
-                continue
-
-        return result
+            result.append(get_most_recent_file(group_items))
 
     def filter_for_latest_mig_and_ahb_docx_files(self) -> None:
         """
@@ -349,39 +332,3 @@ class DocxFileFinder(BaseModel):
         self.paths_to_docx_files = [path for path in self.paths_to_docx_files if indicator_string in path.name]
 
         return self.paths_to_docx_files
-
-
-_pattern = re.compile(
-    r"AHB(?:Strom|Gas)?-?informatorischeLesefassung?((\d+)\.(\d+)([a-z]?))",
-    re.IGNORECASE,
-)
-
-
-def _extract_document_version(path: Path | str) -> tuple[str, int | None, int | None, str]:
-    """Returns the document version, major, minor, and suffix from the given file path."""
-    if isinstance(path, str):
-        document_str = path
-    else:
-        document_str = str(path)
-    matches = _pattern.search(document_str)
-    if matches:
-        document_version, major, minor, suffix = matches.groups()
-        return document_version or "", int(major) or 0, int(minor) or 0, suffix or ""
-    return "", None, None, ""
-
-
-def _get_sort_key(path: Path) -> tuple[int, int, int | None, int | None, str]:
-    """
-    Extracts the sort key from the given path.
-
-    Parameters:
-    - path (Path): The path object to extract the sort key from.
-
-    Returns:
-    - tuple: A tuple containing the "gültig von" date, "gültig bis" date, and version number.
-    """
-    parts = path.stem.split("_")
-    gueltig_von_date = int(parts[-1])
-    gueltig_bis_date = int(parts[-2])
-    _, major, minor, suffix = _extract_document_version(parts[-3])
-    return gueltig_von_date, gueltig_bis_date, major, minor, suffix
