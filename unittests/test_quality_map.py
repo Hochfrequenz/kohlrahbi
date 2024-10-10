@@ -76,6 +76,8 @@ class TestQualityMap:
                 str(Path(__file__).parents[1] / "edi_energy_mirror"),
                 "--output-path",
                 str(actual_output_dir),
+                "--output-format",
+                "csv",
             ]
         )
 
