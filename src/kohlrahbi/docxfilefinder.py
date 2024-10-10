@@ -2,6 +2,7 @@
 This module contains the DocxFileFinder class.
 """
 
+import re
 from itertools import groupby
 from pathlib import Path
 
@@ -121,32 +122,35 @@ class DocxFileFinder(BaseModel):
         result = []
 
         for group_items in groups.values():
-            if len(group_items) == 1:
-                result.append(group_items[0])
-            else:
-                try:
-                    # Define the keywords to filter relevant files
-                    keywords = ["konsolidiertelesefassungmitfehlerkorrekturen", "außerordentlicheveröffentlichung"]
 
+            try:
+                # Define the keywords to filter relevant files
+                keywords = ["konsolidiertelesefassungmitfehlerkorrekturen", "außerordentlicheveröffentlichung"]
+                files_containing_keywords = [
+                    path for path in group_items if any(keyword in path.name.lower() for keyword in keywords)
+                ]
+                if any(files_containing_keywords):
                     # Find the most recent file based on keywords and date suffixes
                     most_recent_file = max(
-                        (path for path in group_items if any(keyword in path.name.lower() for keyword in keywords)),
-                        key=lambda path: (
-                            int(path.stem.split("_")[-1]),  # "gültig von" date
-                            int(path.stem.split("_")[-2]),  # "gültig bis" date
-                        ),
+                        (path for path in files_containing_keywords),
+                        key=_get_sort_key,
+                    )
+                else:  # different versions but no kosildierte Lesefassung or außerordentliche Veröffentlichung at all
+                    most_recent_file = max(
+                        (path for path in group_items),
+                        key=_get_sort_key,
                     )
 
-                    # Add the most recent file to the result and log ignored files
-                    for path in group_items:
-                        if path != most_recent_file:
-                            logger.debug("Ignoring file %s", path.name)
-                        else:
-                            result.append(most_recent_file)
+                # Add the most recent file to the result and log ignored files
+                for path in group_items:
+                    if path != most_recent_file:
+                        logger.debug("Ignoring file %s", path.name)
+                    else:
+                        result.append(most_recent_file)
 
-                except ValueError as e:
-                    logger.error("Error processing group items: %s", e)
-                    continue
+            except ValueError as e:
+                logger.error("Error processing group items: %s", e)
+                continue
 
         return result
 
@@ -228,3 +232,39 @@ class DocxFileFinder(BaseModel):
         self.paths_to_docx_files = [path for path in self.paths_to_docx_files if indicator_string in path.name]
 
         return self.paths_to_docx_files
+
+
+_pattern = re.compile(
+    r"AHB(?:Strom|Gas)?-?informatorischeLesefassung?((\d+)\.(\d+)([a-z]?))",
+    re.IGNORECASE,
+)
+
+
+def _extract_document_version(path: Path | str) -> tuple[str, int | None, int | None, str]:
+    """Returns the document version, major, minor, and suffix from the given file path."""
+    if isinstance(path, str):
+        document_str = path
+    else:
+        document_str = str(path)
+    matches = _pattern.search(document_str)
+    if matches:
+        document_version, major, minor, suffix = matches.groups()
+        return document_version or "", int(major) or 0, int(minor) or 0, suffix or ""
+    return "", None, None, ""
+
+
+def _get_sort_key(path: Path) -> tuple[int, int, int | None, int | None, str]:
+    """
+    Extracts the sort key from the given path.
+
+    Parameters:
+    - path (Path): The path object to extract the sort key from.
+
+    Returns:
+    - tuple: A tuple containing the "gültig von" date, "gültig bis" date, and version number.
+    """
+    parts = path.stem.split("_")
+    gueltig_von_date = int(parts[-1])
+    gueltig_bis_date = int(parts[-2])
+    _, major, minor, suffix = _extract_document_version(parts[-3])
+    return gueltig_von_date, gueltig_bis_date, major, minor, suffix
