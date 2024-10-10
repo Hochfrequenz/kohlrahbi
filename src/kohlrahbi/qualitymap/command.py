@@ -8,7 +8,8 @@ import click
 from efoli import EdifactFormatVersion
 
 from kohlrahbi.ahb.command import check_python_version, validate_path
-from kohlrahbi.qualitymap import scrape_quality_map
+from kohlrahbi.qualitymap.extract import scrape_quality_map
+from kohlrahbi.qualitymap.types import OutputFormat
 
 
 @click.command()
@@ -35,6 +36,13 @@ from kohlrahbi.qualitymap import scrape_quality_map
     help="Format version(s) of the AHB documents, e.g. FV2310",
 )
 @click.option(
+    "--output-format",
+    type=click.Choice([output_format.value for output_format in OutputFormat], case_sensitive=False),
+    required=False,
+    default=OutputFormat.C_SHARP_EXTRACT.value,
+    help="File type for the scraped Quality map.",
+)
+@click.option(
     "--assume-yes",
     "-y",
     is_flag=True,
@@ -45,6 +53,7 @@ def qualitymap(
     edi_energy_mirror_path: Path,
     output_path: Path,
     format_version: EdifactFormatVersion | str,
+    output_format: OutputFormat,
     assume_yes: bool,  # pylint: disable=unused-argument
     # it is used by the callback function of the output-path
 ) -> None:
@@ -56,10 +65,11 @@ def qualitymap(
         output_path (Path): The path to save the scraped change histories.
         format_version (EdifactFormatVersion | str): The version of the EDIFACT format to use for scraping.
             Can be either an instance of EdifactFormatVersion or a string representation of the version.
+        output_format (OutputFormat): The output format of the scraped quality map.
         assume_yes (bool): Flag indicating whether to assume "yes" for all prompts.
     """
     check_python_version()
     if isinstance(format_version, str):
         format_version = EdifactFormatVersion(format_version)
     input_path = edi_energy_mirror_path / "edi_energy_de" / format_version.value
-    scrape_quality_map(input_path=input_path, output_path=output_path)
+    scrape_quality_map(input_path=input_path, output_path=output_path, output_format=output_format)
