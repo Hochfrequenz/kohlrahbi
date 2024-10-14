@@ -2,6 +2,7 @@
 This module contains the DocxFileFinder class.
 """
 
+import re
 from itertools import groupby
 from pathlib import Path
 
@@ -9,6 +10,127 @@ from efoli import EdifactFormat, get_format_of_pruefidentifikator
 from pydantic import BaseModel
 
 from kohlrahbi.logger import logger
+
+
+class EdiEnergyDocument(BaseModel):
+    """
+    This class represents an EDI Energy document.
+    """
+
+    filename: Path
+    document_version: str
+    version_major: int
+    version_minor: int
+    version_suffix: str
+    valid_from: int
+    valid_until: int
+
+    @classmethod
+    def from_path(cls, path: Path) -> "EdiEnergyDocument":
+        """
+        Create an EdiEnergyDocument object from a file path.
+        """
+
+        file_name = extract_document_version_and_valid_dates(path.name)
+        assert file_name is not None, f"Could not extract document version and valid dates from {path.name}."
+        return cls(
+            filename=path,
+            document_version=file_name["document_version"],
+            version_major=int(file_name["version_major"]),
+            version_minor=int(file_name["version_minor"]),
+            version_suffix=file_name["version_suffix"],
+            valid_from=int(file_name["valid_from"]),
+            valid_until=int(file_name["valid_until"]),
+        )
+
+    def __lt__(self, other: "EdiEnergyDocument") -> bool:
+        """
+        Compare two EdiEnergyDocument instances based on
+        their document_version(major, minor and suffix), valid_until, and valid_from.
+
+        I did not know how the tuple comparison works in Python, so I looked it up:
+
+        Python compares tuples lexicographically, meaning it compares the elements one by one from left to right.
+        The comparison starts with the first elements of both tuples:
+          If self.valid_from is less than other.valid_from, the entire expression evaluates to True.
+          If self.valid_from is greater than other.valid_from, the entire expression evaluates to False.
+          If self.valid_from is equal to other.valid_from, Python moves to the next elements in the tuples.
+        This process continues with self.valid_until vs. other.valid_until and then with the version numbers.
+
+        Args:
+            other (EdiEnergyDocument): The other document to compare against.
+
+        Returns:
+            bool: True if this document is considered less than the other document, False otherwise.
+        """
+        return (self.valid_from, self.valid_until, self.version_major, self.version_minor, self.version_suffix) < (
+            other.valid_from,
+            other.valid_until,
+            other.version_major,
+            other.version_minor,
+            other.version_suffix,
+        )
+
+
+def extract_document_version_and_valid_dates(
+    filename: str,
+) -> dict[str, str] | None:
+    """Extract the document version and valid dates from the filename.
+
+    Parameters:
+    - filename (str): The filename of the document.
+
+    Returns:
+    - tuple[str, str, str]: A tuple containing the document version, valid from date, and valid until date.
+    """
+
+    # Pattern to extract detailed version number, valid until and valid from dates
+    document_name_pattern = re.compile(
+        r"-informatorischeLesefassung"
+        r"(?P<document_version>(?:S|G)?(?P<version_major>\d+)\.(?P<version_minor>\d+)(?P<version_suffix>[a-z]?))"
+        r"(?:_|KonsolidierteLesefassung|-AußerordentlicheVeröffentlichung)?"
+        r"([A-Za-z0-9.]+)?"
+        r"_(?P<valid_until>\d{8})_(?P<valid_from>\d{8})\.docx$",
+        re.IGNORECASE,
+    )
+    matches = document_name_pattern.search(filename)
+    try:
+        if matches:
+            return matches.groupdict()
+    except ValueError as e:
+        logger.error("Error extracting document version and valid dates: %s", e)
+    return None
+
+
+def get_most_recent_file(group_items: list[Path]) -> Path | None:
+    """
+    Find the most recent file in a group of files based on specific criteria.
+
+    Parameters:
+    - group_items (List[Path]): A list of Path objects representing the file paths.
+
+    Returns:
+    - Path: A Path object representing the most recent file.
+    """
+
+    try:
+        # Define the keywords to filter relevant files
+        keywords = ["konsolidiertelesefassungmitfehlerkorrekturen", "außerordentlicheveröffentlichung"]
+        files_containing_keywords = [
+            path for path in group_items if any(keyword in path.name.lower() for keyword in keywords)
+        ]
+        if any(files_containing_keywords):
+            list_of_edi_energy_documents = [EdiEnergyDocument.from_path(path) for path in files_containing_keywords]
+        else:
+            list_of_edi_energy_documents = [EdiEnergyDocument.from_path(path) for path in group_items]
+        most_recent_file = max(list_of_edi_energy_documents)
+
+        return most_recent_file.filename
+
+    except ValueError as e:
+
+        logger.error("Error processing group items: %s", e)
+    return None
 
 
 class DocxFileFinder(BaseModel):
@@ -118,36 +240,12 @@ class DocxFileFinder(BaseModel):
         Returns:
         - List[Path]: A list of Path objects representing the latest version of the files.
         """
-        result = []
+        result: list[Path] = []
 
         for group_items in groups.values():
-            if len(group_items) == 1:
-                result.append(group_items[0])
-            else:
-                try:
-                    # Define the keywords to filter relevant files
-                    keywords = ["konsolidiertelesefassungmitfehlerkorrekturen", "außerordentlicheveröffentlichung"]
-
-                    # Find the most recent file based on keywords and date suffixes
-                    most_recent_file = max(
-                        (path for path in group_items if any(keyword in path.name.lower() for keyword in keywords)),
-                        key=lambda path: (
-                            int(path.stem.split("_")[-1]),  # "gültig von" date
-                            int(path.stem.split("_")[-2]),  # "gültig bis" date
-                        ),
-                    )
-
-                    # Add the most recent file to the result and log ignored files
-                    for path in group_items:
-                        if path != most_recent_file:
-                            logger.debug("Ignoring file %s", path.name)
-                        else:
-                            result.append(most_recent_file)
-
-                except ValueError as e:
-                    logger.error("Error processing group items: %s", e)
-                    continue
-
+            most_recent_file = get_most_recent_file(group_items)
+            assert most_recent_file is not None, "Could not find the most recent file."
+            result.append(most_recent_file)
         return result
 
     def filter_for_latest_mig_and_ahb_docx_files(self) -> None:
