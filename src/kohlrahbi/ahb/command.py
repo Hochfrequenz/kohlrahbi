@@ -88,7 +88,7 @@ you will be asked if you want to create it.""",
     default=False,
     help="Confirm all prompts automatically.",
 )
-# pylint: disable=too-many-arguments
+# pylint: disable=too-many-positional-arguments, too-many-arguments
 def ahb(
     pruefis: list[str],
     edi_energy_mirror_path: Path,
