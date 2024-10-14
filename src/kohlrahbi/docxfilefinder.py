@@ -63,22 +63,13 @@ class EdiEnergyDocument(BaseModel):
         Returns:
             bool: True if this document is considered less than the other document, False otherwise.
         """
-        is_less_than = (self.valid_from, self.valid_until, self.version_major, self.version_minor) < (
+        return (self.valid_from, self.valid_until, self.version_major, self.version_minor, self.version_suffix) < (
             other.valid_from,
             other.valid_until,
             other.version_major,
             other.version_minor,
-        ) or (
-            (self.valid_from, self.valid_until, self.version_major, self.version_minor)
-            == (
-                other.valid_from,
-                other.valid_until,
-                other.version_major,
-                other.version_minor,
-            )
-            and self.version_suffix < other.version_suffix
+            other.version_suffix,
         )
-        return is_less_than
 
 
 def extract_document_version_and_valid_dates(
