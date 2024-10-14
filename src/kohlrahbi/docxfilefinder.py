@@ -32,7 +32,7 @@ class EdiEnergyDocument(BaseModel):
         """
 
         file_name = extract_document_version_and_valid_dates(path.name)
-
+        assert file_name is not None, f"Could not extract document version and valid dates from {path.name}."
         return cls(
             filename=path,
             document_version=file_name["document_version"],
@@ -43,7 +43,7 @@ class EdiEnergyDocument(BaseModel):
             valid_until=int(file_name["valid_until"]),
         )
 
-    def __lt__(self, other: "EdiEnergyDocument") -> bool:  # pylint: disable=inconsistent-return-statements
+    def __lt__(self, other: "EdiEnergyDocument") -> bool:
         """
         Compare two EdiEnergyDocument instances based on
         their document_version(major, minor and suffix), valid_until, and valid_from.
@@ -78,13 +78,12 @@ class EdiEnergyDocument(BaseModel):
             )
             and self.version_suffix < other.version_suffix
         )
-        assert isinstance(is_less_than, bool)
         return is_less_than
 
 
 def extract_document_version_and_valid_dates(
     filename: str,
-) -> dict[str, str]:
+) -> dict[str, str] | None:
     """Extract the document version and valid dates from the filename.
 
     Parameters:
@@ -109,6 +108,7 @@ def extract_document_version_and_valid_dates(
             return matches.groupdict()
     except ValueError as e:
         logger.error("Error extracting document version and valid dates: %s", e)
+    return None
 
 
 def get_most_recent_file(group_items: list[Path]) -> Path | None:
@@ -139,7 +139,7 @@ def get_most_recent_file(group_items: list[Path]) -> Path | None:
     except ValueError as e:
 
         logger.error("Error processing group items: %s", e)
-        return None
+    return None
 
 
 class DocxFileFinder(BaseModel):
@@ -252,7 +252,10 @@ class DocxFileFinder(BaseModel):
         result: list[Path] = []
 
         for group_items in groups.values():
-            result.append(get_most_recent_file(group_items))
+            most_recent_file = get_most_recent_file(group_items)
+            assert most_recent_file is not None, "Could not find the most recent file."
+            result.append(most_recent_file)
+        return result
 
     def filter_for_latest_mig_and_ahb_docx_files(self) -> None:
         """

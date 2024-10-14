@@ -10,38 +10,62 @@ class TestDocxFileFinder:
         ["group_items", "expected"],
         [
             pytest.param(
-                {
-                    "UTILTSAHB": [
-                        Path("UTILTSAHB_20240701_20240401.docx"),
-                    ]
-                },
-                [Path("UTILTSAHB_20240701_20240401.docx")],
+                {"UTILTSAHB": [Path("UTILTSAHB-informatorischeLesefassung4.0_20240701_20240401.docx")]},
+                [Path("UTILTSAHB-informatorischeLesefassung4.0_20240701_20240401.docx")],
                 id="Single File",
             ),
             pytest.param(
                 {
                     "UTILTSAHB": [
-                        Path("UTILTSAHB-konsolidiertelesefassungmitfehlerkorrekturen_20240701_20240401.docx"),
-                        Path("UTILTSAHB-außerordentlicheveröffentlichung_20240701_20240501.docx"),
-                        Path("UTILTSAHB-außerordentlicheveröffentlichung_20240930_20240401.docx"),
-                        Path("UTILTSAHB-konsolidiertelesefassungmitfehlerkorrekturen_20240930_20240701.docx"),
-                        Path("UTILTSAHB-konsolidiertelesefassungmitfehlerkorrekturen_20240930_20240501.docx"),
+                        Path(
+                            "UTILTSAHB-informatorischeLesefassung4.0Konsolidiertelesefassungmitfehlerkorrekturen_20240701_20240401.docx"
+                        ),
+                        Path(
+                            "UTILTSAHB-informatorischeLesefassung4.0-außerordentlicheveröffentlichung_20240701_20240501.docx"
+                        ),
+                        Path(
+                            "UTILTSAHB-informatorischeLesefassung4.0-außerordentlicheveröffentlichung_20240930_20240401.docx"
+                        ),
+                        Path(
+                            "UTILTSAHB-informatorischeLesefassung4.0Konsolidiertelesefassungmitfehlerkorrekturen_20240930_20240701.docx"
+                        ),
+                        Path(
+                            "UTILTSAHB-informatorischeLesefassung4.0Konsolidiertelesefassungmitfehlerkorrekturen_20240930_20240501.docx"
+                        ),
                     ]
                 },
-                [Path("UTILTSAHB-konsolidiertelesefassungmitfehlerkorrekturen_20240930_20240701.docx")],
+                [
+                    Path(
+                        "UTILTSAHB-informatorischeLesefassung4.0Konsolidiertelesefassungmitfehlerkorrekturen_20240930_20240701.docx"
+                    )
+                ],
                 id="Standard Case",
             ),
             pytest.param(
                 {
                     "UTILTSAHB": [
-                        Path("UTILTSAHB-konsolidiertelesefassungmitfehlerkorrekturen_20240701_20240401.docx"),
-                        Path("UTILTSAHB-außerordentlicheveröffentlichung_20240731_20240701.docx"),
-                        Path("UTILTSAHB-außerordentlicheveröffentlichung_20240930_20240401.docx"),
-                        Path("UTILTSAHB-konsolidiertelesefassungmitfehlerkorrekturen_20240930_20240701.docx"),
-                        Path("UTILTSAHB-konsolidiertelesefassungmitfehlerkorrekturen_20240930_20240501.docx"),
+                        Path(
+                            "UTILTSAHB-informatorischeLesefassung4.0Konsolidiertelesefassungmitfehlerkorrekturen_20240701_20240401.docx"
+                        ),
+                        Path(
+                            "UTILTSAHB-informatorischeLesefassung4.0-außerordentlicheveröffentlichung_20240731_20240701.docx"
+                        ),
+                        Path(
+                            "UTILTSAHB-informatorischeLesefassung4.0-außerordentlicheveröffentlichung_20240930_20240401.docx"
+                        ),
+                        Path(
+                            "UTILTSAHB-informatorischeLesefassung4.0Konsolidiertelesefassungmitfehlerkorrekturen_20240930_20240701.docx"
+                        ),
+                        Path(
+                            "UTILTSAHB-informatorischeLesefassung4.0Konsolidiertelesefassungmitfehlerkorrekturen_20240930_20240501.docx"
+                        ),
                     ]
                 },
-                [Path("UTILTSAHB-konsolidiertelesefassungmitfehlerkorrekturen_20240930_20240701.docx")],
+                [
+                    Path(
+                        "UTILTSAHB-informatorischeLesefassung4.0Konsolidiertelesefassungmitfehlerkorrekturen_20240930_20240701.docx"
+                    )
+                ],
                 id="Valid from tie",
             ),
             pytest.param(
