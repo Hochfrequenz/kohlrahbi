@@ -4,6 +4,8 @@
   <img src="kohlrahbi-image.png" alt="kohlrahbi-logo" width="512" height="512">
 </p>
 
+[![License: GPL](https://img.shields.io/badge/License-GPL-yellow.svg)](LICENSE)
+![Python Versions (officially) supported](https://img.shields.io/pypi/pyversions/kohlrahbi.svg)
 ![Unittests status badge](https://github.com/Hochfrequenz/kohlrahbi/workflows/Unittests/badge.svg)
 ![Coverage status badge](https://github.com/Hochfrequenz/kohlrahbi/workflows/Coverage/badge.svg)
 ![Linting status badge](https://github.com/Hochfrequenz/kohlrahbi/workflows/Linting/badge.svg)
