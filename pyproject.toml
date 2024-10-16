@@ -68,7 +68,7 @@ typecheck = [
   "pandas-stubs==2.2.3.241009",
   "pytest==8.3.3",
   "types-freezegun==1.1.10",
-  "types-requests==2.32.0.20240914 ",
+  "types-requests==2.32.0.20241016 ",
 ]
 spell_check = ["codespell==2.3.0"]
 coverage = ["coverage==7.6.3"]
