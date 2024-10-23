@@ -63,7 +63,7 @@ test = [
   "syrupy==4.7.2",
 ]
 typecheck = [
-  "mypy==1.11.2",
+  "mypy==1.13.0",
   "networkx-stubs==0.0.1",
   "pandas-stubs==2.2.3.241009",
   "pytest==8.3.3",
