@@ -55,7 +55,7 @@ dev = [
 ]
 lint = ["pylint==3.3.1", "pylint-pydantic==0.3.2"]
 test = [
-  "coverage==7.6.5",
+  "coverage==7.6.7",
   "dictdiffer==0.9.0",
   "freezegun==1.5.1",
   "pytest-datafiles==3.0.0",
@@ -71,7 +71,7 @@ typecheck = [
   "types-requests==2.32.0.20241016 ",
 ]
 spell_check = ["codespell==2.3.0"]
-coverage = ["coverage==7.6.5"]
+coverage = ["coverage==7.6.7"]
 formatting = ["black==24.10.0", "isort==5.13.2"]
 test_packaging = ["build==1.2.2.post1", "twine==5.1.1"]
 
