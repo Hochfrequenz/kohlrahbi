@@ -15,6 +15,8 @@
 Kohlrahbi generates machine-readable files from AHB documents.
 Kohlrahbi's sister is [MIG_mose](https://github.com/Hochfrequenz/migmose).
 
+If you'd like to create a nice diff view of AHBs in different versions, try [`ahlbatross`](https://github.com/Hochfrequenz/ahlbatross).
+
 If you're looking for a tool to process the **official** BDEW XMLs for AHBs (available since 2024), checkout [fundamend](https://github.com/Hochfrequenz/xml-fundamend-python).
 
 ## Rationale
