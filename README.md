@@ -123,6 +123,11 @@ To extract the all AHB tables for each pruefi of a specific format version, you 
 ```bash
 kohlrahbi ahb --edi-energy-mirror-path ../edi_energy_mirror/ --output-path ./output/ --file-type csv --format-version FV2310
 ```
+To remove old outputfiles file to pruefis which do not occur in the provided input, you can run the following command.
+
+```bash
+kohlrahbi ahb --edi-energy-mirror-path ../edi_energy_mirror/ --output-path ./output/ --file-type csv --format-version FV2310 --clear-output-path
+```
 
 To extract the AHB tables for a specific pruefi of a specific format version, you can run the following command.
 
