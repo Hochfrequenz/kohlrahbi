@@ -277,6 +277,7 @@ def scrape_pruefis(
     output_path: Path,
     file_type: tuple[AhbExportFileFormat, ...],
     format_version: EdifactFormatVersion,
+    clear_output_path: bool,
 ) -> None:
     """
     starts the scraping process for provided pruefi_to_file_mappings
@@ -287,7 +288,8 @@ def scrape_pruefis(
     if len(pruefis) > 0:
         validated_pruefis = validate_pruefis(pruefis)
         pruefi_to_file_mapping = reduce_pruefi_to_file_mapping(pruefi_to_file_mapping, validated_pruefis)
-    remove_vanished_pruefis(pruefi_to_file_mapping, output_path)
+    if clear_output_path:
+        remove_vanished_pruefis(pruefi_to_file_mapping, output_path)
     for pruefi, filename in pruefi_to_file_mapping.items():
         try:
             logger.info("start looking for pruefi '%s'", pruefi)

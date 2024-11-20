@@ -95,6 +95,7 @@ def ahb(
     output_path: Path,
     file_type: tuple[AhbExportFileFormat, ...],
     format_version: EdifactFormatVersion | str,
+    clear_output_path: bool = False,  # pylint: disable=unused-argument
     assume_yes: bool,  # pylint: disable=unused-argument
     # it is used by the callback function of the output-path
 ) -> None:
@@ -112,4 +113,5 @@ def ahb(
         output_path=output_path,
         file_type=file_type,
         format_version=format_version,
+        clear_output_path=clear_output_path,
     )
