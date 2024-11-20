@@ -251,11 +251,11 @@ def remove_vanished_pruefis(pruefi_to_file_mapping: dict[str, str], output_path:
             if pruefi not in pruefi_to_file_mapping:
                 logger.info("Removing pruefi '%s' from output directory.", pruefi)
                 file_path.unlink()
+                #
     except ValueError:
         logger.warning(
             "Error while cleaning existing files from given output_path '%s'. Skipping saving files.", output_path
         )
-    return
 
 
 def list_files_in_subdirs(path: Path) -> dict[str, Path]:
