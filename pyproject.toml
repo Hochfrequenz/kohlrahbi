@@ -59,14 +59,14 @@ test = [
   "dictdiffer==0.9.0",
   "freezegun==1.5.1",
   "pytest-datafiles==3.0.0",
-  "pytest==8.3.3",
+  "pytest==8.3.4",
   "syrupy==4.8.0",
 ]
 typecheck = [
   "mypy==1.11.2",
   "networkx-stubs==0.0.1",
   "pandas-stubs==2.2.3.241126",
-  "pytest==8.3.3",
+  "pytest==8.3.4",
   "types-freezegun==1.1.10",
   "types-requests==2.32.0.20241016 ",
 ]
