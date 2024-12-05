@@ -41,7 +41,7 @@ pytz==2024.2
     #   efoli
     #   kohlrahbi (pyproject.toml)
     #   pandas
-six==1.16.0
+six==1.17.0
     # via python-dateutil
 tomlkit==0.13.2
     # via kohlrahbi (pyproject.toml)
