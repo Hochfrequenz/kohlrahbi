@@ -2,14 +2,78 @@
 This module provides the QualityMapTable class
 """
 
+import re
+from collections import OrderedDict
 from pathlib import Path
+from typing import Annotated
 
 import pandas as pd
 from docx.table import Table
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, Field, PlainValidator
 
 from kohlrahbi.ahbtable.ahbsubtable import AhbSubTable
 from kohlrahbi.logger import logger
+
+StrippedStr = Annotated[str, PlainValidator(str.strip)]
+Description = Annotated[
+    str, PlainValidator(str.strip), PlainValidator(lambda value: re.sub(r"\n+", " ", re.sub(r"-\n+", "-", value)))
+]
+HEADERS = OrderedDict(
+    [
+        ("segment_group", "Qualität \\ Segmentgruppe"),
+        ("bestellte_daten", "Bestellte Daten"),
+        ("gueltige_daten", "Gültige Daten"),
+        ("informative_daten", "Informative Daten"),
+        ("erwartete_daten", "Erwartete Daten"),
+        ("im_system_vorhandene_daten", "Im System vorhandene Daten"),
+    ]
+)
+
+
+class Cell(BaseModel):
+    """Represents a set of a qualifier and its description.
+
+    A table cell can contain multiple cells.
+
+    Attributes:
+        qualifier: Qualifier for the Edifact message e.g "Z50"
+        description: Description
+    """
+
+    qualifier: StrippedStr
+    description: Description
+
+
+class SegmentGroup(BaseModel):
+    """Represents a table cell of the left most column of the quality map table.
+
+    Attributes:
+        path_to_data_element: Path to the data element
+        description: Description
+    """
+
+    path_to_data_element: StrippedStr
+    description: Description
+
+
+class Row(BaseModel):
+    """Represents a row in the quality map table.
+
+    Attributes:
+        segment_group: 1st column of the quality map table
+        bestellte_daten: 2nd column of the quality map table
+        gueltige_daten: 3rd column of the quality map table
+        informative_daten: 4th column of the quality map table
+        erwartete_daten: 5th column of the quality map table
+        im_system_vorhandene_daten: Last column of the quality map table
+    """
+
+    segment_group: SegmentGroup
+    bestellte_daten: list[Cell] = Field(default_factory=list)
+    gueltige_daten: list[Cell] = Field(default_factory=list)
+    informative_daten: list[Cell] = Field(default_factory=list)
+    erwartete_daten: list[Cell] = Field(default_factory=list)
+    im_system_vorhandene_daten: list[Cell] = Field(default_factory=list)
 
 
 class QualityMapTable(BaseModel):
@@ -29,9 +93,59 @@ class QualityMapTable(BaseModel):
         •   Im System vorhandene Daten: Datenstand des Berechtigten, ausschließlich für das Datenclearing.
     """
 
-    table: pd.DataFrame
+    rows: list[Row] = Field(default_factory=list)
 
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    @classmethod
+    def from_raw_table(cls, raw_table: list[list[str]]) -> "QualityMapTable":
+        """
+        Create a QualityMapTable object from a raw table.
+        """
+        rows = []
+        for row in raw_table:
+            path_to_data_element, description = row[0].strip().split("\n", 1)
+            segment_group = SegmentGroup(path_to_data_element=path_to_data_element, description=description)
+            row_dict: dict[str, SegmentGroup | list[Cell]] = {
+                "segment_group": segment_group,
+                **{header: [] for header in HEADERS if header != "segment_group"},
+            }
+
+            for column_name, column in zip(
+                (header for header in HEADERS if header != "segment_group"),
+                row[1:],
+            ):
+                column = column.strip()
+                if column == "--":
+                    continue
+                raw_cells = column.strip().split("\n\n")
+                for raw_cell in raw_cells:
+                    qualifier, description = raw_cell.split("\n", 1)
+                    description = description.strip('"„“')
+                    cell = Cell(qualifier=qualifier, description=description)
+                    if isinstance(row_dict[column_name], SegmentGroup):
+                        raise ValueError(f"Expected a list for column '{column_name}'")
+                    row_dict[column_name].append(cell)  # type: ignore[union-attr]
+
+            rows.append(Row.model_validate(row_dict))
+        return cls(rows=rows)
+
+    def to_raw_table(self) -> list[list[str]]:
+        """
+        Create a raw table from the quality map table.
+        """
+        raw_table = []
+        for row in self.rows:
+            raw_row = []
+            for header in HEADERS:
+                if header == "segment_group":
+                    raw_row.append(f"{row.segment_group.path_to_data_element}\n{row.segment_group.description}")
+                    continue
+                raw_cells = []
+                for cell in getattr(row, header):
+                    raw_cells.append(f"{cell.qualifier}\n„{cell.description}“")
+
+                raw_row.append("\n\n".join(raw_cells) if len(raw_cells) > 0 else "--")
+            raw_table.append(raw_row)
+        return raw_table
 
     @classmethod
     def from_docx_quality_map_table(cls, docx_table: Table) -> "QualityMapTable":
@@ -49,29 +163,20 @@ class QualityMapTable(BaseModel):
                 continue
             quality_map_rows.append([cell.text for cell in sanitized_cells])
 
-        headers = [
-            "Qualität \\ Segmentgruppe",
-            "Bestellte Daten",
-            "Gültige Daten",
-            "Informative Daten",
-            "Erwartete Daten",
-            "Im System vorhandene Daten",
-        ]
-
-        df = pd.DataFrame(quality_map_rows, columns=headers)
-
-        return cls(table=df)
+        return cls.from_raw_table(quality_map_rows)
 
     def save_to_csv(self, output_path: Path) -> None:
         """
         Save the quality map table to a csv file.
         """
-        self.table.to_csv(output_path, index=False, encoding="utf-8")
+        df = pd.DataFrame(self.to_raw_table(), columns=list(HEADERS.values()))
+        df.to_csv(output_path, index=False, encoding="utf-8")
         logger.info("💾 Saved quality map table to '%s'", output_path)
 
     def save_to_xlsx(self, output_path: Path) -> None:
         """
         Save the quality map table to an xlsx file.
         """
-        self.table.to_excel(output_path, index=False)
+        df = pd.DataFrame(self.to_raw_table(), columns=list(HEADERS.values()))
+        df.to_excel(output_path, index=False)
         logger.info("💾 Saved quality map table to '%s'", output_path)
