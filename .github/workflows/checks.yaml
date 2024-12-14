@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ "3.12" ]
+        python-version: [ "3.13" ]
         tox-env: [ "test", "lint", "formatcheck", "typecheck", "test_packaging", "dev" ]
     name: ${{ matrix.tox-env }}
     runs-on: ${{ matrix.os }}
