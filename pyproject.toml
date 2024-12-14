@@ -21,7 +21,7 @@ dependencies = [
   "pydantic>=2.9.2",
   "tomlkit>=0.13.2",
   "xlsxwriter>=3.2.0",
-  "efoli>=0.0.3",
+  "efoli>=1.4.0",
 ]
 
 name = "kohlrahbi"
