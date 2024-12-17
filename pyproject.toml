@@ -11,17 +11,17 @@ build-backend = "hatchling.build"
 
 [project]
 dependencies = [
-  "click>=8.0.0",
-  "colorlog>=6.7.0",
-  "more_itertools>=10.4.0",
-  "openpyxl>=3.1.1",
-  "pandas>=1.5.3",
-  "python-docx>=1.0.0",
-  "pytz>=2022.7.1",
-  "pydantic>=2.6.0",
-  "tomlkit>=0.11.6",
-  "xlsxwriter>=3.0.8",
-  "efoli>=0.0.3",
+  "click>=8.1.7",
+  "colorlog>=6.9.0",
+  "more_itertools>=10.5.0",
+  "openpyxl>=3.1.5",
+  "pandas>=2.2.3",
+  "python-docx>=1.1.2",
+  "pytz>=2024.2",
+  "pydantic>=2.9.2",
+  "tomlkit>=0.13.2",
+  "xlsxwriter>=3.2.0",
+  "efoli>=1.4.0",
 ]
 
 name = "kohlrahbi"
@@ -40,6 +40,7 @@ classifiers = [
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
 ]
 dynamic = ["readme", "version"]
 
@@ -53,27 +54,27 @@ dev = [
   "kohlrahbi[typecheck]",
   "kohlrahbi[formatting]",
 ]
-lint = ["pylint==3.3.1", "pylint-pydantic==0.3.2"]
+lint = ["pylint==3.3.2", "pylint-pydantic==0.3.4"]
 test = [
-  "coverage==7.6.7",
+  "coverage==7.6.9",
   "dictdiffer==0.9.0",
   "freezegun==1.5.1",
   "pytest-datafiles==3.0.0",
-  "pytest==8.3.3",
-  "syrupy==4.7.2",
+  "pytest==8.3.4",
+  "syrupy==4.8.0",
 ]
 typecheck = [
   "mypy==1.11.2",
   "networkx-stubs==0.0.1",
-  "pandas-stubs==2.2.3.241009",
-  "pytest==8.3.3",
+  "pandas-stubs==2.2.3.241126",
+  "pytest==8.3.4",
   "types-freezegun==1.1.10",
   "types-requests==2.32.0.20241016 ",
 ]
 spell_check = ["codespell==2.3.0"]
-coverage = ["coverage==7.6.7"]
+coverage = ["coverage==7.6.9"]
 formatting = ["black==24.10.0", "isort==5.13.2"]
-test_packaging = ["build==1.2.2.post1", "twine==5.1.1"]
+test_packaging = ["build==1.2.2.post1", "twine==6.0.1"]
 
 [project.urls]
 Changelog = "https://github.com/Hochfrequenz/kohlrahbi/releases"
