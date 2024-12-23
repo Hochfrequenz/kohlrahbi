@@ -6,7 +6,7 @@
 #
 annotated-types==0.7.0
     # via pydantic
-click==8.1.7
+click==8.1.8
     # via kohlrahbi (pyproject.toml)
 colorama==0.4.6
     # via
