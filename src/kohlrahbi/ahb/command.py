@@ -88,6 +88,12 @@ you will be asked if you want to create it.""",
     default=False,
     help="Confirm all prompts automatically.",
 )
+@click.option(
+    "--clear-output-path",
+    is_flag=True,
+    default=False,
+    help="Clear old removed files from existing output path",
+)
 # pylint: disable=too-many-arguments, too-many-positional-arguments
 def ahb(
     pruefis: list[str],
@@ -96,6 +102,7 @@ def ahb(
     file_type: tuple[AhbExportFileFormat, ...],
     format_version: EdifactFormatVersion | str,
     assume_yes: bool,  # pylint: disable=unused-argument
+    clear_output_path: bool = False,
     # it is used by the callback function of the output-path
 ) -> None:
     """
@@ -112,4 +119,5 @@ def ahb(
         output_path=output_path,
         file_type=file_type,
         format_version=format_version,
+        clear_output_path=clear_output_path,
     )
