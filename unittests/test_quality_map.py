@@ -7,7 +7,7 @@ import pytest
 from click.testing import CliRunner, Result
 
 from kohlrahbi import cli
-from kohlrahbi.qualitymap import is_quality_map_table
+from kohlrahbi.qualitymap.extract import is_quality_map_table
 
 runner: CliRunner = CliRunner()
 
@@ -76,6 +76,8 @@ class TestQualityMap:
                 str(Path(__file__).parents[1] / "edi_energy_mirror"),
                 "--output-path",
                 str(actual_output_dir),
+                "--output-format",
+                "csv",
             ]
         )
 
