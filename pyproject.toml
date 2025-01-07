@@ -54,7 +54,7 @@ dev = [
   "kohlrahbi[typecheck]",
   "kohlrahbi[formatting]",
 ]
-lint = ["pylint==3.3.3", "pylint-pydantic==0.3.4"]
+lint = ["pylint==3.3.3", "pylint-pydantic==0.3.5"]
 test = [
   "coverage==7.6.10",
   "dictdiffer==0.9.0",
