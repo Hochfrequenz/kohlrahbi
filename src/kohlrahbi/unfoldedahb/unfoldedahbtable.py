@@ -255,81 +255,151 @@ class UnfoldedAhb(BaseModel):
     @staticmethod
     def iterate_through_ahb(
         layer: Anwendungsfall | SegmentGroup, unsorted_unfolded_ahb_lines: Dict[str, list["UnfoldedAhbLine"]]
-    ):
-        for segment in layer.segments:
-            if isinstance(layer, Anwendungsfall):
-                unsorted_unfolded_ahb_lines[segment.number] = UnfoldedAhb.unfolded_ahb_lines_from_segment(
-                    segment,
+    ) -> Dict[str, list["UnfoldedAhbLine"]]:
+        """
+        Recursively iterate through an AHB layer (Anwendungsfall or SegmentGroup) and collect all lines.
+
+        Args:
+            layer: The current layer to process (either Anwendungsfall or SegmentGroup)
+            unsorted_unfolded_ahb_lines: Dictionary to collect lines, keyed by segment number
+
+        Returns:
+            The updated dictionary with all lines from this layer and its children
+        """
+        # Process all elements in this layer
+        for element in layer.elements:
+            if isinstance(element, Segment):
+                # Handle direct segments
+                unsorted_unfolded_ahb_lines[element.number] = UnfoldedAhb.unfolded_ahb_lines_from_segment(
+                    segment=element,
+                    segment_group=None if isinstance(layer, Anwendungsfall) else layer.id,
+                    section_name=element.name,
                 )
-            else:
-                unsorted_unfolded_ahb_lines[segment.number] = UnfoldedAhb.unfolded_ahb_lines_from_segment(
-                    segment, layer.id, layer.name
-                )
-        for segment_group in layer.segment_groups:
-            unsorted_unfolded_ahb_lines = UnfoldedAhb.iterate_through_ahb(segment_group, unsorted_unfolded_ahb_lines)
+            elif isinstance(element, SegmentGroup):
+                # Process segments in segment groups
+                for segment in element.elements:
+                    if isinstance(segment, Segment):
+                        unsorted_unfolded_ahb_lines[segment.number] = UnfoldedAhb.unfolded_ahb_lines_from_segment(
+                            segment=segment,
+                            segment_group=element.id,
+                            section_name=segment.name,
+                        )
+                # Recursively process nested segment groups
+                unsorted_unfolded_ahb_lines = UnfoldedAhb.iterate_through_ahb(element, unsorted_unfolded_ahb_lines)
+
         return unsorted_unfolded_ahb_lines
 
     @staticmethod
     def unfolded_ahb_lines_from_segment(
-        segment: Segment, segment_gruppe: str | None, segment_id: str | None
+        segment: Segment, segment_group: str | None, section_name: str | None
     ) -> list[UnfoldedAhbLine]:
         """
-        This function creates a list of all UnfoldedAhbLines from a segment.
+        Converts a Segment into a list of UnfoldedAhbLines.
+
+        Args:
+            segment: The segment to convert
+            segment_group: The segment group key (e.g. "SG4") or None
+            section_name: The name of the section this segment belongs to
+
+        Returns:
+            A list of UnfoldedAhbLines representing the segment and all its data elements
         """
-        # todo: segment bedingung
-        # todo: fix index
-        segment_unfolded_ahb_lines = []
-        segment_unfolded_ahb_lines.append(
+        lines: list[UnfoldedAhbLine] = []
+
+        # Add the segment header line
+        lines.append(
             UnfoldedAhbLine(
-                index=0,
-                segment_name=segment.name,
-                segment_gruppe=segment_gruppe,
+                index=0,  # indexes will be fixed later
+                segment_name=section_name or segment.name,
+                segment_gruppe=segment_group,
                 segment=segment.id,
                 segment_id=segment.number,
                 datenelement=None,
-                code="tba",
+                code=None,
                 qualifier=None,
                 beschreibung=None,
                 bedingung_ausdruck=segment.ahb_status,
-                bedingung="Some",
+                bedingung="",
             )
         )
-        for datenelement in segment.data_elements:
-            if isinstance(datenelement, DataElementGroup):
-                for dataelement in datenelement.data_elements:
-                    for code in dataelement.codes:
-                        segment_unfolded_ahb_lines.append(
+
+        # Process all data elements
+        for data_element in segment.data_elements:
+            if isinstance(data_element, DataElementGroup):
+                # Handle nested data elements in groups
+                for nested_element in data_element.data_elements:
+                    if nested_element.codes:
+                        for code in nested_element.codes:
+                            lines.append(
+                                UnfoldedAhbLine(
+                                    index=0,  # indexes will be fixed later
+                                    segment_name=section_name or segment.name,
+                                    segment_gruppe=segment_group,
+                                    segment=segment.id,
+                                    segment_id=segment.number,
+                                    datenelement=nested_element.id,
+                                    code=code.value,
+                                    qualifier=None,
+                                    beschreibung=code.name,
+                                    bedingung_ausdruck=code.ahb_status,
+                                    bedingung=code.description or "",
+                                )
+                            )
+                    else:
+                        # Data element without codes
+                        lines.append(
                             UnfoldedAhbLine(
-                                index=0,
-                                segment_name=segment.name,
-                                segment_gruppe=segment_gruppe,
+                                index=0,  # indexes will be fixed later
+                                segment_name=section_name or segment.name,
+                                segment_gruppe=segment_group,
                                 segment=segment.id,
                                 segment_id=segment.number,
-                                datenelement=dataelement.id,
-                                code="tba",
-                                qualifier=code.value,
-                                beschreibung=code.name,
-                                bedingung_ausdruck=code.ahb_status,
-                                bedingung="Some",
+                                datenelement=nested_element.id,
+                                code=None,
+                                qualifier=None,
+                                beschreibung=nested_element.name,
+                                bedingung_ausdruck=None,  # No status for elements without codes
+                                bedingung="",
                             )
                         )
             else:
-                segment_unfolded_ahb_lines.append(
-                    UnfoldedAhbLine(
-                        index=0,
-                        segment_name=segment.name,
-                        segment_gruppe=segment_gruppe,
-                        segment=segment.id,
-                        segment_id=segment.number,
-                        datenelement=dataelement.id,
-                        code="tba",
-                        qualifier=code.value,
-                        beschreibung=code.name,
-                        bedingung_ausdruck=code.ahb_status,
-                        bedingung="Some",
+                # Handle direct data elements
+                if data_element.codes:
+                    for code in data_element.codes:
+                        lines.append(
+                            UnfoldedAhbLine(
+                                index=0,  # indexes will be fixed later
+                                segment_name=section_name or segment.name,
+                                segment_gruppe=segment_group,
+                                segment=segment.id,
+                                segment_id=segment.number,
+                                datenelement=data_element.id,
+                                code=code.value,
+                                qualifier=None,
+                                beschreibung=code.name,
+                                bedingung_ausdruck=code.ahb_status,
+                                bedingung=code.description or "",
+                            )
+                        )
+                else:
+                    # Data element without codes
+                    lines.append(
+                        UnfoldedAhbLine(
+                            index=0,  # indexes will be fixed later
+                            segment_name=section_name or segment.name,
+                            segment_gruppe=segment_group,
+                            segment=segment.id,
+                            segment_id=segment.number,
+                            datenelement=data_element.id,
+                            code=None,
+                            qualifier=None,
+                            beschreibung=data_element.name,
+                            bedingung_ausdruck=None,  # No status for elements without codes
+                            bedingung="",
+                        )
                     )
-                )
-        return segment_unfolded_ahb_lines
+
+        return lines
 
     @staticmethod
     def _get_section_name(segment_gruppe_or_section_name: str, last_section_name: str) -> str:
@@ -582,6 +652,7 @@ class UnfoldedAhb(BaseModel):
                 # pylint: disable=no-member
                 workbook = writer.book
                 worksheet = writer.sheets[f"{self.meta_data.pruefidentifikator}"]
+                # type: ignore[attr-defined] # xlsxwriter workbook has add_format
                 wrap_format = workbook.add_format({"text_wrap": True})
                 for column_letter, column_width in _column_letter_width_mapping.items():
                     excel_header = f"{column_letter}:{column_letter}"
