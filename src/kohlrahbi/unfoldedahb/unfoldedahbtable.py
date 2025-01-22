@@ -5,13 +5,16 @@ This module contains the UnfoldedAhbTable class.
 import copy
 import json
 import re
+from collections import defaultdict
 from functools import lru_cache
 from pathlib import Path
-from typing import Optional, Union
+from typing import Dict, Optional, Union
 from uuid import uuid4
 
 import pandas as pd
 from efoli import EdifactFormat, get_format_of_pruefidentifikator
+from fundamend import Anwendungshandbuch
+from fundamend.models.anwendungshandbuch import Anwendungsfall, DataElementGroup, Segment, SegmentGroup
 from more_itertools import first_true, peekable
 from pydantic import BaseModel
 
@@ -224,6 +227,109 @@ class UnfoldedAhb(BaseModel):
                 kommunikation_von=metadata["communication_direction"],
             ),
         )
+
+    @classmethod
+    def from_xml_ahb(cls, ahb_table: Anwendungsfall) -> "UnfoldedAhb":
+        """
+        This function creates an UnfoldedAhb from an Anwendungsfall from a xml AHB.
+        """
+        unsorted_unfolded_ahb_lines: dict[str, list["UnfoldedAhbLine"]] = {}
+        unsorted_unfolded_ahb_lines = UnfoldedAhb.iterate_through_ahb(ahb_table, unsorted_unfolded_ahb_lines)
+        # sort AHBlines
+        unfolded_ahb_lines = []
+        for key in sorted(unsorted_unfolded_ahb_lines.keys()):
+            unfolded_ahb_lines.extend(unsorted_unfolded_ahb_lines[key])
+        # fix index:
+        for index, unfolded_ahb_line in enumerate(unfolded_ahb_lines):
+            unfolded_ahb_line.index = index
+        # add meta data
+        return cls(
+            unfolded_ahb_lines=unfolded_ahb_lines,
+            meta_data=UnfoldedAhbTableMetaData(
+                pruefidentifikator=ahb_table.pruefidentifikator,
+                beschreibung=ahb_table.beschreibung,
+                kommunikation_von=ahb_table.kommunikation_von,
+            ),
+        )
+
+    @staticmethod
+    def iterate_through_ahb(
+        layer: Anwendungsfall | SegmentGroup, unsorted_unfolded_ahb_lines: Dict[str, list["UnfoldedAhbLine"]]
+    ):
+        for segment in layer.segments:
+            if isinstance(layer, Anwendungsfall):
+                unsorted_unfolded_ahb_lines[segment.number] = UnfoldedAhb.unfolded_ahb_lines_from_segment(
+                    segment,
+                )
+            else:
+                unsorted_unfolded_ahb_lines[segment.number] = UnfoldedAhb.unfolded_ahb_lines_from_segment(
+                    segment, layer.id, layer.name
+                )
+        for segment_group in layer.segment_groups:
+            unsorted_unfolded_ahb_lines = UnfoldedAhb.iterate_through_ahb(segment_group, unsorted_unfolded_ahb_lines)
+        return unsorted_unfolded_ahb_lines
+
+    @staticmethod
+    def unfolded_ahb_lines_from_segment(
+        segment: Segment, segment_gruppe: str | None, segment_id: str | None
+    ) -> list[UnfoldedAhbLine]:
+        """
+        This function creates a list of all UnfoldedAhbLines from a segment.
+        """
+        # todo: segment bedingung
+        # todo: fix index
+        segment_unfolded_ahb_lines = []
+        segment_unfolded_ahb_lines.append(
+            UnfoldedAhbLine(
+                index=0,
+                segment_name=segment.name,
+                segment_gruppe=segment_gruppe,
+                segment=segment.id,
+                segment_id=segment.number,
+                datenelement=None,
+                code="tba",
+                qualifier=None,
+                beschreibung=None,
+                bedingung_ausdruck=segment.ahb_status,
+                bedingung="Some",
+            )
+        )
+        for datenelement in segment.data_elements:
+            if isinstance(datenelement, DataElementGroup):
+                for dataelement in datenelement.data_elements:
+                    for code in dataelement.codes:
+                        segment_unfolded_ahb_lines.append(
+                            UnfoldedAhbLine(
+                                index=0,
+                                segment_name=segment.name,
+                                segment_gruppe=segment_gruppe,
+                                segment=segment.id,
+                                segment_id=segment.number,
+                                datenelement=dataelement.id,
+                                code="tba",
+                                qualifier=code.value,
+                                beschreibung=code.name,
+                                bedingung_ausdruck=code.ahb_status,
+                                bedingung="Some",
+                            )
+                        )
+            else:
+                segment_unfolded_ahb_lines.append(
+                    UnfoldedAhbLine(
+                        index=0,
+                        segment_name=segment.name,
+                        segment_gruppe=segment_gruppe,
+                        segment=segment.id,
+                        segment_id=segment.number,
+                        datenelement=dataelement.id,
+                        code="tba",
+                        qualifier=code.value,
+                        beschreibung=code.name,
+                        bedingung_ausdruck=code.ahb_status,
+                        bedingung="Some",
+                    )
+                )
+        return segment_unfolded_ahb_lines
 
     @staticmethod
     def _get_section_name(segment_gruppe_or_section_name: str, last_section_name: str) -> str:

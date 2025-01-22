@@ -23,6 +23,7 @@ dependencies = [
   "xlsxwriter>=3.2.0",
   "efoli>=1.4.0",
   "edi_energy_scraper>=2.0.0"
+  "fundamend >= 0.7.0",
 ]
 
 name = "kohlrahbi"
