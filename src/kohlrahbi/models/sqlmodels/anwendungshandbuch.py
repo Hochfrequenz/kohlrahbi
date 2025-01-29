@@ -1,5 +1,7 @@
 """model classes copy-pasted from kohlrahbi"""
 
+# pylint: disable=too-few-public-methods
+
 try:
     from sqlalchemy import UniqueConstraint
     from sqlmodel import Field, Relationship, SQLModel
@@ -73,7 +75,7 @@ class AhbMetaInformation(SQLModel, table=True):
     __table_args__ = (
         UniqueConstraint("pruefidentifikator", "edifact_format_version", name="IX_pruefi_once_per_format_version"),
     )
-    id: UUID = Field(primary_key=True, default_factory=lambda: uuid.uuid4(), description="optional key")
+    id: UUID = Field(primary_key=True, default_factory=uuid.uuid4, description="optional key")
     edifact_format: EdifactFormat = Field(index=True)
     edifact_format_version: EdifactFormatVersion = Field(index=True)
     flatanwendungshandbuch: Optional[FlatAnwendungshandbuch] = Relationship(
