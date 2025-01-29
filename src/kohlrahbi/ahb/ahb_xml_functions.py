@@ -3,6 +3,7 @@ Contains functions to scrape content from xml files.
 """
 
 from pathlib import Path
+from typing import List
 
 import tomlkit
 from efoli import EdifactFormatVersion
@@ -77,3 +78,29 @@ def scrape_xml_pruefis(
     input_path = input_path / Path("UTILMD_AHB_Strom_2_1_2024_10_01_2024_09_20.xml")
     for pruefi in pruefis:
         process_pruefi(pruefi, input_path, output_path, file_type)
+
+
+def get_pruefidentifikator_list(xml_file_path: Path) -> List[str]:
+    """
+    Reads an XML file and returns a list of all Pruefidentifikator values found in it.
+
+    Args:
+        xml_file_path: Path to the XML file to read
+
+    Returns:
+        List of Pruefidentifikator values found in the file
+
+    Raises:
+        FileNotFoundError: If the XML file does not exist
+        Exception: If there is an error reading or parsing the XML file
+    """
+    if not xml_file_path.exists():
+        raise FileNotFoundError(f"XML file not found: {xml_file_path}")
+
+    reader = AhbReader(xml_file_path)
+    ahb = reader.read()
+
+    if not isinstance(ahb, Anwendungshandbuch):
+        raise Exception(f"Expected Anwendungshandbuch instance, got {type(ahb)}")
+
+    return sorted(list({awf.pruefidentifikator for awf in ahb.anwendungsfaelle}))
