@@ -29,6 +29,13 @@ def _load_flat_ahb_to_db(
     session: Session, json_path: Path, edifact_format: EdifactFormat, edifact_format_version: EdifactFormatVersion
 ) -> str:
     """returns the pruefi"""
+    # you may use this kind of function to eventually load _all_ AHBs into a DB
+    # if you e.g. check out our machine-readable AHB repository,
+    #  for json_path in _mr_ahb_submodule_path.rglob("FV*/**/*.json"):
+    #      with open(json_path, "r", encoding="utf-8") as json_file:
+    #          edifact_format = EdifactFormat(json_path.parent.parent.name)
+    #          edifact_format_version = EdifactFormatVersion(json_path.parent.parent.parent.name)
+    #          _load_flat_ahb_to_db(...)
     with open(json_path, "r", encoding="utf-8") as json_file:
         file_body = json.loads(json_file.read())
         flat_ahb = FlatAnwendungshandbuch.model_validate(file_body)
