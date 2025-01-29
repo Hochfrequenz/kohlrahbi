@@ -4,6 +4,7 @@ import pytest
 from freezegun import freeze_time
 
 from kohlrahbi.ahb import find_pruefidentifikatoren, get_ahb_documents_path, save_pruefi_map_to_toml
+from kohlrahbi.ahb.ahb_xml_functions import get_pruefidentifikator_list
 from unittests import path_to_test_edi_energy_mirror_repo, path_to_test_files_fv2310
 
 
@@ -47,3 +48,31 @@ class TestAhb:
             actual_pruefi_map = f.read()
         assert actual_pruefi_map == expected_pruefi_map
         expected_output_path.unlink()
+
+    @pytest.mark.snapshot
+    def test_get_pruefidentifikator_list(self):
+        """
+        Test get_pruefidentifikator_list function with a sample XML file.
+        """
+        # Test with non-existent file
+        with pytest.raises(FileNotFoundError) as exc_info:
+            get_pruefidentifikator_list(Path("non_existent.xml"))
+        assert "XML file not found" in str(exc_info.value)
+
+        # Test with actual XML file
+        xml_path = Path("xml-migs-and-ahbs/UTILMD/UTILMD_AHB_Strom_2_1_2024_10_01_2024_09_20.xml")
+        pruefis = get_pruefidentifikator_list(xml_path)
+
+        # Verify the result is a list of strings
+        assert isinstance(pruefis, list)
+        assert all(isinstance(p, str) for p in pruefis)
+
+        # Verify the list is not empty and contains expected format
+        assert len(pruefis) > 0
+        assert all(p.isdigit() for p in pruefis)  # Pruefidentifikator should be numeric
+
+        # Verify the list is sorted
+        assert pruefis == sorted(pruefis)
+
+        # Verify there are no duplicates
+        assert len(pruefis) == len(set(pruefis))
