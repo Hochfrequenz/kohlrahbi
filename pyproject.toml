@@ -71,6 +71,7 @@ test = [
   "syrupy==4.8.1",
 ]
 typecheck = [
+  "kohlrahbi[sqlmodels]",
   "mypy==1.11.2",
   "networkx-stubs==0.0.1",
   "pandas-stubs==2.2.3.241126",
