@@ -22,7 +22,7 @@ dependencies = [
   "tomlkit>=0.13.2",
   "xlsxwriter>=3.2.0",
   "efoli>=1.4.0",
-  "edi_energy_scraper>=2.0.0"
+  "edi_energy_scraper>=2.0.0",
   "fundamend >= 0.8.1",
 ]
 
@@ -50,10 +50,7 @@ dynamic = ["readme", "version"]
 kohlrahbi = "kohlrahbi:cli"
 
 [project.optional-dependencies]
-sqlmodels = [
-  "sqlmodel>=0.0.22",
-  "sqlalchemy[mypy]>=2.0.37"
-]
+sqlmodels = ["sqlmodel>=0.0.22", "sqlalchemy[mypy]>=2.0.37"]
 dev = [
   "kohlrahbi[sqlmodels]",
   "kohlrahbi[test]",
