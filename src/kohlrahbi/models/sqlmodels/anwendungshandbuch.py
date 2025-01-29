@@ -46,7 +46,7 @@ class AhbLine(SQLModel, table=True):
     __table_args__ = (UniqueConstraint("ahb_id", "position_inside_ahb", name="IX_position_once_per_ahb"),)
     id: UUID = Field(
         primary_key=True, default_factory=uuid.uuid4, description="optional key"
-    )  # because the combination (segment group, segment, data element, name) is not guaranteed to be unique
+    )
     # yes, it's actually that bad already
 
     position_inside_ahb: int = Field(index=True)
