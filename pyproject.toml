@@ -50,8 +50,8 @@ kohlrahbi = "kohlrahbi:cli"
 
 [project.optional-dependencies]
 sqlmodels = [
-  "sqlmodel",
-  "sqlalchemy[mypy]"
+  "sqlmodel>=0.0.22",
+  "sqlalchemy[mypy]>=2.0.37"
 ]
 dev = [
   "kohlrahbi[sqlmodels]",
