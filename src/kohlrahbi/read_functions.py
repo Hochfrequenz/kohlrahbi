@@ -78,7 +78,7 @@ def is_item_table_with_pruefidentifikatoren(item: Paragraph | Table | None) -> T
 
 
 def is_item_headless_table(
-    value: tuple[Union[Paragraph, Table, None], Union[AhbTable, None]]
+    value: tuple[Union[Paragraph, Table, None], Union[AhbTable, None]],
 ) -> TypeGuard[tuple[Table, AhbTable]]:
     """
     Checks if the given item is a headless table.

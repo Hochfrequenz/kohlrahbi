@@ -1,4 +1,4 @@
-""""
+""" "
 Command line interface for the pruefis module.
 """
 
