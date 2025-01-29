@@ -241,12 +241,54 @@ def reduce_pruefi_to_file_mapping(pruefi_to_file_mapping: dict[str, str], pruefi
     return {pruefi: filename for pruefi, filename in pruefi_to_file_mapping.items() if pruefi in pruefis}
 
 
+def remove_vanished_pruefis(pruefi_to_file_mapping: dict[str, str], output_path: Path) -> None:
+    """
+    Looks for existing pruefis in output_path and removes them if there are no present in pruefi_to_file_mapping
+    """
+    try:
+        existing_pruefis = list_files_in_subdirs(output_path)
+        for pruefi, file_path in existing_pruefis:
+            if pruefi not in pruefi_to_file_mapping:
+                logger.info("Removing pruefi '%s' from '%s' .", pruefi, file_path.parent)
+                file_path.unlink()
+            if is_parent_dir_empty(file_path):
+                file_path.parent.rmdir()
+                logger.info("Removing empty '%s' .", file_path.parent)
+    except ValueError:
+        logger.warning(
+            "Error while cleaning existing files from given output_path '%s'. Skipping saving files.", output_path
+        )
+
+
+def is_parent_dir_empty(file_path: Path) -> bool:
+    """
+    Checks if a parent dir of a provided file path is empty
+    """
+    parent_dir = file_path.parent
+    return not any(parent_dir.iterdir())
+
+
+def list_files_in_subdirs(path: Path) -> list[tuple[str, Path]]:
+    """
+    Find all files in a given subdir.
+    """
+    files_list = []
+    for file_path in path.rglob("*"):
+        if file_path.is_file():
+            file_name_without_ext = file_path.stem
+            if file_name_without_ext not in ["conditions", "packages"]:
+                files_list.append((file_name_without_ext, file_path))
+    return files_list
+
+
+# pylint: disable=too-many-arguments, too-many-positional-arguments
 def scrape_pruefis(
     pruefis: list[str],
     basic_input_path: Path,
     output_path: Path,
     file_type: tuple[AhbExportFileFormat, ...],
     format_version: EdifactFormatVersion,
+    clear_output_path: bool,
 ) -> None:
     """
     starts the scraping process for provided pruefi_to_file_mappings
@@ -257,7 +299,8 @@ def scrape_pruefis(
     if len(pruefis) > 0:
         validated_pruefis = validate_pruefis(pruefis)
         pruefi_to_file_mapping = reduce_pruefi_to_file_mapping(pruefi_to_file_mapping, validated_pruefis)
-
+    if clear_output_path:
+        remove_vanished_pruefis(pruefi_to_file_mapping, output_path)
     for pruefi, filename in pruefi_to_file_mapping.items():
         try:
             logger.info("start looking for pruefi '%s'", pruefi)
