@@ -72,11 +72,12 @@ def test_sqlmodels(sqlite_session: Session, tmp_path: Path) -> None:
     pruefi = _load_flat_ahb_to_db(sqlite_session, flat_ahb_path, EdifactFormat.UTILMD, EdifactFormatVersion.FV2504)
     ahbs_from_db = sqlite_session.exec(
         select(FlatAnwendungshandbuch)
-        .join(AhbMetaInformation, FlatAnwendungshandbuch.id == AhbMetaInformation.ahb_id)
-        .join(AhbLine, FlatAnwendungshandbuch.id == AhbLine.ahb_id)
-        .where(AhbMetaInformation.pruefidentifikator == "55001")  # Ensure it selects a unique row
+        .join(AhbMetaInformation, FlatAnwendungshandbuch.id == AhbMetaInformation.ahb_id)  # type:ignore[arg-type]
+        .join(AhbLine, FlatAnwendungshandbuch.id == AhbLine.ahb_id)  # type:ignore[arg-type]
+        .where(AhbMetaInformation.pruefidentifikator == "55001")
     ).all()
     ahb_from_db: FlatAnwendungshandbuch = ahbs_from_db[0]
     assert isinstance(ahb_from_db, FlatAnwendungshandbuch)
     assert any(ahb_from_db.lines)
+    assert ahb_from_db.meta is not None
     assert ahb_from_db.meta.pruefidentifikator == pruefi
