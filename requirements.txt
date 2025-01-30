@@ -85,7 +85,7 @@ typing-extensions==4.12.2
     #   python-docx
 tzdata==2025.1
     # via pandas
-xlsxwriter==3.2.1
+xlsxwriter==3.2.2
     # via kohlrahbi (pyproject.toml)
 yarl==1.18.3
     # via aiohttp
