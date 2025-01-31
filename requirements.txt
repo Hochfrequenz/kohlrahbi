@@ -68,7 +68,7 @@ python-dateutil==2.9.0.post0
     # via pandas
 python-docx==1.1.2
     # via kohlrahbi (pyproject.toml)
-pytz==2024.2
+pytz==2025.1
     # via
     #   edi-energy-scraper
     #   efoli
