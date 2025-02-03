@@ -2,7 +2,7 @@ from pathlib import Path, PosixPath
 
 import pytest
 
-from kohlrahbi.docxfilefinder import DocxFileFinder, get_most_recent_file
+from kohlrahbi.docxfilefinder import DocxFileFinder, get_most_recent_file, split_version_string
 
 
 class TestDocxFileFinder:
@@ -115,3 +115,10 @@ class TestDocxFileFinder:
     )
     def test_get_most_recent(self, group_items: list[Path], expected: Path):
         assert get_most_recent_file(group_items) == expected
+
+    def test_split_version_string(self):
+        assert split_version_string("1.0f") == (1, 0, "f")
+        assert split_version_string("1.0") == (1, 0, "")
+        assert split_version_string("1.0a") == (1, 0, "a")
+        assert split_version_string("2.0b") == (2, 0, "b")
+        assert split_version_string("4.2c") == (4, 2, "c")
