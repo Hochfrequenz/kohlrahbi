@@ -39,6 +39,9 @@ class EdiEnergyDocument(BaseModel):
 
         valid_from = int(document_metadata.valid_from.strftime("%Y%m%d"))
         valid_until = int(document_metadata.valid_until.strftime("%Y%m%d"))
+        assert valid_from <= valid_until, "Valid from is greater than valid until."
+        assert isinstance(valid_from, int), "Valid from is not an integer."
+        assert isinstance(valid_until, int), "Valid until is not an integer."
 
         return cls(
             filename=path,
