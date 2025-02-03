@@ -60,7 +60,7 @@ dev = [
   "kohlrahbi[typecheck]",
   "kohlrahbi[formatting]",
 ]
-lint = ["pylint==3.3.3", "pylint-pydantic==0.3.5"]
+lint = ["pylint==3.3.4", "pylint-pydantic==0.3.5"]
 test = [
   "kohlrahbi[sqlmodels]",
   "coverage==7.6.10",
