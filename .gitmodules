@@ -1,3 +1,6 @@
 [submodule "edi_energy_mirror"]
 	path = edi_energy_mirror
 	url = https://github.com/Hochfrequenz/edi_energy_mirror
+[submodule "xml-migs-and-ahbs"]
+	path = xml-migs-and-ahbs
+	url = https://github.com/Hochfrequenz/xml-migs-and-ahbs/
