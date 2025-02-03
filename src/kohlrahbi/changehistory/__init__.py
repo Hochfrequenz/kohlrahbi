@@ -9,6 +9,7 @@ The main functions in this module are:
 - `create_sheet_name`: Creates a sheet name from the filename.
 """
 
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
@@ -52,6 +53,29 @@ def get_change_history_table(document: Document) -> Optional[ChangeHistoryTable]
     return None
 
 
+def extract_sheet_name(filename: str) -> str:
+    """
+    Extract the format and version part from a filename to create a sheet name.
+
+    Args:
+        filename (str): The full filename like 'AHB_COMDIS_1.0f_20250606_99991231_20250606_ooox_8871.docx'
+
+    Returns:
+        str: The extracted sheet name like 'AHB_COMDIS_1.0f'
+
+    Examples:
+        >>> extract_sheet_name("AHB_COMDIS_1.0f_20250606_99991231_20250606_ooox_8871.docx")
+        'AHB_COMDIS_1.0f'
+        >>> extract_sheet_name("MIG_UTILMD_2.1e_20250606_99991231_20250131_xoxx_11449.docx")
+        'MIG_UTILMD_2.1e'
+    """
+    pattern = r"^([A-Z]+_[A-Z]+_[0-9]+\.[0-9]+[a-zA-Z]*)"
+    match = re.match(pattern, filename)
+    if not match:
+        raise ValueError(f"Could not extract sheet name from filename: {filename}")
+    return match.group(1)
+
+
 def save_change_histories_to_excel(change_history_collection: dict[str, pd.DataFrame], output_path: Path) -> None:
     """
     Save the collected change histories to an Excel file.
@@ -73,7 +97,8 @@ def save_change_histories_to_excel(change_history_collection: dict[str, pd.DataF
     # https://github.com/PyCQA/pylint/issues/3060 pylint: disable=abstract-class-instantiated
     with pd.ExcelWriter(path_to_change_history_excel_file, engine="xlsxwriter") as writer:
         for sheet_name, df in change_history_collection.items():
-            df.to_excel(writer, sheet_name=sheet_name)
+            shorten_sheet_name = extract_sheet_name(filename=sheet_name)
+            df.to_excel(writer, sheet_name=shorten_sheet_name)
 
             # Access the XlsxWriter workbook and worksheet objects
             workbook = writer.book
