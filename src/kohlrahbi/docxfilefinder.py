@@ -2,10 +2,10 @@
 This module contains the DocxFileFinder class.
 """
 
-import re
 from itertools import groupby
 from pathlib import Path
 
+from edi_energy_scraper import DocumentMetadata
 from efoli import EdifactFormat, get_format_of_pruefidentifikator
 from pydantic import BaseModel
 
@@ -31,16 +31,23 @@ class EdiEnergyDocument(BaseModel):
         Create an EdiEnergyDocument object from a file path.
         """
 
-        file_name = extract_document_version_and_valid_dates(path.name)
-        assert file_name is not None, f"Could not extract document version and valid dates from {path.name}."
+        document_metadata = extract_document_meta_data(path.name)
+        assert document_metadata is not None, f"Could not extract document version and valid dates from {path.name}."
+        assert document_metadata.version is not None, "Document version is None."
+
+        version_major, version_minor, version_suffix = split_version_string(document_metadata.version)
+
+        valid_from = int(document_metadata.valid_from.strftime("%Y%m%d"))
+        valid_until = int(document_metadata.valid_until.strftime("%Y%m%d"))
+
         return cls(
             filename=path,
-            document_version=file_name["document_version"],
-            version_major=int(file_name["version_major"]),
-            version_minor=int(file_name["version_minor"]),
-            version_suffix=file_name["version_suffix"],
-            valid_from=int(file_name["valid_from"]),
-            valid_until=int(file_name["valid_until"]),
+            document_version=document_metadata.version,
+            version_major=version_major,
+            version_minor=version_minor,
+            version_suffix=version_suffix,
+            valid_from=valid_from,
+            valid_until=valid_until,
         )
 
     def __lt__(self, other: "EdiEnergyDocument") -> bool:
