@@ -72,34 +72,40 @@ class EdiEnergyDocument(BaseModel):
         )
 
 
-def extract_document_version_and_valid_dates(
+def split_version_string(version_string: str) -> tuple[int, int, str]:
+    """
+    Split the version string into a tuple of (major, minor, suffix).
+
+    Example version: '1.0f'
+    Returns: (1, 0, 'f')
+    """
+    # Extract major and minor version numbers
+    version_parts = version_string.split(".")
+    major = int(version_parts[0])
+
+    # Extract minor number and suffix
+    minor_and_suffix = version_parts[1]
+    minor = int("".join(c for c in minor_and_suffix if c.isdigit()))
+    suffix = "".join(c for c in minor_and_suffix if not c.isdigit())
+
+    return (major, minor, suffix)
+
+
+def extract_document_meta_data(
     filename: str,
-) -> dict[str, str] | None:
-    """Extract the document version and valid dates from the filename.
+) -> DocumentMetadata:
+    """Extract the document metadata from the filename.
 
     Parameters:
     - filename (str): The filename of the document.
 
     Returns:
-    - tuple[str, str, str]: A tuple containing the document version, valid from date, and valid until date.
+    - DocumentMetadata: A DocumentMetadata object.
     """
 
-    # Pattern to extract detailed version number, valid until and valid from dates
-    document_name_pattern = re.compile(
-        r"-informatorischeLesefassung"
-        r"(?P<document_version>(?:S|G)?(?P<version_major>\d+)\.(?P<version_minor>\d+)(?P<version_suffix>[a-z]?))"
-        r"(?:_|KonsolidierteLesefassung|-AußerordentlicheVeröffentlichung)?"
-        r"([A-Za-z0-9.]+)?"
-        r"_(?P<valid_until>\d{8})_(?P<valid_from>\d{8})\.docx$",
-        re.IGNORECASE,
-    )
-    matches = document_name_pattern.search(filename)
-    try:
-        if matches:
-            return matches.groupdict()
-    except ValueError as e:
-        logger.error("Error extracting document version and valid dates: %s", e)
-    return None
+    document_metadata = DocumentMetadata.from_filename(filename)
+    assert document_metadata is not None, f"Could not extract document metadata from {filename}."
+    return document_metadata
 
 
 def get_most_recent_file(group_items: list[Path]) -> Path | None:
