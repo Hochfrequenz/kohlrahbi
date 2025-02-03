@@ -2,6 +2,7 @@
 This module contains the DocxFileFinder class.
 """
 
+import re
 from itertools import groupby
 from pathlib import Path
 
@@ -19,6 +20,7 @@ class EdiEnergyDocument(BaseModel):
 
     filename: Path
     document_version: str
+    version_prefix: str
     version_major: int
     version_minor: int
     version_suffix: str
@@ -33,19 +35,20 @@ class EdiEnergyDocument(BaseModel):
 
         document_metadata = extract_document_meta_data(path.name)
         assert document_metadata is not None, f"Could not extract document version and valid dates from {path.name}."
-        assert document_metadata.version is not None, "Document version is None."
+        # assert document_metadata.version is not None, "Document version is None."
 
-        version_major, version_minor, version_suffix = split_version_string(document_metadata.version)
+        prefix, version_major, version_minor, version_suffix = split_version_string(document_metadata.version)
 
         valid_from = int(document_metadata.valid_from.strftime("%Y%m%d"))
         valid_until = int(document_metadata.valid_until.strftime("%Y%m%d"))
-        assert valid_from <= valid_until, "Valid from is greater than valid until."
+        # assert valid_from <= valid_until, "Valid from is greater than valid until."
         assert isinstance(valid_from, int), "Valid from is not an integer."
         assert isinstance(valid_until, int), "Valid until is not an integer."
 
         return cls(
             filename=path,
             document_version=document_metadata.version,
+            version_prefix=prefix,
             version_major=version_major,
             version_minor=version_minor,
             version_suffix=version_suffix,
@@ -82,23 +85,31 @@ class EdiEnergyDocument(BaseModel):
         )
 
 
-def split_version_string(version_string: str) -> tuple[int, int, str]:
+def split_version_string(version_string: str) -> tuple[str, int, int, str]:
     """
-    Split the version string into a tuple of (major, minor, suffix).
+    Split the version string into a tuple of (prefix, major, minor, suffix).
+    The prefix is optional (can be empty string).
 
-    Example version: '1.0f'
-    Returns: (1, 0, 'f')
+    Examples:
+        >>> split_version_string("1.3a")
+        ('', 1, 3, 'a')
+        >>> split_version_string("G2.1e")
+        ('G', 2, 1, 'e')
+        >>> split_version_string("S1.2f")
+        ('S', 1, 2, 'f')
     """
-    # Extract major and minor version numbers
-    version_parts = version_string.split(".")
-    major = int(version_parts[0])
+    pattern = r"^([GS])?(\d+)\.(\d+)([a-zA-Z]*)$"
+    match = re.match(pattern, version_string)
+    if not match:
+        raise ValueError(f"Invalid version string format: {version_string}")
 
-    # Extract minor number and suffix
-    minor_and_suffix = version_parts[1]
-    minor = int("".join(c for c in minor_and_suffix if c.isdigit()))
-    suffix = "".join(c for c in minor_and_suffix if not c.isdigit())
-
-    return (major, minor, suffix)
+    prefix, major, minor, suffix = match.groups()
+    return (
+        prefix or "",  # convert None to empty string if no prefix
+        int(major),
+        int(minor),
+        suffix or "",  # convert None to empty string if no suffix
+    )
 
 
 def extract_document_meta_data(
@@ -131,15 +142,27 @@ def get_most_recent_file(group_items: list[Path]) -> Path | None:
 
     try:
         # Define the keywords to filter relevant files
-        keywords = ["konsolidiertelesefassungmitfehlerkorrekturen", "außerordentlicheveröffentlichung"]
-        files_containing_keywords = [
-            path for path in group_items if any(keyword in path.name.lower() for keyword in keywords)
-        ]
-        if any(files_containing_keywords):
-            list_of_edi_energy_documents = [EdiEnergyDocument.from_path(path) for path in files_containing_keywords]
-        else:
-            list_of_edi_energy_documents = [EdiEnergyDocument.from_path(path) for path in group_items]
+        # keywords = ["konsolidiertelesefassungmitfehlerkorrekturen", "außerordentlicheveröffentlichung"]
+        # ahb_and_mig_file_paths = [
+        #     path for path in group_items if path.name.lower().startswith("ahb") or path.name.lower().startswith("mig")
+        # ]
+
+        ahb_and_mig_file_paths = []
+        for path in group_items:
+            document_metadata = extract_document_meta_data(path.name)
+            if document_metadata is not None and (document_metadata.is_informational_reading_version):
+                ahb_and_mig_file_paths.append(path)
+
+        assert len(ahb_and_mig_file_paths) > 0, "No AHB or MIG files found."
+
+        assert len(ahb_and_mig_file_paths) > 0, "No AHB or MIG files found."
+
+        list_of_edi_energy_documents = [EdiEnergyDocument.from_path(path) for path in ahb_and_mig_file_paths]
+
+        assert len(list_of_edi_energy_documents) > 0, "No AHB files found."
         most_recent_file = max(list_of_edi_energy_documents)
+
+        assert most_recent_file is not None, "Most recent file is None."
 
         return most_recent_file.filename
 
@@ -204,11 +227,12 @@ class DocxFileFinder(BaseModel):
         return [
             path
             for path in paths_to_docx_files
-            if "AHB" in path.name
-            or "MIG" in path.name
-            or "AllgemeineFestlegungen" in path.name
-            or "Codeliste" in path.name
-            or "Entscheidungsbaum" in path.name
+            if "ahb" in path.name.lower()
+            or "mig" in path.name.lower()
+            or "allgemeinefestlegungen" in path.name.lower()
+            or "apiguideline" in path.name.lower()
+            or "codeliste" in path.name.lower()
+            or "ebd" in path.name.lower()
         ]
 
     # pylint: disable=line-too-long
