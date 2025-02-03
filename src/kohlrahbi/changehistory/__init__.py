@@ -55,25 +55,68 @@ def get_change_history_table(document: Document) -> Optional[ChangeHistoryTable]
 
 def extract_sheet_name(filename: str) -> str:
     """
-    Extract the format and version part from a filename to create a sheet name.
+    Extract and format a valid Excel sheet name from a filename.
+    The sheet name will be no longer than 31 characters (Excel's limit).
 
     Args:
         filename (str): The full filename like 'AHB_COMDIS_1.0f_20250606_99991231_20250606_ooox_8871.docx'
+                       or 'Entscheidungsbaum-DiagrammeundCodelisten-informatorischeLesefassung3.5.docx'
+                       or 'EBD_4.0b_20250606_20250131_20241215_xoxx_11449.docx'
 
     Returns:
-        str: The extracted sheet name like 'AHB_COMDIS_1.0f'
+        str: The extracted sheet name, shortened to max 31 chars
 
     Examples:
         >>> extract_sheet_name("AHB_COMDIS_1.0f_20250606_99991231_20250606_ooox_8871.docx")
         'AHB_COMDIS_1.0f'
         >>> extract_sheet_name("MIG_UTILMD_2.1e_20250606_99991231_20250131_xoxx_11449.docx")
         'MIG_UTILMD_2.1e'
+        >>> extract_sheet_name("EBD_4.0b_20250606_20250131_20241215_xoxx_11449.docx")
+        'EBD_4.0b'
     """
-    pattern = r"^([A-Z]+_[A-Z]+_[0-9]+\.[0-9]+[a-zA-Z]*)"
+    # First try to extract format and version for standard AHB/MIG/EBD files
+    pattern = r"^((?:AHB|MIG|EBD)_[A-Z]*_?[0-9]+\.[0-9]+[a-zA-Z]*)"
     match = re.match(pattern, filename)
-    if not match:
-        raise ValueError(f"Could not extract sheet name from filename: {filename}")
-    return match.group(1)
+    if match:
+        sheet_name = match.group(1)
+    else:
+        # Handle special cases like Entscheidungsbaum files
+        sheet_name = filename.split("-informatorischeLesefassung")[0]
+        # Apply replacements for common long terms
+        replacements = {
+            "Entscheidungsbaum": "EBDs",
+            "Diagramme": "",
+            "und": "_",
+            "Artikelnummern": "Artikelnr",
+            "Codeliste": "CL",
+            "HG": "",  # Special case for REQOTEQUOTESORDERSORDRSPORDCHGAHB
+        }
+        for old, new in replacements.items():
+            sheet_name = sheet_name.replace(old, new)
+
+        # Extract version if present (assuming it's at the end like '3.5')
+        version_pattern = r".*?([0-9]+\.[0-9]+[a-zA-Z]*)$"
+        version_match = re.search(version_pattern, sheet_name)
+        if version_match:
+            version = version_match.group(1)
+            # Remove everything after the last underscore (if present) and add version
+            base_name = "_".join(sheet_name.split("_")[:-1]) if "_" in sheet_name else sheet_name
+            sheet_name = f"{base_name}_{version}"
+
+    # Ensure the sheet name is not longer than 31 characters
+    if len(sheet_name) > 31:
+        # If still too long, truncate while preserving the version number if present
+        version_pattern = r"(.*)_([0-9]+\.[0-9]+[a-zA-Z]*)$"
+        version_match = re.match(version_pattern, sheet_name)
+        if version_match:
+            base, version = version_match.groups()
+            # Leave room for version plus underscore
+            max_base_length = 31 - len(version) - 1
+            sheet_name = f"{base[:max_base_length]}_{version}"
+        else:
+            sheet_name = sheet_name[:31]
+
+    return sheet_name
 
 
 def save_change_histories_to_excel(change_history_collection: dict[str, pd.DataFrame], output_path: Path) -> None:
@@ -102,7 +145,7 @@ def save_change_histories_to_excel(change_history_collection: dict[str, pd.DataF
 
             # Access the XlsxWriter workbook and worksheet objects
             workbook = writer.book
-            worksheet = writer.sheets[sheet_name]
+            worksheet = writer.sheets[shorten_sheet_name]  # Use shortened name here
 
             # Create a text wrap format, this is needed to avoid the text being cut off in the cells
             wrap_format = workbook.add_format({"text_wrap": True})
@@ -115,28 +158,6 @@ def save_change_histories_to_excel(change_history_collection: dict[str, pd.DataF
             # Apply text wrap format to each cell
             for col_num, width in enumerate(column_widths):
                 worksheet.set_column(col_num, col_num, width, wrap_format)
-
-
-def create_sheet_name(filename: str) -> str:
-    """
-    Creates a sheet name from the filename.
-
-    We need to shorten the sheet name because Excel only allows 31 characters for sheet names.
-    This function replaces some words with acronyms and removes some words.
-    """
-    sheet_name = filename.split("-informatorischeLesefassung")[0]
-
-    if "Entscheidungsbaum-Diagramm" in sheet_name:
-        sheet_name = sheet_name.replace("Entscheidungsbaum", "EBDs")
-    if "Artikelnummern" in sheet_name:
-        sheet_name = sheet_name.replace("Artikelnummern", "Artikelnr")
-    if "Codeliste" in sheet_name:
-        sheet_name = sheet_name.replace("Codeliste", "CL")
-    if len(sheet_name) > 31:
-        # Excel only allows 31 characters for sheet names
-        # but REQOTEQUOTESORDERSORDRSPORDCHGAHB is 33 characters long
-        sheet_name = sheet_name.replace("HG", "")
-    return sheet_name
 
 
 def find_docx_files(input_path: Path) -> list[Path]:
@@ -172,6 +193,6 @@ def scrape_change_histories(input_path: Path, output_path: Path) -> None:
     for file_path in ahb_file_paths:
         df = process_docx_file(file_path)
         if df is not None:
-            change_history_collection[create_sheet_name(file_path.name)] = df
+            change_history_collection[extract_sheet_name(file_path.name)] = df
 
     save_change_histories_to_excel(change_history_collection, output_path)
