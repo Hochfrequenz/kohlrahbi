@@ -36,7 +36,7 @@ class TestDocxFileFinder:
 
         ahb_file_finder.get_docx_files_which_may_contain_searched_pruefi(searched_pruefi=searched_pruefi)
 
-        assert len(ahb_file_finder.paths_to_docx_files) == expected_docx_count
+        assert len(ahb_file_finder.paths_to_edi_energy_mirror) == expected_docx_count
 
     def test_filter_docx_files_for_edifact_format(self) -> None:
         """
@@ -55,7 +55,7 @@ class TestDocxFileFinder:
 
         ahb_file_finder.filter_docx_files_for_edifact_format(edifact_format=EdifactFormat.MSCONS)
 
-        assert len(ahb_file_finder.paths_to_docx_files) == 4
+        assert len(ahb_file_finder.paths_to_edi_energy_mirror) == 4
 
     def test_filter_for_latest_ahb_docx_files(self) -> None:
         """
@@ -69,4 +69,4 @@ class TestDocxFileFinder:
 
         ahb_file_finder.filter_for_latest_ahb_docx_files()
 
-        assert len(ahb_file_finder.paths_to_docx_files) == 18
+        assert len(ahb_file_finder.paths_to_edi_energy_mirror) == 18
