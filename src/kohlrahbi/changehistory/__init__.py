@@ -91,6 +91,8 @@ def extract_sheet_name(filename: str) -> str:
             "Artikelnummern": "Artikelnr",
             "Codeliste": "CL",
             "HG": "",  # Special case for REQOTEQUOTESORDERSORDRSPORDCHGAHB
+            "allgemeinefestlegungeninformatorischelesefassung": "Allgemeine Festlegungen",
+            "apiguidelineinformatorischelesefassung": "API Guideline",
         }
         for old, new in replacements.items():
             sheet_name = sheet_name.replace(old, new)
