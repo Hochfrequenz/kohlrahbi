@@ -1,6 +1,7 @@
-from pathlib import Path, PosixPath
+from pathlib import Path
 
 import pytest
+from efoli import EdifactFormatVersion
 
 from kohlrahbi.docxfilefinder import DocxFileFinder, get_most_recent_file, split_version_string
 
@@ -117,11 +118,12 @@ class TestDocxFileFinder:
         assert get_most_recent_file(group_items) == expected
 
     def test_split_version_string(self):
-        assert split_version_string("1.0f") == (1, 0, "f")
-        assert split_version_string("1.0") == (1, 0, "")
-        assert split_version_string("1.0a") == (1, 0, "a")
-        assert split_version_string("2.0b") == (2, 0, "b")
-        assert split_version_string("4.2c") == (4, 2, "c")
+        assert split_version_string("1.0f") == ("", 1, 0, "f")
+        assert split_version_string("1.0") == ("", 1, 0, "")
+        assert split_version_string("1.0a") == ("", 1, 0, "a")
+        assert split_version_string("2.0b") == ("", 2, 0, "b")
+        assert split_version_string("4.2c") == ("", 4, 2, "c")
+        assert split_version_string("S2.2c") == ("S", 2, 2, "c")
 
     def test_get_file_paths_for_change_history(self):
         path_to_edi_energy_mirror = Path("edi_energy_mirror") / Path("edi_energy_de")
