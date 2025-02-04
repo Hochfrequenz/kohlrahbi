@@ -18,6 +18,7 @@ import docx
 import pandas as pd
 from docx.document import Document
 from docx.table import Table
+from efoli import EdifactFormatVersion
 
 from kohlrahbi.changehistory.changehistorytable import ChangeHistoryTable
 from kohlrahbi.docxfilefinder import DocxFileFinder
@@ -182,15 +183,17 @@ def process_docx_file(file_path: Path) -> Optional[pd.DataFrame]:
     return None
 
 
-def scrape_change_histories(input_path: Path, output_path: Path) -> None:
+def scrape_change_histories(input_path: Path, output_path: Path, format_version: EdifactFormatVersion) -> None:
     """
     starts the scraping process of the change histories
     """
     logger.info("👀 Start looking for change histories")
-    ahb_file_paths = find_docx_files(input_path)
+    path_to_files_with_changehistory = DocxFileFinder(
+        path_to_edi_energy_mirror=input_path
+    ).get_file_paths_for_change_history(format_version=format_version)
 
     change_history_collection = {}
-    for file_path in ahb_file_paths:
+    for file_path in path_to_files_with_changehistory:
         df = process_docx_file(file_path)
         if df is not None:
             change_history_collection[extract_sheet_name(file_path.name)] = df

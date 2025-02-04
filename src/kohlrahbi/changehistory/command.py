@@ -61,5 +61,5 @@ def changehistory(
     check_python_version()
     if isinstance(format_version, str):
         format_version = EdifactFormatVersion(format_version)
-    input_path = edi_energy_mirror_path / "edi_energy_de" / format_version.value
-    scrape_change_histories(input_path=input_path, output_path=output_path)
+    input_path = edi_energy_mirror_path / "edi_energy_de"
+    scrape_change_histories(input_path=input_path, output_path=output_path, format_version=format_version)
