@@ -185,70 +185,147 @@ class DocxFileFinder(BaseModel):
 
     result_paths: list[Path] = []
 
-    def get_file_paths_for_change_history(self, format_version: EdifactFormatVersion):
-        # first I need to filter for the docx files.
+    def get_file_paths_for_change_history(self, format_version: EdifactFormatVersion) -> list[Path]:
+        """Get all file paths that contain change history for a given format version.
 
-        path_to_format_version: Path = self.path_to_edi_energy_mirror / format_version.value
-        assert (
-            path_to_format_version.exists()
-        ), f"The path to the format version {path_to_format_version} does not exist."
-        assert (
-            path_to_format_version.is_dir()
-        ), f"The path to the format version {format_version.value} is not a directory."
+        This method finds all docx files in the format version directory that are informational reading versions,
+        groups them by document type, and returns the most recent version of each document.
 
-        temporary_files: list[Path] = []
+        Args:
+            format_version (EdifactFormatVersion): The EDIFACT format version to search in.
 
-        for path in path_to_format_version.iterdir():
-            if path.name.startswith("~") or not path.name.endswith(".docx"):
-                # skip temporary files and non-docx files
-                continue
+        Returns:
+            list[Path]: A list of paths to the most recent version of each document.
+
+        Raises:
+            ValueError: If the format version directory does not exist or is not a directory.
+        """
+        version_path = self._get_validated_version_path(format_version)
+        docx_files = self._get_valid_docx_files(version_path)
+        informational_versions = self._filter_informational_versions(docx_files)
+        grouped_docs = self.group_documents_by_kind_and_format(informational_versions)
+
+        return self._get_most_recent_versions(grouped_docs)
+
+    def _get_validated_version_path(self, format_version: EdifactFormatVersion) -> Path:
+        """Validate and return the path for a given format version.
+
+        Args:
+            format_version (EdifactFormatVersion): The format version to get the path for.
+
+        Returns:
+            Path: The validated path to the format version directory.
+
+        Raises:
+            ValueError: If the path does not exist or is not a directory.
+        """
+        version_path = self.path_to_edi_energy_mirror / format_version.value
+        if not version_path.exists():
+            raise ValueError(f"Format version directory does not exist: {version_path}")
+        if not version_path.is_dir():
+            raise ValueError(f"Format version path is not a directory: {version_path}")
+        return version_path
+
+    def _get_valid_docx_files(self, directory: Path) -> list[Path]:
+        """Get all valid docx files from a directory, excluding temporary files.
+
+        Args:
+            directory (Path): The directory to search in.
+
+        Returns:
+            list[Path]: A list of paths to valid docx files.
+        """
+        return [path for path in directory.iterdir() if path.name.endswith(".docx") and not path.name.startswith("~")]
+
+    def _filter_informational_versions(self, paths: list[Path]) -> list[Path]:
+        """Filter paths to only include informational reading versions.
+
+        Args:
+            paths (list[Path]): List of paths to filter.
+
+        Returns:
+            list[Path]: Filtered list containing only informational reading versions.
+        """
+        informational_versions = []
+        for path in paths:
             document_metadata = extract_document_meta_data(path.name)
-            is_document_informational_reading_version = (
-                document_metadata is not None and document_metadata.is_informational_reading_version
-            )
-            if is_document_informational_reading_version:
-                temporary_files.append(path)
+            if document_metadata and document_metadata.is_informational_reading_version:
+                informational_versions.append(path)
+        return informational_versions
 
-        groups = self.group_documents_by_kind_and_format(temporary_files)
+    def _get_most_recent_versions(self, grouped_docs: dict[tuple[str, str], list[Path]]) -> list[Path]:
+        """Get the most recent version from each group of documents.
 
-        for group in groups.values():
+        Args:
+            grouped_docs (dict[tuple[str, str], list[Path]]): Documents grouped by kind and format.
+
+        Returns:
+            list[Path]: List of the most recent version from each group.
+        """
+        most_recent_versions = []
+        for group in grouped_docs.values():
             if len(group) == 1:
-                # self.result_paths.append(group[0])
+                most_recent_versions.append(group[0])
                 continue
-            else:
-                # iterate over the group
-                for path in group:
-                    # get the document metadata
-                    document_metadata = extract_document_meta_data(path.name)
-                    if document_metadata is None:
-                        continue
-                    # sort the group by document_metadata.version, document_metadata.publication_date, document_metadata.valid_from, document_metadata.to_date
-                    try:
-                        # First check if any document in the group has error corrections
-                        has_error_correction = any(
-                            extract_document_meta_data(x.name).is_error_correction for x in group
-                        )
 
-                        # If we have error corrections, filter out non-error-correction documents
-                        if has_error_correction:
-                            group[:] = [x for x in group if extract_document_meta_data(x.name).is_error_correction]
+            filtered_group = self._filter_error_corrections(group)
+            sorted_group = self._sort_group_by_metadata(filtered_group)
+            if sorted_group:
+                most_recent_versions.append(sorted_group[0])
 
-                        group.sort(
-                            key=lambda x: (
-                                extract_document_meta_data(x.name).version,
-                                extract_document_meta_data(x.name).publication_date,
-                                extract_document_meta_data(x.name).valid_from,
-                                extract_document_meta_data(x.name).valid_until,
-                            ),
-                            reverse=True,  # we want the latest version first
-                        )
-                    except TypeError:
-                        logger.exception("Could not sort the group %s", group)
+        return sorted(most_recent_versions)
 
-        for group in groups.values():
-            self.result_paths.append(group[0])
+    def _filter_error_corrections(self, group: list[Path]) -> list[Path]:
+        """Filter group to keep only error correction versions if they exist.
 
-        return sorted(self.result_paths)
+        Args:
+            group (list[Path]): List of paths in a group.
+
+        Returns:
+            list[Path]: Filtered list containing only error correction versions if they exist,
+                       otherwise returns the original group.
+        """
+        has_error_correction = any(
+            extract_document_meta_data(path.name).is_error_correction
+            for path in group
+            if extract_document_meta_data(path.name)
+        )
+
+        if has_error_correction:
+            return [
+                path
+                for path in group
+                if extract_document_meta_data(path.name) and extract_document_meta_data(path.name).is_error_correction
+            ]
+        return group
+
+    def _sort_group_by_metadata(self, group: list[Path]) -> list[Path]:
+        """Sort group by version, publication date, and validity dates.
+
+        Args:
+            group (list[Path]): List of paths to sort.
+
+        Returns:
+            list[Path]: Sorted list of paths.
+        """
+        try:
+            return sorted(
+                group,
+                key=lambda x: (
+                    (
+                        extract_document_meta_data(x.name).version,
+                        extract_document_meta_data(x.name).publication_date,
+                        extract_document_meta_data(x.name).valid_from,
+                        extract_document_meta_data(x.name).valid_until,
+                    )
+                    if extract_document_meta_data(x.name)
+                    else (None, None, None, None)
+                ),
+                reverse=True,
+            )
+        except TypeError as e:
+            logger.exception("Could not sort group %s: %s", group, e)
+            return group
 
     @staticmethod
     def get_first_part_of_ahb_docx_file_name(path_to_ahb_document: Path) -> str:
@@ -275,24 +352,6 @@ class DocxFileFinder(BaseModel):
         This function filters the docx files which contain the string "AHB" in their file name.
         """
         return [path for path in paths_to_docx_files if "AHB" in path.name]
-
-    @staticmethod
-    def filter_for_docx_files_with_change_history(paths_to_docx_files: list[Path]) -> list[Path]:
-        """
-        This function filters the docx files which contain a change history.
-        At this time it seems that all docx files have a change history.
-        But this may change in the future, so search for some keywords in the file name.
-        """
-        return [
-            path
-            for path in paths_to_docx_files
-            if "ahb" in path.name.lower()
-            or "mig" in path.name.lower()
-            or "allgemeinefestlegungen" in path.name.lower()
-            or "apiguideline" in path.name.lower()
-            or "codeliste" in path.name.lower()
-            or "ebd" in path.name.lower()
-        ]
 
     # pylint: disable=line-too-long
     @staticmethod
@@ -346,14 +405,6 @@ class DocxFileFinder(BaseModel):
             assert most_recent_file is not None, "Could not find the most recent file."
             result.append(most_recent_file)
         return result
-
-    def filter_for_latest_mig_and_ahb_docx_files(self) -> None:
-        """
-        Filter the list of MIG docx paths for the latest MIG docx files.
-        """
-        self.path_to_edi_energy_mirror = self.filter_for_docx_files_with_change_history(self.path_to_edi_energy_mirror)
-        grouped_files = self.group_files_by_name_prefix(self.path_to_edi_energy_mirror)
-        self.path_to_edi_energy_mirror = self.filter_latest_version(grouped_files)
 
     def filter_docx_files_for_edifact_format(self, edifact_format: EdifactFormat) -> None:
         """
