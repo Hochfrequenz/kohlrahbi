@@ -161,7 +161,7 @@ def find_pruefidentifikatoren(path: Path) -> dict[str, str]:
     ahb_file_finder = DocxFileFinder.from_input_path(input_path=path)
     ahb_file_finder.filter_for_latest_ahb_docx_files()
 
-    for docx_path in ahb_file_finder.paths_to_docx_files:
+    for docx_path in ahb_file_finder.paths_to_edi_energy_mirror:
         pruefis.update(extract_pruefis_from_docx(docx_path))
     return dict(sorted(pruefis.items()))
 
