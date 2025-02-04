@@ -200,14 +200,14 @@ class DocxFileFinder(BaseModel):
         Raises:
             ValueError: If the format version directory does not exist or is not a directory.
         """
-        version_path = self._get_validated_version_path(format_version)
-        docx_files = self._get_valid_docx_files(version_path)
+        format_version_path = self._get_validated_format_version_path(format_version)
+        docx_files = self._get_valid_docx_files(format_version_path)
         informational_versions = self._filter_informational_versions(docx_files)
         grouped_docs = self.group_documents_by_kind_and_format(informational_versions)
 
         return self._get_most_recent_versions(grouped_docs)
 
-    def _get_validated_version_path(self, format_version: EdifactFormatVersion) -> Path:
+    def _get_validated_format_version_path(self, format_version: EdifactFormatVersion) -> Path:
         """Validate and return the path for a given format version.
 
         Args:
