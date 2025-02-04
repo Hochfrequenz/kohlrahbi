@@ -79,7 +79,7 @@ typecheck = [
   "types-freezegun==1.1.10",
   "types-requests==2.32.0.20241016 ",
 ]
-spell_check = ["codespell==2.4.0"]
+spell_check = ["codespell==2.4.1"]
 coverage = ["coverage==7.6.10"]
 formatting = ["black==25.1.0", "isort==5.13.2"]
 test_packaging = ["build==1.2.2.post1", "twine==6.1.0"]
