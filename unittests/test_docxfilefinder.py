@@ -155,6 +155,30 @@ class TestDocxFileFinder:
             result = docx_file_finder._get_validated_format_version_path(format_version)
             assert result == expected_path
 
+    # pylint: disable=protected-access
+    def test_get_valid_docx_files(self, tmp_path):
+        # Create test files
+        valid_file1 = tmp_path / "test1.docx"
+        valid_file2 = tmp_path / "test2.docx"
+        temp_file = tmp_path / "~$temp.docx"  # Word temporary file
+        non_docx_file = tmp_path / "test.txt"
+
+        # Create the files
+        valid_file1.touch()
+        valid_file2.touch()
+        temp_file.touch()
+        non_docx_file.touch()
+
+        docx_file_finder = DocxFileFinder(path_to_edi_energy_mirror=Path("dummy"))
+        result = docx_file_finder._get_valid_docx_files(tmp_path)
+
+        # Should include .docx files but exclude temporary files
+        assert len(result) == 2
+        assert valid_file1 in result
+        assert valid_file2 in result
+        assert temp_file not in result
+        assert non_docx_file not in result
+
     def test_get_file_paths_for_change_history(self):
         path_to_edi_energy_mirror = Path("edi_energy_mirror") / Path("edi_energy_de")
         docx_file_finder = DocxFileFinder(path_to_edi_energy_mirror=path_to_edi_energy_mirror)
