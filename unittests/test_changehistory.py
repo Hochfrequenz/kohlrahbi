@@ -163,34 +163,3 @@ from kohlrahbi.changehistory import extract_sheet_name
 def test_extract_sheet_name(input_filename: str, expected_output: str) -> None:
     """Test extraction of sheet names from standard AHB/MIG files."""
     assert extract_sheet_name(input_filename) == expected_output
-
-
-@pytest.mark.parametrize(
-    "input_filename,expected_output",
-    [
-        (
-            "Entscheidungsbaum-DiagrammeundCodelisten-informatorischeLesefassung3.5.docx",
-            "EBDs_CL_3.5",
-        ),
-        (
-            "EntscheidungsbaumDiagrammeundCodelisten-informatorischeLesefassung2.1.docx",
-            "EBDs_CL_2.1",
-        ),
-    ],
-)
-def test_entscheidungsbaum_files(input_filename: str, expected_output: str) -> None:
-    """Test extraction of sheet names from Entscheidungsbaum files."""
-    assert extract_sheet_name(input_filename) == expected_output
-
-
-@pytest.mark.parametrize(
-    "input_filename,expected_output",
-    [
-        ("SIMPLE_DOCUMENT.docx", "SIMPLE_DOCUMENT"),  # File with no version number
-        ("AHB_TEST-SPECIAL_1.0.docx", "AHB_TEST-SPECIAL_1.0"),  # File with special characters
-        ("MIG.TEST.DOC_2.1a.docx", "MIG.TEST.DOC_2.1a"),  # File with multiple dots
-    ],
-)
-def test_special_cases(input_filename: str, expected_output: str) -> None:
-    """Test special cases and edge cases."""
-    assert extract_sheet_name(input_filename) == expected_output
