@@ -125,6 +125,36 @@ class TestDocxFileFinder:
         assert split_version_string("4.2c") == ("", 4, 2, "c")
         assert split_version_string("S2.2c") == ("S", 2, 2, "c")
 
+    @pytest.mark.parametrize(
+        ["format_version", "base_path", "should_raise"],
+        [
+            pytest.param(
+                EdifactFormatVersion.FV2504,
+                Path("edi_energy_mirror/edi_energy_de"),
+                False,
+                id="Valid format version path",
+            ),
+            pytest.param(
+                EdifactFormatVersion.FV2504,
+                Path("non_existent_directory"),
+                True,
+                id="Valid format version but non-existent directory",
+            ),
+        ],
+    )
+    def test_get_validated_format_version_path(
+        self, format_version, base_path, should_raise
+    ):  # pylint: disable=protected-access
+        docx_file_finder = DocxFileFinder(path_to_edi_energy_mirror=base_path)
+        expected_path = base_path / format_version.value
+
+        if should_raise:
+            with pytest.raises(ValueError, match=f"Format version directory does not exist: {expected_path}"):
+                docx_file_finder._get_validated_format_version_path(format_version)
+        else:
+            result = docx_file_finder._get_validated_format_version_path(format_version)
+            assert result == expected_path
+
     def test_get_file_paths_for_change_history(self):
         path_to_edi_energy_mirror = Path("edi_energy_mirror") / Path("edi_energy_de")
         docx_file_finder = DocxFileFinder(path_to_edi_energy_mirror=path_to_edi_energy_mirror)
