@@ -160,7 +160,7 @@ from kohlrahbi.changehistory import extract_sheet_name
         ),
     ],
 )
-def test_standard_ahb_mig_files(input_filename: str, expected_output: str) -> None:
+def test_extract_sheet_name(input_filename: str, expected_output: str) -> None:
     """Test extraction of sheet names from standard AHB/MIG files."""
     assert extract_sheet_name(input_filename) == expected_output
 
