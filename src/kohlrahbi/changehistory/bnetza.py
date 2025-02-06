@@ -168,6 +168,7 @@ def cleanup_old_files(directory: Path) -> None:
 def extract_change_history(pdf_path: Path) -> pd.DataFrame:
     """
     Extract the Änderungshistorie table from a PDF file.
+    Specifically looks for tables that start with 'Änd-ID'.
 
     Args:
         pdf_path: Path to the PDF file
@@ -175,87 +176,51 @@ def extract_change_history(pdf_path: Path) -> pd.DataFrame:
     Returns:
         DataFrame containing the change history table
     """
-    tables = []
     with pdfplumber.open(pdf_path) as pdf:
-        # Start from the end as Änderungshistorie is usually at the end
-        for page in reversed(pdf.pages):
-            text = page.extract_text()
-            if "Änderungshistorie" in text:
-                # Found the change history section
-                tables.extend(page.extract_tables())
-                # Keep looking in previous pages as the table might span multiple pages
-                continue
-            elif tables:
-                # If we already found tables and now we're on a page without "Änderungshistorie",
-                # check if this page still contains part of the table
-                page_tables = page.extract_tables()
-                if page_tables and len(page_tables[0]) > 0:
-                    tables.extend(page_tables)
-                else:
-                    # No more tables found, we can stop
-                    break
+        # Look through all pages for tables starting with Änd-ID
+        for page in pdf.pages:
+            tables = page.extract_tables()
+            for table in tables:
+                if table and len(table) > 0 and table[0] and table[0][0] == "Änd-ID":
+                    # Found the change history table
+                    df = pd.DataFrame(table[1:], columns=table[0])
+                    # Clean up the data
+                    df = df.replace("", pd.NA).dropna(how="all")  # Remove empty rows
+                    df = df.reset_index(drop=True)  # Reset index to avoid duplicates
+                    return df
 
-    if not tables:
-        logger.warning(f"No change history table found in {pdf_path.name}")
-        return pd.DataFrame()
-
-    # Combine all tables into one DataFrame
-    df = pd.DataFrame()
-    for table in tables:
-        if not table or len(table) < 2:  # Skip empty tables or tables with only headers
-            continue
-
-        # Get headers and make them unique by adding a suffix for duplicates
-        headers = table[0]
-        unique_headers = []
-        seen = {}
-        for header in headers:
-            if header in seen:
-                seen[header] += 1
-                unique_headers.append(f"{header}_{seen[header]}")
-            else:
-                seen[header] = 0
-                unique_headers.append(header)
-
-        # Convert table to DataFrame, using unique headers
-        temp_df = pd.DataFrame(table[1:], columns=unique_headers)
-
-        # If this is not the first table part, we need to handle the headers
-        if not df.empty:
-            # Rename columns to match the first table's columns
-            temp_df.columns = df.columns[: len(temp_df.columns)]
-
-        df = pd.concat([df, temp_df], ignore_index=True)
-
-    return df
+    logger.warning(f"No change history table found in {pdf_path.name}")
+    return pd.DataFrame()
 
 
 def create_change_history_excel(pdf_dir: Path, output_file: Path) -> None:
     """
-    Create an Excel file containing change history tables from all PDFs.
+    Create an Excel file containing change history tables from all PDFs in the directory.
 
     Args:
-        pdf_dir: Directory containing the PDF files
-        output_file: Path where to save the Excel file
+        pdf_dir: Directory containing PDF files
+        output_file: Path where the Excel file should be saved
     """
-    # Create a Pandas Excel writer using XlsxWriter as the engine
-    with pd.ExcelWriter(output_file, engine="xlsxwriter") as writer:
-        for pdf_path in sorted(pdf_dir.glob("*.pdf")):
+    with pd.ExcelWriter(output_file, engine="openpyxl") as writer:
+        # for pdf_file in pdf_dir.glob("*.pdf"):
+        for pdf_file in [
+            Path("/Users/kevin/workspaces/hochfrequenz/kohlrahbi/src/kohlrahbi/changehistory/pdfs/ORDERS_AHB_1.1.pdf")
+        ]:
             try:
-                # Extract the change history table
-                df = extract_change_history(pdf_path)
+                df = extract_change_history(pdf_file)
                 if not df.empty:
-                    # Use the PDF filename (without extension) as sheet name
-                    sheet_name = pdf_path.stem
-                    # Excel sheet names can't be longer than 31 characters
+                    # Use the filename without extension as sheet name
+                    sheet_name = pdf_file.stem
+                    # Excel has a 31 character limit for sheet names
                     if len(sheet_name) > 31:
                         sheet_name = sheet_name[:28] + "..."
-
-                    # Write the DataFrame to an Excel sheet
                     df.to_excel(writer, sheet_name=sheet_name, index=False)
-                    logger.info(f"Added change history from {pdf_path.name} to Excel")
+                    logger.info(f"Successfully processed {pdf_file.name}")
+                else:
+                    logger.warning(f"No data extracted from {pdf_file.name}")
             except Exception as e:
-                logger.error(f"Failed to process {pdf_path.name}: {str(e)}")
+                logger.error(f"Failed to process {pdf_file.name}: {str(e)}")
+                continue
 
 
 async def download_pdfs(target_dir: Optional[Path] = None) -> None:
