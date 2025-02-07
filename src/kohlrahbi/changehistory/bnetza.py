@@ -205,12 +205,15 @@ def clean_table_data(table: List[List[Optional[str]]]) -> List[List[str]]:
     """
 
     assert len(table) > 2, "Need at least headers rows"
-    if len(table) < 2:  # Need at least headers and one data row
-        return [[str(cell) if cell is not None else "" for cell in row] for row in table]
 
-    # Convert None to empty strings in headers
-    headers = [str(cell) if cell is not None else "" for cell in table[0]]
-    result = [headers]  # Start with headers
+    # Get headers and sub-headers
+    headers = table[0]  # First row is headers
+    sub_header = table[1]  # Second row is sub-headers
+
+    # Start with headers and sub-headers
+    result = [headers]
+    result.append(sub_header)
+
     current_row = None
 
     # Process each data row (skip header)
