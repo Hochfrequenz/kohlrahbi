@@ -10,6 +10,7 @@ import httpx
 import pandas as pd
 import pdfplumber
 from bs4 import BeautifulSoup
+from openpyxl.styles import Alignment
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +40,7 @@ EDIFACT_DOCUMENTS = [
     "REQOTE AHB 1.1",
     "REQOTE MIG 1.3c",
     "Codeliste der Artikelnummern und Artikel-ID 5.6",
+    "Entscheidungsbaum-Diagramme und Codelisten 4.1",
 ]
 
 
@@ -299,7 +301,23 @@ def create_change_history_excel(pdf_dir: Path, output_file: Path) -> None:
                     # Excel has a 31 character limit for sheet names
                     if len(sheet_name) > 31:
                         sheet_name = sheet_name[:28] + "..."
+
+                    # Write DataFrame to Excel
                     df.to_excel(writer, sheet_name=sheet_name, index=False)
+
+                    # Get the worksheet to adjust dimensions
+                    worksheet = writer.sheets[sheet_name]
+
+                    # Set fixed column widths
+                    column_widths = [10, 16, 33, 33, 30, 22]
+                    for idx, width in enumerate(column_widths):
+                        worksheet.column_dimensions[chr(65 + idx)].width = width
+
+                    # Enable text wrapping for all cells
+                    for row in worksheet.iter_rows():
+                        for cell in row:
+                            cell.alignment = Alignment(wrap_text=True)
+
                     logger.info("Successfully processed %s", pdf_file.name)
                 else:
                     logger.warning("No data extracted from %s", pdf_file.name)
