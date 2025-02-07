@@ -102,21 +102,21 @@ async def download_pdf(client: httpx.AsyncClient, filename: str, url: str, targe
     Download a single PDF file.
     """
     if target_path.exists():
-        logger.info(f"File {filename} already exists, skipping...")
+        logger.info("File %s already exists, skipping...", filename)
         return
 
     try:
-        logger.info(f"Downloading {filename} from {url}")
+        logger.info("Downloading %s from %s", filename, url)
         async with client.stream("GET", url) as response:
             response.raise_for_status()
             with open(target_path, "wb") as f:
                 async for chunk in response.aiter_bytes():
                     f.write(chunk)
-        logger.info(f"Successfully downloaded {filename}")
+        logger.info("Successfully downloaded %s", filename)
     except httpx.HTTPError as e:
-        logger.error(f"Failed to download {filename} from {url}: {str(e)}")
+        logger.error("Failed to download %s from %s: %s", filename, url, str(e))
     except Exception as e:
-        logger.error(f"Unexpected error while downloading {filename}: {str(e)}")
+        logger.error("Unexpected error while downloading %s: %s", filename, str(e))
 
 
 def rename_existing_files(directory: Path) -> None:
@@ -136,11 +136,11 @@ def rename_existing_files(directory: Path) -> None:
         if old_name != new_name:
             old_path = directory / old_name
             new_path = directory / new_name
-            logger.info(f"Renaming {old_name} to {new_name}")
+            logger.info("Renaming %s to %s", old_name, new_name)
             try:
                 old_path.rename(new_path)
             except Exception as e:
-                logger.error(f"Failed to rename {old_name}: {str(e)}")
+                logger.error("Failed to rename %s: %s", old_name, str(e))
 
 
 def cleanup_old_files(directory: Path) -> None:
@@ -158,7 +158,7 @@ def cleanup_old_files(directory: Path) -> None:
 
     for file_path in directory.glob("*.pdf"):
         if pattern.match(file_path.name):
-            logger.info(f"Removing old file: {file_path.name}")
+            logger.info("Removing old file: %s", file_path.name)
             try:
                 file_path.unlink()
             except Exception as e:
@@ -189,7 +189,7 @@ def extract_change_history(pdf_path: Path) -> pd.DataFrame:
                     df = df.reset_index(drop=True)  # Reset index to avoid duplicates
                     return df
 
-    logger.warning(f"No change history table found in {pdf_path.name}")
+    logger.warning("No change history table found in %s", pdf_path.name)
     return pd.DataFrame()
 
 
@@ -215,11 +215,11 @@ def create_change_history_excel(pdf_dir: Path, output_file: Path) -> None:
                     if len(sheet_name) > 31:
                         sheet_name = sheet_name[:28] + "..."
                     df.to_excel(writer, sheet_name=sheet_name, index=False)
-                    logger.info(f"Successfully processed {pdf_file.name}")
+                    logger.info("Successfully processed %s", pdf_file.name)
                 else:
-                    logger.warning(f"No data extracted from {pdf_file.name}")
+                    logger.warning("No data extracted from %s", pdf_file.name)
             except Exception as e:
-                logger.error(f"Failed to process {pdf_file.name}: {str(e)}")
+                logger.error("Failed to process %s: %s", pdf_file.name, str(e))
                 continue
 
 
@@ -232,7 +232,7 @@ async def download_pdfs(target_dir: Optional[Path] = None) -> None:
         target_dir = Path(__file__).parent / "pdfs"
 
     target_dir.mkdir(exist_ok=True)
-    logger.info(f"Downloading PDFs to {target_dir}")
+    logger.info("Downloading PDFs to %s", target_dir)
 
     # First rename any existing files
     rename_existing_files(target_dir)
@@ -245,7 +245,7 @@ async def download_pdfs(target_dir: Optional[Path] = None) -> None:
         logger.warning("No PDF links found on the page")
         return
 
-    logger.info(f"Found {len(pdf_links)} PDF files to download")
+    logger.info("Found %d PDF files to download", len(pdf_links))
     async with httpx.AsyncClient(timeout=httpx.Timeout(30.0)) as client:
         tasks = []
         for filename, url in pdf_links:
