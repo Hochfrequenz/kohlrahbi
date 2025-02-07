@@ -162,13 +162,90 @@ def cleanup_old_files(directory: Path) -> None:
             try:
                 file_path.unlink()
             except Exception as e:
-                logger.error(f"Failed to remove {file_path.name}: {str(e)}")
+                logger.error("Failed to remove %s: %s", file_path.name, str(e))
+
+
+def find_change_history_page(pdf: pdfplumber.PDF) -> int:
+    """
+    Find the page number where Änderungshistorie starts by checking the table of contents.
+
+    Args:
+        pdf: The opened PDF document
+
+    Returns:
+        The 0-based page index where Änderungshistorie starts, or -1 if not found
+    """
+    # Check first few pages for table of contents
+    for page in pdf.pages[:4]:  # Usually TOC is in first few pages
+        text = page.extract_text()
+        # Look for "Änderungshistorie" followed by a page number
+        matches = re.finditer(r"Änderungshistorie[.\s]+(\d+)", text)
+        for match in matches:
+            # Convert 1-based page number to 0-based index
+            return int(match.group(1)) - 1
+
+    # Fallback: search through all pages
+    for i, page in enumerate(pdf.pages):
+        if "Änderungshistorie" in page.extract_text():
+            return i
+
+    return -1
+
+
+def clean_table_data(table: List[List[Optional[str]]]) -> List[List[str]]:
+    """
+    Clean up the table data by merging related rows before converting to DataFrame.
+    Rows with empty first column should be merged with the row above.
+
+    Args:
+        table: Raw table data from PDF
+
+    Returns:
+        Cleaned table data with merged rows
+    """
+
+    assert len(table) > 2, "Need at least headers rows"
+    if len(table) < 2:  # Need at least headers and one data row
+        return [[str(cell) if cell is not None else "" for cell in row] for row in table]
+
+    # Convert None to empty strings in headers
+    headers = [str(cell) if cell is not None else "" for cell in table[0]]
+    result = [headers]  # Start with headers
+    current_row = None
+
+    # Process each data row (skip header)
+    for row in table[1:]:
+        # Convert None to empty strings in current row
+        row = [str(cell) if cell is not None else "" for cell in row]
+        # If first column (Änd-ID) is empty, merge with previous row
+        if not row[0]:
+            if current_row is not None:
+                # Merge non-empty values with the current row
+                for i, value in enumerate(row):
+                    if value:
+                        if current_row[i]:  # If current cell has content, add newline
+                            current_row[i] = f"{current_row[i]}\n{value}"
+                        else:  # If current cell is empty, just use new value
+                            current_row[i] = value
+        else:
+            # If we have a previous row, add it to results
+            if current_row is not None:
+                result.append(current_row)
+            # Start new row
+            current_row = row.copy()
+
+    # Add the last row if exists
+    if current_row is not None:
+        result.append(current_row)
+
+    return result
 
 
 def extract_change_history(pdf_path: Path) -> pd.DataFrame:
     """
     Extract the Änderungshistorie table from a PDF file.
     Specifically looks for tables that start with 'Änd-ID'.
+    First finds the page number from table of contents.
 
     Args:
         pdf_path: Path to the PDF file
@@ -177,16 +254,22 @@ def extract_change_history(pdf_path: Path) -> pd.DataFrame:
         DataFrame containing the change history table
     """
     with pdfplumber.open(pdf_path) as pdf:
-        # Look through all pages for tables starting with Änd-ID
-        for page in pdf.pages:
+        # First find the page containing Änderungshistorie from table of contents
+        change_history_page = find_change_history_page(pdf)
+
+        if change_history_page == -1:
+            logger.warning("No Änderungshistorie section found in %s", pdf_path.name)
+            return pd.DataFrame()
+
+        # Now only scan pages from the Änderungshistorie page onwards
+        for page in pdf.pages[change_history_page:]:
             tables = page.extract_tables()
             for table in tables:
                 if table and len(table) > 0 and table[0] and table[0][0] == "Änd-ID":
-                    # Found the change history table
-                    df = pd.DataFrame(table[1:], columns=table[0])
-                    # Clean up the data
-                    df = df.replace("", pd.NA).dropna(how="all")  # Remove empty rows
-                    df = df.reset_index(drop=True)  # Reset index to avoid duplicates
+                    # Clean up the table data before converting to DataFrame
+                    cleaned_table = clean_table_data(table)
+                    # Convert to DataFrame
+                    df = pd.DataFrame(cleaned_table[1:], columns=cleaned_table[0])
                     return df
 
     logger.warning("No change history table found in %s", pdf_path.name)
@@ -202,10 +285,10 @@ def create_change_history_excel(pdf_dir: Path, output_file: Path) -> None:
         output_file: Path where the Excel file should be saved
     """
     with pd.ExcelWriter(output_file, engine="openpyxl") as writer:
-        # for pdf_file in pdf_dir.glob("*.pdf"):
-        for pdf_file in [
-            Path("/Users/kevin/workspaces/hochfrequenz/kohlrahbi/src/kohlrahbi/changehistory/pdfs/ORDERS_AHB_1.1.pdf")
-        ]:
+        for pdf_file in pdf_dir.glob("*.pdf"):
+            # for pdf_file in [
+            #     Path("/Users/kevin/workspaces/hochfrequenz/kohlrahbi/src/kohlrahbi/changehistory/pdfs/ORDERS_AHB_1.1.pdf")
+            # ]:
             try:
                 df = extract_change_history(pdf_file)
                 if not df.empty:
