@@ -2,10 +2,9 @@
 
 import asyncio
 import logging
-import os
 import re
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 import httpx
 import pandas as pd
