@@ -287,10 +287,10 @@ def create_change_history_excel(pdf_dir: Path, output_file: Path) -> None:
         output_file: Path where the Excel file should be saved
     """
     with pd.ExcelWriter(output_file, engine="openpyxl") as writer:
-        for pdf_file in pdf_dir.glob("*.pdf"):
-            # for pdf_file in [
-            #     Path("/Users/kevin/workspaces/hochfrequenz/kohlrahbi/src/kohlrahbi/changehistory/pdfs/ORDERS_AHB_1.1.pdf")
-            # ]:
+        # Get all PDF files and sort them alphabetically
+        pdf_files = sorted(pdf_dir.glob("*.pdf"), key=lambda x: x.stem)
+
+        for pdf_file in pdf_files:
             try:
                 df = extract_change_history(pdf_file)
                 if not df.empty:
