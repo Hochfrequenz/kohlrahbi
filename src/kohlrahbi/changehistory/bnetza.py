@@ -288,42 +288,49 @@ def create_change_history_excel(pdf_dir: Path, output_file: Path) -> None:
         pdf_dir: Directory containing PDF files
         output_file: Path where the Excel file should be saved
     """
+    # First collect all data and sheet names
+    sheets_data = []
+    for pdf_file in sorted(pdf_dir.glob("*.pdf"), key=lambda x: x.stem):
+        try:
+            df = extract_change_history(pdf_file)
+            if not df.empty:
+                # Create sheet name with AHB/MIG prefix if present
+                name = pdf_file.stem
+                if "AHB" in name:
+                    name = f"AHB_{name.replace('_AHB', '')}"
+                elif "MIG" in name:
+                    name = f"MIG_{name.replace('_MIG', '')}"
+                # Excel has a 31 character limit for sheet names
+                if len(name) > 31:
+                    name = name[:28] + "..."
+                sheets_data.append((name, df))
+        except Exception as e:
+            logger.error("Failed to process %s: %s", pdf_file.name, str(e))
+            continue
+
+    # Sort sheets by name
+    sheets_data.sort(key=lambda x: x[0])
+
+    # Write to Excel with sorted sheets
     with pd.ExcelWriter(output_file, engine="openpyxl") as writer:
-        # Get all PDF files and sort them alphabetically
-        pdf_files = sorted(pdf_dir.glob("*.pdf"), key=lambda x: x.stem)
+        for sheet_name, df in sheets_data:
+            # Write DataFrame to Excel
+            df.to_excel(writer, sheet_name=sheet_name, index=False)
 
-        for pdf_file in pdf_files:
-            try:
-                df = extract_change_history(pdf_file)
-                if not df.empty:
-                    # Use the filename without extension as sheet name
-                    sheet_name = pdf_file.stem
-                    # Excel has a 31 character limit for sheet names
-                    if len(sheet_name) > 31:
-                        sheet_name = sheet_name[:28] + "..."
+            # Get the worksheet to adjust dimensions
+            worksheet = writer.sheets[sheet_name]
 
-                    # Write DataFrame to Excel
-                    df.to_excel(writer, sheet_name=sheet_name, index=False)
+            # Set fixed column widths
+            column_widths = [10, 16, 33, 33, 30, 22]
+            for idx, width in enumerate(column_widths):
+                worksheet.column_dimensions[chr(65 + idx)].width = width
 
-                    # Get the worksheet to adjust dimensions
-                    worksheet = writer.sheets[sheet_name]
+            # Enable text wrapping for all cells
+            for row in worksheet.iter_rows():
+                for cell in row:
+                    cell.alignment = Alignment(wrap_text=True)
 
-                    # Set fixed column widths
-                    column_widths = [10, 16, 33, 33, 30, 22]
-                    for idx, width in enumerate(column_widths):
-                        worksheet.column_dimensions[chr(65 + idx)].width = width
-
-                    # Enable text wrapping for all cells
-                    for row in worksheet.iter_rows():
-                        for cell in row:
-                            cell.alignment = Alignment(wrap_text=True)
-
-                    logger.info("Successfully processed %s", pdf_file.name)
-                else:
-                    logger.warning("No data extracted from %s", pdf_file.name)
-            except Exception as e:
-                logger.error("Failed to process %s: %s", pdf_file.name, str(e))
-                continue
+            logger.info("Successfully processed sheet %s", sheet_name)
 
 
 async def download_pdfs(target_dir: Optional[Path] = None) -> None:
