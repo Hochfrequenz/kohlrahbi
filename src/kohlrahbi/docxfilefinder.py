@@ -182,70 +182,53 @@ class DocxFileFinder(BaseModel):
 
     path_to_edi_energy_mirror: Path
 
-    format_version: EdifactFormatVersion | None = None
+    format_version: EdifactFormatVersion
 
     result_paths: list[Path] = []
 
     @property
     def path_to_format_version_folders(self):
         """Returns the path to the edi_energy_de directory containing format version folders like FV2410, FV2404, etc."""
-        return self.path_to_edi_energy_mirror / Path("edi_energy_de")
+        path_to_edi_energy_mirror = self.path_to_edi_energy_mirror
+        if not path_to_edi_energy_mirror.exists():
+            raise ValueError(f"The edi_energy_mirror directory {path_to_edi_energy_mirror} does not exist.")
+        return path_to_edi_energy_mirror / Path("edi_energy_de")
 
     @property
     def path_to_specific_format_version_folder(self):
         """Returns the path to the specific format version folder."""
-        if self.format_version is None:
-            return None
-        return self.path_to_format_version_folders / Path(self.format_version.value)
+        specific_format_version_folder = self.path_to_format_version_folders / Path(self.format_version.value)
+        if not specific_format_version_folder.exists():
+            raise ValueError(f"The specific format version folder {specific_format_version_folder} does not exist.")
+        return specific_format_version_folder
 
-    def get_file_paths_for_change_history(self, format_version: EdifactFormatVersion) -> list[Path]:
-        """Get all file paths that contain change history for a given format version.
+    def get_file_paths_for_change_history(self) -> list[Path]:
+        """Get all file paths that contain change history for a given format version."""
 
-        This method finds all docx files in the format version directory that are informational reading versions,
-        groups them by document type, and returns the most recent version of each document.
+        self._get_valid_docx_files()
+        self._filter_informational_versions()
+        self._get_most_recent_versions()
 
-        Args:
-            format_version (EdifactFormatVersion): The EDIFACT format version to search in.
+        return self.result_paths
 
-        Returns:
-            list[Path]: A list of paths to the most recent version of each document.
+    def get_file_paths_for_ahbs(self) -> list[Path]:
+        """Get all AHB file paths for a given format version."""
 
-        Raises:
-            ValueError: If the format version directory does not exist or is not a directory.
+        self._get_valid_docx_files()
+        self._filter_informational_versions()
+        self._filter_for_ahb_docx_files()
+        self._get_most_recent_versions()
+
+        return self.result_paths
+
+    def _filter_for_ahb_docx_files(self) -> None:
+        """Filter the list of AHB docx paths for the latest AHB docx files.
+
+        The latest files contain `LesefassungmitFehlerkorrekturen` in their file names.
         """
-        format_version_path = self._get_validated_format_version_path(format_version)
-        docx_files = self._get_valid_docx_files(format_version_path)
-        informational_versions = self._filter_informational_versions(docx_files)
-        grouped_docs = self.group_documents_by_kind_and_format(informational_versions)
+        self.result_paths = [path for path in self.result_paths if "AHB" in path.name]
 
-        return self._get_most_recent_versions(grouped_docs)
-
-    def get_file_paths_for_ahbs(self, format_version: EdifactFormatVersion) -> list[Path]:
-        """Get all AHB file paths for a given format version.
-
-        This method finds all AHB docx files in the format version directory that are informational reading versions,
-        groups them by document type, and returns the most recent version of each document.
-
-        Args:
-            format_version (EdifactFormatVersion): The EDIFACT format version to search in.
-
-        Returns:
-            list[Path]: A list of paths to the most recent version of each AHB document.
-
-        Raises:
-            ValueError: If the format version directory does not exist or is not a directory.
-        """
-        format_version_path = self._get_validated_format_version_path(format_version)
-        docx_files = self._get_valid_docx_files(format_version_path)
-        informational_versions = self._filter_informational_versions(docx_files)
-
-        # Filter for AHB files only
-        ahb_files = [path for path in informational_versions if "AHB" in path.name]
-        grouped_docs = self.group_documents_by_kind_and_format(ahb_files)
-
-        return self._get_most_recent_versions(grouped_docs)
-
-    def _get_validated_format_version_path(self, format_version: EdifactFormatVersion) -> Path:
+    def _get_validated_format_version_path(self) -> Path:
         """Validate and return the path for a given format version.
 
         Args:
@@ -257,14 +240,14 @@ class DocxFileFinder(BaseModel):
         Raises:
             ValueError: If the path does not exist or is not a directory.
         """
-        version_path = self.path_to_edi_energy_mirror / format_version.value
+        version_path = self.path_to_edi_energy_mirror / self.format_version.value
         if not version_path.exists():
             raise ValueError(f"Format version directory does not exist: {version_path}")
         if not version_path.is_dir():
             raise ValueError(f"Format version path is not a directory: {version_path}")
         return version_path
 
-    def _get_valid_docx_files(self, directory: Path) -> list[Path]:
+    def _get_valid_docx_files(self) -> None:
         """Get all valid docx files from a directory, excluding temporary files.
 
         Args:
@@ -273,9 +256,13 @@ class DocxFileFinder(BaseModel):
         Returns:
             list[Path]: A list of paths to valid docx files.
         """
-        return [path for path in directory.iterdir() if path.name.endswith(".docx") and not path.name.startswith("~")]
+        self.result_paths = [
+            path
+            for path in self.path_to_specific_format_version_folder.iterdir()
+            if path.name.endswith(".docx") and not path.name.startswith("~")
+        ]
 
-    def _filter_informational_versions(self, paths: list[Path]) -> list[Path]:
+    def _filter_informational_versions(self) -> None:
         """Filter paths to only include informational reading versions.
 
         Args:
@@ -285,13 +272,13 @@ class DocxFileFinder(BaseModel):
             list[Path]: Filtered list containing only informational reading versions.
         """
         informational_versions = []
-        for path in paths:
+        for path in self.result_paths:
             document_metadata = extract_document_meta_data(path.name)
             if document_metadata and document_metadata.is_informational_reading_version:
                 informational_versions.append(path)
-        return informational_versions
+        self.result_paths = informational_versions
 
-    def _get_most_recent_versions(self, grouped_docs: dict[tuple[str, str], list[Path]]) -> list[Path]:
+    def _get_most_recent_versions(self) -> None:
         """Get the most recent version from each group of documents.
 
         Args:
@@ -300,6 +287,9 @@ class DocxFileFinder(BaseModel):
         Returns:
             list[Path]: List of the most recent version from each group.
         """
+
+        grouped_docs = self.group_documents_by_kind_and_format(self.result_paths)
+
         most_recent_versions = []
         for group in grouped_docs.values():
             if len(group) == 1:
@@ -311,7 +301,7 @@ class DocxFileFinder(BaseModel):
             if sorted_group:
                 most_recent_versions.append(sorted_group[0])
 
-        return sorted(most_recent_versions)
+        self.result_paths = sorted(most_recent_versions)
 
     def _filter_error_corrections(self, group: list[Path]) -> list[Path]:
         """Filter group to keep only error correction versions if they exist.
