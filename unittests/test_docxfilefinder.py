@@ -128,29 +128,53 @@ class TestDocxFileFinder:
         assert split_version_string("4.2c") == ("", 4, 2, "c")
         assert split_version_string("S2.2c") == ("S", 2, 2, "c")
 
-    # pylint: disable=protected-access
     def test_get_valid_docx_files(self, tmp_path):
+        """Test that _get_valid_docx_files correctly identifies and filters docx files."""
+        # Create a mock format version directory structure
+        format_version = EdifactFormatVersion.FV2504
+        format_dir = tmp_path / "edi_energy_de" / format_version.value
+        format_dir.mkdir(parents=True)
+
         # Create test files
-        valid_file1 = tmp_path / "test1.docx"
-        valid_file2 = tmp_path / "test2.docx"
-        temp_file = tmp_path / "~$temp.docx"  # Word temporary file
-        non_docx_file = tmp_path / "test.txt"
+        valid_files = [format_dir / "test1.docx", format_dir / "test2.docx", format_dir / "AHB_UTILMD_2.1.docx"]
+        temp_files = [
+            format_dir / "~$temp.docx",  # Word temporary file
+            format_dir / "~WRL0001.tmp",  # Another temp file
+        ]
+        other_files = [format_dir / "test.txt", format_dir / "test.pdf", format_dir / "test.doc"]
 
-        # Create the files
-        valid_file1.touch()
-        valid_file2.touch()
-        temp_file.touch()
-        non_docx_file.touch()
+        # Create all the test files
+        for file in valid_files + temp_files + other_files:
+            file.touch()
 
-        docx_file_finder = DocxFileFinder(path_to_edi_energy_mirror=Path("dummy"))
-        result = docx_file_finder._get_valid_docx_files(tmp_path)
+        # Initialize DocxFileFinder with the test directory
+        docx_file_finder = DocxFileFinder(path_to_edi_energy_mirror=tmp_path, format_version=format_version)
 
-        # Should include .docx files but exclude temporary files
-        assert len(result) == 2
-        assert valid_file1 in result
-        assert valid_file2 in result
-        assert temp_file not in result
-        assert non_docx_file not in result
+        # Call the method
+        docx_file_finder._get_valid_docx_files()  # pylint: disable=protected-access
+
+        # Verify results
+        assert len(docx_file_finder.result_paths) == len(valid_files)
+        assert all(path in docx_file_finder.result_paths for path in valid_files)
+        assert all(path not in docx_file_finder.result_paths for path in temp_files)
+        assert all(path not in docx_file_finder.result_paths for path in other_files)
+
+    def test_get_valid_docx_files_empty_directory(self, tmp_path):
+        """Test that _get_valid_docx_files handles empty directories correctly."""
+        # Create empty format version directory
+        format_version = EdifactFormatVersion.FV2504
+        format_dir = tmp_path / "edi_energy_de" / format_version.value
+        format_dir.mkdir(parents=True)
+
+        # Initialize DocxFileFinder with the empty directory
+        docx_file_finder = DocxFileFinder(path_to_edi_energy_mirror=tmp_path, format_version=format_version)
+
+        # Call the method
+        docx_file_finder._get_valid_docx_files()  # pylint: disable=protected-access
+
+        # Verify results
+        assert len(docx_file_finder.result_paths) == 0
+        assert isinstance(docx_file_finder.result_paths, list)
 
     def test_get_file_paths_for_change_history(self):
         path_to_edi_energy_mirror = Path("edi_energy_mirror") / Path("edi_energy_de")
