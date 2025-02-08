@@ -228,25 +228,6 @@ class DocxFileFinder(BaseModel):
         """
         self.result_paths = [path for path in self.result_paths if "AHB" in path.name]
 
-    def _get_validated_format_version_path(self) -> Path:
-        """Validate and return the path for a given format version.
-
-        Args:
-            format_version (EdifactFormatVersion): The format version to get the path for.
-
-        Returns:
-            Path: The validated path to the format version directory.
-
-        Raises:
-            ValueError: If the path does not exist or is not a directory.
-        """
-        version_path = self.path_to_edi_energy_mirror / self.format_version.value
-        if not version_path.exists():
-            raise ValueError(f"Format version directory does not exist: {version_path}")
-        if not version_path.is_dir():
-            raise ValueError(f"Format version path is not a directory: {version_path}")
-        return version_path
-
     def _get_valid_docx_files(self) -> None:
         """Get all valid docx files from a directory, excluding temporary files.
 
