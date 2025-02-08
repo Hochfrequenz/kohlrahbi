@@ -182,11 +182,21 @@ class DocxFileFinder(BaseModel):
 
     path_to_edi_energy_mirror: Path
 
+    format_version: EdifactFormatVersion | None = None
+
     result_paths: list[Path] = []
 
     @property
     def path_to_format_version_folders(self):
+        """Returns the path to the edi_energy_de directory containing format version folders like FV2410, FV2404, etc."""
         return self.path_to_edi_energy_mirror / Path("edi_energy_de")
+
+    @property
+    def path_to_specific_format_version_folder(self):
+        """Returns the path to the specific format version folder."""
+        if self.format_version is None:
+            return None
+        return self.path_to_format_version_folders / Path(self.format_version.value)
 
     def get_file_paths_for_change_history(self, format_version: EdifactFormatVersion) -> list[Path]:
         """Get all file paths that contain change history for a given format version.
