@@ -3,7 +3,6 @@ This module contains the DocxFileFinder class.
 """
 
 import re
-from itertools import groupby
 from pathlib import Path
 
 from edi_energy_scraper import DocumentMetadata
@@ -35,7 +34,7 @@ class EdiEnergyDocument(BaseModel):
 
         document_metadata = extract_document_meta_data(path.name)
         assert document_metadata is not None, f"Could not extract document version and valid dates from {path.name}."
-        # assert document_metadata.version is not None, "Document version is None."
+        assert document_metadata.version is not None, "Document version is None."
 
         prefix, version_major, version_minor, version_suffix = split_version_string(document_metadata.version)
 
@@ -207,6 +206,31 @@ class DocxFileFinder(BaseModel):
 
         return self._get_most_recent_versions(grouped_docs)
 
+    def get_file_paths_for_ahbs(self, format_version: EdifactFormatVersion) -> list[Path]:
+        """Get all AHB file paths for a given format version.
+
+        This method finds all AHB docx files in the format version directory that are informational reading versions,
+        groups them by document type, and returns the most recent version of each document.
+
+        Args:
+            format_version (EdifactFormatVersion): The EDIFACT format version to search in.
+
+        Returns:
+            list[Path]: A list of paths to the most recent version of each AHB document.
+
+        Raises:
+            ValueError: If the format version directory does not exist or is not a directory.
+        """
+        format_version_path = self._get_validated_format_version_path(format_version)
+        docx_files = self._get_valid_docx_files(format_version_path)
+        informational_versions = self._filter_informational_versions(docx_files)
+
+        # Filter for AHB files only
+        ahb_files = [path for path in informational_versions if "AHB" in path.name]
+        grouped_docs = self.group_documents_by_kind_and_format(ahb_files)
+
+        return self._get_most_recent_versions(grouped_docs)
+
     def _get_validated_format_version_path(self, format_version: EdifactFormatVersion) -> Path:
         """Validate and return the path for a given format version.
 
@@ -336,96 +360,96 @@ class DocxFileFinder(BaseModel):
 
         return path_to_ahb_document.name.split("-")[0]
 
-    def filter_for_latest_ahb_docx_files(self) -> None:
-        """
-        Filter the list of AHB docx paths for the latest AHB docx files.
-        The latest files contain `LesefassungmitFehlerkorrekturen` in their file names.
-        This method is _not_ pure. It changes the state of the object.
-        """
-        self.path_to_edi_energy_mirror = self.filter_ahb_docx_files(self.path_to_edi_energy_mirror)
-        grouped_files = self.group_files_by_name_prefix(self.path_to_edi_energy_mirror)
-        self.path_to_edi_energy_mirror = self.filter_latest_version(grouped_files)
+    # def filter_for_latest_ahb_docx_files(self) -> None:
+    #     """
+    #     Filter the list of AHB docx paths for the latest AHB docx files.
+    #     The latest files contain `LesefassungmitFehlerkorrekturen` in their file names.
+    #     This method is _not_ pure. It changes the state of the object.
+    #     """
+    #     self.path_to_edi_energy_mirror = self.filter_ahb_docx_files(self.path_to_edi_energy_mirror)
+    #     grouped_files = self.group_files_by_name_prefix(self.path_to_edi_energy_mirror)
+    #     self.path_to_edi_energy_mirror = self.filter_latest_version(grouped_files)
 
-    @staticmethod
-    def filter_ahb_docx_files(paths_to_docx_files: list[Path]) -> list[Path]:
-        """
-        This function filters the docx files which contain the string "AHB" in their file name.
-        """
-        return [path for path in paths_to_docx_files if "AHB" in path.name]
+    # @staticmethod
+    # def filter_ahb_docx_files(paths_to_docx_files: list[Path]) -> list[Path]:
+    #     """
+    #     This function filters the docx files which contain the string "AHB" in their file name.
+    #     """
+    #     return [path for path in paths_to_docx_files if "AHB" in path.name]
 
     # pylint: disable=line-too-long
-    @staticmethod
-    def group_files_by_name_prefix(paths_to_docx_files: list[Path]) -> dict[str, list[Path]]:
-        """
-        This function groups the docx files by their name prefix.
-        Groups may now look like this:
-        {'APERAKCONTRLAHB': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/APERAKCONTRLAHB-informatorischeLesefassung2.3m_99991231_20231001.docx')],
-         'COMDISAHB': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/COMDISAHB-informatorischeLesefassung1.0dKonsolidierteLesefassungmitFehlerkorrekturenStand20.07.2023_99991231_20231001.docx'), WindowsPath('../edi_energy_mirror/edi_energy_de/future/COMDISAHB-informatorischeLesefassung1.0d_99991231_20231001.docx')],
-         'HerkunftsnachweisregisterAHB': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/HerkunftsnachweisregisterAHB-informatorischeLesefassung2.3cKonsolidierteLesefassungmitFehlerkorrekturenStand19.06.2023_99991231_20231001.docx'), WindowsPath('../edi_energy_mirror/edi_energy_de/future/HerkunftsnachweisregisterAHB-informatorischeLesefassung2.3c_99991231_20231001.docx')],
-         'IFTSTAAHB': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/IFTSTAAHB-informatorischeLesefassung2.0eKonsolidierteLesefassungmitFehlerkorrekturenStand20.07.2023_99991231_20231001.docx'), WindowsPath('../edi_energy_mirror/edi_energy_de/future/IFTSTAAHB-informatorischeLesefassung2.0e_99991231_20231001.docx')],
-         'INVOICREMADVAHB': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/INVOICREMADVAHB-informatorischeLesefassung2.5bKonsolidierteLesefassungmitFehlerkorrekturenStand20.07.2023_99991231_20231001.docx'), WindowsPath('../edi_energy_mirror/edi_energy_de/future/INVOICREMADVAHB-informatorischeLesefassung2.5b_99991231_20231001.docx')],
-         'MSCONSAHB': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/MSCONSAHB-informatorischeLesefassung3.1c_99991231_20231001.docx')],
-         'ORDERSORDRSPAHBMaBiS': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/ORDERSORDRSPAHBMaBiS-informatorischeLesefassung2.2c_99991231_20231001.docx')],
-         'PARTINAHB': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/PARTINAHB-informatorischeLesefassung1.0c_99991231_20231001.docx')],
-         'PRICATAHB': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/PRICATAHB-informatorischeLesefassung2.0c_99991231_20231001.docx')],
-         'REQOTEQUOTESORDERSORDRSPORDCHGAHB': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/REQOTEQUOTESORDERSORDRSPORDCHGAHB-informatorischeLesefassung2.2KonsolidierteLesefassungmitFehlerkorrekturenStand20.07.2023_99991231_20231001.docx'), WindowsPath('../edi_energy_mirror/edi_energy_de/future/REQOTEQUOTESORDERSORDRSPORDCHGAHB-informatorischeLesefassung2.2_99991231_20231001.docx')],
-         'UTILMDAHBGas': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/UTILMDAHBGas-informatorischeLesefassung1.0aKonsolidierteLesefassungmitFehlerkorrekturenStand29.06.2023_99991231_20231001.docx'), WindowsPath('../edi_energy_mirror/edi_energy_de/future/UTILMDAHBGas-informatorischeLesefassung1.0a_99991231_20231001.docx')],
-         'UTILMDAHBMaBiS': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/UTILMDAHBMaBiS-informatorischeLesefassung4.1_99991231_20231001.docx')],
-         'UTILMDAHBStrom': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/UTILMDAHBStrom-informatorischeLesefassung1.1KonsolidierteLesefassungmitFehlerkorrekturenStand29.06.2023_99991231_20231001.docx'), WindowsPath('../edi_energy_mirror/edi_energy_de/future/UTILMDAHBStrom-informatorischeLesefassung1.1_99991231_20231001.docx')],
-         'UTILTSAHBBerechnungsformel': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/UTILTSAHBBerechnungsformel-informatorischeLesefassung1.0e_99991231_20231001.docx')], 'UTILTSAHBDefinitionen': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/UTILTSAHBDefinitionen-informatorischeLesefassung1.1_99991231_20231001.docx')]}
-        """
-        return {
-            group_key: list(group)
-            for group_key, group in groupby(
-                sorted(paths_to_docx_files, key=DocxFileFinder.get_first_part_of_ahb_docx_file_name),
-                key=DocxFileFinder.get_first_part_of_ahb_docx_file_name,
-            )
-        }
+    # @staticmethod
+    # def group_files_by_name_prefix(paths_to_docx_files: list[Path]) -> dict[str, list[Path]]:
+    #     """
+    #     This function groups the docx files by their name prefix.
+    #     Groups may now look like this:
+    #     {'APERAKCONTRLAHB': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/APERAKCONTRLAHB-informatorischeLesefassung2.3m_99991231_20231001.docx')],
+    #      'COMDISAHB': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/COMDISAHB-informatorischeLesefassung1.0dKonsolidierteLesefassungmitFehlerkorrekturenStand20.07.2023_99991231_20231001.docx'), WindowsPath('../edi_energy_mirror/edi_energy_de/future/COMDISAHB-informatorischeLesefassung1.0d_99991231_20231001.docx')],
+    #      'HerkunftsnachweisregisterAHB': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/HerkunftsnachweisregisterAHB-informatorischeLesefassung2.3cKonsolidierteLesefassungmitFehlerkorrekturenStand19.06.2023_99991231_20231001.docx'), WindowsPath('../edi_energy_mirror/edi_energy_de/future/HerkunftsnachweisregisterAHB-informatorischeLesefassung2.3c_99991231_20231001.docx')],
+    #      'IFTSTAAHB': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/IFTSTAAHB-informatorischeLesefassung2.0eKonsolidierteLesefassungmitFehlerkorrekturenStand20.07.2023_99991231_20231001.docx'), WindowsPath('../edi_energy_mirror/edi_energy_de/future/IFTSTAAHB-informatorischeLesefassung2.0e_99991231_20231001.docx')],
+    #      'INVOICREMADVAHB': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/INVOICREMADVAHB-informatorischeLesefassung2.5bKonsolidierteLesefassungmitFehlerkorrekturenStand20.07.2023_99991231_20231001.docx'), WindowsPath('../edi_energy_mirror/edi_energy_de/future/INVOICREMADVAHB-informatorischeLesefassung2.5b_99991231_20231001.docx')],
+    #      'MSCONSAHB': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/MSCONSAHB-informatorischeLesefassung3.1c_99991231_20231001.docx')],
+    #      'ORDERSORDRSPAHBMaBiS': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/ORDERSORDRSPAHBMaBiS-informatorischeLesefassung2.2c_99991231_20231001.docx')],
+    #      'PARTINAHB': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/PARTINAHB-informatorischeLesefassung1.0c_99991231_20231001.docx')],
+    #      'PRICATAHB': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/PRICATAHB-informatorischeLesefassung2.0c_99991231_20231001.docx')],
+    #      'REQOTEQUOTESORDERSORDRSPORDCHGAHB': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/REQOTEQUOTESORDERSORDRSPORDCHGAHB-informatorischeLesefassung2.2KonsolidierteLesefassungmitFehlerkorrekturenStand20.07.2023_99991231_20231001.docx'), WindowsPath('../edi_energy_mirror/edi_energy_de/future/REQOTEQUOTESORDERSORDRSPORDCHGAHB-informatorischeLesefassung2.2_99991231_20231001.docx')],
+    #      'UTILMDAHBGas': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/UTILMDAHBGas-informatorischeLesefassung1.0aKonsolidierteLesefassungmitFehlerkorrekturenStand29.06.2023_99991231_20231001.docx'), WindowsPath('../edi_energy_mirror/edi_energy_de/future/UTILMDAHBGas-informatorischeLesefassung1.0a_99991231_20231001.docx')],
+    #      'UTILMDAHBMaBiS': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/UTILMDAHBMaBiS-informatorischeLesefassung4.1_99991231_20231001.docx')],
+    #      'UTILMDAHBStrom': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/UTILMDAHBStrom-informatorischeLesefassung1.1KonsolidierteLesefassungmitFehlerkorrekturenStand29.06.2023_99991231_20231001.docx'), WindowsPath('../edi_energy_mirror/edi_energy_de/future/UTILMDAHBStrom-informatorischeLesefassung1.1_99991231_20231001.docx')],
+    #      'UTILTSAHBBerechnungsformel': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/UTILTSAHBBerechnungsformel-informatorischeLesefassung1.0e_99991231_20231001.docx')], 'UTILTSAHBDefinitionen': [WindowsPath('../edi_energy_mirror/edi_energy_de/future/UTILTSAHBDefinitionen-informatorischeLesefassung1.1_99991231_20231001.docx')]}
+    #     """
+    #     return {
+    #         group_key: list(group)
+    #         for group_key, group in groupby(
+    #             sorted(paths_to_docx_files, key=DocxFileFinder.get_first_part_of_ahb_docx_file_name),
+    #             key=DocxFileFinder.get_first_part_of_ahb_docx_file_name,
+    #         )
+    #     }
 
-    @staticmethod
-    def filter_latest_version(groups: dict[str, list[Path]]) -> list[Path]:
-        """
-        Filters and returns the latest version of the AHB or MIG .docx files
-        from the provided groups based on specific criteria.
+    # @staticmethod
+    # def filter_latest_version(groups: dict[str, list[Path]]) -> list[Path]:
+    #     """
+    #     Filters and returns the latest version of the AHB or MIG .docx files
+    #     from the provided groups based on specific criteria.
 
-        The latest version is determined based on the presence of specific
-        keywords in the filename and the numerical suffix in the filename.
+    #     The latest version is determined based on the presence of specific
+    #     keywords in the filename and the numerical suffix in the filename.
 
-        Parameters:
-        - groups (Dict[str, List[Path]]): A dictionary where keys are group identifiers
-        and values are lists of Path objects representing the file paths.
+    #     Parameters:
+    #     - groups (Dict[str, List[Path]]): A dictionary where keys are group identifiers
+    #     and values are lists of Path objects representing the file paths.
 
-        Returns:
-        - List[Path]: A list of Path objects representing the latest version of the files.
-        """
-        result: list[Path] = []
+    #     Returns:
+    #     - List[Path]: A list of Path objects representing the latest version of the files.
+    #     """
+    #     result: list[Path] = []
 
-        for group_items in groups.values():
-            most_recent_file = get_most_recent_file(group_items)
-            assert most_recent_file is not None, "Could not find the most recent file."
-            result.append(most_recent_file)
-        return result
+    #     for group_items in groups.values():
+    #         most_recent_file = get_most_recent_file(group_items)
+    #         assert most_recent_file is not None, "Could not find the most recent file."
+    #         result.append(most_recent_file)
+    #     return result
 
-    def filter_docx_files_for_edifact_format(self, edifact_format: EdifactFormat) -> None:
-        """
-        Returns a list of docx files which contain the given edifact format.
-        This method is not pure. It changes the state of the object.
-        """
+    # def filter_docx_files_for_edifact_format(self, edifact_format: EdifactFormat) -> None:
+    #     """
+    #     Returns a list of docx files which contain the given edifact format.
+    #     This method is not pure. It changes the state of the object.
+    #     """
 
-        self.path_to_edi_energy_mirror = [
-            path for path in self.path_to_edi_energy_mirror if str(edifact_format) in path.name
-        ]
+    #     self.path_to_edi_energy_mirror = [
+    #         path for path in self.path_to_edi_energy_mirror if str(edifact_format) in path.name
+    #     ]
 
-    def remove_temporary_files(self) -> None:
-        """
-        This method removes all temporary files from paths_to_docx_files.
-        Temporary files lead to the exception `BadZipFile: File is not a zip file`.
-        It appears if a docx file is opened by Word.
-        """
+    # def remove_temporary_files(self) -> None:
+    #     """
+    #     This method removes all temporary files from paths_to_docx_files.
+    #     Temporary files lead to the exception `BadZipFile: File is not a zip file`.
+    #     It appears if a docx file is opened by Word.
+    #     """
 
-        self.path_to_edi_energy_mirror = [
-            path for path in self.path_to_edi_energy_mirror if not path.name.startswith("~")
-        ]
+    #     self.path_to_edi_energy_mirror = [
+    #         path for path in self.path_to_edi_energy_mirror if not path.name.startswith("~")
+    #     ]
 
     def get_docx_files_which_may_contain_searched_pruefi(self, searched_pruefi: str) -> list[Path]:
         """
@@ -457,45 +481,60 @@ class DocxFileFinder(BaseModel):
             return []
         return self.path_to_edi_energy_mirror
 
-    def get_all_docx_files_which_contain_change_histories(self) -> list[Path]:
-        """
-        This function returns a list of docx files which probably contain a change history.
-        Only format documents like UTILMD, MSCONS etc. contain a change history.
-        """
+    # def get_all_docx_files_which_contain_change_histories(self) -> list[Path]:
+    #     """
+    #     This function returns a list of docx files which probably contain a change history.
+    #     Only format documents like UTILMD, MSCONS etc. contain a change history.
+    #     """
 
-        # self.paths_to_docx_files = self.filter_for_docx_files_with_change_history(self.paths_to_docx_files)
+    #     # self.paths_to_docx_files = self.filter_for_docx_files_with_change_history(self.paths_to_docx_files)
 
-        # self.filter_for_latest_mig_and_ahb_docx_files()
-        self.remove_temporary_files()
+    #     # self.filter_for_latest_mig_and_ahb_docx_files()
+    #     self.remove_temporary_files()
 
-        paths_to_relevant_docx_files = []
-        for path in self.path_to_edi_energy_mirror:
-            document_metadata = extract_document_meta_data(path.name)
-            is_document_relevant = document_metadata is not None and (
-                document_metadata.is_informational_reading_version
-                and document_metadata.is_consolidated_reading_version
-                and document_metadata.is_error_correction
-            )
-            if is_document_relevant:
-                paths_to_relevant_docx_files.append(path)
+    #     paths_to_relevant_docx_files = []
+    #     for path in self.path_to_edi_energy_mirror:
+    #         document_metadata = extract_document_meta_data(path.name)
+    #         is_document_relevant = document_metadata is not None and (
+    #             document_metadata.is_informational_reading_version
+    #             and document_metadata.is_consolidated_reading_version
+    #             and document_metadata.is_error_correction
+    #         )
+    #         if is_document_relevant:
+    #             paths_to_relevant_docx_files.append(path)
 
-        self.path_to_edi_energy_mirror = paths_to_relevant_docx_files
-        return self.path_to_edi_energy_mirror
+    #     self.path_to_edi_energy_mirror = paths_to_relevant_docx_files
+    #     return self.path_to_edi_energy_mirror
 
     def get_docx_files_which_contain_quality_map(self) -> list[Path]:
         """
         This function returns a list of docx files which contain a quality map.
+        Only the UTILMD AHB Strom documents contain quality maps.
+
+        Returns:
+            list[Path]: A list of paths to the most recent UTILMD AHB Strom documents.
         """
+        # Get all docx files in the directory
+        docx_files = self._get_valid_docx_files(self.path_to_edi_energy_mirror)
 
-        self.filter_for_latest_ahb_docx_files()
-        self.remove_temporary_files()
+        # Filter for informational versions
+        informational_versions = self._filter_informational_versions(docx_files)
 
-        indicator_string = "UTILMDAHBStrom"
-        self.path_to_edi_energy_mirror = [
-            path for path in self.path_to_edi_energy_mirror if indicator_string in path.name
-        ]
+        # Group documents by kind and format
+        grouped_docs = self.group_documents_by_kind_and_format(informational_versions)
 
-        return self.path_to_edi_energy_mirror
+        # Find the UTILMD AHB Strom group
+        utilmd_strom_docs = []
+        for group_key, group_paths in grouped_docs.items():
+            if any("UTILMDAHBStrom" in path.name for path in group_paths):
+                utilmd_strom_docs.extend(group_paths)
+
+        if not utilmd_strom_docs:
+            return []
+
+        # Get the most recent version
+        most_recent = get_most_recent_file(utilmd_strom_docs)
+        return [most_recent] if most_recent else []
 
     @staticmethod
     def group_documents_by_kind_and_format(paths: list[Path]) -> dict[tuple[str, str], list[Path]]:
