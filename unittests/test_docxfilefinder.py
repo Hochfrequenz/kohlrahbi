@@ -353,3 +353,108 @@ class TestDocxFileFinder:
 
         # Verify results
         assert len(docx_file_finder.result_paths) == 0
+
+    def test_get_most_recent_versions(self):
+        """Test that _get_most_recent_versions correctly identifies the most recent version of each document."""
+        # Create DocxFileFinder instance
+        docx_file_finder = DocxFileFinder(
+            path_to_edi_energy_mirror=Path("dummy"), format_version=EdifactFormatVersion.FV2504
+        )
+
+        # Set up test paths with multiple versions of documents
+        docx_file_finder.result_paths = [
+            # COMDIS versions
+            Path("AHB_COMDIS_1.0f_20250606_99991231_20250606_ooox_8871.docx"),  # most recent
+            Path("AHB_COMDIS_1.0e_20250606_99991231_20250606_ooox_8870.docx"),
+            Path("AHB_COMDIS_1.0d_20250606_99991231_20250606_ooox_8869.docx"),
+            # CONTRL versions
+            Path("AHB_CONTRL_2.4a_20250606_99991231_20241213_xoxx_11128.docx"),  # most recent
+            Path("AHB_CONTRL_2.4_20250606_99991231_20241213_xoxx_11127.docx"),
+            Path("AHB_CONTRL_2.3_20250606_99991231_20241213_xoxx_11126.docx"),
+            # UTILMD versions
+            Path("MIG_UTILMD_S2.1_20250606_20250129_20241213_xoxx_11161.docx"),  # most recent
+            Path("MIG_UTILMD_S2.0_20250606_20250129_20241213_xoxx_11160.docx"),
+            Path("MIG_UTILMD_S1.9_20250606_20250129_20241213_xoxx_11159.docx"),
+            # MSCONS versions
+            Path("AHB_MSCONS_3.1_20250606_99991231_20251020_ooox_9612.docx"),  # most recent
+            Path("AHB_MSCONS_3.1_20250606_99991231_20250606_ooox_9611.docx"),
+            Path("AHB_MSCONS_3.1_20250606_99991231_20250606_ooox_9610.docx"),
+            Path("AHB_MSCONS_3.0_20250606_99991231_20250606_ooox_9609.docx"),
+        ]
+
+        # Expected results (only most recent versions)
+        expected_paths = [
+            Path("AHB_COMDIS_1.0f_20250606_99991231_20250606_ooox_8871.docx"),
+            Path("AHB_CONTRL_2.4a_20250606_99991231_20241213_xoxx_11128.docx"),
+            Path("MIG_UTILMD_S2.1_20250606_20250129_20241213_xoxx_11161.docx"),
+            Path("AHB_MSCONS_3.1_20250606_99991231_20251020_ooox_9612.docx"),
+        ]
+
+        # Apply filter
+        docx_file_finder._get_most_recent_versions()  # pylint: disable=protected-access
+
+        # Verify results
+        assert len(docx_file_finder.result_paths) == len(expected_paths)
+        assert sorted(docx_file_finder.result_paths) == sorted(expected_paths)
+
+    def test_get_most_recent_versions_empty(self):
+        """Test that _get_most_recent_versions handles empty input correctly."""
+        docx_file_finder = DocxFileFinder(
+            path_to_edi_energy_mirror=Path("dummy"), format_version=EdifactFormatVersion.FV2504
+        )
+        docx_file_finder.result_paths = []
+        docx_file_finder._get_most_recent_versions()  # pylint: disable=protected-access
+        assert len(docx_file_finder.result_paths) == 0
+
+    def test_get_most_recent_versions_single_files(self):
+        """Test that _get_most_recent_versions correctly handles groups with single files."""
+        docx_file_finder = DocxFileFinder(
+            path_to_edi_energy_mirror=Path("dummy"), format_version=EdifactFormatVersion.FV2504
+        )
+
+        # Set up test paths with single files of different types
+        input_paths = [
+            Path("AHB_COMDIS_1.0f_20250606_99991231_20250606_ooox_8871.docx"),
+            Path("AHB_CONTRL_2.4a_20250606_99991231_20241213_xoxx_11128.docx"),
+            Path("MIG_UTILMD_S2.1_20250606_20250129_20241213_xoxx_11161.docx"),
+        ]
+        docx_file_finder.result_paths = input_paths.copy()
+
+        # Apply filter
+        docx_file_finder._get_most_recent_versions()  # pylint: disable=protected-access
+
+        # Verify results - should be same as input since each file is unique
+        assert len(docx_file_finder.result_paths) == len(input_paths)
+        assert sorted(docx_file_finder.result_paths) == sorted(input_paths)
+
+    def test_get_most_recent_versions_with_error_corrections(self):
+        """Test that _get_most_recent_versions correctly prioritizes error correction versions."""
+        docx_file_finder = DocxFileFinder(
+            path_to_edi_energy_mirror=Path("dummy"), format_version=EdifactFormatVersion.FV2504
+        )
+
+        # Set up test paths with error corrections and regular versions
+        docx_file_finder.result_paths = [
+            # Regular versions
+            Path("AHB_COMDIS_1.0f_20250606_99991231_20250606_oooo_8872.docx"),
+            Path("AHB_CONTRL_2.4a_20250606_99991231_20250606_oooo_8927.docx"),
+            Path("MIG_UTILMD_S2.1_20250606_20250129_20241213_xoxo_11160.docx"),
+            # Error correction versions (should be preferred)
+            Path("AHB_COMDIS_1.0f_20250606_99991231_20250606_ooox_8871.docx"),
+            Path("AHB_CONTRL_2.4a_20250606_99991231_20241213_xoxx_11128.docx"),
+            Path("MIG_UTILMD_S2.1_20250606_20250129_20241213_xoxx_11161.docx"),
+        ]
+
+        # Expected results (only error correction versions)
+        expected_paths = [
+            Path("AHB_COMDIS_1.0f_20250606_99991231_20250606_ooox_8871.docx"),
+            Path("AHB_CONTRL_2.4a_20250606_99991231_20241213_xoxx_11128.docx"),
+            Path("MIG_UTILMD_S2.1_20250606_20250129_20241213_xoxx_11161.docx"),
+        ]
+
+        # Apply filter
+        docx_file_finder._get_most_recent_versions()  # pylint: disable=protected-access
+
+        # Verify results
+        assert len(docx_file_finder.result_paths) == len(expected_paths)
+        assert sorted(docx_file_finder.result_paths) == sorted(expected_paths)
