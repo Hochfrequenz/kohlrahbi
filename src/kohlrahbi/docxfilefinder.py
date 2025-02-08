@@ -184,6 +184,10 @@ class DocxFileFinder(BaseModel):
 
     result_paths: list[Path] = []
 
+    @property
+    def path_to_format_version_folders(self):
+        return self.path_to_edi_energy_mirror / Path("edi_energy_de")
+
     def get_file_paths_for_change_history(self, format_version: EdifactFormatVersion) -> list[Path]:
         """Get all file paths that contain change history for a given format version.
 
