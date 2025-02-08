@@ -288,3 +288,68 @@ class TestDocxFileFinder:
         docx_file_finder._filter_for_ahb_docx_files()  # pylint: disable=protected-access
         # Verify results
         assert sorted(docx_file_finder.result_paths) == sorted(expected_paths)
+
+    def test_filter_informational_versions(self):
+        """Test that _filter_informational_versions correctly filters for informational reading versions."""
+        # Create DocxFileFinder instance
+        docx_file_finder = DocxFileFinder(
+            path_to_edi_energy_mirror=Path("dummy"), format_version=EdifactFormatVersion.FV2504
+        )
+
+        # Set up test paths with mix of informational and non-informational versions
+        docx_file_finder.result_paths = [
+            # Informational reading versions
+            Path("AHB_COMDIS_1.0f_20250606_99991231_20250606_ooox_8871.docx"),
+            Path("AHB_CONTRL_2.4a_20250606_99991231_20241213_xoxx_11128.docx"),
+            Path("MIG_UTILMD_S2.1_20250606_20250129_20241213_xoxx_11161.docx"),
+            # Non-informational versions
+            Path("AHB_COMDIS_1.0f_20250606_99991231_20250606_oooo_8872.pdf"),
+            Path("AHB_CONTRL_2.4a_20250606_99991231_20250606_oooo_8927.pdf"),
+            Path("MIG_UTILMD_S2.1_20250606_20250129_20241213_xoxo_11160.pdf"),
+        ]
+
+        # Expected results (only informational reading versions)
+        expected_paths = [
+            Path("AHB_COMDIS_1.0f_20250606_99991231_20250606_ooox_8871.docx"),
+            Path("AHB_CONTRL_2.4a_20250606_99991231_20241213_xoxx_11128.docx"),
+            Path("MIG_UTILMD_S2.1_20250606_20250129_20241213_xoxx_11161.docx"),
+        ]
+
+        # Apply filter
+        docx_file_finder._filter_informational_versions()  # pylint: disable=protected-access
+
+        # Verify results
+        assert len(docx_file_finder.result_paths) == len(expected_paths)
+        assert sorted(docx_file_finder.result_paths) == sorted(expected_paths)
+
+    def test_filter_informational_versions_empty(self):
+        """Test that _filter_informational_versions handles empty input correctly."""
+        # Create DocxFileFinder instance
+        docx_file_finder = DocxFileFinder(
+            path_to_edi_energy_mirror=Path("dummy"), format_version=EdifactFormatVersion.FV2504
+        )
+
+        # Test with empty list
+        docx_file_finder.result_paths = []
+        docx_file_finder._filter_informational_versions()  # pylint: disable=protected-access
+        assert len(docx_file_finder.result_paths) == 0
+
+    def test_filter_informational_versions_no_informational(self):
+        """Test that _filter_informational_versions handles case with no informational versions."""
+        # Create DocxFileFinder instance
+        docx_file_finder = DocxFileFinder(
+            path_to_edi_energy_mirror=Path("dummy"), format_version=EdifactFormatVersion.FV2504
+        )
+
+        # Set up test paths with only non-informational versions
+        docx_file_finder.result_paths = [
+            Path("UTILMDAHB-4.0_20240701_20240401.docx"),
+            Path("APERAKAHB-2.0_20240701_20240401.docx"),
+            Path("MIG-1.0_20240701_20240401.docx"),
+        ]
+
+        # Apply filter
+        docx_file_finder._filter_informational_versions()  # pylint: disable=protected-access
+
+        # Verify results
+        assert len(docx_file_finder.result_paths) == 0
