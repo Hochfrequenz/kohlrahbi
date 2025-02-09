@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 
 from edi_energy_scraper import DocumentMetadata
-from efoli import EdifactFormat, EdifactFormatVersion, get_format_of_pruefidentifikator
+from efoli import EdifactFormat, EdifactFormatVersion
 from pydantic import BaseModel
 
 from kohlrahbi.logger import logger
@@ -126,52 +126,6 @@ def extract_document_meta_data(
     document_metadata = DocumentMetadata.from_filename(filename)
     assert document_metadata is not None, f"Could not extract document metadata from {filename}."
     return document_metadata
-
-
-def get_most_recent_file(group_items: list[Path]) -> Path | None:
-    """
-    Find the most recent file in a group of files based on specific criteria.
-
-    Parameters:
-    - group_items (List[Path]): A list of Path objects representing the file paths.
-
-    Returns:
-    - Path: A Path object representing the most recent file.
-    """
-
-    try:
-        # Define the keywords to filter relevant files
-        # keywords = ["konsolidiertelesefassungmitfehlerkorrekturen", "außerordentlicheveröffentlichung"]
-        # ahb_and_mig_file_paths = [
-        #     path for path in group_items if path.name.lower().startswith("ahb") or path.name.lower().startswith("mig")
-        # ]
-
-        ahb_and_mig_file_paths = []
-        for path in group_items:
-            document_metadata = extract_document_meta_data(path.name)
-            is_document_relevant = document_metadata is not None and (
-                document_metadata.is_informational_reading_version
-                and document_metadata.is_consolidated_reading_version
-                and document_metadata.is_error_correction
-            )
-            if is_document_relevant:
-                ahb_and_mig_file_paths.append(path)
-
-        # assert len(ahb_and_mig_file_paths) > 0, "No AHB or MIG files found."
-
-        list_of_edi_energy_documents = [EdiEnergyDocument.from_path(path) for path in ahb_and_mig_file_paths]
-
-        # assert len(list_of_edi_energy_documents) > 0, "No AHB files found."
-        most_recent_file = max(list_of_edi_energy_documents)
-
-        # assert most_recent_file is not None, "Most recent file is None."
-
-        return most_recent_file.filename
-
-    except ValueError as e:
-
-        logger.error("Error processing group items: %s", e)
-    return None
 
 
 class DocxFileFinder(BaseModel):
