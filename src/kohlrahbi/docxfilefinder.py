@@ -346,16 +346,6 @@ class DocxFileFinder(BaseModel):
 
         return path_to_ahb_document.name.split("-")[0]
 
-    # def filter_for_latest_ahb_docx_files(self) -> None:
-    #     """
-    #     Filter the list of AHB docx paths for the latest AHB docx files.
-    #     The latest files contain `LesefassungmitFehlerkorrekturen` in their file names.
-    #     This method is _not_ pure. It changes the state of the object.
-    #     """
-    #     self.path_to_edi_energy_mirror = self.filter_ahb_docx_files(self.path_to_edi_energy_mirror)
-    #     grouped_files = self.group_files_by_name_prefix(self.path_to_edi_energy_mirror)
-    #     self.path_to_edi_energy_mirror = self.filter_latest_version(grouped_files)
-
     # @staticmethod
     # def filter_ahb_docx_files(paths_to_docx_files: list[Path]) -> list[Path]:
     #     """
