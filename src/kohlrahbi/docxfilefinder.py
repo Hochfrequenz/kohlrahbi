@@ -421,36 +421,6 @@ class DocxFileFinder(BaseModel):
 
         self.result_paths = [path for path in self.result_paths if str(edifact_format) in path.name]
 
-    def get_docx_files_which_may_contain_searched_pruefi(self, searched_pruefi: str) -> list[Path]:
-        """
-        This functions takes a pruefidentifikator and returns a list of docx files which can contain the searched pruefi
-        Unfortunately, it is not clear in which docx the pruefidentifikator you are looking for is located.
-        A 11042 belongs to the UTILMD format. However, there are seven docx files that describe the UTILMD format.
-        A further reduction of the number of files is not possible with the pruefidentifikator only.
-        This method is _not_ pure. It changes the state of the object.
-        """
-
-        edifact_format = get_format_of_pruefidentifikator(searched_pruefi)
-        if edifact_format is None:
-            logger.exception("❌ There is no known format for the prüfi '%s'.", searched_pruefi)
-            raise ValueError(f"There is no known format for the prüfi '{searched_pruefi}'.")
-
-        self.filter_for_latest_ahb_docx_files()
-        self.filter_docx_files_for_edifact_format(edifact_format=edifact_format)
-        if (
-            edifact_format == EdifactFormat.UTILMD
-            and searched_pruefi.startswith("11")
-            and all("202310" in path.name for path in self.path_to_edi_energy_mirror)
-        ):
-            logger.info(
-                # pylint:disable=line-too-long
-                "You searched for a UTILMD prüfi %s starting with the soon deprecated prefix '11' but all relevant files %s are valid from 2023-10 onwards. They won't contain any match.",
-                searched_pruefi,
-                ", ".join([path.name for path in self.path_to_edi_energy_mirror]),
-            )
-            return []
-        return self.path_to_edi_energy_mirror
-
     def get_docx_files_which_contain_quality_map(self) -> list[Path]:
         """
         This function returns a list of docx files which contain a quality map.
