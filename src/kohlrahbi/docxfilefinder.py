@@ -324,6 +324,7 @@ class DocxFileFinder(BaseModel):
                     (
                         extract_document_meta_data(x.name).version,
                         extract_document_meta_data(x.name).publication_date,
+                        extract_document_meta_data(x.name).is_extraordinary_publication,
                         extract_document_meta_data(x.name).valid_from,
                         extract_document_meta_data(x.name).valid_until,
                     )
