@@ -346,13 +346,6 @@ class DocxFileFinder(BaseModel):
 
         return path_to_ahb_document.name.split("-")[0]
 
-    # @staticmethod
-    # def filter_ahb_docx_files(paths_to_docx_files: list[Path]) -> list[Path]:
-    #     """
-    #     This function filters the docx files which contain the string "AHB" in their file name.
-    #     """
-    #     return [path for path in paths_to_docx_files if "AHB" in path.name]
-
     # pylint: disable=line-too-long
     # @staticmethod
     # def group_files_by_name_prefix(paths_to_docx_files: list[Path]) -> dict[str, list[Path]]:
