@@ -167,9 +167,9 @@ class TestDocxFileFinder:
 
         # Set up test paths with only non-informational versions
         docx_file_finder.result_paths = [
-            Path("UTILMDAHB-4.0_20240701_20240401.docx"),
-            Path("APERAKAHB-2.0_20240701_20240401.docx"),
-            Path("MIG-1.0_20240701_20240401.docx"),
+            Path("AHB_COMDIS_1.0f_20250606_99991231_20250606_oooo_8872.pdf"),
+            Path("AHB_CONTRL_2.4a_20250606_99991231_20250606_oooo_8927.pdf"),
+            Path("MIG_ORDRSP_1.4_20250606_99991231_20250606_oooo_9796.pdf"),
         ]
 
         # Apply filter
