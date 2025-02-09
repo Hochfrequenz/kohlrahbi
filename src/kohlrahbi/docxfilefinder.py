@@ -431,17 +431,6 @@ class DocxFileFinder(BaseModel):
 
         self.result_paths = [path for path in self.result_paths if str(edifact_format) in path.name]
 
-    # def remove_temporary_files(self) -> None:
-    #     """
-    #     This method removes all temporary files from paths_to_docx_files.
-    #     Temporary files lead to the exception `BadZipFile: File is not a zip file`.
-    #     It appears if a docx file is opened by Word.
-    #     """
-
-    #     self.path_to_edi_energy_mirror = [
-    #         path for path in self.path_to_edi_energy_mirror if not path.name.startswith("~")
-    #     ]
-
     def get_docx_files_which_may_contain_searched_pruefi(self, searched_pruefi: str) -> list[Path]:
         """
         This functions takes a pruefidentifikator and returns a list of docx files which can contain the searched pruefi
