@@ -154,14 +154,15 @@ def get_ahb_documents_path(base_path: Path, version: str) -> Path:
     return path
 
 
-def find_pruefidentifikatoren(path: Path) -> dict[str, str]:
+def find_pruefidentifikatoren(path: Path, format_version: EdifactFormatVersion) -> dict[str, str]:
     """finds pruefis in given dir"""
-    pruefis = {}
+    pruefis: dict[str, str] = {}
 
-    ahb_file_finder = DocxFileFinder.from_input_path(input_path=path)
-    ahb_file_finder.filter_for_latest_ahb_docx_files()
+    file_finder = DocxFileFinder(path_to_edi_energy_mirror=path, format_version=format_version)
 
-    for docx_path in ahb_file_finder.paths_to_edi_energy_mirror:
+    file_finder.get_file_paths_for_ahbs()
+
+    for docx_path in file_finder.result_paths:
         pruefis.update(extract_pruefis_from_docx(docx_path))
     return dict(sorted(pruefis.items()))
 
@@ -228,8 +229,8 @@ def get_pruefi_to_file_mapping(basic_input_path: Path, format_version: EdifactFo
             raise ReferenceError(f"Could not find pruefidentifikatoren in {default_path_to_cache_file}")
         return dict(pruefi_to_file_mapping)
 
-    path_to_docx_files = basic_input_path / Path(f"edi_energy_de/{format_version}")
-    pruefi_to_file_mapping = find_pruefidentifikatoren(path_to_docx_files)
+    # path_to_docx_files = basic_input_path / Path(f"edi_energy_de/{format_version}")
+    pruefi_to_file_mapping = find_pruefidentifikatoren(basic_input_path, format_version=format_version)
     save_pruefi_map_to_toml(pruefi_to_file_mapping, format_version.value)
     return pruefi_to_file_mapping
 
