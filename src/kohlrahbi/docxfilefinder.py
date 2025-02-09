@@ -421,36 +421,6 @@ class DocxFileFinder(BaseModel):
 
         self.result_paths = [path for path in self.result_paths if str(edifact_format) in path.name]
 
-    def get_docx_files_which_contain_quality_map(self) -> list[Path]:
-        """
-        This function returns a list of docx files which contain a quality map.
-        Only the UTILMD AHB Strom documents contain quality maps.
-
-        Returns:
-            list[Path]: A list of paths to the most recent UTILMD AHB Strom documents.
-        """
-        # Get all docx files in the directory
-        docx_files = self._get_valid_docx_files(self.path_to_edi_energy_mirror)
-
-        # Filter for informational versions
-        informational_versions = self._filter_informational_versions(docx_files)
-
-        # Group documents by kind and format
-        grouped_docs = self.group_documents_by_kind_and_format(informational_versions)
-
-        # Find the UTILMD AHB Strom group
-        utilmd_strom_docs = []
-        for group_key, group_paths in grouped_docs.items():
-            if any("UTILMDAHBStrom" in path.name for path in group_paths):
-                utilmd_strom_docs.extend(group_paths)
-
-        if not utilmd_strom_docs:
-            return []
-
-        # Get the most recent version
-        most_recent = get_most_recent_file(utilmd_strom_docs)
-        return [most_recent] if most_recent else []
-
     @staticmethod
     def group_documents_by_kind_and_format(paths: list[Path]) -> dict[tuple[str, str], list[Path]]:
         """
