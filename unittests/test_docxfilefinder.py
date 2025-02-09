@@ -256,20 +256,20 @@ class TestDocxFileFinder:
         # Set up test paths with error corrections and regular versions
         docx_file_finder.result_paths = [
             # Regular versions
-            Path("AHB_COMDIS_1.0f_20250606_99991231_20250606_oooo_8872.docx"),
-            Path("AHB_CONTRL_2.4a_20250606_99991231_20250606_oooo_8927.docx"),
-            Path("MIG_UTILMD_S2.1_20250606_20250129_20241213_xoxo_11160.docx"),
+            Path("AHB_CONTRL_2.4a_20250606_99991231_20250606_ooox_8928.docx"),
+            Path("MIG_QUOTES_1.3a_20250606_99991231_20250606_ooox_10001.docx"),
+            Path("MIG_UTILMD_S2.1_20250606_99991231_20250606_ooox_10660.docx"),
             # Error correction versions (should be preferred)
-            Path("AHB_COMDIS_1.0f_20250606_99991231_20250606_ooox_8871.docx"),
             Path("AHB_CONTRL_2.4a_20250606_99991231_20241213_xoxx_11128.docx"),
-            Path("MIG_UTILMD_S2.1_20250606_20250129_20241213_xoxx_11161.docx"),
+            Path("MIG_QUOTES_1.3a_20250606_99991231_20241213_xoxx_11155.docx"),
+            Path("MIG_UTILMD_S2.1_20250606_99991231_20250131_xoxx_11449.docx"),
         ]
 
         # Expected results (only error correction versions)
         expected_paths = [
-            Path("AHB_COMDIS_1.0f_20250606_99991231_20250606_ooox_8871.docx"),
             Path("AHB_CONTRL_2.4a_20250606_99991231_20241213_xoxx_11128.docx"),
-            Path("MIG_UTILMD_S2.1_20250606_20250129_20241213_xoxx_11161.docx"),
+            Path("MIG_QUOTES_1.3a_20250606_99991231_20241213_xoxx_11155.docx"),
+            Path("MIG_UTILMD_S2.1_20250606_99991231_20250131_xoxx_11449.docx"),
         ]
 
         # Apply filter
@@ -278,3 +278,66 @@ class TestDocxFileFinder:
         # Verify results
         assert len(docx_file_finder.result_paths) == len(expected_paths)
         assert sorted(docx_file_finder.result_paths) == sorted(expected_paths)
+
+    def test_filter_error_corrections(self):
+        """Test that _filter_error_corrections correctly filters for error correction versions."""
+        # Create DocxFileFinder instance
+        docx_file_finder = DocxFileFinder(
+            path_to_edi_energy_mirror=Path("dummy"), format_version=EdifactFormatVersion.FV2504
+        )
+
+        # Test case 1: Group with error corrections
+        group_with_corrections = [
+            # Error correction versions (should be kept)
+            Path("AHB_CONTRL_2.4a_20250606_99991231_20241213_xoxx_11128.docx"),
+            Path("MIG_ORDERS_1.4a_20250606_99991231_20241213_xoxx_11139.docx"),
+            # Regular versions (should be filtered out)
+            Path("AHB_CONTRL_2.4a_20250606_99991231_20250606_ooox_8928.docx"),
+            Path("MIG_ORDERS_1.4a_20250606_99991231_20250606_ooox_9744.docx"),
+        ]
+
+        # Expected results for group with corrections
+        expected_corrections = [
+            Path("AHB_CONTRL_2.4a_20250606_99991231_20241213_xoxx_11128.docx"),
+            Path("MIG_ORDERS_1.4a_20250606_99991231_20241213_xoxx_11139.docx"),
+        ]
+
+        result = docx_file_finder._filter_error_corrections(group_with_corrections)  # pylint: disable=protected-access
+        assert sorted(result) == sorted(expected_corrections)
+
+        # Test case 2: Group without error corrections
+        group_without_corrections = [
+            Path("AHB_COMDIS_1.0f_20250606_99991231_20250606_oooo_8872.docx"),
+            Path("AHB_CONTRL_2.4a_20250606_99991231_20250606_ooox_8928.docx"),
+        ]
+
+        # Should return original group if no error corrections exist
+        result = docx_file_finder._filter_error_corrections(  # pylint: disable=protected-access
+            group_without_corrections
+        )
+        assert sorted(result) == sorted(group_without_corrections)
+
+    def test_filter_error_corrections_empty_group(self):
+        """Test that _filter_error_corrections handles empty groups correctly."""
+        docx_file_finder = DocxFileFinder(
+            path_to_edi_energy_mirror=Path("dummy"), format_version=EdifactFormatVersion.FV2504
+        )
+
+        result = docx_file_finder._filter_error_corrections([])  # pylint: disable=protected-access
+        assert result == []
+
+    def test_filter_error_corrections_single_file(self):
+        """Test that _filter_error_corrections handles single file groups correctly."""
+        docx_file_finder = DocxFileFinder(
+            path_to_edi_energy_mirror=Path("dummy"), format_version=EdifactFormatVersion.FV2504
+        )
+
+        # Test with single error correction file
+        single_correction = [Path("AHB_COMDIS_1.0f_20250606_99991231_20250606_ooox_8871.docx")]
+        result = docx_file_finder._filter_error_corrections(single_correction)  # pylint: disable=protected-access
+        assert result == single_correction
+
+        # Test with single non-error correction file
+        single_regular = [Path("AHB_COMDIS_1.0f_20250606_99991231_20250606_oooo_8872.docx")]
+        result = docx_file_finder._filter_error_corrections(single_regular)  # pylint: disable=protected-access
+        assert result == single_regular
