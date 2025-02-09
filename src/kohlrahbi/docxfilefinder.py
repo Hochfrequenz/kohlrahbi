@@ -346,30 +346,6 @@ class DocxFileFinder(BaseModel):
 
         return path_to_ahb_document.name.split("-")[0]
 
-    # @staticmethod
-    # def filter_latest_version(groups: dict[str, list[Path]]) -> list[Path]:
-    #     """
-    #     Filters and returns the latest version of the AHB or MIG .docx files
-    #     from the provided groups based on specific criteria.
-
-    #     The latest version is determined based on the presence of specific
-    #     keywords in the filename and the numerical suffix in the filename.
-
-    #     Parameters:
-    #     - groups (Dict[str, List[Path]]): A dictionary where keys are group identifiers
-    #     and values are lists of Path objects representing the file paths.
-
-    #     Returns:
-    #     - List[Path]: A list of Path objects representing the latest version of the files.
-    #     """
-    #     result: list[Path] = []
-
-    #     for group_items in groups.values():
-    #         most_recent_file = get_most_recent_file(group_items)
-    #         assert most_recent_file is not None, "Could not find the most recent file."
-    #         result.append(most_recent_file)
-    #     return result
-
     def _filter_docx_files_for_edifact_format(self, edifact_format: EdifactFormat) -> None:
         """
         Filters the result_paths to only include files containing the given EDIFACT format in their name.
