@@ -467,31 +467,6 @@ class DocxFileFinder(BaseModel):
             return []
         return self.path_to_edi_energy_mirror
 
-    # def get_all_docx_files_which_contain_change_histories(self) -> list[Path]:
-    #     """
-    #     This function returns a list of docx files which probably contain a change history.
-    #     Only format documents like UTILMD, MSCONS etc. contain a change history.
-    #     """
-
-    #     # self.paths_to_docx_files = self.filter_for_docx_files_with_change_history(self.paths_to_docx_files)
-
-    #     # self.filter_for_latest_mig_and_ahb_docx_files()
-    #     self.remove_temporary_files()
-
-    #     paths_to_relevant_docx_files = []
-    #     for path in self.path_to_edi_energy_mirror:
-    #         document_metadata = extract_document_meta_data(path.name)
-    #         is_document_relevant = document_metadata is not None and (
-    #             document_metadata.is_informational_reading_version
-    #             and document_metadata.is_consolidated_reading_version
-    #             and document_metadata.is_error_correction
-    #         )
-    #         if is_document_relevant:
-    #             paths_to_relevant_docx_files.append(path)
-
-    #     self.path_to_edi_energy_mirror = paths_to_relevant_docx_files
-    #     return self.path_to_edi_energy_mirror
-
     def get_docx_files_which_contain_quality_map(self) -> list[Path]:
         """
         This function returns a list of docx files which contain a quality map.
