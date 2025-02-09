@@ -175,6 +175,36 @@ class DocxFileFinder(BaseModel):
 
         return self.result_paths
 
+    def get_file_paths_for_quality_map(self) -> list[Path]:
+        """
+        This function returns a list of docx files which contain a quality map.
+        Only the UTILMD AHB Strom documents contain quality maps.
+
+        Returns:
+            list[Path]: A list of paths to the most recent UTILMD AHB Strom documents.
+        """
+        self._get_valid_docx_files()
+        self._filter_informational_versions()
+
+        # Group documents by kind and format
+        grouped_docs = self.group_documents_by_kind_and_format(self.result_paths)
+
+        # Find the UTILMD AHB Strom group
+        utilmd_strom_docs = []
+        for _, group_paths in grouped_docs.items():
+            if any("UTILMDAHBStrom" in path.name for path in group_paths):
+                utilmd_strom_docs.extend(group_paths)
+
+        if not utilmd_strom_docs:
+            self.result_paths = []
+            return self.result_paths
+
+        # Update result_paths with UTILMD Strom docs and get most recent version
+        self.result_paths = utilmd_strom_docs
+        self._get_most_recent_versions()
+
+        return self.result_paths
+
     def _filter_for_ahb_docx_files(self) -> None:
         """Filter the list of AHB docx paths for the latest AHB docx files.
 
