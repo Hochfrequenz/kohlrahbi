@@ -192,7 +192,7 @@ class DocxFileFinder(BaseModel):
         # Find the UTILMD AHB Strom group
         utilmd_strom_docs = []
         for _, group_paths in grouped_docs.items():
-            if any("UTILMDAHBStrom" in path.name for path in group_paths):
+            if any("AHB_UTILMD" in path.name for path in group_paths):
                 utilmd_strom_docs.extend(group_paths)
 
         if not utilmd_strom_docs:
