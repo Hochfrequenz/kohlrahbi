@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+from efoli import EdifactFormatVersion
 from freezegun import freeze_time
 
 from kohlrahbi.ahb import find_pruefidentifikatoren, get_ahb_documents_path, save_pruefi_map_to_toml
@@ -13,7 +14,9 @@ class TestAhb:
         """
         test find_pruefidentifikatoren.
         """
-        pruefis = find_pruefidentifikatoren(Path(__file__).parents[1] / "edi_energy_mirror/edi_energy_de/FV2310")
+        pruefis = find_pruefidentifikatoren(
+            Path(__file__).parents[1] / "edi_energy_mirror/", EdifactFormatVersion.FV2410
+        )
         assert pruefis == snapshot
 
     def test_get_ahb_documents_path(self):
