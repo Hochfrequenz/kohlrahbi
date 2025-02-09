@@ -416,15 +416,20 @@ class DocxFileFinder(BaseModel):
     #         result.append(most_recent_file)
     #     return result
 
-    # def filter_docx_files_for_edifact_format(self, edifact_format: EdifactFormat) -> None:
-    #     """
-    #     Returns a list of docx files which contain the given edifact format.
-    #     This method is not pure. It changes the state of the object.
-    #     """
+    def _filter_docx_files_for_edifact_format(self, edifact_format: EdifactFormat) -> None:
+        """
+        Filters the result_paths to only include files containing the given EDIFACT format in their name.
 
-    #     self.path_to_edi_energy_mirror = [
-    #         path for path in self.path_to_edi_energy_mirror if str(edifact_format) in path.name
-    #     ]
+        This method modifies the state of the object by updating result_paths.
+
+        Args:
+            edifact_format (EdifactFormat): The EDIFACT format to filter for (e.g. UTILMD, MSCONS)
+
+        Returns:
+            None
+        """
+
+        self.result_paths = [path for path in self.result_paths if str(edifact_format) in path.name]
 
     # def remove_temporary_files(self) -> None:
     #     """
