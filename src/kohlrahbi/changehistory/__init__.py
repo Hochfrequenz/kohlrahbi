@@ -172,8 +172,8 @@ def scrape_change_histories(input_path: Path, output_path: Path, format_version:
     """
     logger.info("👀 Start looking for change histories")
     path_to_files_with_changehistory = DocxFileFinder(
-        path_to_edi_energy_mirror=input_path
-    ).get_file_paths_for_change_history(format_version=format_version)
+        path_to_edi_energy_mirror=input_path, format_version=format_version
+    ).get_file_paths_for_change_history()
 
     change_history_collection = {}
     for file_path in path_to_files_with_changehistory:
