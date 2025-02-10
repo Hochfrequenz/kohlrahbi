@@ -152,14 +152,6 @@ def save_change_histories_to_excel(change_history_collection: dict[str, pd.DataF
                 worksheet.set_column(col_num, col_num, width, wrap_format)
 
 
-def find_docx_files(input_path: Path) -> list[Path]:
-    """
-    Find all .docx files containing change histories.
-    """
-    docx_file_finder = DocxFileFinder.from_input_path(input_path=input_path)
-    return docx_file_finder.get_all_docx_files_which_contain_change_histories()
-
-
 def process_docx_file(file_path: Path) -> Optional[pd.DataFrame]:
     """
     Read and process change history from a .docx file.
