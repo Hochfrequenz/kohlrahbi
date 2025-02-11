@@ -9,6 +9,7 @@ The main functions in this module are:
 - `create_sheet_name`: Creates a sheet name from the filename.
 """
 
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
@@ -17,6 +18,7 @@ import docx
 import pandas as pd
 from docx.document import Document
 from docx.table import Table
+from efoli import EdifactFormatVersion
 
 from kohlrahbi.changehistory.changehistorytable import ChangeHistoryTable
 from kohlrahbi.docxfilefinder import DocxFileFinder
@@ -52,6 +54,63 @@ def get_change_history_table(document: Document) -> Optional[ChangeHistoryTable]
     return None
 
 
+def extract_sheet_name(filename: str) -> str:
+    """
+    Extract and format a valid Excel sheet name from a filename.
+    The sheet name will be no longer than 31 characters (Excel's limit).
+
+    Args:
+        filename (str): The full filename like 'AHB_COMDIS_1.0f_20250606_99991231_20250606_ooox_8871.docx'
+                       or 'Entscheidungsbaum-DiagrammeundCodelisten-informatorischeLesefassung3.5.docx'
+                       or 'EBD_4.0b_20250606_20250131_20241215_xoxx_11449.docx'
+
+    Returns:
+        str: The extracted sheet name, shortened to max 31 chars
+    """
+    # Remove .docx extension if present
+    filename = filename.replace(".docx", "")
+
+    # Handle standard AHB/MIG/EBD files
+    parts = filename.split("_")
+    if parts[0] in ["AHB", "MIG", "EBD"]:
+        if parts[0] == "EBD":
+            # EBD files have format: EBD_4.0b_date_...
+            return f"{parts[0]}_{parts[1]}"
+        # AHB/MIG files have format: AHB_COMDIS_1.0f_date_...
+        return f"{parts[0]}_{parts[1]}_{parts[2]}"
+
+    # Handle special cases
+    if filename.startswith("allgemeinefestlegungeninformatorischelesefassung"):
+        # Extract version if present
+        version_pattern = r".*?_?([0-9]+\.[0-9]+[a-zA-Z]*)(?:_\d{8}|$)"
+        version_match = re.search(version_pattern, filename)
+        version = version_match.group(1) if version_match else ""
+        return f"Allgemeine_Festlegungen_{version}"
+
+    if filename.startswith("apiguidelineinformatorischelesefassung"):
+        version_pattern = r".*?_?([0-9]+\.[0-9]+[a-zA-Z]*)(?:_\d{8}|$)"
+        version_match = re.search(version_pattern, filename)
+        version = version_match.group(1) if version_match else ""
+        return f"API_Guideline_{version}"
+
+    if filename.startswith("codeliste"):
+        version_pattern = r".*?_?([0-9]+\.[0-9]+[a-zA-Z]*)(?:_\d{8}|$)"
+        version_match = re.search(version_pattern, filename)
+        version = version_match.group(1) if version_match else ""
+        return f"CL_der_Konfigurationen_{version}"
+
+    # Handle Entscheidungsbaum files
+    if filename.startswith("Entscheidungsbaum"):
+        version_pattern = r".*?([0-9]+\.[0-9]+)(?:_\d{8}|$)"
+        version_match = re.search(version_pattern, filename)
+        version = version_match.group(1) if version_match else ""
+        return f"EBDs_CL_{version}"
+
+    # For any other cases, just return the filename without extension
+    # and ensure it's not longer than 31 characters
+    return filename[:31]
+
+
 def save_change_histories_to_excel(change_history_collection: dict[str, pd.DataFrame], output_path: Path) -> None:
     """
     Save the collected change histories to an Excel file.
@@ -73,11 +132,12 @@ def save_change_histories_to_excel(change_history_collection: dict[str, pd.DataF
     # https://github.com/PyCQA/pylint/issues/3060 pylint: disable=abstract-class-instantiated
     with pd.ExcelWriter(path_to_change_history_excel_file, engine="xlsxwriter") as writer:
         for sheet_name, df in change_history_collection.items():
-            df.to_excel(writer, sheet_name=sheet_name)
+            shorten_sheet_name = extract_sheet_name(filename=sheet_name)
+            df.to_excel(writer, sheet_name=shorten_sheet_name)
 
             # Access the XlsxWriter workbook and worksheet objects
             workbook = writer.book
-            worksheet = writer.sheets[sheet_name]
+            worksheet = writer.sheets[shorten_sheet_name]  # Use shortened name here
 
             # Create a text wrap format, this is needed to avoid the text being cut off in the cells
             wrap_format = workbook.add_format({"text_wrap": True})
@@ -90,36 +150,6 @@ def save_change_histories_to_excel(change_history_collection: dict[str, pd.DataF
             # Apply text wrap format to each cell
             for col_num, width in enumerate(column_widths):
                 worksheet.set_column(col_num, col_num, width, wrap_format)
-
-
-def create_sheet_name(filename: str) -> str:
-    """
-    Creates a sheet name from the filename.
-
-    We need to shorten the sheet name because Excel only allows 31 characters for sheet names.
-    This function replaces some words with acronyms and removes some words.
-    """
-    sheet_name = filename.split("-informatorischeLesefassung")[0]
-
-    if "Entscheidungsbaum-Diagramm" in sheet_name:
-        sheet_name = sheet_name.replace("Entscheidungsbaum", "EBDs")
-    if "Artikelnummern" in sheet_name:
-        sheet_name = sheet_name.replace("Artikelnummern", "Artikelnr")
-    if "Codeliste" in sheet_name:
-        sheet_name = sheet_name.replace("Codeliste", "CL")
-    if len(sheet_name) > 31:
-        # Excel only allows 31 characters for sheet names
-        # but REQOTEQUOTESORDERSORDRSPORDCHGAHB is 33 characters long
-        sheet_name = sheet_name.replace("HG", "")
-    return sheet_name
-
-
-def find_docx_files(input_path: Path) -> list[Path]:
-    """
-    Find all .docx files containing change histories.
-    """
-    docx_file_finder = DocxFileFinder.from_input_path(input_path=input_path)
-    return docx_file_finder.get_all_docx_files_which_contain_change_histories()
 
 
 def process_docx_file(file_path: Path) -> Optional[pd.DataFrame]:
@@ -136,17 +166,19 @@ def process_docx_file(file_path: Path) -> Optional[pd.DataFrame]:
     return None
 
 
-def scrape_change_histories(input_path: Path, output_path: Path) -> None:
+def scrape_change_histories(input_path: Path, output_path: Path, format_version: EdifactFormatVersion) -> None:
     """
     starts the scraping process of the change histories
     """
     logger.info("👀 Start looking for change histories")
-    ahb_file_paths = find_docx_files(input_path)
+    path_to_files_with_changehistory = DocxFileFinder(
+        path_to_edi_energy_mirror=input_path, format_version=format_version
+    ).get_file_paths_for_change_history()
 
     change_history_collection = {}
-    for file_path in ahb_file_paths:
+    for file_path in path_to_files_with_changehistory:
         df = process_docx_file(file_path)
         if df is not None:
-            change_history_collection[create_sheet_name(file_path.name)] = df
+            change_history_collection[extract_sheet_name(file_path.name)] = df
 
     save_change_histories_to_excel(change_history_collection, output_path)

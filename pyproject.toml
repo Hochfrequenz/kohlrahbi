@@ -13,16 +13,16 @@ build-backend = "hatchling.build"
 dependencies = [
   "click>=8.1.7",
   "colorlog>=6.9.0",
+  "edi_energy_scraper>=2.0.0",
+  "efoli>=1.4.0",
   "more_itertools>=10.5.0",
   "openpyxl>=3.1.5",
   "pandas>=2.2.3",
+  "pydantic>=2.9.2",
   "python-docx>=1.1.2",
   "pytz>=2024.2",
-  "pydantic>=2.9.2",
   "tomlkit>=0.13.2",
   "xlsxwriter>=3.2.0",
-  "efoli>=1.4.0",
-  "edi_energy_scraper>=2.0.0"
 ]
 
 name = "kohlrahbi"
@@ -49,10 +49,7 @@ dynamic = ["readme", "version"]
 kohlrahbi = "kohlrahbi:cli"
 
 [project.optional-dependencies]
-sqlmodels = [
-  "sqlmodel>=0.0.22",
-  "sqlalchemy[mypy]>=2.0.37"
-]
+sqlmodels = ["sqlmodel>=0.0.22", "sqlalchemy[mypy]>=2.0.37"]
 dev = [
   "kohlrahbi[sqlmodels]",
   "kohlrahbi[test]",
