@@ -57,6 +57,9 @@ KohlrAHBi as a tool helps you to break those chains and access the AHBs as you'd
 Hence, KohlrAHBi is the key for unlocking any automation potential that is reliant on information hidden in the Anwendungshandbücher.
 
 We're all hoping for the day of true digitization on which this repository will become obsolete.
+**Update 2025**: Indeed the machine-readable (XML) MIGs and AHBs available in a paid BDEW subscription make lots of the kohlrahbi features obsolete 🎉.
+Still, some issues remain:
+  1. The XML AHBs do not contain an "Änderungshistorie" although with some work you could compute them from the XMLs (more of a ahlbatross feature)
 
 ## Installation
 
