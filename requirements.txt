@@ -22,7 +22,7 @@ colorama==0.4.6
     #   colorlog
 colorlog==6.9.0
     # via kohlrahbi (pyproject.toml)
-edi-energy-scraper==2.0.7
+edi-energy-scraper==2.0.8
     # via kohlrahbi (pyproject.toml)
 efoli==1.4.0
     # via
