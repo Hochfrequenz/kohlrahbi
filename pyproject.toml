@@ -63,7 +63,7 @@ dev = [
 lint = ["pylint==3.3.4", "pylint-pydantic==0.3.5"]
 test = [
   "kohlrahbi[sqlmodels]",
-  "coverage==7.6.10",
+  "coverage==7.6.12",
   "dictdiffer==0.9.0",
   "freezegun==1.5.1",
   "pytest-datafiles==3.0.0",
@@ -80,7 +80,7 @@ typecheck = [
   "types-requests==2.32.0.20241016 ",
 ]
 spell_check = ["codespell==2.4.1"]
-coverage = ["coverage==7.6.10"]
+coverage = ["coverage==7.6.12"]
 formatting = ["black==25.1.0", "isort==6.0.0"]
 test_packaging = ["build==1.2.2.post1", "twine==6.1.0"]
 
