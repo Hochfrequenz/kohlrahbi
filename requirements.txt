@@ -52,7 +52,7 @@ openpyxl==3.1.5
     # via kohlrahbi (pyproject.toml)
 pandas==2.2.3
     # via kohlrahbi (pyproject.toml)
-propcache==0.2.1
+propcache==0.3.0
     # via
     #   aiohttp
     #   yarl
