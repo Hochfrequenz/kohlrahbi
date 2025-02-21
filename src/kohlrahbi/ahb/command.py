@@ -9,6 +9,7 @@ import click
 from efoli import EdifactFormatVersion
 
 from kohlrahbi.ahb import scrape_pruefis
+from kohlrahbi.ahb.ahb_xml_functions import scrape_xml_pruefis
 from kohlrahbi.enums.ahbexportfileformat import AhbExportFileFormat
 
 
@@ -82,6 +83,13 @@ you will be asked if you want to create it.""",
     help="Format version(s) of the AHB documents, e.g. FV2310",
 )
 @click.option(
+    "--parse-from-xml",
+    "-xml",
+    is_flag=True,
+    default=False,
+    help="Uses xml files as datasource.",
+)
+@click.option(
     "--assume-yes",
     "-y",
     is_flag=True,
@@ -101,6 +109,7 @@ def ahb(
     output_path: Path,
     file_type: tuple[AhbExportFileFormat, ...],
     format_version: EdifactFormatVersion | str,
+    parse_from_xml: bool,
     assume_yes: bool,  # pylint: disable=unused-argument
     clear_output_path: bool = False,
     # it is used by the callback function of the output-path
@@ -113,11 +122,22 @@ def ahb(
     if isinstance(format_version, str):
         format_version = EdifactFormatVersion(format_version)
 
-    scrape_pruefis(
-        pruefis=list(pruefis),
-        basic_input_path=edi_energy_mirror_path,
-        output_path=output_path,
-        file_type=file_type,
-        format_version=format_version,
-        clear_output_path=clear_output_path,
-    )
+    if not parse_from_xml:
+        scrape_pruefis(
+            pruefis=list(pruefis),
+            basic_input_path=edi_energy_mirror_path,
+            output_path=output_path,
+            file_type=file_type,
+            format_version=format_version,
+            clear_output_path=clear_output_path,
+        )
+        
+
+    else:
+        scrape_xml_pruefis(
+            pruefis=list(pruefis),
+            input_path=edi_energy_mirror_path,
+            output_path=output_path,
+            file_type=file_type,
+            format_version=format_version,
+        )
