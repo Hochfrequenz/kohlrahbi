@@ -68,7 +68,7 @@ test = [
   "freezegun==1.5.1",
   "pytest-datafiles==3.0.0",
   "pytest==8.3.4",
-  "syrupy==4.8.1",
+  "syrupy==4.8.2",
 ]
 typecheck = [
   "kohlrahbi[sqlmodels]",
