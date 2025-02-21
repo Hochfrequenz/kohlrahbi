@@ -47,6 +47,7 @@ def scrape_conditions(
         for file in files:
             # pylint: disable=too-many-function-args
             path: Path = basic_input_path / path_to_file / Path(file)
+            assert path.exists(), f"File {path} does not exist"
             doc = docx.Document(str(path.absolute()))
             logger.info("Start scraping conditions for %s in %s", edifact_format, file)
             if not doc:
