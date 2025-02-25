@@ -6,7 +6,7 @@
 #
 aiohappyeyeballs==2.4.6
     # via aiohttp
-aiohttp==3.11.12
+aiohttp==3.11.13
     # via edi-energy-scraper
 aiosignal==1.3.2
     # via aiohttp
