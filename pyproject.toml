@@ -81,7 +81,7 @@ typecheck = [
 ]
 spell_check = ["codespell==2.4.1"]
 coverage = ["coverage==7.6.12"]
-formatting = ["black==25.1.0", "isort==6.0.0"]
+formatting = ["black==25.1.0", "isort==6.0.1"]
 test_packaging = ["build==1.2.2.post1", "twine==6.1.0"]
 
 [project.urls]
