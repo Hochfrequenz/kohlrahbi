@@ -60,7 +60,7 @@ pydantic==2.9.2
     # via
     #   edi-energy-scraper
     #   kohlrahbi (pyproject.toml)
-pydantic-core==2.23.4
+pydantic-core==2.31.1
     # via pydantic
 pypdf==5.3.0
     # via edi-energy-scraper
