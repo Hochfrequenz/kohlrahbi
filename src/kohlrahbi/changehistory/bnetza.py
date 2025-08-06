@@ -14,33 +14,28 @@ from openpyxl.styles import Alignment
 
 logger = logging.getLogger(__name__)
 
-BNETZA_URL = "https://www.bundesnetzagentur.de/DE/Beschlusskammern/BK06/BK6_83_Zug_Mess/835_mitteilungen_datenformate/Mitteilung_48/Mitteilung_Nr_48.html?nn=875498"
+BNETZA_URL = "https://www.bundesnetzagentur.de/DE/Beschlusskammern/BK06/BK6_83_Zug_Mess/835_mitteilungen_datenformate/Mitteilung_52/Mitteilung_Nr_52.html?nn=875498"
 
 # List of EDIFACT documents to download
 EDIFACT_DOCUMENTS = [
-    "Anwendungsübersicht der Prüfindikatoren 3.2",
-    "APERAK AHB 1.0",
-    "COMDIS AHB 1.0g",
-    "COMDIS MIG 1.0f",
-    "CONTRL AHB 1.0",
-    "IFTSTA AHB 2.0h",
-    "IFTSTA MIG 2.0g",
-    "INVOIC AHB 1.0",
-    "INVOIC MIG 2.8e",
-    "ORDERS AHB 1.1",
-    "ORDERS MIG 1.4b",
-    "ORDRSP AHB 1.1",
-    "ORDRSP MIG 1.4a",
-    "PRICAT AHB 2.0f",
-    "PRICAT MIG 2.0e",
-    "QUOTES AHB 1.1",
-    "QUOTES MIG 1.3b",
-    "REMADV AHB 1.0",
-    "REMADV MIG 2.9d",
-    "REQOTE AHB 1.1",
-    "REQOTE MIG 1.3c",
-    "Codeliste der Artikelnummern und Artikel-ID 5.6",
-    "Entscheidungsbaum-Diagramme und Codelisten 4.1",
+    "COMDIS AHB 1.0h",
+    "Allgemeine Festlegungen ",
+    "Anwendungsübersicht der Prüfidentifikatoren ",
+    "Codeliste der OBIS-Kennzahlen und Medien 2.5c",
+    "COMDIS MIG 1.0g",
+    "Konzept zur Nutzung der Kontaktinformationen des Senders in den EDI@Energy Nachrichtentypen 1.0",
+    "Konzept zur Weiterentwicklung der Berechnungsformel, der Lokationsbündelstruktur und der Zählzeiten 1.0",
+    "MSCONS AHB ",
+    "ORDERS AHB ",
+    "ORDRSP AHB ",
+    "ORDRSP MIG 1.4b",
+    "PARTIN AHB ",
+    "PARTIN MIG ",
+    "REMADV AHB 1.0a",
+    "REMADV MIG 2.9e",
+    "UTILMD AHB Gas ",
+    "UTILMD MIG Gas G",
+    "Entscheidungsbaum-Diagramme und Codelisten für die Antwortnachrichten, Version 4.2",
 ]
 
 
