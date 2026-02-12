@@ -209,18 +209,13 @@ def clean_table_data(table: List[List[Optional[str]]]) -> List[List[str]]:
         logger.warning("Table has insufficient rows (%d), need at least 2", len(table))
         return []
 
-    # Get headers and sub-headers
-    headers = table[0]  # First row is headers
-    sub_header = table[1]  # Second row is sub-headers
+    headers = table[0]
 
-    # Start with headers and sub-headers
     result = [headers]
-    result.append(sub_header)
-
     current_row = None
 
-    # Process each data row (skip header)
-    for row in table[1:]:
+    # Process each data row (skip header and sub-header)
+    for row in table[2:]:
         # Convert None to empty strings in current row
         row = [str(cell) if cell is not None else "" for cell in row]
         # If first column (Änd-ID) is empty, merge with previous row
@@ -274,35 +269,40 @@ def extract_change_history(pdf_path: Path) -> pd.DataFrame:
                 "Found Änderungshistorie section in %s starting at page %d", pdf_path.name, change_history_page + 1
             )
 
-            # Now only scan pages from the Änderungshistorie page onwards
+            all_rows: List[List] = []
+
+            # Scan pages from the Änderungshistorie page onwards, collecting raw rows
             for page in pdf.pages[change_history_page:]:
                 tables = page.extract_tables()
                 logger.debug("Page %d has %d tables", page.page_number + 1, len(tables))
 
                 for table_idx, table in enumerate(tables):
-                    if table and len(table) > 0 and table[0]:
-                        first_cell = table[0][0]
-                        is_change_history_table = first_cell == "Änd-ID" or first_cell == "Änd-\nID"
-                        if is_change_history_table:
-                            logger.info(
-                                "Found change history table in %s on page %d (table %d)",
-                                pdf_path.name,
-                                page.page_number + 1,
-                                table_idx + 1,
-                            )
-                            # Clean up the table data before converting to DataFrame
-                            cleaned_table = clean_table_data(table)
-                            # Convert to DataFrame
-                            df = pd.DataFrame(cleaned_table[1:], columns=cleaned_table[0])
-                            logger.info("Extracted %d rows of change history data from %s", len(df), pdf_path.name)
-                            return df
+                    if not table or not table[0]:
+                        continue
+
+                    first_cell = table[0][0]
+                    is_change_history_table = first_cell == "Änd-ID" or first_cell == "Änd-\nID"
+
+                    if is_change_history_table:
+                        logger.info(
+                            "Found change history table in %s on page %d (table %d)",
+                            pdf_path.name,
+                            page.page_number + 1,
+                            table_idx + 1,
+                        )
+                        if not all_rows:
+                            # First table: keep header and sub-header
+                            all_rows.extend(table)
                         else:
-                            logger.debug(
-                                "Table %d on page %d starts with: %s",
-                                table_idx + 1,
-                                page.page_number + 1,
-                                repr(first_cell),
-                            )
+                            # Subsequent tables: skip header (row 0) and sub-header (row 1)
+                            all_rows.extend(table[2:])
+
+            if all_rows:
+                cleaned_table = clean_table_data(all_rows)
+                if cleaned_table:
+                    df = pd.DataFrame(cleaned_table[1:], columns=cleaned_table[0])
+                    logger.info("Extracted %d rows of change history data from %s", len(df), pdf_path.name)
+                    return df
 
             logger.warning("No change history table found in %s", pdf_path.name)
             return pd.DataFrame()
