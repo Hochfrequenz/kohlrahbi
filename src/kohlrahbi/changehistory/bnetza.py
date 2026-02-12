@@ -209,9 +209,14 @@ def clean_table_data(table: List[List[Optional[str]]]) -> List[List[str]]:
         logger.warning("Table has insufficient rows (%d), need at least 2", len(table))
         return []
 
-    headers = table[0]
+    # Get headers and sub-headers
+    headers = table[0]  # First row is headers
+    sub_header = table[1]  # Second row is sub-headers
 
+    # Start with headers and sub-headers
     result = [headers]
+    result.append(sub_header)
+
     current_row = None
 
     # Process each data row (skip header and sub-header)
