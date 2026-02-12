@@ -193,6 +193,39 @@ def find_change_history_page(pdf: pdfplumber.PDF) -> int:
     return -1
 
 
+def _merge_columns(cells: List[Optional[str]]) -> str:
+    """Merge multiple cells into one, joining non-empty values with newlines."""
+    parts = [str(c) for c in cells if c is not None and str(c).strip()]
+    return "\n".join(parts) if parts else ""
+
+
+def normalize_table_columns(table: List[List[Optional[str]]]) -> List[List[Optional[str]]]:
+    """
+    Normalize tables with 10 columns (e.g. Allgemeine Festlegungen) to the standard 6-column layout.
+
+    The 10-column layout from pdfplumber looks like:
+        [Änd-ID, Ort, _, Fehlerkorrektur/Änderung, _, _, _, _, Grund der Anpassung, Status]
+        [_, _, _, Bisher, _, _, Neu, _, _, _]
+
+    This maps to 6 logical columns:
+        [Änd-ID, Ort, Bisher, Neu, Grund der Anpassung, Status]
+    """
+    if not table or len(table[0]) != 10:
+        return table
+
+    normalized = []
+    for row in table:
+        normalized.append([
+            row[0],                       # Änd-ID
+            row[1],                       # Ort
+            _merge_columns(row[2:5]),     # Bisher (cols 2-4)
+            _merge_columns(row[5:8]),     # Neu (cols 5-7)
+            row[8],                       # Grund der Anpassung
+            row[9],                       # Status
+        ])
+    return normalized
+
+
 def clean_table_data(table: List[List[Optional[str]]]) -> List[List[str]]:
     """
     Clean up the table data by merging related rows before converting to DataFrame.
@@ -295,6 +328,8 @@ def extract_change_history(pdf_path: Path) -> pd.DataFrame:
                             page.page_number + 1,
                             table_idx + 1,
                         )
+                        # Normalize 10-column tables to 6 columns
+                        table = normalize_table_columns(table)
                         if not all_rows:
                             # First table: keep header and sub-header
                             all_rows.extend(table)
