@@ -11,7 +11,6 @@ import pandas as pd
 import pdfplumber
 from bs4 import BeautifulSoup
 from openpyxl.styles import Alignment
-from openpyxl.utils import get_column_letter
 
 logger = logging.getLogger(__name__)
 
