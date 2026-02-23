@@ -11,31 +11,49 @@ import pandas as pd
 import pdfplumber
 from bs4 import BeautifulSoup
 from openpyxl.styles import Alignment
+from openpyxl.utils import get_column_letter
 
 logger = logging.getLogger(__name__)
 
-BNETZA_URL = "https://www.bundesnetzagentur.de/DE/Beschlusskammern/BK06/BK6_83_Zug_Mess/835_mitteilungen_datenformate/Mitteilung_52/Mitteilung_Nr_52.html?nn=875498"
+BNETZA_URL = "https://www.bundesnetzagentur.de/DE/Beschlusskammern/BK06/BK6_83_Zug_Mess/835_mitteilungen_datenformate/Mitteilung_55/Mitteilung_Nr_55.html?nn=660086"
 
 # List of EDIFACT documents to download
 EDIFACT_DOCUMENTS = [
-    "COMDIS AHB 1.0h",
-    "Allgemeine Festlegungen ",
-    "Anwendungsübersicht der Prüfidentifikatoren ",
-    "Codeliste der OBIS-Kennzahlen und Medien 2.5c",
-    "COMDIS MIG 1.0g",
-    "Konzept zur Nutzung der Kontaktinformationen des Senders in den EDI@Energy Nachrichtentypen 1.0",
-    "Konzept zur Weiterentwicklung der Berechnungsformel, der Lokationsbündelstruktur und der Zählzeiten 1.0",
-    "MSCONS AHB ",
-    "ORDERS AHB ",
-    "ORDRSP AHB ",
-    "ORDRSP MIG 1.4b",
-    "PARTIN AHB ",
-    "PARTIN MIG ",
-    "REMADV AHB 1.0a",
-    "REMADV MIG 2.9e",
-    "UTILMD AHB Gas ",
-    "UTILMD MIG Gas G",
-    "Entscheidungsbaum-Diagramme und Codelisten für die Antwortnachrichten, Version 4.2",
+    "Allgemeine Festlegungen 6.1d",
+    "APERAK AHB 1.1",
+    "APERAK MIG 2.2",
+    "Anwendungsübersicht der Prüfidentifikatoren 4.0",
+    "API Guideline 1.0b",
+    "Codeliste-Konfigurationen 1.4",
+    "Codeliste-Verwendungszwecke 1.0",
+    "IFTSTA AHB 2.1",
+    "IFTSTA MIG 2.1",
+    "INVOIC AHB 1.0b",
+    "MSCONS AHB 3.2",
+    "MSCONS MIG 2.5",
+    "ORDCHG AHB 1.1",
+    "ORDCHG MIG 1.2",
+    "ORDERS AHB 1.1b",
+    "ORDERS MIG 1.4c",
+    "ORDRSP AHB 1.1b",
+    "ORDRSP MIG 1.4c",
+    "PARTIN AHB 1.1",
+    "PARTIN MIG 1.1",
+    "PRICAT AHB 2.1",
+    "PRICAT MIG 2.1",
+    "QUOTES AHB 1.1a",
+    "QUOTES MIG 1.3c",
+    "REQOTE AHB 1.2",
+    "REQOTE MIG 1.3d",
+    "UTILMD AHB Strom 2.2",
+    "UTILMD MIG Strom S2.2",
+    "UTILMD AHB Gas 1.2",
+    "UTILMD MIG Gas G1.2",
+    "UTILTS AHB 1.1",
+    "EBD und Codelisten 4.3",
+    "Regelungen zum Übertragungsweg, Version 1.10",
+    "AS4-Profil, Version 1.2",
+    "Regelungen zum Übertragungsweg AS4, Version 2.6",
 ]
 
 
