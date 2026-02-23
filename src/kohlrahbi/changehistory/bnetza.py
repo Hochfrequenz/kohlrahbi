@@ -482,25 +482,3 @@ async def download_pdfs(url: str, target_dir: Optional[Path] = None) -> None:
         logger.error("Excel file was not created at: %s", output_file)
 
 
-def main() -> None:
-    """Main entry point for the script. Expects the BNetzA URL as the first command-line argument."""
-    import sys
-
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-
-    if len(sys.argv) < 2:
-        logger.error("Usage: python -m kohlrahbi.changehistory.bnetza <BNETZA_URL>")
-        sys.exit(1)
-
-    url = sys.argv[1]
-    logger.info("Starting BNetzA PDF processing for URL: %s", url)
-    try:
-        asyncio.run(download_pdfs(url=url))
-        logger.info("BNetzA PDF processing completed successfully")
-    except Exception as e:
-        logger.error("BNetzA PDF processing failed: %s", str(e))
-        raise
-
-
-if __name__ == "__main__":
-    main()
