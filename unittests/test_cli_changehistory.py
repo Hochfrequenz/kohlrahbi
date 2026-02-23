@@ -8,7 +8,7 @@ import pandas as pd
 from click.testing import CliRunner, Result
 from freezegun import freeze_time
 
-from kohlrahbi.changehistory.command import changehistory
+from kohlrahbi.changehistory.command import docx
 from unittests import path_to_test_edi_energy_mirror_repo, path_to_test_files_fv2310
 
 runner: CliRunner = CliRunner()
@@ -65,7 +65,7 @@ class TestCliChangeHistory:
         ]
 
         # Call the CLI tool with the desired arguments
-        response: Result = runner.invoke(changehistory, argument_options)
+        response: Result = runner.invoke(docx, argument_options)
 
         assert response.exit_code == 0
 
