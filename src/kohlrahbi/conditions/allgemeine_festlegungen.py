@@ -2,6 +2,7 @@
 """
 Contains conditions for times in allgemeine Festlegungen.
 """
+
 # We decided against adding the time_packages to the regular packages.
 # The time-packages are resolved by a special transformer in AHBicht:
 # https://github.com/Hochfrequenz/ahbicht/blob/c51c81d2be098dd79ff52b754979892396207fe2/src/ahbicht/expressions/expression_resolver.py#L149

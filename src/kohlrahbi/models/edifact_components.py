@@ -3,6 +3,7 @@
 EDIFACT components are data structures on different hierarchical levels inside an EDIFACT message.
 Components contain not only EDIFACT composites but also segments and segment groups.
 """
+
 import re
 from abc import ABC
 from enum import Enum

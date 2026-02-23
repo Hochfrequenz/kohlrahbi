@@ -143,7 +143,7 @@ def save_change_histories_to_excel(change_history_collection: dict[str, pd.DataF
             wrap_format = workbook.add_format({"text_wrap": True})
 
             # Get the dimensions of the DataFrame
-            (_, max_col) = df.shape
+            _, max_col = df.shape
 
             assert max_col + 1 == len(column_widths)  # +1 cause of index
 

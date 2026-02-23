@@ -142,7 +142,7 @@ def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
 
 def get_style_name(item: Paragraph | Table) -> str:
     """Extracts and normalizes the style name of a document item."""
-    return item.style.name if item.style else "None"  # type:ignore[no-any-return]
+    return item.style.name if item.style else "None"  # type: ignore[no-any-return]
 
 
 def reached_end_of_document(style_name: str, item: Paragraph | Table | None) -> bool:
@@ -188,7 +188,7 @@ def process_table(
         ahb_sub_table = AhbSubTable.from_headless_table(docx_table=item, tmd=seed)
         ahb_table.append_ahb_sub_table(ahb_sub_table=ahb_sub_table)
     # actually, the ahb_table is none here (see test_kohlrahbi_cli_with_valid_arguments)
-    return searched_pruefi_is_found, ahb_table  # type:ignore[return-value]
+    return searched_pruefi_is_found, ahb_table  # type: ignore[return-value]
 
 
 # Logging functions

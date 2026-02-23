@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Generator
 
 import pytest
-from _pytest.fixtures import SubRequest  # type:ignore[import]
+from _pytest.fixtures import SubRequest  # type: ignore[import]
 from docx import Document
 from docx.document import Document as DocumentClass
 from docx.table import Table

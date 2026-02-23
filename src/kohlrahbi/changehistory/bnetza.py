@@ -15,6 +15,7 @@ from openpyxl.utils import get_column_letter
 
 logger = logging.getLogger(__name__)
 
+
 def clean_filename(text: str) -> str:
     """
     Clean up the filename by removing file size information and special characters.
@@ -191,14 +192,16 @@ def normalize_table_columns(table: List[List[Optional[str]]]) -> List[List[Optio
 
     normalized = []
     for row in table:
-        normalized.append([
-            row[0],                       # Änd-ID
-            row[1],                       # Ort
-            _merge_columns(row[2:5]),     # Bisher (cols 2-4)
-            _merge_columns(row[5:8]),     # Neu (cols 5-7)
-            row[8],                       # Grund der Anpassung
-            row[9],                       # Status
-        ])
+        normalized.append(
+            [
+                row[0],  # Änd-ID
+                row[1],  # Ort
+                _merge_columns(row[2:5]),  # Bisher (cols 2-4)
+                _merge_columns(row[5:8]),  # Neu (cols 5-7)
+                row[8],  # Grund der Anpassung
+                row[9],  # Status
+            ]
+        )
     return normalized
 
 
@@ -480,5 +483,3 @@ async def download_pdfs(url: str, target_dir: Optional[Path] = None) -> None:
         logger.info("File size: %d bytes", output_file.stat().st_size)
     else:
         logger.error("Excel file was not created at: %s", output_file)
-
-

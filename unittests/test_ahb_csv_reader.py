@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Optional
 
-import pytest  # type:ignore[import]
+import pytest  # type: ignore[import]
 
 from kohlrahbi.models.flat_ahb_reader import FlatAhbCsvReader, check_file_can_be_parsed_as_ahb_csv
 
