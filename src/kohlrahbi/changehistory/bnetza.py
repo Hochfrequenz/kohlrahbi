@@ -46,7 +46,7 @@ async def get_pdf_links(url: str) -> List[Tuple[str, str]]:
     Args:
         url: The BNetzA page URL to scrape for PDF links.
     """
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=httpx.Timeout(30.0)) as client:
         response = await client.get(url)
         response.raise_for_status()
 
