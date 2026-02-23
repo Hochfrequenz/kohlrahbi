@@ -150,7 +150,7 @@ def find_change_history_page(pdf: pdfplumber.PDF) -> int:
     """
     # Check first few pages for table of contents
     for page_idx, page in enumerate(pdf.pages[:4]):  # Usually TOC is in first few pages
-        text = page.extract_text()
+        text = page.extract_text() or ""
         # Look for "Änderungshistorie" followed by a page number
         matches = re.finditer(r"Änderungshistorie[.\s]+(\d+)", text)
         for match in matches:
@@ -161,7 +161,7 @@ def find_change_history_page(pdf: pdfplumber.PDF) -> int:
 
     # Fallback: search through all pages
     for i, page in enumerate(pdf.pages):
-        if "Änderungshistorie" in page.extract_text():
+        if "Änderungshistorie" in (page.extract_text() or ""):
             logger.debug("Found Änderungshistorie text on page %d", i + 1)
             return i
 
