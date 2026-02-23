@@ -15,48 +15,6 @@ from openpyxl.utils import get_column_letter
 
 logger = logging.getLogger(__name__)
 
-BNETZA_URL = "https://www.bundesnetzagentur.de/DE/Beschlusskammern/BK06/BK6_83_Zug_Mess/835_mitteilungen_datenformate/Mitteilung_55/Mitteilung_Nr_55.html?nn=660086"
-
-# List of EDIFACT documents to download
-EDIFACT_DOCUMENTS = [
-    "Allgemeine Festlegungen 6.1d",
-    "APERAK AHB 1.1",
-    "APERAK MIG 2.2",
-    "Anwendungsübersicht der Prüfidentifikatoren 4.0",
-    "API Guideline 1.0b",
-    "Codeliste-Konfigurationen 1.4",
-    "Codeliste-Verwendungszwecke 1.0",
-    "IFTSTA AHB 2.1",
-    "IFTSTA MIG 2.1",
-    "INVOIC AHB 1.0b",
-    "MSCONS AHB 3.2",
-    "MSCONS MIG 2.5",
-    "ORDCHG AHB 1.1",
-    "ORDCHG MIG 1.2",
-    "ORDERS AHB 1.1b",
-    "ORDERS MIG 1.4c",
-    "ORDRSP AHB 1.1b",
-    "ORDRSP MIG 1.4c",
-    "PARTIN AHB 1.1",
-    "PARTIN MIG 1.1",
-    "PRICAT AHB 2.1",
-    "PRICAT MIG 2.1",
-    "QUOTES AHB 1.1a",
-    "QUOTES MIG 1.3c",
-    "REQOTE AHB 1.2",
-    "REQOTE MIG 1.3d",
-    "UTILMD AHB Strom 2.2",
-    "UTILMD MIG Strom S2.2",
-    "UTILMD AHB Gas 1.2",
-    "UTILMD MIG Gas G1.2",
-    "UTILTS AHB 1.1",
-    "EBD und Codelisten 4.3",
-    "Regelungen zum Übertragungsweg, Version 1.10",
-    "AS4-Profil, Version 1.2",
-    "Regelungen zum Übertragungsweg AS4, Version 2.6",
-]
-
-
 def clean_filename(text: str) -> str:
     """
     Clean up the filename by removing file size information and special characters.
@@ -80,33 +38,33 @@ def clean_filename(text: str) -> str:
     return text
 
 
-async def get_pdf_links() -> List[Tuple[str, str]]:
+async def get_pdf_links(url: str) -> List[Tuple[str, str]]:
     """
-    Fetch PDF links from the BNetzA website.
+    Fetch all PDF links from the given BNetzA website URL.
     Returns a list of tuples containing (filename, url).
+
+    Args:
+        url: The BNetzA page URL to scrape for PDF links.
     """
     async with httpx.AsyncClient() as client:
-        response = await client.get(BNETZA_URL)
+        response = await client.get(url)
         response.raise_for_status()
 
         soup = BeautifulSoup(response.text, "html.parser")
         pdf_links = []
 
-        # Find all links that contain PDF files
+        # Find all links that point to PDF files
         for link in soup.find_all("a"):
             href = link.get("href", "")
             text = link.get_text(strip=True)
 
-            # Check if the link text matches any of our target documents
-            for doc in EDIFACT_DOCUMENTS:
-                if doc in text and isinstance(href, str):
-                    # Convert relative URLs to absolute URLs if necessary
-                    if href.startswith("/"):
-                        href = f"https://www.bundesnetzagentur.de{href}"
-                    # Create a clean filename
-                    safe_filename = clean_filename(text)
-                    pdf_links.append((safe_filename, href))
-                    break
+            if isinstance(href, str) and ".pdf" in href:
+                # Convert relative URLs to absolute URLs if necessary
+                if href.startswith("/"):
+                    href = f"https://www.bundesnetzagentur.de{href}"
+                # Create a clean filename
+                safe_filename = clean_filename(text)
+                pdf_links.append((safe_filename, href))
 
         logger.info("Found %d PDF links to download", len(pdf_links))
         return pdf_links
@@ -467,10 +425,14 @@ def create_change_history_excel(pdf_dir: Path, output_file: Path) -> None:
         raise
 
 
-async def download_pdfs(target_dir: Optional[Path] = None) -> None:
+async def download_pdfs(url: str, target_dir: Optional[Path] = None) -> None:
     """
-    Download PDF files from the BNetzA website and store them in the specified directory.
+    Download PDF files from the given BNetzA website URL and store them in the specified directory.
     If no directory is specified, creates a 'pdfs' directory next to this script.
+
+    Args:
+        url: The BNetzA page URL to scrape for PDF links.
+        target_dir: Directory to store downloaded PDFs. Defaults to a 'pdfs' directory next to this script.
     """
     if target_dir is None:
         target_dir = Path(__file__).parent / "pdfs"
@@ -484,7 +446,7 @@ async def download_pdfs(target_dir: Optional[Path] = None) -> None:
     # Clean up old files
     cleanup_old_files(target_dir)
 
-    pdf_links = await get_pdf_links()
+    pdf_links = await get_pdf_links(url)
     if not pdf_links:
         logger.warning("No PDF links found on the page")
         return
@@ -492,9 +454,9 @@ async def download_pdfs(target_dir: Optional[Path] = None) -> None:
     logger.info("Found %d PDF files to download", len(pdf_links))
     async with httpx.AsyncClient(timeout=httpx.Timeout(30.0)) as client:
         tasks = []
-        for filename, url in pdf_links:
+        for filename, pdf_url in pdf_links:
             target_path = target_dir / filename
-            task = download_pdf(client, filename, url, target_path)
+            task = download_pdf(client, filename, pdf_url, target_path)
             tasks.append(task)
 
         logger.info("Starting download of %d PDF files...", len(tasks))
@@ -521,11 +483,19 @@ async def download_pdfs(target_dir: Optional[Path] = None) -> None:
 
 
 def main() -> None:
-    """Main entry point for the script."""
+    """Main entry point for the script. Expects the BNetzA URL as the first command-line argument."""
+    import sys
+
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-    logger.info("Starting BNetzA PDF processing...")
+
+    if len(sys.argv) < 2:
+        logger.error("Usage: python -m kohlrahbi.changehistory.bnetza <BNETZA_URL>")
+        sys.exit(1)
+
+    url = sys.argv[1]
+    logger.info("Starting BNetzA PDF processing for URL: %s", url)
     try:
-        asyncio.run(download_pdfs())
+        asyncio.run(download_pdfs(url=url))
         logger.info("BNetzA PDF processing completed successfully")
     except Exception as e:
         logger.error("BNetzA PDF processing failed: %s", str(e))
