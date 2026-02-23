@@ -1,4 +1,4 @@
-# KohlrAHBi
+# kohlr_AHB_i
 
 <p align="center">
   <img src="kohlrahbi-image.png" alt="kohlrahbi-logo" width="512" height="512">
@@ -12,8 +12,8 @@
 ![Black status badge](https://github.com/Hochfrequenz/kohlrahbi/workflows/Black/badge.svg)
 ![PyPI](https://img.shields.io/pypi/v/kohlrahbi)
 
-Kohlrahbi generates machine-readable files from AHB documents.
-Kohlrahbi's sister is [MIG_mose](https://github.com/Hochfrequenz/migmose).
+Kohlr_AHB_i generates machine-readable files from AHB documents.
+Kohlr_AHB_i's sister is [MIG_mose](https://github.com/Hochfrequenz/migmose).
 
 If you'd like to create a nice diff view of AHBs in different versions, try [`ahlbatross`](https://github.com/Hochfrequenz/ahlbatross).
 
@@ -50,17 +50,21 @@ Although the AHBs are publicly available as PDF or Word files on `edi-energy.de`
 The root cause for all these inaccessibility is a technical one:
 Information that are theoretically structured are published in an unstructured format (PDF or Word), which is not suited for technical specifications in IT.
 
-KohlrAHBi as a tool helps you to break those chains and access the AHBs as you'd expect it from technical specs: easy and automatically instead of with hours of mindless manual work.
+Kohlr_AHB_i as a tool helps you to break those chains and access the AHBs as you'd expect it from technical specs: easy and automatically instead of with hours of mindless manual work.
 
-**KohlrAHBi takes the `.docx` files published by `edi-energy.de` as an input and returns truly machine-readable data in a variety of formats (JSON, CSV...) as a result.**
+**Kohlr_AHB_i takes the `.docx` files published by `edi-energy.de` as an input and returns truly machine-readable data in a variety of formats (JSON, CSV...) as a result.**
 
-Hence, KohlrAHBi is the key for unlocking any automation potential that is reliant on information hidden in the Anwendungshandbücher.
+Hence, Kohlr_AHB_i is the key for unlocking any automation potential that is reliant on information hidden in the Anwendungshandbücher.
 
 We're all hoping for the day of true digitization on which this repository will become obsolete.
+**Update 2025**: Indeed the machine-readable (XML) MIGs and AHBs available in a paid BDEW subscription make lots of the kohlrahbi features obsolete 🎉.
+Still, some issues remain:
+  1. The XML AHBs do not contain an "Änderungshistorie" although with some work you could compute them from the XMLs (more of a ahlbatross feature)
+  2. Kohlr_AHB_i generates the data modell for the AHB Tabellen web application. 
 
 ## Installation
 
-Kohlrahbi is a Python based tool.
+Kohlr_AHB_i is a Python based tool.
 Therefore you have to make sure, that Python is running on your machine.
 
 We recommend to use virtual environments to keep your system clean.
@@ -193,12 +197,12 @@ The PDFs are saved to `<output-path>/pdfs/` and the resulting Excel file to `<ou
 
 ## `.docx` Data Sources
 
-kohlrahbi internally relies on a [specific naming schema](https://github.com/Hochfrequenz/kohlrahbi/blob/22a78dc076c7d5f9248cb9e8707b0cc14a2981d3/src/kohlrahbi/read_functions.py#L57) of the `.docx` files in which the file name holds information about the edifact format and validity period of the AHBs contained within the file.
+Kohlr_AHB_i internally relies on a [specific naming schema](https://github.com/Hochfrequenz/kohlrahbi/blob/22a78dc076c7d5f9248cb9e8707b0cc14a2981d3/src/kohlrahbi/read_functions.py#L57) of the `.docx` files in which the file name holds information about the edifact format and validity period of the AHBs contained within the file.
 The easiest way to be compliant with this naming schema is to clone our [edi_energy_mirror](https://github.com/Hochfrequenz/edi_energy_mirror/) repository to your localhost.
 
 ## Results
 
-There is a kohlrahbi based CI pipeline from the edi_energy_mirror mentioned above to the repository [machine-readable_anwendungshandbuecher](https://github.com/Hochfrequenz/machine-readable_anwendungshandbuecher) where you can find scraped AHBs as JSON, CSV or Excel files.
+There is a kohlr_AHB_i based CI pipeline from the edi_energy_mirror mentioned above to the repository [machine-readable_anwendungshandbuecher](https://github.com/Hochfrequenz/machine-readable_anwendungshandbuecher) where you can find scraped AHBs as JSON, CSV or Excel files.
 
 ## Workflow
 
