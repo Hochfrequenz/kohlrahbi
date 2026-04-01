@@ -64,16 +64,16 @@ def test_sqlmodels(sqlite_session: Session, tmp_path: Path) -> None:
         / "edi_energy_mirror"
         / "edi_energy_de"
         / "FV2504"
-        / "UTILMDAHBStrom-informatorischeLesefassung2.1_99991231_20250404.docx"
+        / "AHB_UTILMD_S2.1_20250606_99991231_20250606_ooox_10554.docx"
     )
     process_pruefi("55001", docx_file_path, flat_ahb_dir_path, (AhbExportFileFormat.FLATAHB,))
-    flat_ahb_path = flat_ahb_dir_path / "UTILMD" / "flatahb" / "55001.json"
+    flat_ahb_path = flat_ahb_dir_path / "UTILMDS" / "flatahb" / "55001.json"
     assert flat_ahb_path.exists()
     pruefi = _load_flat_ahb_to_db(sqlite_session, flat_ahb_path, EdifactFormat.UTILMD, EdifactFormatVersion.FV2504)
     ahbs_from_db = sqlite_session.exec(
         select(FlatAnwendungshandbuch)
-        .join(AhbMetaInformation, FlatAnwendungshandbuch.id == AhbMetaInformation.ahb_id)  # type:ignore[arg-type]
-        .join(AhbLine, FlatAnwendungshandbuch.id == AhbLine.ahb_id)  # type:ignore[arg-type]
+        .join(AhbMetaInformation, FlatAnwendungshandbuch.id == AhbMetaInformation.ahb_id)  # type: ignore[arg-type]
+        .join(AhbLine, FlatAnwendungshandbuch.id == AhbLine.ahb_id)  # type: ignore[arg-type]
         .where(AhbMetaInformation.pruefidentifikator == "55001")
     ).all()
     ahb_from_db: FlatAnwendungshandbuch = ahbs_from_db[0]

@@ -6,7 +6,8 @@ import re
 from itertools import groupby
 from pathlib import Path
 
-from efoli import EdifactFormat, get_format_of_pruefidentifikator
+from edi_energy_scraper import DocumentMetadata
+from efoli import EdifactFormat, EdifactFormatVersion, get_format_of_pruefidentifikator
 from pydantic import BaseModel
 
 from kohlrahbi.logger import logger
@@ -19,6 +20,7 @@ class EdiEnergyDocument(BaseModel):
 
     filename: Path
     document_version: str
+    version_prefix: str
     version_major: int
     version_minor: int
     version_suffix: str
@@ -31,16 +33,27 @@ class EdiEnergyDocument(BaseModel):
         Create an EdiEnergyDocument object from a file path.
         """
 
-        file_name = extract_document_version_and_valid_dates(path.name)
-        assert file_name is not None, f"Could not extract document version and valid dates from {path.name}."
+        document_metadata = extract_document_meta_data(path.name)
+        assert document_metadata is not None, f"Could not extract document version and valid dates from {path.name}."
+        assert document_metadata.version is not None, "Document version is None."
+
+        prefix, version_major, version_minor, version_suffix = split_version_string(document_metadata.version)
+
+        valid_from = int(document_metadata.valid_from.strftime("%Y%m%d"))
+        valid_until = int(document_metadata.valid_until.strftime("%Y%m%d"))
+        # assert valid_from <= valid_until, "Valid from is greater than valid until."
+        assert isinstance(valid_from, int), "Valid from is not an integer."
+        assert isinstance(valid_until, int), "Valid until is not an integer."
+
         return cls(
             filename=path,
-            document_version=file_name["document_version"],
-            version_major=int(file_name["version_major"]),
-            version_minor=int(file_name["version_minor"]),
-            version_suffix=file_name["version_suffix"],
-            valid_from=int(file_name["valid_from"]),
-            valid_until=int(file_name["valid_until"]),
+            document_version=document_metadata.version,
+            version_prefix=prefix,
+            version_major=version_major,
+            version_minor=version_minor,
+            version_suffix=version_suffix,
+            valid_from=valid_from,
+            valid_until=valid_until,
         )
 
     def __lt__(self, other: "EdiEnergyDocument") -> bool:
@@ -72,34 +85,48 @@ class EdiEnergyDocument(BaseModel):
         )
 
 
-def extract_document_version_and_valid_dates(
+def split_version_string(version_string: str) -> tuple[str, int, int, str]:
+    """
+    Split the version string into a tuple of (prefix, major, minor, suffix).
+    The prefix is optional (can be empty string).
+
+    Examples:
+        >>> split_version_string("1.3a")
+        ('', 1, 3, 'a')
+        >>> split_version_string("G2.1e")
+        ('G', 2, 1, 'e')
+        >>> split_version_string("S1.2f")
+        ('S', 1, 2, 'f')
+    """
+    pattern = r"^([GS])?(\d+)\.(\d+)([a-zA-Z]*)$"
+    match = re.match(pattern, version_string)
+    if not match:
+        raise ValueError(f"Invalid version string format: {version_string}")
+
+    prefix, major, minor, suffix = match.groups()
+    return (
+        prefix or "",  # convert None to empty string if no prefix
+        int(major),
+        int(minor),
+        suffix or "",  # convert None to empty string if no suffix
+    )
+
+
+def extract_document_meta_data(
     filename: str,
-) -> dict[str, str] | None:
-    """Extract the document version and valid dates from the filename.
+) -> DocumentMetadata:
+    """Extract the document metadata from the filename.
 
     Parameters:
     - filename (str): The filename of the document.
 
     Returns:
-    - tuple[str, str, str]: A tuple containing the document version, valid from date, and valid until date.
+    - DocumentMetadata: A DocumentMetadata object.
     """
 
-    # Pattern to extract detailed version number, valid until and valid from dates
-    document_name_pattern = re.compile(
-        r"-informatorischeLesefassung"
-        r"(?P<document_version>(?:S|G)?(?P<version_major>\d+)\.(?P<version_minor>\d+)(?P<version_suffix>[a-z]?))"
-        r"(?:_|KonsolidierteLesefassung|-AußerordentlicheVeröffentlichung)?"
-        r"([A-Za-z0-9.]+)?"
-        r"_(?P<valid_until>\d{8})_(?P<valid_from>\d{8})\.docx$",
-        re.IGNORECASE,
-    )
-    matches = document_name_pattern.search(filename)
-    try:
-        if matches:
-            return matches.groupdict()
-    except ValueError as e:
-        logger.error("Error extracting document version and valid dates: %s", e)
-    return None
+    document_metadata = DocumentMetadata.from_filename(filename)
+    assert document_metadata is not None, f"Could not extract document metadata from {filename}."
+    return document_metadata
 
 
 def get_most_recent_file(group_items: list[Path]) -> Path | None:
@@ -115,15 +142,30 @@ def get_most_recent_file(group_items: list[Path]) -> Path | None:
 
     try:
         # Define the keywords to filter relevant files
-        keywords = ["konsolidiertelesefassungmitfehlerkorrekturen", "außerordentlicheveröffentlichung"]
-        files_containing_keywords = [
-            path for path in group_items if any(keyword in path.name.lower() for keyword in keywords)
-        ]
-        if any(files_containing_keywords):
-            list_of_edi_energy_documents = [EdiEnergyDocument.from_path(path) for path in files_containing_keywords]
-        else:
-            list_of_edi_energy_documents = [EdiEnergyDocument.from_path(path) for path in group_items]
+        # keywords = ["konsolidiertelesefassungmitfehlerkorrekturen", "außerordentlicheveröffentlichung"]
+        # ahb_and_mig_file_paths = [
+        #     path for path in group_items if path.name.lower().startswith("ahb") or path.name.lower().startswith("mig")
+        # ]
+
+        ahb_and_mig_file_paths = []
+        for path in group_items:
+            document_metadata = extract_document_meta_data(path.name)
+            is_document_relevant = document_metadata is not None and (
+                document_metadata.is_informational_reading_version
+                and document_metadata.is_consolidated_reading_version
+                and document_metadata.is_error_correction
+            )
+            if is_document_relevant:
+                ahb_and_mig_file_paths.append(path)
+
+        # assert len(ahb_and_mig_file_paths) > 0, "No AHB or MIG files found."
+
+        list_of_edi_energy_documents = [EdiEnergyDocument.from_path(path) for path in ahb_and_mig_file_paths]
+
+        # assert len(list_of_edi_energy_documents) > 0, "No AHB files found."
         most_recent_file = max(list_of_edi_energy_documents)
+
+        # assert most_recent_file is not None, "Most recent file is None."
 
         return most_recent_file.filename
 
@@ -135,22 +177,161 @@ def get_most_recent_file(group_items: list[Path]) -> Path | None:
 
 class DocxFileFinder(BaseModel):
     """
-    This class is responsible for finding the docx files in the input directory.
-    It can find MIG and AHB docx files.
+    This class is responsible for finding the correct docx files in the edi energy mirror.
+    It is used for all commands which need to find docx files.
     """
 
-    paths_to_docx_files: list[Path]
+    path_to_edi_energy_mirror: Path
+
+    docx_files: list[Path] = []
 
     @classmethod
     def from_input_path(cls, input_path: Path) -> "DocxFileFinder":
-        """
-        Create an DocxFileFinder object from the input path.
-        """
+        """Create a DocxFileFinder from an input directory path, populating docx_files."""
+        docx_files = [p for p in input_path.iterdir() if p.name.endswith(".docx") and not p.name.startswith("~")]
+        return cls(path_to_edi_energy_mirror=input_path, docx_files=docx_files)
 
-        ahb_file_paths: list[Path] = [path for path in input_path.iterdir() if path.is_file() if path.suffix == ".docx"]
-        if not any(ahb_file_paths):  # this is suspicious at least
-            logger.warning("The directory '%s' does not contain any docx files.", input_path.absolute())
-        return cls(paths_to_docx_files=ahb_file_paths)
+    def get_file_paths_for_change_history(self, format_version: EdifactFormatVersion) -> list[Path]:
+        """Get all file paths that contain change history for a given format version.
+
+        This method finds all docx files in the format version directory that are informational reading versions,
+        groups them by document type, and returns the most recent version of each document.
+
+        Args:
+            format_version (EdifactFormatVersion): The EDIFACT format version to search in.
+
+        Returns:
+            list[Path]: A list of paths to the most recent version of each document.
+
+        Raises:
+            ValueError: If the format version directory does not exist or is not a directory.
+        """
+        format_version_path = self._get_validated_format_version_path(format_version)
+        docx_files = self._get_valid_docx_files(format_version_path)
+        informational_versions = self._filter_informational_versions(docx_files)
+        grouped_docs = self.group_documents_by_kind_and_format(informational_versions)
+
+        return self._get_most_recent_versions(grouped_docs)
+
+    def _get_validated_format_version_path(self, format_version: EdifactFormatVersion) -> Path:
+        """Validate and return the path for a given format version.
+
+        Args:
+            format_version (EdifactFormatVersion): The format version to get the path for.
+
+        Returns:
+            Path: The validated path to the format version directory.
+
+        Raises:
+            ValueError: If the path does not exist or is not a directory.
+        """
+        version_path = self.path_to_edi_energy_mirror / format_version.value
+        if not version_path.exists():
+            raise ValueError(f"Format version directory does not exist: {version_path}")
+        if not version_path.is_dir():
+            raise ValueError(f"Format version path is not a directory: {version_path}")
+        return version_path
+
+    def _get_valid_docx_files(self, directory: Path) -> list[Path]:
+        """Get all valid docx files from a directory, excluding temporary files.
+
+        Args:
+            directory (Path): The directory to search in.
+
+        Returns:
+            list[Path]: A list of paths to valid docx files.
+        """
+        return [path for path in directory.iterdir() if path.name.endswith(".docx") and not path.name.startswith("~")]
+
+    def _filter_informational_versions(self, paths: list[Path]) -> list[Path]:
+        """Filter paths to only include informational reading versions.
+
+        Args:
+            paths (list[Path]): List of paths to filter.
+
+        Returns:
+            list[Path]: Filtered list containing only informational reading versions.
+        """
+        informational_versions = []
+        for path in paths:
+            document_metadata = extract_document_meta_data(path.name)
+            if document_metadata and document_metadata.is_informational_reading_version:
+                informational_versions.append(path)
+        return informational_versions
+
+    def _get_most_recent_versions(self, grouped_docs: dict[tuple[str, str], list[Path]]) -> list[Path]:
+        """Get the most recent version from each group of documents.
+
+        Args:
+            grouped_docs (dict[tuple[str, str], list[Path]]): Documents grouped by kind and format.
+
+        Returns:
+            list[Path]: List of the most recent version from each group.
+        """
+        most_recent_versions = []
+        for group in grouped_docs.values():
+            if len(group) == 1:
+                most_recent_versions.append(group[0])
+                continue
+
+            filtered_group = self._filter_error_corrections(group)
+            sorted_group = self._sort_group_by_metadata(filtered_group)
+            if sorted_group:
+                most_recent_versions.append(sorted_group[0])
+
+        return sorted(most_recent_versions)
+
+    def _filter_error_corrections(self, group: list[Path]) -> list[Path]:
+        """Filter group to keep only error correction versions if they exist.
+
+        Args:
+            group (list[Path]): List of paths in a group.
+
+        Returns:
+            list[Path]: Filtered list containing only error correction versions if they exist,
+                       otherwise returns the original group.
+        """
+        has_error_correction = any(
+            extract_document_meta_data(path.name).is_error_correction
+            for path in group
+            if extract_document_meta_data(path.name)
+        )
+
+        if has_error_correction:
+            return [
+                path
+                for path in group
+                if extract_document_meta_data(path.name) and extract_document_meta_data(path.name).is_error_correction
+            ]
+        return group
+
+    def _sort_group_by_metadata(self, group: list[Path]) -> list[Path]:
+        """Sort group by version, publication date, and validity dates.
+
+        Args:
+            group (list[Path]): List of paths to sort.
+
+        Returns:
+            list[Path]: Sorted list of paths.
+        """
+        try:
+            return sorted(
+                group,
+                key=lambda x: (
+                    (
+                        extract_document_meta_data(x.name).version,
+                        extract_document_meta_data(x.name).publication_date,
+                        extract_document_meta_data(x.name).valid_from,
+                        extract_document_meta_data(x.name).valid_until,
+                    )
+                    if extract_document_meta_data(x.name)
+                    else (None, None, None, None)
+                ),
+                reverse=True,
+            )
+        except TypeError as e:
+            logger.exception("Could not sort group %s: %s", group, e)
+            return group
 
     @staticmethod
     def get_first_part_of_ahb_docx_file_name(path_to_ahb_document: Path) -> str:
@@ -167,9 +348,9 @@ class DocxFileFinder(BaseModel):
         The latest files contain `LesefassungmitFehlerkorrekturen` in their file names.
         This method is _not_ pure. It changes the state of the object.
         """
-        self.paths_to_docx_files = self.filter_ahb_docx_files(self.paths_to_docx_files)
-        grouped_files = self.group_files_by_name_prefix(self.paths_to_docx_files)
-        self.paths_to_docx_files = self.filter_latest_version(grouped_files)
+        self.docx_files = self.filter_ahb_docx_files(self.docx_files)
+        grouped_files = self.group_files_by_name_prefix(self.docx_files)
+        self.docx_files = self.filter_latest_version(grouped_files)
 
     @staticmethod
     def filter_ahb_docx_files(paths_to_docx_files: list[Path]) -> list[Path]:
@@ -177,23 +358,6 @@ class DocxFileFinder(BaseModel):
         This function filters the docx files which contain the string "AHB" in their file name.
         """
         return [path for path in paths_to_docx_files if "AHB" in path.name]
-
-    @staticmethod
-    def filter_for_docx_files_with_change_history(paths_to_docx_files: list[Path]) -> list[Path]:
-        """
-        This function filters the docx files which contain a change history.
-        At this time it seems that all docx files have a change history.
-        But this may change in the future, so search for some keywords in the file name.
-        """
-        return [
-            path
-            for path in paths_to_docx_files
-            if "AHB" in path.name
-            or "MIG" in path.name
-            or "AllgemeineFestlegungen" in path.name
-            or "Codeliste" in path.name
-            or "Entscheidungsbaum" in path.name
-        ]
 
     # pylint: disable=line-too-long
     @staticmethod
@@ -244,17 +408,9 @@ class DocxFileFinder(BaseModel):
 
         for group_items in groups.values():
             most_recent_file = get_most_recent_file(group_items)
-            assert most_recent_file is not None, "Could not find the most recent file."
-            result.append(most_recent_file)
+            if most_recent_file is not None:
+                result.append(most_recent_file)
         return result
-
-    def filter_for_latest_mig_and_ahb_docx_files(self) -> None:
-        """
-        Filter the list of MIG docx paths for the latest MIG docx files.
-        """
-        self.paths_to_docx_files = self.filter_for_docx_files_with_change_history(self.paths_to_docx_files)
-        grouped_files = self.group_files_by_name_prefix(self.paths_to_docx_files)
-        self.paths_to_docx_files = self.filter_latest_version(grouped_files)
 
     def filter_docx_files_for_edifact_format(self, edifact_format: EdifactFormat) -> None:
         """
@@ -262,7 +418,7 @@ class DocxFileFinder(BaseModel):
         This method is not pure. It changes the state of the object.
         """
 
-        self.paths_to_docx_files = [path for path in self.paths_to_docx_files if str(edifact_format) in path.name]
+        self.docx_files = [path for path in self.docx_files if str(edifact_format) in path.name]
 
     def remove_temporary_files(self) -> None:
         """
@@ -271,7 +427,7 @@ class DocxFileFinder(BaseModel):
         It appears if a docx file is opened by Word.
         """
 
-        self.paths_to_docx_files = [path for path in self.paths_to_docx_files if not path.name.startswith("~")]
+        self.docx_files = [path for path in self.docx_files if not path.name.startswith("~")]
 
     def get_docx_files_which_may_contain_searched_pruefi(self, searched_pruefi: str) -> list[Path]:
         """
@@ -292,16 +448,16 @@ class DocxFileFinder(BaseModel):
         if (
             edifact_format == EdifactFormat.UTILMD
             and searched_pruefi.startswith("11")
-            and all("202310" in path.name for path in self.paths_to_docx_files)
+            and all("202310" in path.name for path in self.docx_files)
         ):
             logger.info(
                 # pylint:disable=line-too-long
                 "You searched for a UTILMD prüfi %s starting with the soon deprecated prefix '11' but all relevant files %s are valid from 2023-10 onwards. They won't contain any match.",
                 searched_pruefi,
-                ", ".join([path.name for path in self.paths_to_docx_files]),
+                ", ".join([path.name for path in self.docx_files]),
             )
             return []
-        return self.paths_to_docx_files
+        return self.docx_files
 
     def get_all_docx_files_which_contain_change_histories(self) -> list[Path]:
         """
@@ -309,10 +465,24 @@ class DocxFileFinder(BaseModel):
         Only format documents like UTILMD, MSCONS etc. contain a change history.
         """
 
-        self.filter_for_latest_mig_and_ahb_docx_files()
+        # self.paths_to_docx_files = self.filter_for_docx_files_with_change_history(self.paths_to_docx_files)
+
+        # self.filter_for_latest_mig_and_ahb_docx_files()
         self.remove_temporary_files()
 
-        return self.paths_to_docx_files
+        paths_to_relevant_docx_files = []
+        for path in self.docx_files:
+            document_metadata = extract_document_meta_data(path.name)
+            is_document_relevant = document_metadata is not None and (
+                document_metadata.is_informational_reading_version
+                and document_metadata.is_consolidated_reading_version
+                and document_metadata.is_error_correction
+            )
+            if is_document_relevant:
+                paths_to_relevant_docx_files.append(path)
+
+        self.docx_files = paths_to_relevant_docx_files
+        return self.docx_files
 
     def get_docx_files_which_contain_quality_map(self) -> list[Path]:
         """
@@ -322,7 +492,53 @@ class DocxFileFinder(BaseModel):
         self.filter_for_latest_ahb_docx_files()
         self.remove_temporary_files()
 
-        indicator_string = "UTILMDAHBStrom"
-        self.paths_to_docx_files = [path for path in self.paths_to_docx_files if indicator_string in path.name]
+        self.docx_files = [
+            path for path in self.docx_files if "UTILMDAHBStrom" in path.name or "AHB_UTILMD_S" in path.name
+        ]
 
-        return self.paths_to_docx_files
+        return self.docx_files
+
+    @staticmethod
+    def group_documents_by_kind_and_format(paths: list[Path]) -> dict[tuple[str, str], list[Path]]:
+        """
+        Groups documents by their kind and EDIFACT format.
+
+        Args:
+            paths (list[Path]): List of paths to process
+
+        Returns:
+            dict[tuple[str, str], list[Path]]: Dictionary where key is (kind, edifact_format) and value is list of paths
+
+        Example:
+            >>> paths = [Path("UTILMDAHB-1.0.docx"), Path("INVOICAHB-2.0.docx")]
+            >>> result = DocxFileFinder.group_documents_by_format(paths)
+            >>> # Result might look like: {("AHB", "UTILMD"): [Path("UTILMDAHB-1.0.docx")],
+            >>> #                         ("AHB", "INVOIC"): [Path("INVOICAHB-2.0.docx")]}
+        """
+        result: dict[tuple[str, str], list[Path]] = {}
+
+        for path in paths:
+            try:
+                metadata = extract_document_meta_data(path.name)
+                if metadata is None or metadata.kind is None or metadata.edifact_format is None:
+
+                    # cases for
+                    # 'codelistederkonfigurationen_1.3b_20250606_99991231_20241213_xoxx_11124.docx'
+                    # 'codelistederkonfigurationeninformatorischelesefassung_1.3b_20250606_99991231_20250606_ooox_8757.docx'
+                    # 'allgemeinefestlegungeninformatorischelesefassung_6.1b_20250606_99991231_20250606_ooox_8638.docx'
+                    # 'apiguidelineinformatorischelesefassung_1.0a_20250606_99991231_20250606_ooox_10824.docx'
+
+                    x = path.name.split("_")[0]
+
+                    key = (x, "")
+
+                else:
+                    key = (metadata.kind, metadata.edifact_format)
+                if key not in result:
+                    result[key] = []
+                result[key].append(path)
+            except Exception as e:  # pylint: disable=broad-exception-caught
+                logger.warning("Could not process %s: %s", path.name, e)
+                continue
+
+        return result

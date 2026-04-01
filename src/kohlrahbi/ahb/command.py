@@ -24,7 +24,7 @@ def check_python_version() -> None:
 
 
 # pylint: disable=unused-argument
-def validate_path(ctx, param, value) -> Path:  # type:ignore[no-untyped-def]
+def validate_path(ctx, param, value) -> Path:  # type: ignore[no-untyped-def]
     """
     Ensure the path exists or offer to create it.
     """

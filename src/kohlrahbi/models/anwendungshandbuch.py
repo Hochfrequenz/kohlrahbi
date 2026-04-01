@@ -6,6 +6,7 @@ structure.
 2. the "nested" AHB which contains structural information (e.g. that a segment group is contained in
 another segment group)
 """
+
 import re
 from typing import Annotated, Callable, Optional, Sequence, Union
 from uuid import UUID
@@ -156,7 +157,7 @@ def _remove_grouped_ahb_lines_containing_section_name(
 
 
 # pylint:disable=unused-argument
-def _check_that_nearly_all_lines_have_a_segment_group(  # type:ignore[no-untyped-def]
+def _check_that_nearly_all_lines_have_a_segment_group(  # type: ignore[no-untyped-def]
     value: list[AhbLine],
 ):
     """
@@ -178,7 +179,7 @@ _data_element_pattern = re.compile(r"^\d{4}$|^\d{5}$|^[A-Za-z]+\d{4}$")
 
 
 # pylint:disable=unused-argument
-def _check_that_line_has_either_none_or_d4_data_element(  # type:ignore[no-untyped-def]
+def _check_that_line_has_either_none_or_d4_data_element(  # type: ignore[no-untyped-def]
     value: AhbLine,
 ):
     """
@@ -197,7 +198,7 @@ _segment_group_key_pattern = re.compile(r"^SG\d+$")
 
 
 # pylint:disable=unused-argument
-def _check_that_line_has_either_none_or_matching_sg(value: AhbLine):  # type:ignore[no-untyped-def]
+def _check_that_line_has_either_none_or_matching_sg(value: AhbLine):  # type: ignore[no-untyped-def]
     """
     checks that the given line has a segment group key that is either None (for root) or matches SG\\d+
     """
@@ -214,7 +215,7 @@ _segment_code_pattern = re.compile(r"^[A-Z]+$")
 
 
 # pylint:disable=unused-argument
-def _check_that_line_has_either_none_az_segment_code(  # type:ignore[no-untyped-def]
+def _check_that_line_has_either_none_az_segment_code(  # type: ignore[no-untyped-def]
     value: AhbLine,
 ):
     """
@@ -275,7 +276,7 @@ class FlatAnwendungshandbuch(BaseModel):
                 result.append(line.segment_group_key)
         return result
 
-    def sort_lines_by_segment_groups(self):  # type:ignore[no-untyped-def]
+    def sort_lines_by_segment_groups(self):  # type: ignore[no-untyped-def]
         """
         sorts lines by segment groups while preserving the order inside the groups and the order between the groups.
         """
@@ -430,7 +431,7 @@ class DeepAnwendungshandbuch(BaseModel):
         added_discriminators: set[Optional[str]] = set()
         # checks like "str in set" are way faster than "value pool in list"
 
-        def add_to_result(value_pool: DataElementValuePool):  # type:ignore[no-untyped-def]
+        def add_to_result(value_pool: DataElementValuePool):  # type: ignore[no-untyped-def]
             if value_pool.discriminator in added_discriminators:
                 # assumption: the discriminator is truly unique in an AHB
                 return

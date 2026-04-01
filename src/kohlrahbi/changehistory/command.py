@@ -1,7 +1,8 @@
 """
-Command line interface for the changehistory command.
+Command line interface for the changehistory commands.
 """
 
+import asyncio
 from pathlib import Path
 
 import click
@@ -9,9 +10,15 @@ from efoli import EdifactFormatVersion
 
 from kohlrahbi.ahb.command import check_python_version, validate_path
 from kohlrahbi.changehistory import scrape_change_histories
+from kohlrahbi.changehistory.bnetza import download_pdfs
 
 
-@click.command()
+@click.group()
+def changehistory() -> None:
+    """Scrape change histories from EDIFACT documents."""
+
+
+@changehistory.command()
 @click.option(
     "-eemp",
     "--edi-energy-mirror-path",
@@ -41,25 +48,38 @@ from kohlrahbi.changehistory import scrape_change_histories
     default=False,
     help="Confirm all prompts automatically.",
 )
-def changehistory(
+def docx(  # pylint: disable=unused-argument
     edi_energy_mirror_path: Path,
     output_path: Path,
     format_version: EdifactFormatVersion | str,
-    assume_yes: bool,  # pylint: disable=unused-argument
-    # it is used by the callback function of the output-path
+    assume_yes: bool,
 ) -> None:
-    """
-    Scrape change histories from the input path and save them to the output path.
-
-    Args:
-        edi_energy_mirror_path (Path): The path to the input file or directory containing change histories.
-        output_path (Path): The path to save the scraped change histories.
-        format_version (EdifactFormatVersion | str): The version of the EDIFACT format to use for scraping.
-            Can be either an instance of EdifactFormatVersion or a string representation of the version.
-        assume_yes (bool): Flag indicating whether to assume "yes" for all prompts.
-    """
+    """Scrape change histories from .docx files in the edi_energy_mirror repository."""
     check_python_version()
     if isinstance(format_version, str):
         format_version = EdifactFormatVersion(format_version)
-    input_path = edi_energy_mirror_path / "edi_energy_de" / format_version.value
-    scrape_change_histories(input_path=input_path, output_path=output_path)
+    input_path = edi_energy_mirror_path / "edi_energy_de"
+    scrape_change_histories(input_path=input_path, output_path=output_path, format_version=format_version)
+
+
+@changehistory.command()
+@click.option(
+    "--url",
+    type=str,
+    required=True,
+    help="The BNetzA URL to scrape for PDF documents.",
+)
+@click.option(
+    "-o",
+    "--output-path",
+    type=click.Path(exists=False, dir_okay=True, file_okay=False, resolve_path=True, path_type=Path),
+    callback=validate_path,
+    default="output",
+    prompt="Output directory",
+    help="Define the path where you want to save the downloaded PDFs and generated Excel file.",
+)
+def bnetza(url: str, output_path: Path) -> None:
+    """Download PDFs from a BNetzA URL and extract change histories."""
+    check_python_version()
+    pdf_dir = output_path / "pdfs"
+    asyncio.run(download_pdfs(url=url, target_dir=pdf_dir))

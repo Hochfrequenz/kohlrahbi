@@ -1,7 +1,7 @@
 import uuid
 from typing import Optional
 
-import pytest  # type:ignore[import]
+import pytest  # type: ignore[import]
 
 from kohlrahbi.models.anwendungshandbuch import (
     AhbLine,
@@ -17,7 +17,7 @@ from kohlrahbi.models.edifact_components import (
     SegmentGroup,
     ValuePoolEntry,
 )
-from unittests.serialization_test_helper import assert_serialization_roundtrip  # type:ignore[import]
+from unittests.serialization_test_helper import assert_serialization_roundtrip  # type: ignore[import]
 
 meta_x = AhbMetaInformation(pruefidentifikator="11042", maus_version="0.2.3")
 meta_y = AhbMetaInformation(pruefidentifikator="11043", maus_version="0.2.3")

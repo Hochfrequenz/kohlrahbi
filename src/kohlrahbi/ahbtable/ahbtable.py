@@ -59,7 +59,7 @@ class AhbTable(BaseModel):
         latest_segement: str = ""
         latest_datenelement: str = ""
 
-        for _, row in self.table.iterrows():
+        for idx, row in self.table.iterrows():
             if row["Segment Gruppe"] != "":
                 latest_segement_gruppe = row["Segment Gruppe"]
 
@@ -70,9 +70,9 @@ class AhbTable(BaseModel):
                 latest_datenelement = row["Datenelement"]
 
             if row["Segment Gruppe"] == "" and row["Codes und Qualifier"] != "" or row["Segment"] != "":
-                row["Segment Gruppe"] = latest_segement_gruppe
-                row["Segment"] = latest_segement
-                row["Datenelement"] = latest_datenelement
+                self.table.at[idx, "Segment Gruppe"] = latest_segement_gruppe
+                self.table.at[idx, "Segment"] = latest_segement
+                self.table.at[idx, "Datenelement"] = latest_datenelement
 
     @classmethod
     def from_ahb_sub_table(cls, ahb_sub_table: AhbSubTable) -> "AhbTable":
@@ -91,7 +91,7 @@ class AhbTable(BaseModel):
             self.table = pd.concat([self.table, ahb_sub_table.table], ignore_index=True)
 
     @staticmethod
-    def line_contains_only_segment_gruppe(raw_line: pd.Series) -> bool:  # type:ignore[type-arg]
+    def line_contains_only_segment_gruppe(raw_line: pd.Series) -> bool:  # type: ignore[type-arg]
         """
         Returns true if the given raw line only contains some meaningful data in the "Segment Gruppe" key
         """
@@ -109,9 +109,9 @@ class AhbTable(BaseModel):
         """
         index_of_lines_to_drop: list[int] = []
 
-        iterable_ahb_table = peekable(self.table.iterrows())
         self.table.reset_index(drop=True, inplace=True)
-        for _, row in iterable_ahb_table:
+        iterable_ahb_table = peekable(self.table.iterrows())
+        for current_index, row in iterable_ahb_table:
             # pylint: disable=unpacking-non-sequence # it is a tuple indeed
             index_of_next_row, next_row = iterable_ahb_table.peek(
                 (
@@ -137,7 +137,7 @@ class AhbTable(BaseModel):
             )
             if segment_gruppe_contains_multiple_lines:
                 merged_segment_gruppe_content = " ".join([row["Segment Gruppe"], next_row["Segment Gruppe"]])
-                row["Segment Gruppe"] = merged_segment_gruppe_content.strip()
+                self.table.at[current_index, "Segment Gruppe"] = merged_segment_gruppe_content.strip()
 
                 if not isinstance(index_of_next_row, int):
                     raise TypeError(

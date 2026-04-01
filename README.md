@@ -97,22 +97,27 @@ pip install kohlrahbi
 
 ## Usage
 
-Kohlr_AHB_i is a command line tool.
-You can use it in three different ways:
-
-1. Extract AHB tables for all prüfidentifikatoren or a specific prüfidentifikator of a provided format version.
-2. Extract all conditions for each format of a provided format version.
-3. Extract the change history of a provided format version.
-
-You can run the following command to get an overview of all available commands and options.
+Kohlrahbi is a command line tool. Run `kohlrahbi --help` to see all available commands.
 
 ```bash
 kohlrahbi --help
 ```
 
+### Commands overview
+
+| Command | Description |
+|---------|-------------|
+| `kohlrahbi ahb` | Extract AHB tables from `.docx` files |
+| `kohlrahbi conditions` | Extract conditions and packages from `.docx` files |
+| `kohlrahbi changehistory docx` | Extract change histories from `.docx` files |
+| `kohlrahbi changehistory bnetza` | Download PDFs from a BNetzA URL and extract change histories |
+
+---
+
+### `kohlrahbi ahb` — Extract AHB tables
+
 > [!NOTE]
-> For the following steps we assume that you cloned our [edi_energy_mirror](https://github.com/Hochfrequenz/edi_energy_mirror/) to a neighbouring directory.
-> The `edi_energy_mirror` contains the `.docx` files of the AHBs.
+> This command requires a local clone of the [edi_energy_mirror](https://github.com/Hochfrequenz/edi_energy_mirror/) repository, which contains the `.docx` files of the AHBs.
 > The folder structure should look like this:
 > ```plaintext
 > .
@@ -120,57 +125,75 @@ kohlrahbi --help
 > └── kohlrahbi
 > ```
 
-### Extract AHB table
-
-To extract the all AHB tables for each pruefi of a specific format version, you can run the following command.
+Extract all AHB tables for a specific format version:
 
 ```bash
-kohlrahbi ahb --edi-energy-mirror-path ../edi_energy_mirror/ --output-path ./output/ --file-type csv --format-version FV2310
-```
-To remove old outputfiles file to pruefis which do not occur in the provided input, you can run the following command.
-
-```bash
-kohlrahbi ahb --edi-energy-mirror-path ../edi_energy_mirror/ --output-path ./output/ --file-type csv --format-version FV2310 --clear-output-path
+kohlrahbi ahb -eemp ../edi_energy_mirror/ --output-path ./output/ --file-type csv --format-version FV2310
 ```
 
-To extract the AHB tables for a specific pruefi of a specific format version, you can run the following command.
+Extract tables for specific Prüfidentifikatoren:
 
 ```bash
 kohlrahbi ahb -eemp ../edi_energy_mirror/ --output-path ./output/ --file-type csv --pruefis 13002 --format-version FV2310
 ```
 
-You can also provide multiple pruefis.
+You can provide multiple `--pruefis` and multiple `--file-type` values:
 
 ```bash
-kohlrahbi ahb -eemp ../edi_energy_mirror/ --output-path ./output/ --file-type csv --pruefis 13002 --pruefis 13003 --pruefis 13005 --format-version FV2310
+kohlrahbi ahb -eemp ../edi_energy_mirror/ --output-path ./output/ \
+  --file-type csv --file-type xlsx --file-type flatahb \
+  --pruefis 13002 --pruefis 13003 --pruefis 13005 \
+  --format-version FV2310
 ```
 
-And you can also provide multiple file types.
+To remove old output files for Prüfidentifikatoren that no longer appear in the input, add `--clear-output-path`:
 
 ```bash
-kohlrahbi ahb -eemp ../edi_energy_mirror/ --output-path ./output/ --file-type csv --file-type xlsx --file-type flatahb --pruefis 13002 --format-version FV2310
+kohlrahbi ahb -eemp ../edi_energy_mirror/ --output-path ./output/ --file-type csv --format-version FV2310 --clear-output-path
 ```
 
-### Extract all conditions
+---
 
-To extract all conditions for each format of a specific format version, you can run the following command.
+### `kohlrahbi conditions` — Extract conditions and packages
+
+> [!NOTE]
+> This command also requires a local clone of the [edi_energy_mirror](https://github.com/Hochfrequenz/edi_energy_mirror/).
 
 ```bash
 kohlrahbi conditions -eemp ../edi_energy_mirror/ --output-path ./output/ --format-version FV2310
 ```
-This will provide you with:
-* all conditions
-* all packages
 
-found in all AHBs (including the condition texts from package tables) within the specified folder with the .docx files.
-The output will be saved for each Edifact format separately as `conditions.json` and `packages.json` in the specified output path.
-Please note that the information regarding the conditions collected here may more comprehensive compared to the information collected for the AHBs above. This is because `conditions` uses a different routine than `ahb`.
+This extracts all conditions and packages found in all AHBs (including the condition texts from package tables) within the `.docx` files. The output is saved per EDIFACT format as `conditions.json` and `packages.json`.
 
-### Extract change history
+> [!NOTE]
+> The conditions collected here may be more comprehensive than those collected via `kohlrahbi ahb`, because `conditions` uses a different extraction routine.
+
+---
+
+### `kohlrahbi changehistory` — Extract change histories
+
+The `changehistory` command has two subcommands depending on your data source.
+
+#### `kohlrahbi changehistory docx` — From `.docx` files
+
+> [!NOTE]
+> This command requires a local clone of the [edi_energy_mirror](https://github.com/Hochfrequenz/edi_energy_mirror/).
 
 ```bash
-kohlrahbi changehistory -eemp ../edi_energy_mirror/ --output-path ./output/ --format-version FV2310
+kohlrahbi changehistory docx -eemp ../edi_energy_mirror/ --output-path ./output/ --format-version FV2310
 ```
+
+#### `kohlrahbi changehistory bnetza` — From BNetzA PDFs
+
+Downloads PDF documents from a BNetzA URL, extracts the change history tables, and writes them to an Excel file.
+
+```bash
+kohlrahbi changehistory bnetza \
+  --url "https://www.bundesnetzagentur.de/DE/Beschlusskammern/BK06/BK6_83_Zug_Mess/835_mitteilungen_datenformate/Mitteilung_55/Mitteilung_Nr_55.html" \
+  --output-path ./output/
+```
+
+The PDFs are saved to `<output-path>/pdfs/` and the resulting Excel file to `<output-path>/change_history.xlsx`.
 
 ## `.docx` Data Sources
 
