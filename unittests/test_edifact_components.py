@@ -1,4 +1,4 @@
-import pytest  # type: ignore[import]
+import pytest
 
 from kohlrahbi.models.edifact_components import (
     DataElementDataType,
@@ -10,7 +10,7 @@ from kohlrahbi.models.edifact_components import (
     SegmentGroup,
     ValuePoolEntry,
 )
-from unittests.serialization_test_helper import assert_serialization_roundtrip  # type: ignore[import]
+from unittests.serialization_test_helper import assert_serialization_roundtrip
 
 
 class TestEdifactComponents:
@@ -32,7 +32,7 @@ class TestEdifactComponents:
             ),
         ],
     )
-    def test_free_text_serialization_roundtrip(self, free_text: DataElementFreeText):
+    def test_free_text_serialization_roundtrip(self, free_text: DataElementFreeText) -> None:
         assert_serialization_roundtrip(free_text)
 
     @pytest.mark.parametrize(
@@ -50,7 +50,7 @@ class TestEdifactComponents:
             ),
         ],
     )
-    def test_value_pool_serialization_roundtrip(self, value_pool: DataElementValuePool):
+    def test_value_pool_serialization_roundtrip(self, value_pool: DataElementValuePool) -> None:
         assert_serialization_roundtrip(value_pool)
 
     @pytest.mark.parametrize(
@@ -83,7 +83,7 @@ class TestEdifactComponents:
             ),
         ],
     )
-    def test_segment_serialization_roundtrip(self, segment: Segment):
+    def test_segment_serialization_roundtrip(self, segment: Segment) -> None:
         assert_serialization_roundtrip(segment)
 
     @pytest.mark.parametrize(
@@ -115,7 +115,7 @@ class TestEdifactComponents:
             )
         ],
     )
-    def test_segment_get_value_pools(self, segment: Segment, expected_result_length: int):
+    def test_segment_get_value_pools(self, segment: Segment, expected_result_length: int) -> None:
         actual = segment.get_all_value_pools()
         assert len(actual) == expected_result_length
 
@@ -170,7 +170,7 @@ class TestEdifactComponents:
             ),
         ],
     )
-    def test_segment_group_serialization_roundtrip(self, segment_group: SegmentGroup):
+    def test_segment_group_serialization_roundtrip(self, segment_group: SegmentGroup) -> None:
         assert_serialization_roundtrip(segment_group)
 
     @pytest.mark.parametrize(
@@ -221,7 +221,7 @@ class TestEdifactComponents:
     )
     def test_edifact_stack_is_sub_or_parent_of(
         self, stack_x: EdifactStack, stack_y: EdifactStack, x_is_sub_stack_of_y: bool, x_is_parent_of_y: bool
-    ):
+    ) -> None:
         assert stack_x.is_sub_stack_of(stack_y) == x_is_sub_stack_of_y
         assert stack_x.is_parent_of(stack_y) == x_is_parent_of_y
 
@@ -232,11 +232,11 @@ class TestEdifactComponents:
             pytest.param('$["asd"][223239102]["Hallo ()asd90e34A)SD=A)D"]["bar"][29]["sss(asd)"][2]'),
         ],
     )
-    def test_edifact_stack_to_from_json_path(self, json_path: str):
+    def test_edifact_stack_to_from_json_path(self, json_path: str) -> None:
         stack = EdifactStack.from_json_path(json_path)
         assert stack.to_json_path() == json_path
 
-    def test_segment_group_can_be_instantiated_without_explicitly_defining_sub_groups(self):
+    def test_segment_group_can_be_instantiated_without_explicitly_defining_sub_groups(self) -> None:
         """
         Tests https://github.com/Hochfrequenz/mig_ahb_utility_stack/issues/41
         """
@@ -307,11 +307,11 @@ class TestEdifactComponents:
             )
         ],
     )
-    def test_segment_group_get_value_pools(self, segment_group: SegmentGroup, expected_result_length: int):
+    def test_segment_group_get_value_pools(self, segment_group: SegmentGroup, expected_result_length: int) -> None:
         actual = segment_group.get_all_value_pools()
         assert len(actual) == expected_result_length
 
-    def test_replacing_value_pool_entries(self):
+    def test_replacing_value_pool_entries(self) -> None:
         data_element = DataElementValuePool(
             value_pool=[
                 ValuePoolEntry(qualifier="HELLO", meaning="world", ahb_expression="A"),
@@ -330,7 +330,7 @@ class TestEdifactComponents:
             ValuePoolEntry(qualifier="FOO", meaning="bar", ahb_expression="C"),
         ]
 
-    def test_replacing_value_pool_entries_with_merger(self):
+    def test_replacing_value_pool_entries_with_merger(self) -> None:
         data_element = DataElementValuePool(
             value_pool=[
                 ValuePoolEntry(qualifier="HELLO", meaning="world", ahb_expression="A"),
@@ -363,7 +363,7 @@ class TestEdifactComponents:
             pytest.param(["FOO", "MAUS", "HELLO"], True),
         ],
     )
-    def test_has_value_pool_which_is_subset_of(self, candidate, expected: bool):
+    def test_has_value_pool_which_is_subset_of(self, candidate: set[str] | list[str], expected: bool) -> None:
         data_element = DataElementValuePool(
             value_pool=[
                 ValuePoolEntry(qualifier="HELLO", meaning="world", ahb_expression="A"),

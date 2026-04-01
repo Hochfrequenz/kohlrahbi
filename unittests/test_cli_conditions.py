@@ -18,11 +18,11 @@ runner: CliRunner = CliRunner()
 
 
 @pytest.fixture(scope="class")
-def shared_tmp_path(tmp_path_factory):
+def shared_tmp_path(tmp_path_factory: pytest.TempPathFactory) -> Path:
     return tmp_path_factory.mktemp("shared")
 
 
-def read_json_if_exists(file_path: Path):
+def read_json_if_exists(file_path: Path) -> object:
     if file_path.exists():
         with file_path.open("r", encoding="utf-8") as file:
             return json.load(file)
@@ -63,7 +63,7 @@ class TestCliConditions:
             for edifact_format in edifact_formats
         ],
     )
-    def test_cli_conditions(self, edifact_format, shared_tmp_path, snapshot) -> None:
+    def test_cli_conditions(self, edifact_format: EdifactFormat, shared_tmp_path: Path, snapshot: object) -> None:
 
         # run CLI command only for the first time
         if not any(shared_tmp_path.iterdir()):

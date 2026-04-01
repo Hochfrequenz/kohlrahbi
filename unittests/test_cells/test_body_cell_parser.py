@@ -1,3 +1,5 @@
+from typing import Any
+
 import pandas as pd
 import pytest
 from docx.shared import Length, Twips
@@ -139,7 +141,7 @@ class TestBodyCell:
         ],
     )
     def test_body_cell_parse_with_one_line(
-        self, get_ahb_table_with_multiple_paragraphs, body_cell_paragraphs, expected_dataframe
+        self, get_ahb_table_with_multiple_paragraphs: Any, body_cell_paragraphs: Any, expected_dataframe: Any
     ) -> None:
         table = get_ahb_table_with_multiple_paragraphs(body_cell_paragraphs=body_cell_paragraphs)
 
@@ -335,7 +337,11 @@ class TestBodyCell:
         ],
     )
     def test_body_cell_parse_with_multiple_lines(
-        self, get_ahb_table_with_multiple_paragraphs, body_cell_paragraphs, empty_ahb_row, expected_dataframe
+        self,
+        get_ahb_table_with_multiple_paragraphs: Any,
+        body_cell_paragraphs: Any,
+        empty_ahb_row: Any,
+        expected_dataframe: Any,
     ) -> None:
         table = get_ahb_table_with_multiple_paragraphs(body_cell_paragraphs=body_cell_paragraphs)
 

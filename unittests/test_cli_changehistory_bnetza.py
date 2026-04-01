@@ -7,7 +7,7 @@ from kohlrahbi import cli
 runner = CliRunner()
 
 
-def test_changehistory_is_a_group():
+def test_changehistory_is_a_group() -> None:
     """changehistory should be a click group with subcommands."""
     result = runner.invoke(cli, ["changehistory", "--help"])
     assert result.exit_code == 0
@@ -15,7 +15,7 @@ def test_changehistory_is_a_group():
     assert "bnetza" in result.output
 
 
-def test_bnetza_subcommand_help():
+def test_bnetza_subcommand_help() -> None:
     """bnetza subcommand should accept --url option."""
     result = runner.invoke(cli, ["changehistory", "bnetza", "--help"])
     assert result.exit_code == 0

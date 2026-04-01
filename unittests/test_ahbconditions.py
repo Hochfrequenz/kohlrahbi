@@ -3,20 +3,21 @@ import shutil
 from pathlib import Path
 
 import pytest
+from efoli import EdifactFormat
 
 from kohlrahbi.ahbtable.ahbcondtions import AhbConditions
 from unittests import path_to_test_files_fv2310
 
 
 class TestAhbConditions:
-    def test_dump_as_json(self, tmp_path):
+    def test_dump_as_json(self, tmp_path: Path) -> None:
         test_condition_dict = AhbConditions(
             conditions_dict={
-                "PARTIN": {
+                EdifactFormat.PARTIN: {
                     "2": "Condition2",
                     "3": "Condition3",
                 },
-                "COMDIS": {
+                EdifactFormat.COMDIS: {
                     "12": "Condition12",
                     "13": "Condition13",
                 },
@@ -66,7 +67,7 @@ class TestAhbConditions:
             ),
         ],
     )
-    def test_include_condition_dict(self, dict1, dict2, expected):
+    def test_include_condition_dict(self, dict1, dict2, expected) -> None:  # type: ignore[no-untyped-def]
         test_condition_dict = AhbConditions(conditions_dict=dict1)
         test_condition_dict.include_condition_dict(dict2)
         assert test_condition_dict.conditions_dict == expected

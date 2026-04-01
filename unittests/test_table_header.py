@@ -16,7 +16,7 @@ from kohlrahbi.table_header import create_mapping_of_tabstop_positions
         pytest.param([10, 20, 30], [10, 20, 30], {10: 10, 20: 20, 30: 30}, id="identical_lists"),
     ],
 )
-def test_create_mapping(initial, current, expected):
+def test_create_mapping(initial: list[int], current: list[int], expected: dict[int, int]) -> None:
     """
     Test the create_mapping_of_tabstop_positions function.
     """
@@ -29,7 +29,7 @@ def test_create_mapping(initial, current, expected):
         pytest.param([float("inf"), 200, 300], [float("inf"), 2, 3], id="no_possible_match"),
     ],
 )
-def test_create_mapping_error(initial, current):
+def test_create_mapping_error(initial: list[int], current: list[int]) -> None:
     """
     Test the create_mapping_of_tabstop_positions function with an error.
 

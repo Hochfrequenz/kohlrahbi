@@ -4,6 +4,7 @@ from pathlib import Path
 import docx
 import pytest
 from docx import Document
+from docx.text.paragraph import Paragraph
 from efoli import EdifactFormat, EdifactFormatVersion
 
 from kohlrahbi.ahb import get_pruefi_to_file_mapping
@@ -14,9 +15,9 @@ from kohlrahbi.read_functions import get_all_conditions_from_doc, is_item_packag
 from unittests import test_formats
 
 
-def create_heading_paragraph(text, style):
+def create_heading_paragraph(text: str, style: str) -> Paragraph:
     paragraph = Document().add_paragraph(text)
-    paragraph.style = style
+    paragraph.style = style  # type: ignore[assignment]
     return paragraph
 
 
@@ -57,7 +58,9 @@ class TestReadFunctions:
             ),
         ],
     )
-    def test_is_package_item_heading(self, item, style_name, expected_boolean):
+    def test_is_package_item_heading(
+        self, item: Paragraph | docx.table.Table | None, style_name: str, expected_boolean: bool
+    ) -> None:
         assert is_item_package_heading(item, style_name, EdifactFormat.UTILMD) == expected_boolean
 
     @pytest.mark.parametrize(
@@ -70,7 +73,7 @@ class TestReadFunctions:
             for format in test_formats
         ],
     )
-    def test_get_all_conditions_from_doc(self, edifact_format: EdifactFormat, tmp_path, snapshot):
+    def test_get_all_conditions_from_doc(self, edifact_format: EdifactFormat, tmp_path: Path, snapshot: object) -> None:
 
         edi_repo_path = Path(str(Path(__file__).parents[1] / "edi_energy_mirror"))
         pruefi_to_file_mapping = get_pruefi_to_file_mapping(edi_repo_path, EdifactFormatVersion.FV2404)
@@ -83,7 +86,6 @@ class TestReadFunctions:
         assert files is not None
 
         for file in files:
-            # type: ignore[call-arg, arg-type]
             doc = docx.Document(str(edi_repo_path / "edi_energy_de/FV2404" / Path(file)))
             assert doc
             packages, cond_table = get_all_conditions_from_doc(doc, edifact_format)

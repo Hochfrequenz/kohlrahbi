@@ -11,25 +11,25 @@ class TestUnfoldedAhbTable:
     All tests regarding the AhbTable class
     """
 
-    def test_from_ahb_table(self):
+    def test_from_ahb_table(self) -> None:
         pass
 
-    def test_get_section_name(self):
+    def test_get_section_name(self) -> None:
         pass
 
-    def test_is_section_name(self):
+    def test_is_section_name(self) -> None:
         pass
 
-    def test_is_segment_group(self):
+    def test_is_segment_group(self) -> None:
         pass
 
-    def test_is_segment_opening_line(self):
+    def test_is_segment_opening_line(self) -> None:
         pass
 
-    def test_is_just_segment(self):
+    def test_is_just_segment(self) -> None:
         pass
 
-    def test_is_dataelement(self):
+    def test_is_dataelement(self) -> None:
         pass
 
     def test_convert_to_flat_ahb(self) -> None:
@@ -191,7 +191,7 @@ class TestUnfoldedAhbTable:
 
         assert expected_flat_ahb == flat_ahb
 
-    def test_convert_to_dataframe(self):
+    def test_convert_to_dataframe(self) -> None:
         pass
 
     @pytest.mark.parametrize(
@@ -284,5 +284,5 @@ class TestUnfoldedAhbTable:
             ),
         ],
     )
-    def test_line_is_flatahb_line(self, line: UnfoldedAhbLine, expected: bool):
+    def test_line_is_flatahb_line(self, line: UnfoldedAhbLine, expected: bool) -> None:
         assert _line_is_flatahb_line(line) == expected

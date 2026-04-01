@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Optional
 
-import pytest  # type: ignore[import]
+import pytest
 
 from kohlrahbi.models.flat_ahb_reader import FlatAhbCsvReader, check_file_can_be_parsed_as_ahb_csv
 
@@ -31,7 +31,7 @@ class TestAhbCsvReader:
             pytest.param([], None),
         ],
     )
-    def test_ahb_expression_column_finder(self, field_names: list[str], expected_column_name: Optional[str]):
+    def test_ahb_expression_column_finder(self, field_names: list[str], expected_column_name: Optional[str]) -> None:
         actual = FlatAhbCsvReader._get_name_of_expression_column(field_names)
         assert actual == expected_column_name
 
@@ -46,7 +46,7 @@ class TestAhbCsvReader:
             pytest.param("Gabi sitzt zu Hause ", False),
         ],
     )
-    def test_is_value_pool_entry(self, value: Optional[str], expected_is_value_pool_entry: bool):
+    def test_is_value_pool_entry(self, value: Optional[str], expected_is_value_pool_entry: bool) -> None:
         actual = FlatAhbCsvReader._is_value_pool_entry(value)
         assert actual == expected_is_value_pool_entry
 
@@ -60,7 +60,7 @@ class TestAhbCsvReader:
             pytest.param("SG12", True),
         ],
     )
-    def test_is_segment_group(self, value: Optional[str], expected_is_segment_group: bool):
+    def test_is_segment_group(self, value: Optional[str], expected_is_segment_group: bool) -> None:
         actual = FlatAhbCsvReader._is_segment_group(value)
         assert actual == expected_is_segment_group
 
@@ -181,14 +181,14 @@ class TestAhbCsvReader:
         csv_beschreibung: Optional[str],
         expected_code: Optional[str],
         expected_beschreibung: Optional[str],
-    ):
+    ) -> None:
         actual_code, actual_beschreibung = FlatAhbCsvReader.separate_value_pool_entry_and_name(
             csv_code, csv_beschreibung
         )
         assert actual_code == expected_code
         assert actual_beschreibung == expected_beschreibung
 
-    def test_csv_file_reading_11042(self):
+    def test_csv_file_reading_11042(self) -> None:
         path_to_csv: Path = Path(__file__).parents[1] / "unittests/ahbs/FV2204/UTILMD/11042.csv"
         reader = FlatAhbCsvReader(file_path=path_to_csv)
         assert len(reader.rows) == 844
@@ -246,11 +246,13 @@ class TestAhbCsvReader:
             )
         ],
     )
-    def test_merging_of_section_only_lines(self, input_lines: list[dict], expected_lines: list[dict]):
+    def test_merging_of_section_only_lines(
+        self, input_lines: list[dict[str, str]], expected_lines: list[dict[str, str]]
+    ) -> None:
         actual = FlatAhbCsvReader.merge_section_only_lines(input_lines)
         assert actual == expected_lines
 
-    def test_is_parsable(self):
+    def test_is_parsable(self) -> None:
         check_file_can_be_parsed_as_ahb_csv(Path(__file__).parents[1] / Path("unittests/ahbs/FV2204/UTILMD/11042.csv"))
         # if no exception is thrown, the test is successful
 
@@ -264,11 +266,11 @@ class TestAhbCsvReader:
             pytest.param(None, {}),
         ],
     )
-    def test_extract_bedingungen(self, candidate: str, expected: dict[str, str]):
+    def test_extract_bedingungen(self, candidate: str, expected: dict[str, str]) -> None:
         actual = FlatAhbCsvReader._extract_bedingungen(candidate)
         assert actual == expected
 
-    def test_extract_bedingungen_from_csv(self):
+    def test_extract_bedingungen_from_csv(self) -> None:
         path_to_csv: Path = Path(__file__).parents[1] / "unittests/ahbs/FV2204/UTILMD/11042.csv"
         reader = FlatAhbCsvReader(file_path=path_to_csv)
         actual = reader.extract_condition_texts()

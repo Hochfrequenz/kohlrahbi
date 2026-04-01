@@ -1,10 +1,11 @@
 import glob
 from pathlib import Path
-from typing import Union
+from typing import Any, Optional, Union
 from unittest.mock import MagicMock
 
 import pytest
 from click.testing import CliRunner, Result
+from docx.table import Table
 
 from kohlrahbi import cli
 from kohlrahbi.qualitymap import is_quality_map_table
@@ -13,18 +14,19 @@ runner: CliRunner = CliRunner()
 
 
 class MockCell:
-    def __init__(self, text):
-        self.text = text
+    def __init__(self, text: Optional[str]) -> None:
+        self.text: Optional[str] = text
 
-    def strip(self):
+    def strip(self) -> str:
+        assert self.text is not None
         return self.text.strip()
 
 
 class MockTable:
-    def __init__(self, cell_text):
-        self.cell_text = cell_text
+    def __init__(self, cell_text: Optional[str]) -> None:
+        self.cell_text: Optional[str] = cell_text
 
-    def cell(self, row_idx, col_idx):
+    def cell(self, row_idx: int, col_idx: int) -> MockCell:
         if row_idx == 0 and col_idx == 0:
             return MockCell(self.cell_text)
         raise IndexError
@@ -36,16 +38,16 @@ class TestQualityMap:
     This class contains the unit tests for the quality map
     """
 
-    def test_is_quality_map_table_true(self):
-        table = MockTable("Qualität\n\nSegmentgruppe")
+    def test_is_quality_map_table_true(self) -> None:
+        table: Any = MockTable("Qualität\n\nSegmentgruppe")
         assert is_quality_map_table(table) is True
 
-    def test_is_quality_map_table_false(self):
-        table = MockTable("Some other text")
+    def test_is_quality_map_table_false(self) -> None:
+        table: Any = MockTable("Some other text")
         assert is_quality_map_table(table) is False
 
-    def test_is_quality_map_table_index_error(self):
-        table = MockTable(None)
+    def test_is_quality_map_table_index_error(self) -> None:
+        table: Any = MockTable(None)
         table.cell = MagicMock(side_effect=IndexError)
         assert is_quality_map_table(table) is False
 
@@ -64,8 +66,12 @@ class TestQualityMap:
         ],
     )
     def test_cli_quality_map_table(
-        self, argument_options: list[str], expected_response: dict[str, Union[str, int]], snapshot, tmp_path
-    ):
+        self,
+        argument_options: list[str],
+        expected_response: dict[str, Union[str, int]],
+        snapshot: object,
+        tmp_path: Path,
+    ) -> None:
 
         actual_output_dir = tmp_path / "actual-output"
 

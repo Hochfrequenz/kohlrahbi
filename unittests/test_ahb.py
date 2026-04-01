@@ -9,14 +9,14 @@ from unittests import path_to_test_edi_energy_mirror_repo, path_to_test_files_fv
 
 @pytest.mark.snapshot
 class TestAhb:
-    def test_find_pruefidentifikatoren(self, snapshot):
+    def test_find_pruefidentifikatoren(self, snapshot: object) -> None:
         """
         test find_pruefidentifikatoren.
         """
         pruefis = find_pruefidentifikatoren(Path(__file__).parents[1] / "edi_energy_mirror/edi_energy_de/FV2310")
         assert pruefis == snapshot
 
-    def test_get_ahb_documents_path(self):
+    def test_get_ahb_documents_path(self) -> None:
         """
         test get_ahb_documents_path.
         """
@@ -28,7 +28,7 @@ class TestAhb:
         assert str(exc_info.value) == f"The specified path {expected_path.absolute()} does not exist."
 
     @freeze_time("2024-04-29")
-    def test_save_pruefi_map_to_toml(self):
+    def test_save_pruefi_map_to_toml(self) -> None:
         """
         test save_pruefi_map_to_toml.
         """

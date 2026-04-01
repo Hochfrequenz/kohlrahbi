@@ -13,35 +13,35 @@ from kohlrahbi.changehistory.bnetza import (
 
 
 class TestCleanFilename:
-    def test_removes_pdf_size_mb(self):
+    def test_removes_pdf_size_mb(self) -> None:
         assert clean_filename("Document (pdf / 2.5 MB)") == "Document.pdf"
 
-    def test_removes_pdf_size_kb(self):
+    def test_removes_pdf_size_kb(self) -> None:
         assert clean_filename("Report (pdf / 150 KB)") == "Report.pdf"
 
-    def test_replaces_slashes_and_spaces(self):
+    def test_replaces_slashes_and_spaces(self) -> None:
         assert clean_filename("My Document/v2") == "My_Document_v2.pdf"
 
-    def test_preserves_existing_pdf_extension(self):
+    def test_preserves_existing_pdf_extension(self) -> None:
         assert clean_filename("file.pdf") == "file.pdf"
 
-    def test_adds_pdf_extension_if_missing(self):
+    def test_adds_pdf_extension_if_missing(self) -> None:
         assert clean_filename("file") == "file.pdf"
 
-    def test_removes_size_and_adds_extension(self):
+    def test_removes_size_and_adds_extension(self) -> None:
         assert clean_filename("AHB UTILMD (pdf / 1 MB)") == "AHB_UTILMD.pdf"
 
 
 class TestNormalizeTableColumns:
-    def test_returns_table_unchanged_if_not_10_columns(self):
-        table = [["a", "b", "c", "d", "e", "f"]]
+    def test_returns_table_unchanged_if_not_10_columns(self) -> None:
+        table: list[list[str | None]] = [["a", "b", "c", "d", "e", "f"]]
         assert normalize_table_columns(table) == table
 
-    def test_returns_empty_table_unchanged(self):
+    def test_returns_empty_table_unchanged(self) -> None:
         assert normalize_table_columns([]) == []
 
-    def test_normalizes_10_columns_to_6(self):
-        row = ["ID1", "Ort1", "B1", "B2", "B3", "N1", "N2", "N3", "Grund", "Status"]
+    def test_normalizes_10_columns_to_6(self) -> None:
+        row: list[str | None] = ["ID1", "Ort1", "B1", "B2", "B3", "N1", "N2", "N3", "Grund", "Status"]
         result = normalize_table_columns([row])
         assert len(result) == 1
         assert len(result[0]) == 6
@@ -50,19 +50,19 @@ class TestNormalizeTableColumns:
         assert result[0][4] == "Grund"
         assert result[0][5] == "Status"
 
-    def test_merges_bisher_and_neu_columns(self):
-        row = ["ID", "Ort", "a", None, "c", "x", None, "z", "Grund", "Status"]
+    def test_merges_bisher_and_neu_columns(self) -> None:
+        row: list[str | None] = ["ID", "Ort", "a", None, "c", "x", None, "z", "Grund", "Status"]
         result = normalize_table_columns([row])
         assert result[0][2] == "a\nc"  # Bisher: cols 2-4, None skipped
         assert result[0][3] == "x\nz"  # Neu: cols 5-7, None skipped
 
 
 class TestCleanTableData:
-    def test_returns_empty_for_insufficient_rows(self):
+    def test_returns_empty_for_insufficient_rows(self) -> None:
         assert clean_table_data([["header"]]) == []
 
-    def test_preserves_header_and_subheader(self):
-        table = [
+    def test_preserves_header_and_subheader(self) -> None:
+        table: list[list[str | None]] = [
             ["Änd-ID", "Ort", "Bisher", "Neu", "Grund", "Status"],
             ["", "", "alt", "neu", "", ""],
             ["ID1", "S1", "old", "new", "reason", "done"],
@@ -71,8 +71,8 @@ class TestCleanTableData:
         assert result[0] == table[0]  # header
         assert result[1] == table[1]  # sub-header
 
-    def test_merges_continuation_rows(self):
-        table = [
+    def test_merges_continuation_rows(self) -> None:
+        table: list[list[str | None]] = [
             ["Änd-ID", "Ort", "Bisher", "Neu", "Grund", "Status"],
             ["", "", "", "", "", ""],
             ["ID1", "S1", "old", "new", "reason", "done"],
@@ -84,8 +84,8 @@ class TestCleanTableData:
         assert result[2][2] == "old\nmore old"
         assert result[2][4] == "reason\nmore reason"
 
-    def test_converts_none_to_empty_string(self):
-        table = [
+    def test_converts_none_to_empty_string(self) -> None:
+        table: list[list[str | None]] = [
             ["H1", "H2"],
             ["S1", "S2"],
             ["A", None],
@@ -106,7 +106,7 @@ class TestFindChangeHistoryPage:
         pdf.pages = pages
         return pdf
 
-    def test_finds_page_from_toc(self):
+    def test_finds_page_from_toc(self) -> None:
         pdf = self._make_pdf(
             [
                 "Table of Contents\nÄnderungshistorie.....10",
@@ -115,7 +115,7 @@ class TestFindChangeHistoryPage:
         )
         assert find_change_history_page(pdf) == 9  # 10 - 1 = 9 (0-based)
 
-    def test_fallback_finds_page_by_text(self):
+    def test_fallback_finds_page_by_text(self) -> None:
         pdf = self._make_pdf(
             [
                 "Introduction",
@@ -127,11 +127,11 @@ class TestFindChangeHistoryPage:
         )
         assert find_change_history_page(pdf) == 4
 
-    def test_returns_negative_one_when_not_found(self):
+    def test_returns_negative_one_when_not_found(self) -> None:
         pdf = self._make_pdf(["No relevant content", "More content"])
         assert find_change_history_page(pdf) == -1
 
-    def test_handles_none_from_extract_text(self):
+    def test_handles_none_from_extract_text(self) -> None:
         pdf = self._make_pdf(["normal text"])
         # Override second page to return None
         none_page = MagicMock()
