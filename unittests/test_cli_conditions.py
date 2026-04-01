@@ -30,9 +30,7 @@ def read_json_if_exists(file_path: Path):
 
 
 edifact_formats = [
-    EdifactFormat.COMDIS,
     EdifactFormat.IFTSTA,
-    EdifactFormat.INSRPT,
     EdifactFormat.INVOIC,
     EdifactFormat.MSCONS,
     EdifactFormat.ORDCHG,
@@ -43,7 +41,7 @@ edifact_formats = [
     EdifactFormat.QUOTES,
     EdifactFormat.REMADV,
     EdifactFormat.REQOTE,
-    EdifactFormat.UTILMD,
+    EdifactFormat.UTILMDS,
     EdifactFormat.UTILTS,
 ]
 

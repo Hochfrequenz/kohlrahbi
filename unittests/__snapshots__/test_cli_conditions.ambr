@@ -1,143 +1,478 @@
 # serializer version: 1
-# name: TestCliConditions.test_cli_conditions[COMDIS]
+# name: TestCliConditions.test_cli_conditions[IFTSTA]
   False
 # ---
-# name: TestCliConditions.test_cli_conditions[COMDIS].1
+# name: TestCliConditions.test_cli_conditions[IFTSTA].1
   list([
     dict({
       'condition_key': '1',
-      'condition_text': 'wenn SG3 AJT+Z61+S_0109 oder SG3 AJT+Z62+S_0109 vorhanden.',
-      'edifact_format': 'COMDIS',
-    }),
-    dict({
-      'condition_key': '2',
-      'condition_text': 'wenn SG3 AJT+Z58+S_0109 oder SG3 AJT+Z59+S_0109 oder SG3 AJT+Z60+S_0109 vorhanden.',
-      'edifact_format': 'COMDIS',
+      'condition_text': 'Wenn die Übermittlung nicht codierbarer Informationen nötig ist.',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
       'condition_key': '3',
-      'condition_text': 'Nur MP-ID aus Sparte Strom',
-      'edifact_format': 'COMDIS',
+      'condition_text': 'Wenn SG7 STS+Z01 nicht vorhanden.',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
       'condition_key': '4',
-      'condition_text': 'wenn SG3 AJT+Z58/Z59/ Z60/Z61/Z62+S_0109vorhanden',
-      'edifact_format': 'COMDIS',
+      'condition_text': 'Wenn SG7 STS+Z02 nicht vorhanden.',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
       'condition_key': '5',
-      'condition_text': 'wenn SG3 AJT+A01/A02/ A03/A04/A06/A07/A09/A12/ A15+E_0504 vorhanden',
-      'edifact_format': 'COMDIS',
+      'condition_text': 'Wenn SG7 STS+Z03 nicht vorhanden.',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
       'condition_key': '6',
-      'condition_text': 'wenn SG3 AJT+A07+E_0504 vorhanden',
-      'edifact_format': 'COMDIS',
+      'condition_text': 'Wenn für das 3-Tupel (MaBiS-ZP, Betrachtungszeitraum, Version der Summenzeitreihe) dem BIKO der Prüfstatus vorliegt, so ist dieser immer zusammen mit dem Datenstatus zu übertragen.',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
       'condition_key': '7',
-      'condition_text': 'wenn SG3 AJT+A02+E_0504 vorhanden',
-      'edifact_format': 'COMDIS',
+      'condition_text': 'Wenn derDatenstatus "Abgerechnete Daten" bzw. "Abgerechnete Daten Korrektur-BKA" nicht vorhanden.',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
       'condition_key': '8',
-      'condition_text': 'wenn SG3 AJT+A01/A04/ A06/A09/A12+E_0504 vorhanden',
-      'edifact_format': 'COMDIS',
-    }),
-    dict({
-      'condition_key': '9',
-      'condition_text': 'wenn SG3 AJT+A05/A10/ A11/A14+E_0504 vorhanden',
-      'edifact_format': 'COMDIS',
+      'condition_text': 'Wenn der Datenstatus einer NZR vom BIKO an NB nicht vorhanden.',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
       'condition_key': '10',
-      'condition_text': 'wenn SG3 AJT+A03+E_0504 vorhanden',
-      'edifact_format': 'COMDIS',
-    }),
-    dict({
-      'condition_key': '11',
-      'condition_text': 'wenn SG3 AJT+A15+E_0504 vorhanden',
-      'edifact_format': 'COMDIS',
-    }),
-    dict({
-      'condition_key': '12',
-      'condition_text': 'wenn SG3 AJT+A99+S_0109 vorhanden',
-      'edifact_format': 'COMDIS',
-    }),
-    dict({
-      'condition_key': '13',
-      'condition_text': 'wenn SG3 AJT+A07+E_1008 vorhanden',
-      'edifact_format': 'COMDIS',
-    }),
-    dict({
-      'condition_key': '14',
-      'condition_text': 'wenn SG3 AJT+A02+E_1008 vorhanden',
-      'edifact_format': 'COMDIS',
-    }),
-    dict({
-      'condition_key': '15',
-      'condition_text': 'wenn SG3 AJT+A01/ A04/A06/A09+E_1008 vorhanden',
-      'edifact_format': 'COMDIS',
+      'condition_text': 'Wenn Meldung des BKV/NB/ÜNB nach Frist eingeht.',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
       'condition_key': '16',
-      'condition_text': 'wenn SG3 AJT+A03+E_1008 vorhanden',
-      'edifact_format': 'COMDIS',
+      'condition_text': 'Wenn MP-ID in SG1 NAD+MR in der Rolle BKV',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
       'condition_key': '17',
-      'condition_text': 'wenn SG3 AJT+A15+E_1008 vorhanden',
-      'edifact_format': 'COMDIS',
+      'condition_text': 'Wenn Meldung des BKV auf falscher Aggregationsebene eingeht.',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
       'condition_key': '18',
-      'condition_text': 'wenn SG3 AJT+A05/ A10/A11+E_1008 vorhanden',
-      'edifact_format': 'COMDIS',
+      'condition_text': 'Wenn SG15 STS+Z19 nicht vorhanden.',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
       'condition_key': '19',
-      'condition_text': 'wenn SG3 AJT+A99+E_0265/E_0516/ E_0520/E_0567 vorhanden',
-      'edifact_format': 'COMDIS',
+      'condition_text': 'Wenn SG15 STS+Z24 nicht vorhanden.',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
       'condition_key': '20',
-      'condition_text': 'wenn SG3 AJT+A01/ A02/A03/A04/A06/A07/A09/ A15+E_1008 vorhanden',
-      'edifact_format': 'COMDIS',
-    }),
-    dict({
-      'condition_key': '21',
-      'condition_text': 'wenn im DE3155 in demselben COM der Code EM vorhanden ist',
-      'edifact_format': 'COMDIS',
-    }),
-    dict({
-      'condition_key': '22',
-      'condition_text': 'wenn im DE3155 in demselben COM der Code TE / FX / AJ / AL vorhanden ist',
-      'edifact_format': 'COMDIS',
+      'condition_text': 'Wenn MP-ID in SG1 NAD+MR in der Rolle LF',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
       'condition_key': '23',
-      'condition_text': 'Wenn MP-ID in NAD+MS (Nachrichtensender) mit Rolle MSB vorhanden',
-      'edifact_format': 'COMDIS',
-    }),
-    dict({
-      'condition_key': '24',
-      'condition_text': 'Wenn MP-ID in NAD+MR (Nachrichtenempfänger) mit Rolle ESA vorhanden',
-      'edifact_format': 'COMDIS',
-    }),
-    dict({
-      'condition_key': '25',
-      'condition_text': 'Wenn MP-ID in NAD+MR (Nachrichtenempfänger) mit Rolle LF vorhanden',
-      'edifact_format': 'COMDIS',
+      'condition_text': 'Wenn SG15 STS+Z25+Z31+A06 / A09 / A10 / A11 / A13 / A14 / A15 / A16 vorhanden.',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
       'condition_key': '26',
-      'condition_text': 'Wenn MP-ID in NAD+MR (Nachrichtenempfänger) mit Rolle NB vorhanden',
-      'edifact_format': 'COMDIS',
+      'condition_text': 'Wenn MP-ID in SG1 NAD+MR in der Rolle NB',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
       'condition_key': '27',
-      'condition_text': 'Wenn MP-ID in NAD+MS (Nachrichtensender) mit Rolle NB vorhanden',
-      'edifact_format': 'COMDIS',
+      'condition_text': 'Nur MP-ID aus Sparte Strom',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '28',
+      'condition_text': 'Nur MP-ID aus Sparte Gas',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '29',
+      'condition_text': 'Wenn MP-ID in SG1 NAD+MR in der Rolle ÜNB',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '30',
+      'condition_text': 'Wenn in dieser SG15 STS+Z20+Z32+A07:E_0207 vorhanden.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '31',
+      'condition_text': 'Wenn in dieser SG16 in QTY in DE6411 KWH/K3 vorhanden.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '32',
+      'condition_text': 'Wenn in dieser SG16 in QTY in DE6411 KWT/K5 vorhanden.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '33',
+      'condition_text': 'Wenn in dieser SG16 DTM+163 vorhanden.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '43',
+      'condition_text': 'Wenn STS+Z01+Z07 vorhanden, dann sind nur Codes aus dem EBD-Cluster Zustimmung möglich.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '44',
+      'condition_text': 'Wenn STS+Z01+Z08 vorhanden, dann sind nur Codes aus dem EBD-Cluster Ablehnung möglich.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '45',
+      'condition_text': 'Wenn STS+Z03+Z07 vorhanden, dann sind nur Codes aus dem EBD-Cluster Zustimmung möglich.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '46',
+      'condition_text': 'Wenn STS+Z03+Z08 vorhanden, dann sind nur Codes aus dem EBD-Cluster Ablehnung möglich.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '47',
+      'condition_text': 'Es sind nur Codes aus dem EBD-Cluster Ablehnung möglich.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '48',
+      'condition_text': 'Es sind nur Codes aus dem EBD-Cluster Zustimmung möglich.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '49',
+      'condition_text': 'Wenn STS+Z25+Z30 vorhanden, dann sind nur Codes aus dem EBD-Cluster Zustimmung möglich.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '50',
+      'condition_text': 'Wenn STS+Z25+Z31 vorhanden, dann sind nur Codes aus dem EBD-Cluster Ablehnung möglich.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '51',
+      'condition_text': 'Es sind nur Codes aus dem EBD-Cluster Abweisung möglich.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '52',
+      'condition_text': 'Wenn STS+Z27+Z32 vorhanden',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '53',
+      'condition_text': 'Wenn STS+Z28+Z32 vorhanden',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '54',
+      'condition_text': 'Wenn STS+Z29+Z32 vorhanden',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '55',
+      'condition_text': 'Wenn STS+Z30+Z32 vorhanden',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '56',
+      'condition_text': 'Wenn in dieser SG15 STS das SG15 RFF+ACW nicht identisch mit dem SG15 RFF+ACW der SG15 STS+Z27 ist',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '57',
+      'condition_text': 'Wenn in dieser SG15 STS das SG15 RFF+ACW nicht identisch mit dem SG15 RFF+ACW der SG15 STS+Z28 ist',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '58',
+      'condition_text': 'Wenn in dieser SG15 STS das SG15 RFF+ACW nicht identisch mit dem SG15 RFF+ACW der SG15 STS+Z29 ist',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '59',
+      'condition_text': 'Wenn in dieser SG15 STS das SG15 RFF+ACW nicht identisch mit dem SG15 RFF+ACW der SG15 STS+Z30 ist',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '60',
+      'condition_text': 'Wenn zusätzlich zum Fahrplananteil auch die Ausfallarbeit zu identischem Wert aus RFF+ACW nicht o.k. ist',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '61',
+      'condition_text': 'Wenn zusätzlich zur Ausfallarbeit auch der Fahrplananteil zu identischem Wert aus RFF+ACW nicht o.k. ist',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '62',
+      'condition_text': 'Wenn STS+Z27+Z30 vorhanden, dann sind nur Codes aus dem EBD-Cluster Zustimmung möglich.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '63',
+      'condition_text': 'Wenn STS+Z27+Z32 vorhanden, dann sind nurCodes aus dem EBD-Cluster Ablehnung möglich.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '64',
+      'condition_text': 'Wenn STS+Z28+Z30 vorhanden, dann sind nur Codes aus dem EBD-Cluster Zustimmung möglich.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '65',
+      'condition_text': 'Wenn STS+Z28+Z32 vorhanden, dann sind nur Codes aus dem EBD-Cluster Ablehnung möglich.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '66',
+      'condition_text': 'Wenn STS+Z29+Z30 vorhanden, dann sind nur Codes aus dem EBD-Cluster Zustimmung möglich.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '67',
+      'condition_text': 'Wenn STS+Z29+Z32 vorhanden, dann sind nur Codes aus dem EBD-Cluster Ablehnung möglich.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '68',
+      'condition_text': 'Wenn STS+Z30+Z30 vorhanden, dann sind nur Codes aus dem EBD-Cluster Zustimmung möglich.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '69',
+      'condition_text': 'Wenn STS+Z30+Z32 vorhanden, dann sind nur Codes aus dem EBD-Cluster Ablehnung möglich.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '70',
+      'condition_text': 'Wenn zusätzlich zum Gegenvorschlag des Fahrplananteils auch der Gegenvorschlag der Ausfallarbeit zu identischem Wert aus RFF+ACW nicht o.k. ist',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '71',
+      'condition_text': 'Wenn zusätzlich zum Gegenvorschlag der Ausfallarbeit auch der Gegenvorschlag des Fahrplananteils zu identischem Wert aus RFF+ACW nicht o.k. ist',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '72',
+      'condition_text': 'Wenn Gegenvorschlag erstellt werden kann',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '76',
+      'condition_text': 'Wenn MP-ID in SG1 NAD+MR in der Rolle ESA',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '77',
+      'condition_text': 'Wenn STS+Z37+Z14 in dieser SG14 vorhanden',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '78',
+      'condition_text': 'Wenn STS+Z38 in dieser SG14 nicht vorhanden',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '79',
+      'condition_text': 'Wenn STS+Z37 in dieser SG14 nicht vorhanden',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '80',
+      'condition_text': 'Wenn STS+Z38+Z14 in dieser SG14 vorhanden',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '83',
+      'condition_text': 'Wenn STS+Z37+Z13+A04/ A05/A06:E_0472 in dieser SG14 vorhanden',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '84',
+      'condition_text': 'Wenn STS+Z38+Z13+A02: E_0499 in dieser SG14 vorhanden',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '85',
+      'condition_text': 'Wenn STS+Z37+Z32+A01: E_0501 in dieser SG14 vorhanden',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '91',
+      'condition_text': 'Wenn in diesem STS DE1131 = E_0472',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '92',
+      'condition_text': 'Wenn in diesem STS DE1131 = E_0501',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '93',
+      'condition_text': 'Wenn STS+Z37+Z13 vorhanden, dann sind nur Codes aus dem EBD-Cluster gescheitert möglich.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '94',
+      'condition_text': 'Wenn STS+Z37+Z14 vorhanden, dann sind nur Codes aus dem EBD-Cluster erfolgreich möglich.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '95',
+      'condition_text': 'Wenn in diesem STS DE1131 = E_0499',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '96',
+      'condition_text': 'Wenn in diesem STS DE1131 = E_0487',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '97',
+      'condition_text': 'Wenn STS+Z38+Z13 vorhanden, dann sind nur Codes aus dem EBD-Cluster gescheitert möglich.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '98',
+      'condition_text': 'Wenn STS+Z38+Z14 vorhanden, dann sind nur Codes aus dem EBD-Cluster erfolgreich möglich.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '99',
+      'condition_text': 'Wenn in diesem STS DE1131 = E_0487, dann ist nur der Code A01 möglich.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '107',
+      'condition_text': 'Wenn STS+Z37+Z32 vorhanden, dann sind nur Codes aus dem EBD-Cluster Ablehnung möglich.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '114',
+      'condition_text': 'Wenn MP-ID in SG1 NAD+MS in der Rolle MSB',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '115',
+      'condition_text': 'Wenn MP-ID in SG1 NAD+MS in der Rolle NB',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '117',
+      'condition_text': 'Wenn MP-ID in SG1 NAD+MR in der Rolle MSB',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '118',
+      'condition_text': 'Wenn in diesem STS DE1131 = E_0526',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '119',
+      'condition_text': 'Wenn in diesem STS DE1131 = E_0528',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '120',
+      'condition_text': 'Wenn in diesem STS DE1131 = E_0529',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '121',
+      'condition_text': 'Wenn in diesem STS DE1131 = E_0536',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '129',
+      'condition_text': 'Wenn STS+Z20+Z32+A99:E_0524 in dieser SG14 vorhanden',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '130',
+      'condition_text': 'Wenn STS+Z20+Z32+A99:E_0531 in dieser SG14 vorhanden',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '131',
+      'condition_text': 'Wenn STS+Z37+Z13+A04/ A05/A06:E_1003 in dieser SG14 vorhanden',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '132',
+      'condition_text': 'Wenn STS+Z37+Z32+A01: E_1002 in dieser SG14 vorhanden',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '133',
+      'condition_text': 'Wenn in diesem STS DE1131 = E_1003',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '134',
+      'condition_text': 'Wenn in diesem STS DE1131 = E_1002',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '135',
+      'condition_text': 'Wenn in dieser SG15 in STS+Z21 DE9013 = A99',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '136',
+      'condition_text': 'Wenn STS+Z38+Z13+A02: E_1005 in dieser SG14 vorhanden',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '137',
+      'condition_text': 'Wenn in diesem STS DE1131 = E_1005',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '138',
+      'condition_text': 'Wenn in diesem STS DE1131 = E_1020',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '139',
+      'condition_text': 'Wenn in diesem STS DE1131 = E_1020, dann ist nur der Code A01 möglich.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '140',
+      'condition_text': 'Wenn in diesem STS DE9013 <> A01',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '141',
+      'condition_text': 'Wenn in diesem STS DE9013 = A01',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '142',
+      'condition_text': 'Wenn in diesem STS DE1131 = E_0535',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '143',
+      'condition_text': 'Wenn mehr als ein Grund vorliegt und die voranstehenden DE9013 dieses STS nicht ausreichen',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '144',
+      'condition_text': 'Wenn RFF+Z45 in dieser SG15 nicht vorhanden',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '145',
+      'condition_text': 'Wenn RFF+Z17 in dieser SG15 nicht vorhanden',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
       'condition_key': '490',
@@ -146,7 +481,7 @@
         ›	„Sommerzeit (MESZ) von“ Darstellung in UTC und
         ›	„Sommerzeit (MESZ) bis“ Darstellung in UTC ist.
       ''',
-      'edifact_format': 'COMDIS',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
       'condition_key': '491',
@@ -155,76 +490,196 @@
         ›	„Winterzeit (MEZ) von“ Darstellung in UTC und
         ›	„Winterzeit (MEZ) bis“ Darstellung in UTC ist.
       ''',
-      'edifact_format': 'COMDIS',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
       'condition_key': '492',
-      'condition_text': 'Wenn MP-ID in NAD+MR (Nachrichtenempfänger) aus Sparte Strom',
-      'edifact_format': 'COMDIS',
+      'condition_text': 'wenn MP-ID in NAD+MR aus Sparte Strom',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
       'condition_key': '493',
-      'condition_text': 'Wenn MP-ID in NAD+MR (Nachrichtenempfänger) aus Sparte Gas',
-      'edifact_format': 'COMDIS',
+      'condition_text': 'wenn MP-ID in NAD+MR aus Sparte Gas',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '494',
+      'condition_text': 'Das hier genannte Datum muss der Zeitpunkt sein, zu dem das Dokument erstellt wurde, oder ein Zeitpunkt, der davor liegt',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '495',
+      'condition_text': 'Der Zeitpunkt muss ≤ dem Wert im DE2380 des DTM+137 sein',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '496',
+      'condition_text': 'Der Zeitpunkt muss > dem Wert im DE2380 des DTM+137 sein',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '501',
+      'condition_text': 'Hinweis: Aus QUOTES BGM DE1004',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '502',
+      'condition_text': 'Hinweis: Aus REQOTE BGM DE1004',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '503',
+      'condition_text': 'Hinweis: Auf Selbsteinbau eines iMS oder einer mME wird verzichtet',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '504',
+      'condition_text': 'Hinweis: Verwendung der ID des MaBiS-ZP',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
       'condition_key': '505',
-      'condition_text': 'Hinweis: BGM DE1004 aus der vorher per REMADV abgelehnten INVOIC-Nachricht',
-      'edifact_format': 'COMDIS',
+      'condition_text': 'Hinweis: Verwendung der ID der Messlokation',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
       'condition_key': '506',
-      'condition_text': 'Hinweis: BGM DE1004 aus der vorher per IFTSTA abgelehnten MSCONS- Nachricht',
-      'edifact_format': 'COMDIS',
+      'condition_text': 'Hinweis: Verwendung der ID der Marktlokation',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
-      'condition_key': '508',
-      'condition_text': 'Hinweis: Es darf nur eine Information im DE3148 übermittelt werden',
-      'edifact_format': 'COMDIS',
+      'condition_key': '510',
+      'condition_text': 'Hinweis: Es ist neben der Information über die Ablehnung auch der unverändert gebliebene Datenstatus informell mitzugeben.',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
-      'condition_key': '930',
-      'condition_text': 'Format: max. 2 Nachkommastellen',
-      'edifact_format': 'COMDIS',
+      'condition_key': '512',
+      'condition_text': 'Hinweis: Aus MSCONS BGM DE1004',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '519',
+      'condition_text': 'Hinweis: Aus ORDERS BGM DE1004',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '520',
+      'condition_text': 'Hinweis: Zeitpunkt, zu dem der Wechsel erfolgt, falls er zustande kommt',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '521',
+      'condition_text': 'Hinweis: Zeitpunkt, ab dem der MSBN tatsächlich den Messstellenbetrieb übernimmt',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '522',
+      'condition_text': 'Hinweis: Zeitpunkt, ab dem der gMSB den Messstellenbetrieb übernimmt',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '523',
+      'condition_text': 'Hinweis: Wert aus BGM DE1004 der MSCONS, auf die sich die Statusangabe bezieht',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '524',
+      'condition_text': 'Hinweis: Wert aus BGM DE1004 der MSCONS, die den Gegenvorschlag enthält',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '525',
+      'condition_text': 'Hinweis: Je SG14 sind nur Statusinformationen zu einer MSCONS enthalten',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '530',
+      'condition_text': 'Hinweis: Hier ist die Arbeit bzw. Leistung anzugeben, die der Sender der IFTSTA im Lieferschein für den von ihm genannten Zeitraum / Leistungsperiode erwartet hätte.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '531',
+      'condition_text': 'Vom MSBN in Schritt 1 des SD verwendete Vorgangsnummer, damit der LF diese bei der Bestellung einer Konfigurationbeim MSBN, unter dem Vorbehalt, dass der MSB-Wechsel an der Messlokation erfolgreich sein wird, verwenden kann.',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '532',
+      'condition_text': 'Hinweis: Verwendung der ID der Netzlokation',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '533',
+      'condition_text': 'Hinweis: Verwendung der ID der Steuerbaren Ressource',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '902',
+      'condition_text': 'Format: Wert darf nur positiv oder 0 sein',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '903',
+      'condition_text': 'Format: Möglicher Wert: 1',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '906',
+      'condition_text': 'Format: max. 3 Nachkommastellen',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '911',
+      'condition_text': 'Format: Mögliche Werte: 1 bis n, je Nachricht bei 1 beginnend und fortlaufend aufsteigend',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
       'condition_key': '931',
       'condition_text': 'Format: ZZZ = +00',
-      'edifact_format': 'COMDIS',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
       'condition_key': '932',
       'condition_text': 'Format: HHMM = 2200',
-      'edifact_format': 'COMDIS',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
       'condition_key': '933',
       'condition_text': 'Format: HHMM = 2300',
-      'edifact_format': 'COMDIS',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
       'condition_key': '934',
       'condition_text': 'Format: HHMM = 0400',
-      'edifact_format': 'COMDIS',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
       'condition_key': '935',
       'condition_text': 'Format: HHMM = 0500',
-      'edifact_format': 'COMDIS',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
-      'condition_key': '939',
-      'condition_text': 'Format: Die Zeichenkette muss die Zeichen @ und . enthalten',
-      'edifact_format': 'COMDIS',
+      'condition_key': '950',
+      'condition_text': 'Format: Marktlokations-ID',
+      'edifact_format': 'IFTSTA',
     }),
     dict({
-      'condition_key': '940',
-      'condition_text': 'Format: Die Zeichenkette muss mit dem Zeichen + beginnen und danach dürfen nur noch Ziffern folgen',
-      'edifact_format': 'COMDIS',
+      'condition_key': '951',
+      'condition_text': 'Format: Zählpunktbezeichnu ng',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '960',
+      'condition_text': 'Format: Netzlokations- ID',
+      'edifact_format': 'IFTSTA',
+    }),
+    dict({
+      'condition_key': '961',
+      'condition_text': 'Format: SR-ID',
+      'edifact_format': 'IFTSTA',
     }),
   ])
 # ---
-# name: TestCliConditions.test_cli_conditions[COMDIS].2
+# name: TestCliConditions.test_cli_conditions[IFTSTA].2
   None
 # ---
 # name: TestCliConditions.test_cli_conditions[INVOIC]
@@ -5700,6 +6155,2759 @@
   ])
 # ---
 # name: TestCliConditions.test_cli_conditions[REQOTE].2
+  None
+# ---
+# name: TestCliConditions.test_cli_conditions[UTILMDS]
+  False
+# ---
+# name: TestCliConditions.test_cli_conditions[UTILMDS].1
+  list([
+    dict({
+      'condition_key': '1',
+      'condition_text': 'Wenn Aufteilung vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2',
+      'condition_text': 'Wenn UNH DE0070 (Übermittlungsfolgenum mer) mit 1 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '3',
+      'condition_text': 'Bei Aufteilung, in der Nachricht mit der höchsten Übermittlungsfolgenum mer',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '4',
+      'condition_text': 'Wenn MP-ID in SG2 NAD+MR (Nachrichtenempfäng er) in der Rolle LF',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '5',
+      'condition_text': 'Wenn MP-ID in SG2 NAD+MS (Nachrichtenabsender) in der Rolle LF',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '6',
+      'condition_text': 'Wenn MP-ID in SG2 NAD+MR (Nachrichtenempfänger) in der Rolle ÜNB',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '7',
+      'condition_text': 'Wenn SG4 STS+7++ZG9/ZH1/ZH2 (Transaktionsgrund: Aufhebung einer zukünftigen Zuordnung wegen Auszug des Kunden / -wegen Stilllegung / -wegen aufgehobenem Vertragsverhältnis) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '9',
+      'condition_text': 'Wenn SG4 STS+7++ZE4 (Transaktionsgrund: Weggefallene Markt- bzw. Messlokation) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '10',
+      'condition_text': 'Wenn SG4 STS+Z17 (Transaktionsgrund für befristete Anmeldung) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '11',
+      'condition_text': 'Wenn SG4 STS+7++ZG9/ZH1/ZH2 (Transaktionsgrund: Aufhebung einer zukünftigen Zuordnung wegen Auszug des Kunden / -wegen Stilllegung / -wegen aufgehobenem Vertragsverhältnis) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '12',
+      'condition_text': 'Wenn SG4 DTM+471 (Ende zum nächstmöglichem Termin) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '13',
+      'condition_text': 'Wenn SG4 STS+E01++Z01 (Status der Antwort: Zustimmung mitTerminänderung) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '14',
+      'condition_text': 'Wenn Datum bekannt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '15',
+      'condition_text': 'Wenn SG4 STS+E01++Z34 (Status der Antwort: Ablehnung Mehrfachkündigung) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '16',
+      'condition_text': 'Wenn SG4 STS+E01++Z12 (Status der Antwort: Ablehnung Vertragsbindung) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '17',
+      'condition_text': 'Wenn bereits eine bestätigte Kündigung durch Kunde oder MP vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '18',
+      'condition_text': 'Wenn SG4 DTM+93 (Ende zum) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '19',
+      'condition_text': 'Wenn SG8 SEQ+Z01 (Daten der Marktlokation) SG10 CCI+++ZC0 (Prognose auf Basis von Werten) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '20',
+      'condition_text': 'Wenn SG8 SEQ+Z01 (Daten der Marktlokation) SG10 CCI+Z30++Z07 (Verbrauch) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '21',
+      'condition_text': 'Wenn SG10 CCI+++ZA6 (Prognose auf Basis von Profilen) in dieser SG8 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '24',
+      'condition_text': 'Wenn SG6 DTM+Z21 (Termin der Netznutzungsabrechnun g) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '25',
+      'condition_text': 'Wenn SG5 LOC+Z16 (Marktlokation) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '26',
+      'condition_text': 'Wenn SG4 FTX+Z17 (Zieladresse URI) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '28',
+      'condition_text': 'Wenn SG4 DTM+93 (Ende zum) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '29',
+      'condition_text': 'Wenn eine Bilanzierung stattfindet',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '30',
+      'condition_text': 'Wenn Antwort auf Aktivierung übermittelt wird',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '31',
+      'condition_text': 'Wenn eine Korrektur erfolgt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '32',
+      'condition_text': 'Wenn mehr als ein SG8 SEQ+Z78 (Referenz auf die Lokationsbündelstrukt ur) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '33',
+      'condition_text': 'Wenn in Abmeldung ein Bilanzierungsende vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '34',
+      'condition_text': 'Wenn Antwort auf Deaktivierung übermittelt wird',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '35',
+      'condition_text': 'Wenn das DE2380 von SG4 DTM+Z01 (Kündigungsfrist des Vertrags) an vierter Stelle T (Termin) enthält',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '36',
+      'condition_text': 'Wenn SG4 STS+E01++ZC5 (Status der Antwort: Ablehnung andere Anmeldung in Bearbeitung) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '37',
+      'condition_text': 'Wenn Anmeldung/ Änderung befristet',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '38',
+      'condition_text': 'ID des NB muss identisch mit der ID in NAD+MS (Nachrichtenabsender) sein.',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '40',
+      'condition_text': 'Wenn SG4 STS+7++E02 (Transaktionsgrund: Einzug in Neuanlage) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '45',
+      'condition_text': 'Wenn in derselben SG8 das SG10 CCI+Z01++Z82 (Verwendungsumfang: ID der prozessual behandelten Messlokation) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '46',
+      'condition_text': 'Wenn ID für Objekt vergeben wurde',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '47',
+      'condition_text': 'Wenn SG10 CCI+15++Z21 (Summenzeitreihentyp) CAV+DBA/ VZR/ EGS/ LGS/ SLS/ SES/ TLS/ TES/ BIL/ BIP/ BIT/ GAL/ GAP/ GAT/ GEL/ GEP/ GET/ SOL/ SOP/ SOT/ WFL/ WFP/ WFT/ WNL/ WNP/ WNT vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '48',
+      'condition_text': 'Wenn in dieser SG4 das STS+E01++E14/ A99 (Status der Antwort: Ablehnung Sonstiges) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '52',
+      'condition_text': 'Wenn SG10 CCI+Z07++Z55/ Z56 (Profiltyp: sonstige verbrauchende Marktlokation / sonstige erzeugende Marktlokation) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '53',
+      'condition_text': 'Wenn weitere Präzisierungen als über CCI+Z07 (Profiltyp) möglich sind',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '54',
+      'condition_text': 'Wenn SG8 SEQ+Z01 (Daten der Marktlokation) SG10 CCI+Z30++Z06 (Lieferrichtung: Erzeugung) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '55',
+      'condition_text': 'Wenn SG10 CCI+Z22++Z91 (Status der erzeugenden Marktlokation: Veräußerungsform Geförderte Direktvermarktung bzw. Marktprämie) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '56',
+      'condition_text': 'Wenn im STS+E01 im DE9013 ein Antwortcode aus dem Cluster Zustimmung vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '57',
+      'condition_text': 'Wenn CCI+Z45++ZD9 (Abrechnung findet statt) vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '58',
+      'condition_text': 'Wenn in diesem CCI das DE3055 mit dem Code 293 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '59',
+      'condition_text': 'Wenn mehr als eine SG8 SEQ+Z45 (Netznutzungsabrechnungsdat en der Marktlokation) mit einer Gruppen-/Artikel-ID im SG8 PIA+Z02 (Gruppenartikel- ID / Artikel-ID), welche mit 1- 08-1/2/3/4/5 beginnt, vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '64',
+      'condition_text': 'Wenn SG4 DTM+158 (Bilanzierungsbeginn) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '71',
+      'condition_text': 'Wenn Antwort aufZuordnung übermittelt wird',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '72',
+      'condition_text': 'Wenn Antwort auf Beendigung der Zuordnung übermittelt wird',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '73',
+      'condition_text': 'Wenn in derselben SG8 im PIA DE7140 ein Code aus der Codeliste der Gruppenartikel- und Artikel-ID vorhanden ist, der in der Spalte UTILMD/Preisangabe mit X gekennzeichnet ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '76',
+      'condition_text': 'Wenn Summenzeitreihe auf Ebene des Bilanzierungsgebiet',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '77',
+      'condition_text': 'Wenn SG8 SEQ+Z03 (Zähleinrichtungsdaten) CAV+Z30 (Identifikation/Nummer des Gerätes) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '78',
+      'condition_text': 'Wenn SG4 STS+7++E02 (Transaktionsgrund: Einzug in Neuanlage) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '80',
+      'condition_text': 'Wenn SG4 STS+7++Z37 (Transaktionsgrund: EoG aus Einzug in Neuanlage) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '84',
+      'condition_text': 'Wenn SG4 STS+E01++Z35 (Status der Antwort: Ablehnung der Abmeldeanfrage) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '86',
+      'condition_text': 'Wenn das RFF+Z18 (Marktlokation) aus dieser SG6 (Termine der Marktlokation) auf das gleiche SG5 LOC+Z16 (Marktlokation), wie ein RFF+Z18 (Marktlokation) aus einer SG8 SEQ+Z01 (Daten der Marktlokation), in dem SG10 CCI+++ZA6 (Prognose auf Basis von Profilen) vorhanden ist, referenziert',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '89',
+      'condition_text': 'Wenn im SG8 SEQ+Z01 (Daten der Marktlokation) das SG10 CCI+++ZA6 (Prognosegrundlage der Marktlokation: Prognose auf Basis von Profilen) CAV+E14 (TLP/TEP) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '90',
+      'condition_text': 'Wenn SG10 CCI+++ZA6 (Prognosegrundlage der Marktlokation: Prognose auf Basis von Profilen) einmal mit CAV+E14 (TLP/TEP) und einmal mit CAV+E02 (SLP/SEP) in dieser SG8 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '92',
+      'condition_text': 'Wenn Wert innerhalb SG bzw. Segment geändert wird',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '93',
+      'condition_text': 'Erlaubte Codes aus der PRICAT BGM+Z32 (Preisblatt Messstellenbetrieb) des verantwortlichen MSB',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '94',
+      'condition_text': 'Wenn ein Segment innerhalb der SG vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '95',
+      'condition_text': 'Wenn in derselben SG10 das CCI+Z17 (Stromverbrauchsart) CAV+ZE5 (E-Mobilität) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '96',
+      'condition_text': 'Wenn SG4 STS+7++Z37 (Transaktionsgrund: EoG aus Einzug in Neuanlage) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '98',
+      'condition_text': 'Wenn MP-ID in SG2 NAD+MS (Nachrichtenabsender) in der Rolle NB',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '99',
+      'condition_text': 'Wenn MP-ID in SG2 NAD+MS (Nachrichtenabsender) in der Rolle ÜNB',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '100',
+      'condition_text': 'Wenn SG10 CAV+TLS/ TES/ BIT/ GET/ GAT/ SOT/ WNT/ WFT/ WAT vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '101',
+      'condition_text': 'Wenn SG10 CCI+++ZA6 (Prognosegrundlage der Marktlokation: Prognose auf Basis von Profilen) CAV+E14/ Z36 (TLP/ TEP/ TEP mit Ref. messung) in dieser SG8 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '102',
+      'condition_text': 'Wenn SG10 CCI+++ZA6 (Prognosegrundlage der Marktlokation: Prognose auf Basis von Profilen) CAV+Z36 (TEP mit Ref. messung) in dieser SG8 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '103',
+      'condition_text': 'Wenn SG9 QTY+265 (Arbeit / Leistung für tagesparameterabhän gig e Marktlokation: Veranschlagte Jahresmenge Gesamt) in dieser SG8 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '104',
+      'condition_text': 'Wenn SG9 QTY+Z08 (Arbeit / Leistung für tagesparameterabhängig e Marktlokation: angepasste elektrische Arbeit nach Anhang D) in dieser SG8 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '105',
+      'condition_text': 'Wenn SG9 QTY+Z10 (Arbeit / Leistung für tagesparameterabhängig e Marktlokation: Leistung der Marktlokation) in dieser SG8 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '106',
+      'condition_text': 'Wenn in dieser SG8 SEQ+Z01 SG10 CCI+++ZA6 (Prognosegrundlage der Marktlokation: Prognose auf Basis von Profilen) CAV+E02 (SLP/SEP) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '107',
+      'condition_text': 'Wenn in derselben SG8 das SG10 CAV+SLS/ SES/ BIP/ GEP/ GAP/ SOP/ WNP/ WFP/ WAP vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '108',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z45 (Netznutzungsabrechnungsdat en der Marktlokation) eine Gruppen-/Artikel-ID im SG8 PIA+Z02 (Gruppenartikel-ID / Artikel-ID), welche mit 1-08- 1/2/3/4/5 beginnt, vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '109',
+      'condition_text': 'Wenn in dieser SG4 das STS+E01++A14 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '110',
+      'condition_text': 'Wenn SG10 CAV+LGS/ EGS/ BIL/ GEL/ GAL/ SOL/ WNL/ WFL / WAL vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '111',
+      'condition_text': 'Wenn CCI+Z19 (Bilanzkreis) in SG8 SEQ+Z15 (Daten der Tranche) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '112',
+      'condition_text': 'Wenn in dieser SG4 das STS+E01++A08/A09 nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '113',
+      'condition_text': 'Wenn es sich um eine Antwort auf die Bestellung einer Zählzeit handelt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '114',
+      'condition_text': 'Wenn das SG10 CCI+E03 (Spannungsebene der Marktlokation) CAV E06 (Niederspannung) in dieser SG vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '115',
+      'condition_text': 'Wenn das SG10 CCI+E03 (Spannungsebene der Marktlokation) CAV E05 (Mittelspannung) in dieser SG vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '116',
+      'condition_text': 'Wenn das SG10 CCI+E03 (Spannungsebene der Marktlokation) CAV E04 (Hochspannung) in dieser SG vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '118',
+      'condition_text': 'Wenn SG4 STS+E01++Z35 (Status der Antwort: Ablehnung der Abmeldeanfrage) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '119',
+      'condition_text': 'Wenn in der SG8 SEQ+Z01 SG10 CCI+++ZA6 (Prognosegrundlage der Marktlokation: Prognose auf Basis von Profilen) CAV+E02 (SLP/SEP) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '121',
+      'condition_text': 'Wenn in dem SEQ+Z03 (Zähleinrichtungsdate n) das SG8 RFF+Z14 (Referenz auf das Smartmeter-Gateway) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '123',
+      'condition_text': 'Wenn noch mindestens eine weitere SG8 SEQ+Z20 (OBIS-Daten der Zähleinrichtung Smartmeter-Gateway) mit dem SG8 RFF+MG (Gerätenummer des Zählers) auf die gleiche Identifikation/ Nummer des Gerätes referenziert',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '124',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z15 (Daten der Tranche) das RFF+Z20 (Referenz auf die ID der Tranche) nichtvorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '125',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z76 (Messstellenbetriebsabrechnu ngsdaten der Marktlokation) im DE4347 des PIA Z02 (Gruppenartikel-ID / Artikel- ID) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '126',
+      'condition_text': 'Wenn in dieser SG4 das STS+E01++A08/A09 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '127',
+      'condition_text': 'Hat der Lieferant auf Grund seines Vertrags Kenntnis, dass der Kunde keine hohe KA hat so muss er dies dem NB mitteilen',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '128',
+      'condition_text': 'Wenn SG10 CAV+TAS/ TSS/ TKS/ SAS/ KAS vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '129',
+      'condition_text': 'Hat der Lieferant auf Grund seines Vertrags Kenntnis über die Höhe der Sonder-KA, so muss er diesen dem NB mitteilen',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '130',
+      'condition_text': 'Wenn an Messlokation vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '133',
+      'condition_text': 'Wenn an der übermittelten Marktlokation / Messlokation vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '135',
+      'condition_text': 'Wenn MP-ID in SG2 NAD+MS (Nachrichtenabsender) in der Rolle MSBBeschreibung Anfrage an Antwort auf Ablehnung Nicht bila.rel. Nicht bila.rel. Antwort auf Bedingung MSB ohne Anfrage Anfrage Anfrage an Anfrage an Anfrage Abhängigkeite MSB ohne MSB ohne n Abhängigkeite Abhängigkeite n n Kommunikation von LF/ MSB NB [Verteiler] NB [Verteiler] NB [Verteiler] NB MSB an NB [Berechtigt] an LF/ MSB an LF/ MSB an MSB [Berechtigt] an NB [Berechtigt] [Berechtigt] an MSB [Verteiler] Prüfidentifikator 55162 55163 55164 55165 55166 55167',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '136',
+      'condition_text': 'Wenn SG10 CCI+++E13 (Zählertyp) CAV+EHZ (elektronischer Haushaltszähler) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '137',
+      'condition_text': 'Nicht bei Neuanlage',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '138',
+      'condition_text': 'Wenn im selben QTY im DE6063 Z35 (Abschlag) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '139',
+      'condition_text': 'Wenn SG10 CAV+IVA (Individuelle Abstimmung) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '140',
+      'condition_text': 'Wenn im selben QTY im DE6063 Z34/Z35 (Zuschlag/ Abschlag) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '141',
+      'condition_text': 'Wenn SG10 CAV+MIW/ MPW/ MBW vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '142',
+      'condition_text': 'Wenn SG8 PIA+Z01+:Z04/ Z05 (Berechnung Tagesmitteltemperatur: vom Anbieter zur Verfügung gestellte - / Äquivalente Tagesmitteltemperatur) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '143',
+      'condition_text': 'Wenn STS+7++E03 (Transaktionsgrund: Wechsel) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '145',
+      'condition_text': 'Wenn SG10 CCI+Z31++ZA8 (bereits ausg. Aggreg.verantw. in MaBiS: NB) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '147',
+      'condition_text': 'Wenn in Anfrage vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '148',
+      'condition_text': 'Möglich wenn SG10 CCI+Z31++ZA9 (bereits ausg. Aggreg.verantw. in MaBiS: ÜNB) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '156',
+      'condition_text': 'Wenn SG4 STS+7++ZP1/ ZR6 (Transaktionsgrund: Stammdatensynchronisa tion / -Stärkung der Bilanzkreistreue) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '165',
+      'condition_text': 'Wenn bekannt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '166',
+      'condition_text': 'Wenn vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '167',
+      'condition_text': 'Wenn SG5 LOC+Z21 (Tranche) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '170',
+      'condition_text': 'Wenn Anschrift der Marktlokation vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '172',
+      'condition_text': 'Wenn im selben QTY im DE6063 Z37 (Kein Zu- und Abschlag) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '173',
+      'condition_text': 'Wenn SG10 CCI+++ZB1 (Bereits ausgetauschte Prognosegrundlage der Marktlokation: Prognose auf Basis von Profilen) CAV+E14 (TLP/TEP) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '174',
+      'condition_text': 'Wenn SG10+++ZB1 (Bereits ausgetauschte Prognosegrundlage der Marktlokation: Prognose auf Basis von Profilen) CAV+E02 (SLP/SEP) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '179',
+      'condition_text': 'Wenn SG10 CCI+++ZB1 (Bereits ausgetauschte Prognosegrundlage der Marktlokation: Prognose auf Basis von Profilen) CAV+E14/ Z36 (TLP/TEP / TEP mit Referenzmessung) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '180',
+      'condition_text': 'Wenn im selben QTY im DE6063 Z46 (Kein Abschlag) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '181',
+      'condition_text': 'Wenn SG10 CCI+++ZB1 (Bereits ausgetauschte Prognosegrundlage der Marktlokation: Prognose auf Basis von Profilen) CAV+E02 (SLP/SEP) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '184',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z18 (Daten der Messlokation) ein CCI+Z01++Z82 (Verwendungsumfang: ID der prozessual behandelten Messlokation) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '185',
+      'condition_text': 'Wenn SG10 CCI+++ZB1 (Bereits ausgetauschte Prognosegrundlage der Marktlokation: Prognose auf Basis von Profilen) CAV+Z36 (TEP mit Ref.messung) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '186',
+      'condition_text': 'Wenn SG8 SEQ+Z01 (Daten der Marktlokation) SG10 CCI+Z19 (Bilanzkreis) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '187',
+      'condition_text': 'Wenn SG10 CCI+++ZB1 (Prognose auf Basis von Profilen) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '189',
+      'condition_text': 'Wenn SG10 CCI+Z31++ZA9 (bereits ausgetauschte Aggreg. verantw. ÜNB) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '190',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z60 (Produkt- Daten der Netzlokation) PIA+5+999100000072 1:Z12 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '191',
+      'condition_text': 'Wenn im SG4 IDE+Z01 (Identifikation einer Liste) STS+E01 (Status der Antwort der Liste) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '193',
+      'condition_text': 'Wenn das SG10 CCI ZB5 (Spannungsebene der Summenzeitreihe) CAV E06 (Niederspannung) in dieser SG vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '194',
+      'condition_text': 'Wenn das SG10 CCI ZB5 (Spannungsebene der Summenzeitreihe) CAV E05 (Mittelspannung) in dieser SG vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '195',
+      'condition_text': 'Wenn das SG10 CCI ZB5 (Spannungsebene der Summenzeitreihe) CAV E04 (Hochspannung) in dieser SG vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '196',
+      'condition_text': 'Wenn SG4 STS+E01++Z35 (Status der Antwort: Ablehnung der Abmeldeanfrage) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '197',
+      'condition_text': 'Wenn das RFF+Z18 (Marktlokation) aus dieser SG8 auf das gleiche SG5 LOC+Z16 (Marktlokation), wie ein RFF+Z18 (Marktlokation) aus einer SG8 SEQ+Z01 (Daten der Marktlokation), in dem SG10 CCI+++ZA6 (Prognosegrundlage der Marktlokation: Prognose auf Basis von Profilen) CAV+E02 (SLP/SEP) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '201',
+      'condition_text': 'Wenn die Marktlokation / Tranche nicht den ganzen Bilanzierungsmonat dem gleichen Tupel aus Bilanzkreis, Zeitreihentyp,Spannungsebene und Lieferant zugeordnet ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '202',
+      'condition_text': 'Wenn SG4 STS+E01+ZG2 (Status der Antwort: Gültiges Ergebnis nach der Datenprüfung) vorhanden Beschreibung Anfrage an Antwort auf Ablehnung Nicht bila.rel. Nicht bila.rel. Antwort auf Bedingung MSB ohne Anfrage Anfrage Anfrage an Anfrage an Anfrage Abhängigkeite MSB ohne MSB ohne n Abhängigkeite Abhängigkeite n n Kommunikation von LF/ MSB NB [Verteiler] NB [Verteiler] NB [Verteiler] NB MSB an NB [Berechtigt] an LF/ MSB an LF/ MSB an MSB [Berechtigt] an NB [Berechtigt] [Berechtigt] an MSB [Verteiler] Prüfidentifikator 55162 55163 55164 55165 55166 55167',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '203',
+      'condition_text': 'Wenn STS+7++E06 / Z39 / ZC6 / ZC7/ ZT6/ ZT7 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '205',
+      'condition_text': 'Wenn SG5 LOC+Z19 (Steuerbare Ressource) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '206',
+      'condition_text': 'Wenn SG4 STS+7++ZG5 (Transaktionsgrund: Aufhebung der zukünftigen Zuordnung aufgrund §38 EEG 2014 bzw. §21b Abs. 1 Nr. 2 EEG 2017) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '209',
+      'condition_text': 'Wenn im selben Segment im DE2379 der Code 303 vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '210',
+      'condition_text': 'Wenn SG10 CCI+++ZA6 (Prognose auf Basis von Profilen) in dieser SG8 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '212',
+      'condition_text': 'Wenn im selben SG12 NAD DE3124 nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '213',
+      'condition_text': 'Wenn SG12 NAD+Z09 (Kunde des Lieferanten) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '215',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z03 (Zähleinrichtungsdate n) SG10 CCI+++E13 CAV+MME (Zählertyp: mME) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '216',
+      'condition_text': 'Wenn CCI+++Z88 (Netznutzung) CAV+Z74:::Z08 (Netznutzungsvertrag: Direkter Vertrag zwischen Kunden und NB) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '219',
+      'condition_text': 'Wenn an Marktlokation vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '220',
+      'condition_text': 'Wenn SG8 SEQ+Z01 (Daten der Marktlokation) SG10 CCI+Z30++Z06 (Lieferrichtung: Erzeugung) in dieser SG8 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '221',
+      'condition_text': 'Wenn kein SG8 SEQ+Z15 (Daten der Tranche) auf die gleiche Marktlokation-ID mit dem RFF+Z18 (Marktlokation) referenziert wie dieses SG8 SEQ+Z01 (Daten der Marktlokation)',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '222',
+      'condition_text': 'Wenn das RFF+Z18 (Marktlokation) aus dieser SG8 auf das gleiche SG5 LOC+Z16 (Marktlokation), wie ein RFF+Z18 (Marktlokation) aus einer SG8 SEQ+Z01 (Daten der Marktlokation) verweist, und dort das SG10 CCI+Z30++Z07 (Lieferrichtung: Verbrauch) vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '223',
+      'condition_text': 'Wenn das RFF+Z18 (Marktlokation) aus dieser SG8 auf das gleiche SG5 LOC+Z16 (Marktlokation), wie ein RFF+Z18 (Marktlokation) aus einer SG8 SEQ+Z01 (Daten der Marktlokation) verweist, und dort das SG10 CCI+Z30++Z06 (Lieferrichtung: Erzeugung) vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '224',
+      'condition_text': 'Wenn SG4 STS+7++ZP0/ ZP2 (Transaktionsgrund: Stammdatensynchronisa tion Beginn der Aggregationsverantwort ung/ Stammdatensynchronisa tion Korrektur des Beginns der Aggregationsverantwort ung) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '225',
+      'condition_text': 'Wenn CCI+++Z88 (Netznutzung) CAV+Z73:::Z11 (Zahlung der Netznutzung: Lieferant) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '226',
+      'condition_text': 'Wenn SG8 SEQ+Z01 (Daten der Marktlokation) SG10 CCI+6++ZA8 (Aggreg. verantw. NB) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '230',
+      'condition_text': 'Sich ergebendes Datum/ bzw. Endedatum des Turnuszeitraums aus DTM+Z21 (Termin der Netznutzungsabrechnun g) und DTM+Z09 (Nächste Netznutzungsabrechnun g) muss >= DTM+92 (Beginn zum) sein',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '232',
+      'condition_text': 'Wenn SG10 CCI+++Z83 CAV+Z52 (Messtechnische Einordnung der Marktlokation: iMS) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '233',
+      'condition_text': 'Wenn MP-ID in SG2 NAD+MR (Nachrichtenempfänger) in der Rolle NB',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '234',
+      'condition_text': 'Wenn SG10 CCI+++Z83 (Messtechnische Einordnung der Marktlokation) CAV+Z53 (kME/ mME) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '235',
+      'condition_text': 'Wenn das RFF+Z19 (Messlokation) aus dieser SG8 auf das gleiche SG5 LOC+Z17 (Messlokation), wie ein RFF+Z19 (Messlokation) aus einer SG8 SEQ+Z03 (Zähleinrichtungsdate n), in dem SG10 CCI+++E13 CAV+MME (Zählertyp: mME) nicht vorhanden ist, referenziert',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '237',
+      'condition_text': 'Wenn in derselben SG8 im DE7140 des PIA+Z02 (Gruppenartikel-ID / Artikel- ID) eine Gruppenartikel-ID / Artikel-ID mit 1-06 (entspricht Entgelte des Messstellenbetriebs bei kME) beginnt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '238',
+      'condition_text': 'Wenn SG4 IDE+24 (Vorgang) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '239',
+      'condition_text': 'Wenn in derselben SG10 das CCI+Z17 (Stromverbrauchsart) im CAV+Z65 (Wärme) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '240',
+      'condition_text': 'Wenn SG8 SEQ+Z01 (Daten der Marktlokation) CCI+Z22++Z91 (Status der erzeugenden Marktlokation: Veräußerungsform Geförderte Direktvermarktung bzw. Marktprämie) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '241',
+      'condition_text': 'Wenn MP-ID in SG2 NAD+MR (Nachrichtenempfänger) in der Rolle MSBBeschreibung Anfrage an Antwort auf Ablehnung Nicht bila.rel. Nicht bila.rel. Antwort auf Bedingung MSB ohne Anfrage Anfrage Anfrage an Anfrage an Anfrage Abhängigkeite MSB ohne MSB ohne n Abhängigkeite Abhängigkeite n n Kommunikation von LF/ MSB NB [Verteiler] NB [Verteiler] NB [Verteiler] NB MSB an NB [Berechtigt] an LF/ MSB an LF/ MSB an MSB [Berechtigt] an NB [Berechtigt] [Berechtigt] an MSB [Verteiler] Prüfidentifikator 55162 55163 55164 55165 55166 55167',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '243',
+      'condition_text': 'Wenn SG10 CCI+6++ZA8 (Aggreg. verantw. NB) in dieser SG8 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '244',
+      'condition_text': 'Wenn SG10 CCI+6++ZA9 (Aggreg. verantw. ÜNB) in dieser SG8 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '245',
+      'condition_text': 'Wenn die Messlokation mit einer kME ausgestartet ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '247',
+      'condition_text': 'Wenn CAV+ZE2 (Wahlrecht durch LF nicht gegeben) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '248',
+      'condition_text': 'Wenn die Inbetriebnahme der verbrauchenden Marktlokation innerhalb der letzten drei Jahre war und die Energie der Marktlokation mit iMS ausgestatteten Messlokationen erfolgt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '249',
+      'condition_text': 'Innerhalb eines SG4 IDE müssen alle DE1131 der SG4Beschreibung Nicht bila.rel. Antwort auf Ablehnung Nicht bila.rel. Nicht bila.rel. Antwort auf Bedingung Anfrage an LF Anfrage Anfrage Anfrage an LF Anfrage an LF Anfrage Kommunikation von MSB an NB NB [Verteiler] NB [Verteiler] NB [Verteiler] NB LF an NB [Verteiler] an MSB an MSB an LF [Berechtigt] [Verteiler] an LF LF an NB [Berechtigt] Prüfidentifikator 55133 55134 55135 55136 55137 55138STS+E01 den identischen Wert enthalten',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '251',
+      'condition_text': 'Wenn MP-ID in SG2 NAD+MS (Nachrichtensender) in der Rolle BIKO',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '252',
+      'condition_text': 'Wenn DE0068 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '254',
+      'condition_text': 'Es ist der Code "AUA" einzutragen',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '255',
+      'condition_text': 'Wenn Marktlokation am Redispatch 2.0 teilnimmt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '256',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z20 (OBIS- Daten der Zähleinrichtung / Smartmeter-Gateway) das PIA+5+1-b?:1.8.e / 1-b?:2.8.e vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '257',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z02 (OBIS- Daten der Marktlokation) das PIA+5+1-b?:1.9.e vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '259',
+      'condition_text': 'Wenn in diesem PIA der Code im DE7140 mit 1-01, 1- 03, 1-05 enthalten ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '261',
+      'condition_text': 'Wenn in diesem PIA der Code im DE7140 mit 1-07-1/2, 1-10-1/2/ 4/5/6/7/8/9, 1-11-1 beginnt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '262',
+      'condition_text': 'Wenn Produkt an der Marktlokation vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '263',
+      'condition_text': 'Wenn das RFF+Z18 (Marktlokation) aus dieser SG8 auf das gleiche SG5 LOC+Z16 [Marktlokation), wie ein RFF+Z18 (Marktlokation) aus einer SG8 SEQ+Z01 (Daten der Marktlokation) verweist, und dort die Prognose auf Basis von Profilen) CAV+Z36 (TEP m. Referenzmessung) vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '265',
+      'condition_text': 'Wenn im SG8 SEQ+Z01 (Daten der Marktlokation) das SG10 CCI+++ZA6 (Prognosegrundlage der Marktlokation: Prognose auf Basis von Profilen) CAV+Z36 (TEP m. Referenzmessung) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '266',
+      'condition_text': 'Wenn SG10 CCI+++ZB1 (Bereits ausgetauschte Prognosegrundlage derMarktlokation: Prognose auf Basis von Profilen) CAV+Z36 (TEP m. Referenzmessung) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '267',
+      'condition_text': 'Wenn SG8 SEQ+Z38 (Referenzprofildaten) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '268',
+      'condition_text': 'Wenn der Code im DE3207 in der "EDI@Energy Codeliste der europäischen Ländercodes" in der Spalte "PLZ vorhanden" ein "X" aufgeführt istBeschreibung Anfrage an Antwort auf Ablehnung Nicht bila.rel. Nicht bila.rel. Antwort auf Bedingung MSB ohne Anfrage Anfrage Anfrage an Anfrage an Anfrage Abhängigkeite MSB ohne MSB ohne n Abhängigkeite Abhängigkeite n n Kommunikation von LF/ MSB NB [Verteiler] NB [Verteiler] NB [Verteiler] NB MSB an NB [Berechtigt] an LF/ MSB an LF/ MSB an MSB [Berechtigt] an NB [Berechtigt] [Berechtigt] an MSB [Verteiler] Prüfidentifikator 55162 55163 55164 55165 55166 55167',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '269',
+      'condition_text': 'Es sind alle OBIS- Kennzahlen gem. EDI@Energy Codeliste der OBIS-Kennzahlen und Medien für den deutschen Energiemarkt Kap.3 anzugeben welche an der Tranche erforderlich sind',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '270',
+      'condition_text': 'Wenn in diesem PIA der Code im DE7140 mit 1-02, 1- 04, 1-06, 1-09 beginnt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '273',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z20 (OBIS-Daten der Zähleinrichtung / Smartmeter-Gateway) das PIA+5+1-b?:1.8.e / 1-b?:2.8.e / 1-b?:3.8.e / 1-b?:4.8.e / 1-b?:5. 8.e / 1-b?:6.8.e / 1- b?:7.8.e / 1-b?:8.8.e / 1-b?:1.8.63 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '278',
+      'condition_text': 'Wenn in dieser SG4 das STS+E01++A97/A98 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '280',
+      'condition_text': 'Nur MP-ID aus Sparte Strom',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '281',
+      'condition_text': 'Wenn in dieser SG4 das STS+E01++A97 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '282',
+      'condition_text': 'Wenn in diesem PIA der Code im DE7140 1-01-6-005, 1-01-9-001, 1-07-3-001, 1- 08-1-001, 1-08-3-001, 1-08- 4-001/002/003/004, 1-10-3- 001 enthalten ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '283',
+      'condition_text': 'Wenn Empfänger der Nachricht der zum Nachrichtendatum aktuell zugeordnete Lieferant ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '284',
+      'condition_text': 'Erlaubte Codes aus der Codeliste der Gruppenartikel- und Artikel-ID sind in der Spalte UTILMD/ Codeverwendung mit X gekennzeichnet',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '285',
+      'condition_text': 'Wenn in diesem PIA der Code im DE7140 mit 1-08-3- AGS angegeben ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '286',
+      'condition_text': 'Wenn in diesem PIA der Code im DE7140 mit 1-08-1/ 2/4/5-AGS-KG',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '287',
+      'condition_text': 'Erlaubte Codes aus der PRICAT BGM+ Z70 (Preisblatt Netznutzung) des verantwortlichen NB',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '288',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z02 (OBIS- Daten der Marktlokation) das PIA+5+1-b?:2.9.e vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '290',
+      'condition_text': 'Wenn der Objektcode im RFF+Z33 (Referenz auf den Objektcode in der Lokationsbündelstrukt ur) im DE1154 derselben SG8 SEQ+Z58 (Zuordnung Lokation zum Objektcode des Lokationsbündels) in einem weiteren SG8 SEQ+Z58 vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '291',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z58 (Zuordnung Lokation zum Objektcode des Lokationsbündels) das RFF+Z37 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '294',
+      'condition_text': 'Wenn SG5 LOC+Z18 (Netzlokation) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '295',
+      'condition_text': 'Wenn SG5 LOC+Z15 (MaBiS-Zählpunkt) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '296',
+      'condition_text': 'Wenn SG5 LOC+Z20 (Technische Ressource) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '297',
+      'condition_text': 'Wenn SG5 LOC+Z18 (Netzlokation) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '298',
+      'condition_text': 'Wenn SG5 LOC+Z20 (Technische Ressource) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '299',
+      'condition_text': 'Wenn SG5 LOC+Z19 (Steuerbare Ressource) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '300',
+      'condition_text': 'Wenn SG8 SEQ+Z15 (Daten der Tranche) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '302',
+      'condition_text': 'Wenn SG8 SEQ+Z08 (Profilschardaten) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '303',
+      'condition_text': 'Wenn SG8 SEQ+Z21 (Profildaten) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '304',
+      'condition_text': 'Wenn SG8 SEQ+Z22 (Daten der Summenzeitreihe) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '305',
+      'condition_text': 'Wenn SG8 SEQ+Z24 (Daten der Überführungszeitreihe) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '308',
+      'condition_text': 'Wenn DTM+92 (Beginn zum) im DE2380 < 202212312300?+00',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '309',
+      'condition_text': 'Wenn DTM+137 (Nachrichtendatum) im DE2380 ≥ 202409302200?+00',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '312',
+      'condition_text': 'Wenn DTM+157 (Änderung zum) im DE2380 < 202212312300?+00',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '314',
+      'condition_text': 'Es sind alle OBIS- Kennzahlen gem. EDI@Energy Codeliste der OBIS-Kennzahlen und Medien für den deutschen Energiemarkt Kap. 3 anzugeben, welche an der Marktlokation erforderlich sind. Der Mindestumfang der OBIS-Kennzahlen ergibt sich aus den genannten Messprodukt-Codes dem Kap. 5.1 des Dokumentes "Codeliste der Konfigurationen"',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '316',
+      'condition_text': 'Wenn in derselben SG8 das RFF+Z14 (Smartmeter- Gateway) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '317',
+      'condition_text': 'Es ist derselbe Wert wie im DE2380 von DTM+92 (Datum Vertragsbeginn) einzutragen',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '318',
+      'condition_text': 'Es ist derselbe Wert wie im DE2380 von DTM+93 (Datum Vertragende) einzutragen',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '321',
+      'condition_text': 'Wenn im DE3155 in demselben COM der Code EM vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '322',
+      'condition_text': 'Wenn im DE3155 inBeschreibung Anfrage an Antwort auf Ablehnung Nicht bila.rel. Nicht bila.rel. Antwort auf Bedingung MSB ohne Anfrage Anfrage Anfrage an Anfrage an Anfrage Abhängigkeite MSB ohne MSB ohne n Abhängigkeite Abhängigkeite n n Kommunikation von LF/ MSB NB [Verteiler] NB [Verteiler] NB [Verteiler] NB MSB an NB [Berechtigt] an LF/ MSB an LF/ MSB an MSB [Berechtigt] an NB [Berechtigt] [Berechtigt] an MSB [Verteiler] Prüfidentifikator 55162 55163 55164 55165 55166 55167demselben COM der Code TE / FX / AJ / AL vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '323',
+      'condition_text': 'Es sind alle OBIS- Kennzahlen gem. EDI@Energy Codeliste der OBIS-Kennzahlen und Medien für den deutschen Energiemarkt Kap. 3. anzugeben, welche an der Zähleinrichtung genutzt werden. Der Mindestumfang der OBIS-Kennzahlen ergibt sich aus den genannten Messprodukt-Codes dem Kap. 5.1 des Dokumentes "Codeliste der Konfigurationen"',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '327',
+      'condition_text': 'Wenn DTM+157 (Änderung zum) im DE2380 ≥ 202212312300?+00',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '328',
+      'condition_text': 'Wenn IMD++Z36+Z12 (Identifikationslogik: Marktlokations-ID) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '329',
+      'condition_text': 'Wenn in dieser SG4 IDE+24 das STS+E01++A03: E_0096 bzw. A04:E_0097 nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '332',
+      'condition_text': 'Wenn im SG8 SEQ+Z01 (Daten der Marktlokation) das SG10 CCI+6++ZA9 (Aggreg. verantw. ÜNB) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '333',
+      'condition_text': 'Wenn IMD+Z36+Z13 (Identifikationslogik: Alle Identifikationsdaten) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '334',
+      'condition_text': 'Nur MP-ID aus Sparte Gas',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '335',
+      'condition_text': 'Wenn im SG8 SEQ+Z78 RFF+Z31 "Referenz auf die Lokationsbündelstruktur " im DE1153 der Code Z31 "Lokationsbündelstruktu r" vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '336',
+      'condition_text': 'Wenn in Änderungsmeldung gefülltBeschreibung Nicht bila.rel. Antwort auf Ablehnung Nicht bila.rel. Nicht bila.rel. Antwort auf Bedingung Anfrage an LF Anfrage Anfrage Anfrage an LF Anfrage an LF Anfrage Kommunikation von MSB an NB NB [Verteiler] NB [Verteiler] NB [Verteiler] NB LF an NB [Verteiler] an MSB an MSB an LF [Berechtigt] [Verteiler] an LF LF an NB [Berechtigt] Prüfidentifikator 55133 55134 55135 55136 55137 55138',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '337',
+      'condition_text': 'Wenn SG10 CCI+++ZB4 (Bezeichnung der Summenzeitreihe) CAV+Z95/ Z96 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '338',
+      'condition_text': 'Wenn CCI+++ZB4 (Bezeichnung der Summenzeitreihe) CAV+Z95/ Z96/ Z97/ Z99/ ZA1/ ZA3/ ZA4/ZG7 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '339',
+      'condition_text': 'Wenn CCI+++ZB4 (Bezeichnung der Summenzeitreihe) CAV+Z97/ Z98/ Z99/ ZA0/ ZA1/ ZA2/ ZA3/ ZA6/ ZG7 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '340',
+      'condition_text': 'Wenn CCI+++ZB4 (Bezeichnung der Summenzeitreihe) CAV+Z95/ Z97/ Z98/ Z99/ ZA1/ ZA2/ ZA3/ ZA4/ ZA5/ ZA6 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '341',
+      'condition_text': 'Wenn CCI+++ZB4 (Bezeichnung der Summenzeitreihe) CAV+Z96/ ZA0/ ZG7 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '342',
+      'condition_text': 'Wenn aktiver MaBiS-ZP für den Betrachtungszeitraum vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '343',
+      'condition_text': 'Wenn DTM+157 (Änderung zum) im DE2380 ≥ 202312312300?+00',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '344',
+      'condition_text': 'Wenn in dieser SG8 das SG10 CCI+++ZB4 (Bezeichnung der Summenzeitreihe) CAV+ZF1 (Netzgangzeitreihe (NGZ)) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '345',
+      'condition_text': 'Wenn SG5 LOC+Z17 (Messlokation) vorhandenBeschreibung Anfrage an Antwort auf Ablehnung Nicht bila.rel. Nicht bila.rel. Antwort auf Bedingung MSB ohne Anfrage Anfrage Anfrage an Anfrage an Anfrage Abhängigkeite MSB ohne MSB ohne n Abhängigkeite Abhängigkeite n n Kommunikation von LF/ MSB NB [Verteiler] NB [Verteiler] NB [Verteiler] NB MSB an NB [Berechtigt] an LF/ MSB an LF/ MSB an MSB [Berechtigt] an NB [Berechtigt] [Berechtigt] an MSB [Verteiler] Prüfidentifikator 55162 55163 55164 55165 55166 55167',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '346',
+      'condition_text': 'Wenn SG10 CCI+++E13 (Zählertyp) CAV+MME (mME) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '347',
+      'condition_text': 'Wenn SG5 LOC+Z16 (Marktlokation) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '348',
+      'condition_text': 'Wenn SG5 LOC+Z21 (Tranche) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '349',
+      'condition_text': 'Wenn SG5 LOC+Z17 (Messlokation) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '350',
+      'condition_text': 'Wenn STS+E01++A01/ A03/ A04/ A12 nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '351',
+      'condition_text': 'Wenn SG4 STS+E01++A07/ A08 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '352',
+      'condition_text': 'Wenn SG4 STS++A08/ A09 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '354',
+      'condition_text': 'Wenn STS+E01++A01/ A03/ A17/ A18 nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '355',
+      'condition_text': 'Wenn SG4 STS+E01++A11 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '356',
+      'condition_text': 'Wenn SG4 STS+E01++A50 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '357',
+      'condition_text': 'Wenn SG4 STS+E01++A06/ A11 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '359',
+      'condition_text': 'Es sind nur Antwortcodes aus dem Cluster Ablehnung erlaubt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '360',
+      'condition_text': 'Es sind nur Antwortcodes aus dem Cluster Zustimmung erlaubt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '363',
+      'condition_text': 'Wenn SG4 STS+E01++A50 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '365',
+      'condition_text': 'Wenn in dieser SG4 IDE+24 das STS+E01++A04: E_0047/E_0014 bzw. A03: E_0049/E_0004 nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '366',
+      'condition_text': 'Bis auf den Code A30 sind alle Codes aus EBD E_0403 im Cluster Ablehnung erlaubt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '367',
+      'condition_text': 'Wenn SG4 STS+E01++A04 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '369',
+      'condition_text': 'Wenn Marktlokation nicht tranchiert',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '370',
+      'condition_text': 'Wenn SG10 CAV+TLS/ TES/BIT/GET/GAT/SOT/ WNT/WFT/WAT',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '371',
+      'condition_text': 'Wenn SG8 SEQ+Z38 (Referenzprofildaten) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '372',
+      'condition_text': 'Wenn SG10 CAV+TES/ BIT/GET/GAT/SOT/WNT/ WFT/WAT vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '373',
+      'condition_text': 'Wenn ein Referenzprofil an der Marktlokation vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '375',
+      'condition_text': 'Für die ID im SG5 LOC+Z15 (MaBiS-Zählpunkt) DE3225, wenn SG8+Z24(Daten der Überführungszeitreihe) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '376',
+      'condition_text': 'Für die ID im SG5 LOC+Z15 (MaBiS-Zählpunkt) DE3225, wenn SG8+Z22 (Daten der Summenzeitreihe) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '377',
+      'condition_text': 'Wenn SG10 CCI+15++Z21 (Überführungszeitreihentyp) CAV+AUS vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '378',
+      'condition_text': 'Wenn SG10 CCI+15++Z21 (Überführungszeitreihentyp) CAV+AUS nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '379',
+      'condition_text': 'Wenn SG10 CCI+15++Z21 (Überführungszeitreihentyp) CAV+ Code für EEG- Überführungszeitreihen (ausgenommen AU1) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '380',
+      'condition_text': 'Wenn SG10 CCI+15++Z21 (Überführungszeitreihentyp) CAV+AUS/AU1 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '384',
+      'condition_text': 'Wenn SG10 CCI+Z37++ZD1 (Basis zur Bildung der Tranchengröße) (Prozentual) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '386',
+      'condition_text': 'Wenn mehr als eine SG8 SEQ+Z02 (OBIS-Daten der Marktlokation) mit einer OBIS-Kennzahl für Energiemenge im PIA+5 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '387',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z02 (OBIS Daten der Marktlokation) eine OBIS- Kennzahl für Energiemenge im PIA+5 vorhanden und es sich lt. Codeliste OBIS um eine OBIS mit zugeordneter Zählzeit handelt (Tarif: e = 1 .. 62)',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '389',
+      'condition_text': 'Wenn mehr als eine SG8 SEQ+Z20 (OBIS-Daten der Zähleinrichtung / Smartmeter-Gateway), die mit dem RFF+MG/ Z14 (Referenz auf die Gerätenummer) auf die gleiche Gerätenummer referenziert, mit einer OBIS-Kennzahl der Werteart "Zählerstand" im PIA+5 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '390',
+      'condition_text': 'Wenn mindestens eine weitere SG8 SEQ+Z20 (OBIS-Daten der Zähleinrichtung / Smartmeter- Gateway), die mit dem RFF+Z18 (Referenz auf die ID der Marktlokation) auf die gleiche ID einer Marktlokation wie in dieser SG referenziert und mit dem RFF+MG / Z14 (Referenz auf die Gerätenummer / Referenz auf das SMGw) auf die gleiche Gerätenummer wie in dieser SG referenziert und mit dem SG8 RFF+AGK (Konfigurations-ID auf die gleich Konfigurations-ID referenziert (wenn diese vorhanden), und auch mit einer OBIS- Kennzahl für Zählerstand im PIA+5 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '391',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z20 (OBIS Daten der Zähleinrichtung / Smartmeter-Gateway) eine OBIS-Kennzahl für Zählerstand im PIA+5 vorhanden und es sich lt. Codeliste OBIS um eine OBIS mit zugeordneter Zählzeit handelt (Tarif: e = 1 .. 62)',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '392',
+      'condition_text': 'Wenn in diesem PIA der Code im Format n1-n2-n1 angegeben ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '393',
+      'condition_text': 'Wenn in diesem PIA der Code im Format n1-n2-n1-n3 angegeben ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '394',
+      'condition_text': 'Wenn in diesem PIA der Code im Format n1-n2-n1- n8-n2 angegeben ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '395',
+      'condition_text': 'Wenn in diesem PIA der Code im Format n1-n2-n1-n8 angegeben ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '396',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z02 (OBIS- Daten der Marktlokation) eine OBIS-Kennzahl für Wirkarbeit und 1/4 Stunde im PIA+5 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '397',
+      'condition_text': 'Wenn in diesem PIA der Code im DE7140 mit 1-08-1/ 1-08-4 beginnt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '398',
+      'condition_text': 'Wenn in diesem PIA der Code im DE7140 mit 1-08-2/ 1-08-5 beginnt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '399',
+      'condition_text': 'Wenn im SG8 SEQ+Z78 RFF+Z31 (Referenz auf die Lokationsbündelstruktur) im DE1153 der Code Z31 (Lokationsbündelstruktur ) vorhanden ist und im DE1154 (ID der Lokationsbündelstruktur) der Code 9992 00000 001 8 nicht vorhanden ist.',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '402',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z20 (OBIS- Daten der Zähleinrichtung / Smartmeter-Gateway) eine OBIS-Kennzahl der Werteart "Zählerstand" im PIA+5 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '404',
+      'condition_text': 'Wenn nicht dieselbe MP-ID in SG2 NAD+MR (Nachrichtenempfänger) und im SG8 SEQ+Z01 (Daten der Marktlokation) SG10 CCI+++ZB3 (Zugeordnete Marktpartner) CAV+Z91 (Messtellenbetreiber) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '412',
+      'condition_text': 'Es sind ausschließlich Konfigurationsprodukt -Codes der "EDI@Energy Codeliste der Konfigurationen" aus Kapitel 4.2 Konfigurationsprodukt e Leistungskurvendefinit ion erlaubt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '417',
+      'condition_text': 'Wenn für den erforderlichen Wert keine Zählzeit benötigt wird',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '420',
+      'condition_text': 'Wenn in dieser SG8 das RFF+Z14 (Smartmeter- Gateway) vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '421',
+      'condition_text': 'Wenn in dieser SG8 das SG10 CCI+Z39 (Zugeordnete Zählzeitdefinition) vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '425',
+      'condition_text': 'Messprodukt-Code aus den Kapitel 2.1 "Standard- Messprodukte der Marktlokation" der Codeliste der Konfigurationen',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '426',
+      'condition_text': 'Messprodukt-Code aus den Kapitel 2.2 "Standard- Messprodukte der Tranche" der Codeliste der Konfigurationen',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '427',
+      'condition_text': 'Messprodukt-Code aus den Kapitel 2.3 "Standard- Messprodukte der Messlokation" der Codeliste der Konfigurationen',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '428',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z27 (Erforderliches Messprodukt der Marktlokation) das PIA+5 DE7140 mit einem Messprodukt aus Codeliste der Konfigurationen Kapitel 2.1.1 Standard- Messprodukt der Marktlokation mit der Wahlmöglichkeit der Zuordnung einer Zählzeit vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '429',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z19 (Erforderliches Messprodukt der Messlokation) das PIA+5 DE7140 mit einem Messprodukt aus Codeliste der Konfigurationen Kapitel 2.3.1 Standard- Messprodukt der Messlokation mit der Wahlmöglichkeit der Zuordnung einer Zählzeit vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '432',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z27 (Erforderliches Messprodukt der Marktlokation), das PIA+5+9991000000078: Z11 (Wirkarbeit Lastgang 1/4 stündlich) vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '437',
+      'condition_text': 'Wenn in dieser DG4 das STS+E01+++A06:E:0502vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '438',
+      'condition_text': 'Wenn im selben CCI im DE7059 der Code Z39 (Code der Zählzeit) vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '439',
+      'condition_text': 'Wenn in dem SG8 SEQ+Z15 (Daten der Tranche) das RFF+Z20 (Referenz auf die ID der Tranche) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '440',
+      'condition_text': 'Wenn SG8 SEQ+Z01 (Daten der Marktlokation) RFF+Z18 (Referenz auf die ID der Marktlokation) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '441',
+      'condition_text': 'Wenn im SG8+SEQ+Z03 (Zähleinrichtungsdate n) für die in diesem RFF DE1154 genannte Gerätenummer eines Zählers das RFF+Z14 (Referenz auf das Smartmeter-Gateway) nicht vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '443',
+      'condition_text': 'Wenn DTM+157 (Änderung zum) im DE2380 < 202409302200?+00',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '444',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z60 (Produkt- Daten der Netzlokation) das PIA+5 (Produkt- Daten der Netzlokation) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '445',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z60 (Produkt- Daten der Netzlokation) das SG10 CCI+11 (Details zum Produkt der Netzlokation) nicht vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '446',
+      'condition_text': 'Wenn in derselben SG8 das CCI+Z17 (Stromverbrauchsart) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '447',
+      'condition_text': 'Wenn in derselben SG8 das CCI+Z50 (Stromerzeugungsart) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '448',
+      'condition_text': 'Wenn in derselben SG8 das CCI+Z56 (Speicher) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '449',
+      'condition_text': 'Wenn in derselben SG8 das SG10 CCI+6++ZA9 CAV=ZG3 (Aggreg.verantw. ÜNB und Lokation im Regelbetrieb) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '450',
+      'condition_text': 'Wenn in demselben RFF der Code Z32 (Netzlokation) im DE1153 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '451',
+      'condition_text': 'Wenn in demselben RFF der Code Z18 (Marktlokation) im DE1153 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '452',
+      'condition_text': 'Wenn in demselben RFF der Code Z19 (Messlokation) im DE1153 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '453',
+      'condition_text': 'Wenn bei der Bestellung ein Messprodukt der Codeliste der Konfigurationen aus dem Kapitel 4.4 mit dem Auslöser „Bei Schwellwertunter-/ - überschreitung“ mit selbständiger Änderungsmöglichkeit bestellt wurde',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '454',
+      'condition_text': 'Das Bilanzierungsbeginn Datum muss kleiner sein als das Bilanzierungsende Datum in der SG8 „Datenstand des ÜNB“, SG 9 Energiemenge DZÜ Anteil',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '455',
+      'condition_text': 'Das Bilanzierungsende- Datum muss größer sein, als das Bilanzierungsbeginn Datum in der SG8 „Datenstand des ÜNB“ , SG 9 Energiemenge DZÜ Anteil',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '456',
+      'condition_text': 'Wenn in demselben RFF der Code Z37 (Technische Ressource) im DE1153 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '457',
+      'condition_text': 'Wenn bei der Bestellung das Messprodukten 9991 00000 149 8 bestellt wurde',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '458',
+      'condition_text': 'Wenn bei der Bestellung das Konfigurationsprodukte 9991 00000 073 9 bestellt wurde',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '459',
+      'condition_text': 'Wenn bei der Bestellung ein Messprodukt der Codeliste der Konfigurationen aus dem Kapitel 4.4 mit dem Übertragungsweg "CLS-Direkt aus dem SMGW" bestellt wurde',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '460',
+      'condition_text': 'Wenn bei der Bestellung ein Messprodukt der Codeliste der Konfigurationen aus dem Kapitel 4.4 mit dem Übertragungsweg "aus dem SMGW" bestellt wurde',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '461',
+      'condition_text': 'Wenn in derselben SG10 das CCI+Z17 (Stromverbrauchsart) im CAV+ZG8 (Technischen Ressource fällt unter § 14a EnWG) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '462',
+      'condition_text': 'Wenn in derselben SG10 das CCI+Z17 (Stromverbrauchsart) im CAV+ZH1 (Inbetriebsetzung der TR vor 2024) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '463',
+      'condition_text': 'Wenn in derselben SG10 das CCI+Z61++ZF9 (Kunde erfüllt die Voraussetzung nach EnFG) vorhandenBeschreibung Nicht bila.rel. Antwort auf Ablehnung Nicht bila.rel. Nicht bila.rel. Antwort auf Bedingung Anfrage an LF Anfrage Anfrage Anfrage an LF Anfrage an LF Anfrage Kommunikation von MSB an NB NB [Verteiler] NB [Verteiler] NB [Verteiler] NB LF an NB [Verteiler] an MSB an MSB an LF [Berechtigt] [Verteiler] an LF LF an NB [Berechtigt] Prüfidentifikator 55133 55134 55135 55136 55137 55138',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '464',
+      'condition_text': 'Wenn DTM+157 (Änderung zum) im DE2380 < 202312312300?+00',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '465',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z52 (Daten der Technischen Ressource) das RFF+Z38 (Referenz auf die der Technischen Ressource zugeordnete Steuerbare Ressource) vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '466',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z52 (Daten der Technischen Ressource) das RFF+Z32 (Referenz auf die der Technischen Ressource zugeordneten Netzlokation) vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '467',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z52 (Daten der Technischen Ressource) das CAV+ZG8 (Technischen Ressource fällt unter §14a EnWG) vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '468',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z52 (Daten der Technischen Ressource) das SG10 CAV+ZH0 (Inbetriebsetzung der TR nach 2023) vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '469',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z52 (Daten der Technischen Ressource) das SG10 CAV+ZH1 (Inbetriebsetzung der TR vor 2024) vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '470',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z52 (Daten der Technischen Ressource) das CAV+ZH5 (Wechsel in das in das §14a EnWG-Modell gem. Festlegung BK6-22-300 wurde durchgeführt) vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '471',
+      'condition_text': 'Wenn in demselben RFF der Code Z35 (vorgelagerte Netzlokation) im DE1153 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '472',
+      'condition_text': 'Wenn in demselben RFF der Code Z34 (vorgelagerte Messlokation) im DE1153 vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '473',
+      'condition_text': 'Wenn im RFF+Z33 (Referenz auf den Objektcode in der Lokationsbündelstrukt ur) das DE1156 (Fortlaufende Nummer eines Lokationsbündels im Geschäftsvorfall) in derselben SG8 SEQ+Z58 (Zuordnung Lokation zum Objektcode des Lokationsbündels) nicht vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '474',
+      'condition_text': 'Wenn im RFF+Z33 (Referenz auf den Objektcode in der Lokationsbündelstrukt ur) das DE1156 Fortlaufende Nummer eines Lokationsbündels im Geschäftsvorfall) in derselben SG8 SEQ+Z58 Zuordnung Lokation zum Objektcode des Lokationsbündels) vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '475',
+      'condition_text': 'Wenn der Objektcode im RFF+Z33 (Referenz auf den Objektcode in der Lokationsbündelstruktur) im DE1154 derselben SG8 SEQ+Z58 (Zuordnung Lokation zum Objektcode des Lokationsbündels) in einem weiteren SG8 SEQ+Z58 mit derselben fortlaufenden Nummer vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '476',
+      'condition_text': 'Wenn in demselben Segment das DE1153 mit dem Code Z34 vorgelagerte Messlokation vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '477',
+      'condition_text': 'Wenn in demselben Segment das DE1153 mit dem Code Z35 vorgelagerte Netzlokation vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '478',
+      'condition_text': 'Wenn das LOC+Z18 (Netzlokation) vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '479',
+      'condition_text': 'Wenn der Objektcode im RFF+Z33 (Referenz auf den Objektcode in der Lokationsbündelstrukt ur) im DE1154 derselben SG8 SEQ+Z58 (Zuordnung Lokation zum Objektcode des Lokationsbündels) in einem weiteren SG8 SEQ+Z58 (Zuordnung Lokation zum Objektcode des Lokationsbündels) vorhanden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '490',
+      'condition_text': '''
+        wenn Wert in diesem DE, an der Stelle CCYYMMDDHHMM ein Zeitpunkt aus dem angegeben Zeitraum der Tabelle Kapitel 3.5 „Übersicht gesetzliche deutsche Sommerzeit (MESZ)“ der Spalten:
+        ›	„Sommerzeit (MESZ) von“ Darstellung in UTC und
+        ›	„Sommerzeit (MESZ) bis“ Darstellung in UTC ist.
+      ''',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '491',
+      'condition_text': '''
+        wenn Wert in diesem DE, an der Stelle CCYYMMDDHHMM ein Zeitpunkt aus dem angegeben Zeitraum der Tabelle Kapitel 3.6 „Übersicht gesetzliche deutsche Zeit (MEZ)“ der Spalten: 
+        ›	„Winterzeit (MEZ) von“ Darstellung in UTC und
+        ›	„Winterzeit (MEZ) bis“ Darstellung in UTC ist.
+      ''',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '492',
+      'condition_text': 'wenn MP-ID in NAD+MR aus Sparte Strom',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '493',
+      'condition_text': 'wenn MP-ID in NAD+MR aus Sparte Gas',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '494',
+      'condition_text': 'Das hier genannte Datum muss der Zeitpunkt sein, zu dem das Dokument erstellt wurde, oder ein Zeitpunkt, der davor liegt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '500',
+      'condition_text': 'Hinweis: Code ist gemäß der Kategorie der zu stornierenden Meldung zu wählen',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '502',
+      'condition_text': 'Hinweis: Es wird der Betrachtungsmonat der DZR bzw. BAS angegeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '503',
+      'condition_text': 'Hinweis: Angabe des BGM DE1004 aus der ORDERS',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '504',
+      'condition_text': 'Hinweis: Je Profil (ggf. inkl. Profilschar) ein Vorgang erforderlich',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '505',
+      'condition_text': 'Hinweis: Je zugeordneter ID und je EEG- Überführungszeitreihe ein Vorgang erforderlich',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '506',
+      'condition_text': 'Hinweis: Für jeden Code im LOC+Z16 (Marktlokation) sollen die entsprechenden Kundendaten des LF angegeben werden, falls bekannt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '507',
+      'condition_text': 'Hinweis: Ursprünglich vom NB bestätigtes Beginndatum',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '508',
+      'condition_text': 'Hinweis: Beginndatum beim neuen NB',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '510',
+      'condition_text': 'Hinweis: Zu verwenden bei der Abmeldung der ESV',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '511',
+      'condition_text': 'Hinweis: Es sind alle Bilanzierungsgebiete anzugeben in denen das Profil verwendet wird',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '513',
+      'condition_text': 'Hinweis: Bei Anwendung dieser Segmentgruppe vor dem 01.10.2024 sind die Codes in diesem Segment noch nicht gültig. Somit wird der Geschäftsvorfall mit einer Verarbeitbarkeitsfehlermeldu ng mit Fehlercode Z39 (Code nicht aus erlaubtem Wertebereich“) abgelehnt werden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '514',
+      'condition_text': 'Hinweis: Es darf nur eine Information im DE3148 übermittelt werden Beschreibung Nicht bila.rel. Antwort auf Ablehnung Nicht bila.rel. Nicht bila.rel. Antwort auf Bedingung Anfrage an LF Anfrage Anfrage Anfrage an LF Anfrage an LF Anfrage Kommunikation von MSB an NB NB [Verteiler] NB [Verteiler] NB [Verteiler] NB LF an NB [Verteiler] an MSB an MSB an LF [Berechtigt] [Verteiler] an LF LF an NB [Berechtigt] Prüfidentifikator 55133 55134 55135 55136 55137 55138',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '515',
+      'condition_text': 'Hinweis: Für den ZP derLieferantensummenZR anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '518',
+      'condition_text': 'Hinweis: Es sind alle Altlieferanten anzugeben, an die eine Abmeldeanfrage gesendet wird',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '520',
+      'condition_text': 'Hinweis: Bei Geschäftsvorfall 1 100%',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '521',
+      'condition_text': 'Hinweis: Bei Geschäftsvorfall 2 100%',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '522',
+      'condition_text': 'Hinweis: Bei Geschäftsvorfall 2 prozentualer Anteil der Tranche von der Marktlokation',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '523',
+      'condition_text': 'Hinweis: Bei Geschäftsvorfall 3 prozentualer Anteil der Tranche von der Marktlokation',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '524',
+      'condition_text': 'Hinweis: Bei Geschäftsvorfall 1 und 3: ist die ID der Marktlokation anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '526',
+      'condition_text': 'Hinweis: Bei Geschäftsvorfall 2: ID der Marktlokation und ID der Tranche, bei Geschäfts-vorfall 1 und 3: ID der Marktlokation',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '527',
+      'condition_text': 'Hinweis: Es sind alle Identifikatoren der Messlokationen anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '528',
+      'condition_text': 'Hinweis: Es ist das Datum/ Daten aus der Anfrage zu verwendenBeschreibung Anfrage an Antwort auf Ablehnung Nicht bila.rel. Nicht bila.rel. Antwort auf Bedingung MSB ohne Anfrage Anfrage Anfrage an Anfrage an Anfrage Abhängigkeite MSB ohne MSB ohne n Abhängigkeite Abhängigkeite n n Kommunikation von LF/ MSB NB [Verteiler] NB [Verteiler] NB [Verteiler] NB MSB an NB [Berechtigt] an LF/ MSB an LF/ MSB an MSB [Berechtigt] an NB [Berechtigt] [Berechtigt] an MSB [Verteiler] Prüfidentifikator 55162 55163 55164 55165 55166 55167',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '530',
+      'condition_text': 'Hinweis: Es sind alle an der Lokation vorhandenen Daten, die mit dieser Segmentgruppe übermittelt werden und zum Datum „Änderung zum“ Gültigkeit haben, anzugeben. Dies kann zur Folge haben, dass Segmentgruppen bzw. Segmente zu wiederholen sind',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '533',
+      'condition_text': 'Hinweis: Es ist die MP-ID des Lieferanten anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '556',
+      'condition_text': 'Hinweis: Wenn keine Korrespondenzanschrift des Endverbrauchers/ Kunden vorliegt, ist die Anschrift der Marktlokation zu übermitteln',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '558',
+      'condition_text': 'Hinweis: Diese Information kann freiwillig ausgetauscht werden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '559',
+      'condition_text': 'Hinweis: Die Korrespondenzanschrift des Endverbrauchers/ Kunden wird nicht zur Identifikation genutzt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '560',
+      'condition_text': 'Hinweis: Die Angabe Name und Adresse für die Ablesekarte wird nicht zur Identifikation genutzt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '563',
+      'condition_text': 'Hinweis: Für die ID der LieferantensummenZR',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '565',
+      'condition_text': 'Hinweis: Dieses Datum beschreibt den Beginn der Gültigkeit der Stammdaten aus Sicht des NB, welche der ÜNB übernimmt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '566',
+      'condition_text': 'Hinweis: Altlieferant',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '567',
+      'condition_text': 'Hinweis: Neulieferant',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '568',
+      'condition_text': 'Hinweis: Lieferant der LieferantensummenZR',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '569',
+      'condition_text': 'Hinweis: Dritter Nutzer',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '570',
+      'condition_text': 'Hinweis: Netzbetreiber Alt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '571',
+      'condition_text': 'Hinweis: Auslösender Marktpartner (LFA bei STS+7++ZG9, LFN bei STS+7++ZH0, NB bei STS+7++ZH1)',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '572',
+      'condition_text': 'Hinweis: Kundenname aus Anmeldung Lieferant neu',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '573',
+      'condition_text': 'Hinweis: Wenn keine andere Information für „Name und Adresse für die Ablesekarte“ vorliegt, wird das Segment aus dem Kundennamen im NAD+Z09 und der Adresse aus der Korrespondenzanschrift NAD+Z04 zusammengesetzt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '576',
+      'condition_text': 'Hinweis: Stammdaten des bisherigen Messstellenbetreibers',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '577',
+      'condition_text': 'Hinweis: Wird mit dem ursprünglich vom NB bestätigten Beginndatum gefüllt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '579',
+      'condition_text': 'Hinweis: Auslösender Marktpartner (LFN bei STS+7++ZH0, NB bei STS+7++ZH1)',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '580',
+      'condition_text': 'Hinweis: Ersatzbelieferung gibt es nur bei - Marktlokationen in der Niederspannung, die kein Haushaltskunde gem. EnWG sind und die nicht mehr der gesetzlichen Ersatzversorgung (drei Monate) unterliegen und - für Marktlokationen, die in Mittelspannung/Hochspannung einer Versorgung zugeführt werden sollen. Grundlage für eine Ersatzbelieferung ist die bilaterale Vereinbarung.',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '581',
+      'condition_text': 'Hinweis: Es ist das nächst mögliche Kündigungsdatum anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '582',
+      'condition_text': 'Hinweis: Bei Geschäftsvorfall 2 ist die ID der Tranche anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '583',
+      'condition_text': 'Hinweis: Verwendung der ID der Marktlokation',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '586',
+      'condition_text': 'Hinweis: Die Messlokationsadresse ist der Messlokation zugeordnet, welche in SG8 SEQ+Z18 (Daten der Messlokation) mit CCI+Z01++Z82 (Verwendungsumfang: ID der prozessual behandelten Messlokation) gekennzeichnet ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '590',
+      'condition_text': 'Hinweis: Für den Empfang des Steuerbefehls',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '593',
+      'condition_text': 'Hinweis: Dieses Datum beschreibt das Ende der Gültigkeit der Stammdaten aus Sicht des NB, welche der ÜNB übernimmt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '594',
+      'condition_text': 'Hinweis: Es ist der ZPB des ZP der NGZ und die ZPB der NZR anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '598',
+      'condition_text': 'Hinweis: Die Übermittlung dieser Angabe dient dazu, dass der LF auch bei iMS gemessenen Marktlokationen mit Prognosegrundlage auf Basis von Werten einen belastbare Informationfür die Energiebeschaffung hat',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '599',
+      'condition_text': 'Hinweis: Es ist der Name und die Adresse des Ablesekartenempfängers für die Messlokation anzugeben, welche in SG8 SEQ+Z18 (Daten der Messlokation) mit CCI+Z01++Z82 (Verwendungsumfang: ID der prozessual behandelten Messlokation) gekennzeichnet ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '603',
+      'condition_text': 'Hinweis: Es ist die Vorgangsnummer aus dem RFF+TN (Referenz Vorgangsnummer aus Anfragenachricht) des LF zu übernehmen',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '605',
+      'condition_text': 'Hinweis: In diesem Segment bzw. SG sind die Daten aus der Sicht des LF anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '606',
+      'condition_text': 'Hinweis: In diesem Segment bzw. SG sind die Daten aus der Sicht des NB anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '607',
+      'condition_text': 'Hinweis: In diesem Segment bzw. SG sind die zwischen LF und NB im Rahmen der Marktkommunikation ausgetauschten Daten aus der Sicht des NB anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '609',
+      'condition_text': 'Hinweis: In diesem Segment bzw. SG sind die zwischen NB, LF und ÜNB im Rahmen der Marktkommunikation ausgetauschten Daten aus der Sicht des ÜNB anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '611',
+      'condition_text': 'Hinweis: Wenn das Unternehmen NB die Aufgaben der Marktrolle LF wahrnimmt, ist die MP-ID des Unternehmens NB in der Marktrolle LF anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '612',
+      'condition_text': 'Hinweis: Es muss die Vorgangsnummer aus dem IDE+24 (Vorgang) der SDÄ des MSB angegeben werden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '613',
+      'condition_text': 'Hinweis: Der Code wird verwendet um die Aggregationsverantwort ung einer Marktlokation auf den ÜNB zu übertragen',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '614',
+      'condition_text': 'Hinweis: Es werden nur die OBIS Kennzahlen übermittelt die für die Bilanzierung relevant sind',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '615',
+      'condition_text': 'Hinweis: Es ist das Datum/Daten aus der eingehenden Nachricht zu verwenden.',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '616',
+      'condition_text': 'Hinweis: Dient dazu, dass der ÜNB den NB kennt, von welchem der Ursprung ausgegangen ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '617',
+      'condition_text': 'Hinweis: Mehrere Vorgänge für eine Marktlokation bei Wechsel bilanzierungsrelevanter Stammdaten innerhalb des Bilanzierungsmonats',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '618',
+      'condition_text': 'Hinweis: Bisheriges Datum des MSBA. Sollte der MSBN ein abweichendes Datum verwenden wollen, so teilt er das neue Datum mit einer Stammdatenänderung mit',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '619',
+      'condition_text': 'Hinweis: Für die selbständige Änderungsmöglichkeit der Schwellwertunter- / -über- schreitung',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '620',
+      'condition_text': 'Hinweis: Erforderlich für Bedingungen in SG1 RFF Referenzangaben in PID 13017 der MSCONS',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '621',
+      'condition_text': 'Hinweis: Es ist der MSB anzugeben, welcher ab dem Zeitpunkt der Lokation zugeordnet ist, der in DTM+76 (Datum zum geplanten Leistungsbeginn) genannt ist.',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '622',
+      'condition_text': 'Hinweis: Falls die OBIS-Kennzahl für mehrere Marktrollen relevant ist, so muss die Segmentgruppe pro Marktrolle wiederholt werden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '623',
+      'condition_text': 'Hinweis: Es sind alle Identifikatoren der Messlokationen anzugeben, die zur Ermittlung der Energiemenge der im Vorgang genannten Marktlokation benötigt werden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '624',
+      'condition_text': 'Hinweis: Bei Geschäftsvorfall 1',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '625',
+      'condition_text': 'Hinweis: Bei Geschäftsvorfall 2 und 3',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '626',
+      'condition_text': 'Hinweis: Bei Geschäftsvorfall 2',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '627',
+      'condition_text': 'Hinweis: Bei Geschäftsvorfall 1 und 3',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '628',
+      'condition_text': 'Hinweis: Referenzierung auf eine ID einer Marktlokation vom SG5 LOC+Z16 (Marktlokation)',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '629',
+      'condition_text': 'Hinweis: Referenzierung auf eine ID einer Messlokation vom SG5 LOC+Z17 (Messlokation)',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '630',
+      'condition_text': 'Hinweis: Wenn die Liste abgelehnt wird, ist kein Vorgang enthalten',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '631',
+      'condition_text': 'Hinweis: Es ist die Listennummer aus der Lieferanten- bzw. Bilanzierungsgebietsclearinglis te zu verwenden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '632',
+      'condition_text': 'Hinweis: Es ist die Listennummer aus der Lieferanten-ausfallarbeits- clearingliste zu verwenden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '635',
+      'condition_text': 'Hinweis: Wenn SG4 STS+E01++Z35 (Status der Antwort: Ablehnung der Abmeldeanfrage)vorhanden, sind die Identifikatoren aller Tranchen anzugeben zu denen eine Ablehnung der Abmelde-anfrage vorliegt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '636',
+      'condition_text': 'Hinweis: Dieses RFF klassifiziert mit einem Code im DE1153 die in derselben Segmentgruppe enthaltenen DTM zu einem Markt- bzw. Messlokation relevanten Inhalt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '637',
+      'condition_text': 'Hinweis: Bei Verpflichtungsanfrage',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '638',
+      'condition_text': 'Hinweis: Bei Aufforderung zur Übernahme der einzelnen Messlokation durch den gMSB',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '639',
+      'condition_text': 'Hinweis: Wenn Antwort auf Deaktivierung',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '640',
+      'condition_text': 'Hinweis: Wenn Antwort auf Aktivierung',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '641',
+      'condition_text': 'Hinweis: Wenn Einzelanforderung vorliegt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '642',
+      'condition_text': 'Hinweis: Wenn Abo vorliegt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '643',
+      'condition_text': 'Hinweis: Nachfolgender Netzbetreiber',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '644',
+      'condition_text': 'Hinweis: Wenn in der zugehörigenAnmeldung (55001) in diesem Segment "Einzug in Neuanlage" (SG4 STS+7++E02) enthalten ist, wird in diesem Geschäftsvorfall der Code E01 verwendet',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '645',
+      'condition_text': 'Hinweis: Es ist der Bilanzkreis des LF anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '646',
+      'condition_text': 'Hinweis: Es ist der RD-Bilanzkreis des ANB anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '647',
+      'condition_text': 'Hinweis: Es ist der RD-Bilanzkreis des anfNB anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '648',
+      'condition_text': 'Hinweis: Soll ein Produkt ab dem Datum "Änderung zum" nicht mehr vorhanden sein, wird dies durch nicht angeben des PIA+5 ausgedrückt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '649',
+      'condition_text': 'Hinweis: Es werden genau die OBIS Kennzahlen übermittelt, die dem LF vom NB im PID 55185 gemeldet wurden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '651',
+      'condition_text': 'Hinweis: Es sind die Marktlokationen anzugeben, zu welchen die hier genannte OBIS benötigt wird',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '653',
+      'condition_text': 'Hinweis: Es sind alle Netzlokationen, Marktlokationen, Tranchen und Messlokationen zu nennen, die durch die Bestätigung der Abmeldung der prozessual behandelten Messlokation nicht mehr dem MSB zugeordnet sind',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '654',
+      'condition_text': 'Hinweis: Es sindausschließlich die Daten zum Meldepunkt anzugeben, die für den in NAD+MR (Nachrichtenempfäng er) adressierten Marktpartner relevant ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '655',
+      'condition_text': 'Hinweis: Es ist die Listennummer aus der DZÜ Liste zu verwenden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '656',
+      'condition_text': 'Hinweis: Anzugeben wenn der NB den Use-Case „Stammdatenänderung NB (verantwortlich) ausgehend“ für die Änderung der Aggregationsverantwort ung vom ÜNB auf NB gegenüber LF und MSB durchgeführt hat',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '657',
+      'condition_text': 'Hinweis: Anzugeben wenn der NB den LF und MSB informiert hat, dass die Marktlokation nicht mehr bilanzierungs- relevant ist, weil sie ins Modell 2 gewechselt ist oder Bestandteil einer Kundenanlage geworden ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '658',
+      'condition_text': 'Hinweis: Anzugeben wenn der NB den Use-Case „Weiterleitung der Stammdaten-änderung vom MSB (verantwortlich) ausgehend“ aufgrund einer Änderung des Bilanzierungsverfahrens von Bilanzierung auf Basis von Viertelstundenwerten auf Bilanzierung auf Basis von Profilen gegenüber LF und MSB durchgeführt hat und die Aggregationsverantwort ung liegt weiterhin beim NB',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '659',
+      'condition_text': 'Hinweis: Bei Tranchen ist nur der Meldepunkt der Tranche anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '660',
+      'condition_text': 'Hinweis: Es ist die ID der BK-Summenzeitreihe Aggregationsebene BG anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '661',
+      'condition_text': 'Hinweis: Ist dem NB bereits die ab dem Lieferbeginn zu verwendende Konfuigurations-ID bekannt, teilt er diese bereits hier mit. Liegt diese noch nicht vor, teilt der NB die aktuell verwendete Konfigurations-ID mit und veranlasst beim MSB eine Konfigurationsänderung, welche nach erfolgreichem Abschluss zu einer neuen Konfigurations-ID führt, die über den Prozess Stammdatenänderung kommuniziert wird.',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '662',
+      'condition_text': 'Hinweis: Es sind die Daten NGZ und die Daten der NZR anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '663',
+      'condition_text': 'Hinweis: Es ist die ID der Marktlokation und die ZPB des ZP der NGZ anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '664',
+      'condition_text': 'Hinweis: Es ist das BG des NB (LPB) anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '665',
+      'condition_text': 'Hinweis: Wenn ein Zähler mit einem SMGW parametriert ist werden an dem Zähler keine OBIS- Kennzahlen angegeben Hier gibt es nur OBIS Kennzahlen vom SMGW',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '666',
+      'condition_text': 'Hinweis: Referenzierung auf eine ID einer Tranche vom SG5 LOC+Z21 (Tranche)',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '667',
+      'condition_text': 'Hinweis: Für Zeiten die bilanziert wurden, aber inzwischen keine Aggregationsverantwortung beim ÜNB vorliegt, ist eine SG8 mit SG8 - SG10 CCI+6=ZA8 oder SG 10 CCI+6 = ZA9 CAV=ZG4 und SG8 - SG9 QTY+Z45 = 0 zu bilden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '668',
+      'condition_text': 'Hinweis: Dieses Segment wird nach Abschluss der Einführung der Lokationsbündelstrukt ur zum 01.10.2025 aus der UTILMD entfernt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '669',
+      'condition_text': 'Hinweis: Es können mehrere Messlokationen angegeben werden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '670',
+      'condition_text': 'Hinweis: Es sind alle Netzlokationen, zu nennen, die dem gleichen Lokationsbündel angehören wie die prozessual behandelte Messlokation',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '671',
+      'condition_text': 'Hinweis: Es sind alle Marktlokationen, zu nennen, die dem gleichen Lokationsbündel angehören wie die prozessual behandelte Messlokation',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '672',
+      'condition_text': 'Hinweis: Es sind alle Technischen Ressourcen, zu nennen, die dem gleichen Lokationsbündel angehören wie die prozessual behandelte Messlokation',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '673',
+      'condition_text': 'Hinweis: Es sind alle Steuerbaren Ressourcen, zu nennen, die dem gleichen Lokationsbündel angehören wie die prozessual behandelte Messlokation',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '674',
+      'condition_text': 'Hinweis: Es sind alle Tranchen, zu nennen, die dem gleichen Lokationsbündel angehören wie die prozessual behandelte Messlokation',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '675',
+      'condition_text': 'Hinweis: Es sind alle Messlokationen, zu nennen, die Lokationsbündel angehören wie die prozessual behandelte Messlokation',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '677',
+      'condition_text': 'Hinweis: Es sind alle Netzlokationen, zu nennen, die aktuell und / oder zukünftig dem gleichen Lokationsbündel angehören wie die prozessual behandelte Messlokation. Zudem ist über das DE5479 mit der Angabe des entsprechenden Codes der Zustand der Netzlokation zu beschreiben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '678',
+      'condition_text': 'Hinweis: Es sind alleMarktlokationen, zu nennen, die aktuell und / oder zukünftig dem gleichen Lokationsbündel angehören wie die prozessual behandelte Messlokation. Zudem ist über das DE5479 mit der Angabe des entsprechenden Codes der Zustand der Marktlokation zu beschreiben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '679',
+      'condition_text': 'Hinweis: Es sind alle Technischen Ressourcen, zu nennen, die aktuell und / oder zukünftig dem gleichen Lokationsbündel angehören wie die prozessual behandelte Messlokation. Zudem ist über das DE5479 mit der Angabe des entsprechenden Codes der Zustand der Technischen Ressource zu beschreiben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '680',
+      'condition_text': 'Hinweis: Es sind alle Steuerbaren Ressourcen, zu nennen, die aktuell und / oder zukünftig dem gleichen Lokationsbündel angehören wie die prozessual behandelte Messlokation. Zudem ist über das DE5479 mit der Angabe des entsprechenden Codes der Zustand der Steuerbaren Ressource zu beschreiben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '681',
+      'condition_text': 'Hinweis: Es sind alle Tranchen, zu nennen, die aktuell und / oder zukünftig dem gleichen Lokationsbündel angehören wie die prozessual behandelte Messlokation.Zudem ist über das DE5479 mit der Angabe des entsprechenden Codes der Zustand der Tranche zu beschreiben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '682',
+      'condition_text': 'Hinweis: Es sind alle Messlokationen, zu nennen, die aktuell und / oder zukünftig dem gleichen Lokationsbündel angehören sowie die prozessual behandelte Messlokation im DE5479 zu kennzeichnen. Zudem ist über das DE5479 mit der Angabe des entsprechenden Codes der Zustand der weitern Messlokationen zu beschreiben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '683',
+      'condition_text': 'Hinweis: Es sind alle ID der Netzlokationen, welche der im SG5 LOC+Z16 angegebenen Marktlokation aktuell und / oder zukünftig vorgelagert sind anzugeben. Zudem ist über das DE5479 mit der Angabe des entsprechenden Codes der Zustand der Netzlokation zu beschreiben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '684',
+      'condition_text': 'Hinweis: Es sind alle ID der Technischen Ressourcen, welche der im LOC+Z16 angegebenen Marktlokation aktuell und / oder zukünftig zugehören anzugeben. Zudem ist über das DE5479 mit der Angabe des entsprechenden Codes der Zustand der Technischen Ressource zu beschreiben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '685',
+      'condition_text': 'Hinweis: Es sind alle ID der Steuerbaren Ressourcen, welche der im LOC+Z20 angegebenen Technischen Ressourcen aktuell und / oder zukünftig zugeordnet sind anzugeben. Zudem ist über das DE5479 mit der Angabe des entsprechenden Codes der Zustand der Steuerbaren Ressource zu beschreiben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '686',
+      'condition_text': 'Hinweis: Es sind alle ID der Tranchen, welche dem LF an der im LOC+Z16 angegebenen Marktlokation die aktuell und / oder zukünftig zugeordnet sind anzugeben.',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '687',
+      'condition_text': 'Hinweis: Es sind alle Messlokationen zu nennen, die für die Energiemengenermittlun g aktuell und / oder zukünftig der im LOC+Z16 angegebenen Marktlokation notwendig sind. Zudem ist über das DE5479 mit der Angabe des entsprechenden Codes der Zustand der Messlokation zu beschreiben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '688',
+      'condition_text': 'Hinweis: Es sind alle ID der Netzlokationen, welche der im LOC+Z16 angegebenen Marktlokation vorgelagert sind anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '689',
+      'condition_text': 'Hinweis: Es sind alle ID der Technischen Ressourcen, welche der im LOC+Z16 angegebenen Marktlokation zugehören anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '690',
+      'condition_text': 'Hinweis: Es sind alle ID der Steuerbaren Ressourcen, welche der im LOC+Z20 angegebenen Technischen Ressourcen zugeordnet sind anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '693',
+      'condition_text': 'Hinweis: Es sind die Daten NGZ anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '694',
+      'condition_text': 'Hinweis: Wenn in einer Marktlokation eine ID für eine Technischen Ressource vergeben wird, müssen für alle ggf. weitere Technische Ressourcen in der Marktlokation ID vergeben werden. Hintergrund: MSB und LF benötigen einen vollständigen Überblick auf die Art und Nutzung der Technischen Ressourcen in einer Marktlokation für die Plausibilisierung, Ersatzwertbildung, Produktauswahl bzw. Prognose',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '695',
+      'condition_text': 'Hinweis: Verwendung, wenn Rolle LF einem Unternehmen NB zugeordnet ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '696',
+      'condition_text': 'Hinweis: Verwendung, nur wenn die Rolle LF nicht einem Unternehmen NB zugeordnet ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '697',
+      'condition_text': 'Hinweis: Anzugeben wenn der NB den LF und MSB informiert hat, dass die Marktlokation nicht mehr bilanzierungsrelevant ist, weil sie ins Modell 2 gewechselt ist oder Bestandteil einer Kundenanlage geworden ist.',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '698',
+      'condition_text': 'Hinweis: Für eine erzeugende Marktlokation muss für jede Technische Ressource eine ID der Technischen Ressourcen vergeben werden. Dies ist notwendig um die Nennleistung der Technische Ressource bekannt zu geben, da auf Basis diese Information die POG des MSB einer erzeugenden Marktlokation ermittelt wird',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '699',
+      'condition_text': 'Hinweis: Es ist die ID der Steuerbare Ressource zu nennen über die die Technische Ressource gesteuert wird',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '700',
+      'condition_text': 'Hinweis: Es ist die ID der Netzlokation zu nennen über die die Technische Ressource gesteuert wird',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '701',
+      'condition_text': 'Hinweis: Es ist ein anderes Datum als in der Anfrage zu verwenden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '902',
+      'condition_text': 'Format: Möglicher Wert: ≥ 0',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '910',
+      'condition_text': 'Format: Möglicher Wert: < 0 oder ≥ 0',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '912',
+      'condition_text': 'Format: max. 6 Nachkommastellen',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '914',
+      'condition_text': 'Format: Möglicher Wert: > 0',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '922',
+      'condition_text': 'Format: TR-ID',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '926',
+      'condition_text': 'Format: Möglicher Wert: 0',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '930',
+      'condition_text': 'Format: max. 2 Nachkommastellen',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '931',
+      'condition_text': 'Format: ZZZ = +00Beschreibung Anfrage an Antwort auf Ablehnung Nicht bila.rel. Nicht bila.rel. Antwort auf Bedingung MSB ohne Anfrage Anfrage Anfrage an Anfrage an Anfrage Abhängigkeite MSB ohne MSB ohne n Abhängigkeite Abhängigkeite n n Kommunikation von LF/ MSB NB [Verteiler] NB [Verteiler] NB [Verteiler] NB MSB an NB [Berechtigt] an LF/ MSB an LF/ MSB an MSB [Berechtigt] an NB [Berechtigt] [Berechtigt] an MSB [Verteiler] Prüfidentifikator 55162 55163 55164 55165 55166 55167',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '932',
+      'condition_text': 'Format: HHMM = 2200',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '933',
+      'condition_text': 'Format: HHMM = 2300',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '934',
+      'condition_text': 'Format: HHMM = 0400',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '935',
+      'condition_text': 'Format: HHMM = 0500',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '937',
+      'condition_text': 'Format: keine Nachkommastelle',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '938',
+      'condition_text': 'Format: Möglicher Wert: <= 10',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '939',
+      'condition_text': 'Format: Die Zeichenkette muss die Zeichen @ und . enthalten',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '940',
+      'condition_text': 'Format: Die Zeichenkette muss mit dem Zeichen + beginnen und danach dürfen nur noch Ziffern folgenBeschreibung Anfrage an Antwort auf Ablehnung Nicht bila.rel. Nicht bila.rel. Antwort auf Bedingung MSB ohne Anfrage Anfrage Anfrage an Anfrage an Anfrage Abhängigkeite MSB ohne MSB ohne n Abhängigkeite Abhängigkeite n n Kommunikation von LF/ MSB NB [Verteiler] NB [Verteiler] NB [Verteiler] NB MSB an NB [Berechtigt] an LF/ MSB an LF/ MSB an MSB [Berechtigt] an NB [Berechtigt] [Berechtigt] an MSB [Verteiler] Prüfidentifikator 55162 55163 55164 55165 55166 55167',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '942',
+      'condition_text': 'Format: n1-n2- n1-n3',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '943',
+      'condition_text': 'Format: n1-n2-n1',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '946',
+      'condition_text': 'Format: max. 11 Nachkommastellen',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '948',
+      'condition_text': 'Format: n1-n2- n1-n8-n2',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '950',
+      'condition_text': 'Format: Marktlokations-IDBeschreibung Anfrage an Antwort auf Ablehnung Nicht bila.rel. Nicht bila.rel. Antwort auf Bedingung MSB ohne Anfrage Anfrage Anfrage an Anfrage an Anfrage Abhängigkeite MSB ohne MSB ohne n Abhängigkeite Abhängigkeite n n Kommunikation von LF/ MSB NB [Verteiler] NB [Verteiler] NB [Verteiler] NB MSB an NB [Berechtigt] an LF/ MSB an LF/ MSB an MSB [Berechtigt] an NB [Berechtigt] [Berechtigt] an MSB [Verteiler] Prüfidentifikator 55162 55163 55164 55165 55166 55167',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '951',
+      'condition_text': 'Format: ZählpunktbezeichnungBeschreibung Anfrage an Antwort auf Ablehnung Nicht bila.rel. Nicht bila.rel. Antwort auf Bedingung MSB ohne Anfrage Anfrage Anfrage an Anfrage an Anfrage Abhängigkeite MSB ohne MSB ohne n Abhängigkeite Abhängigkeite n n Kommunikation von LF/ MSB NB [Verteiler] NB [Verteiler] NB [Verteiler] NB MSB an NB [Berechtigt] an LF/ MSB an LF/ MSB an MSB [Berechtigt] an NB [Berechtigt] [Berechtigt] an MSB [Verteiler] Prüfidentifikator 55162 55163 55164 55165 55166 55167Beschreibung Anfrage an Antwort auf Ablehnung Nicht bila.rel. Nicht bila.rel. Antwort auf Bedingung MSB ohne Anfrage Anfrage Anfrage an Anfrage an Anfrage Abhängigkeite MSB ohne MSB ohne n Abhängigkeite Abhängigkeite n n Kommunikation von LF/ MSB NB [Verteiler] NB [Verteiler] NB [Verteiler] NB MSB an NB [Berechtigt] an LF/ MSB an LF/ MSB an MSB [Berechtigt] an NB [Berechtigt] [Berechtigt] an MSB [Verteiler] Prüfidentifikator 55162 55163 55164 55165 55166 55167',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '952',
+      'condition_text': 'Format: Gerätenummer nach DIN 43863-5',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '955',
+      'condition_text': 'Format: Möglicher Wert: < 100',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '956',
+      'condition_text': 'Format: ≥ 202212312300?+00',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '957',
+      'condition_text': 'Format: n1-n2- n1-n8',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '958',
+      'condition_text': 'Format: Möglicher Wert: 100',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '960',
+      'condition_text': 'Format: Netzlokations- ID',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '961',
+      'condition_text': 'Format: SR-ID',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '967',
+      'condition_text': 'Format: Zertifikatskörper gemäß X509.1, BSI TR-03109-4',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2056',
+      'condition_text': 'Einmal für jede Marktlokation bzw. Tranche, für die der LF nicht die gemeldete Ansicht des NB teilt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2060',
+      'condition_text': 'Wenn SG10 CAV+NZR ist die Segmentgruppe genau zwei Mal je IDE+24 anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2061',
+      'condition_text': 'Segment bzw. Segmentgruppe ist genau einmal je SG4 IDE (Vorgang) anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2062',
+      'condition_text': 'Segmentgruppe ist max. einmal je SG4 IDE+24 (Vorgang) anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2071',
+      'condition_text': 'Für die ID der LieferantensummenZR einmal je SG4 IDE+24 (Vorgang)',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2073',
+      'condition_text': 'Für die ID der BilanzkreissummenZR einmal je SG4 IDE+24 (Vorgang)',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2075',
+      'condition_text': 'Für die ID der Zeitreihen (nicht bei EEG-EUZ und EUZ der AAÜZ) in der Clearingliste einmal je SG4 IDE+24 (Vorgang)',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2080',
+      'condition_text': 'Segmentgruppe ist max. zweimal je SG4 IDE+24 (Vorgang) anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2095',
+      'condition_text': 'Je SG5 LOC+Z15 (MaBiS-Zählpunkt) ist genau einmal die Segmentgruppe anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2096',
+      'condition_text': 'Segmentgruppe ist genau zweimal je SG4 IDE anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2119',
+      'condition_text': 'Je SG8 SEQ+Z13 (Smartmeter- Gateway) ist genau einmal die Segmentgruppe anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2140',
+      'condition_text': 'Für die ID der LieferantensummenZR einmal je SG4 IDE+Z01 (Liste)',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2182',
+      'condition_text': 'Segmentgruppe ist genau einmal je SG8 SEQ+Z01 (Daten der Marktlokation) anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2183',
+      'condition_text': 'Segmentgruppe ist genau zweimal je SG8 SEQ+Z01 (Daten der Marktlokation) anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2207',
+      'condition_text': 'Für die ID der Lieferanten-ausfall-arbeits- summen-zeitreihe einmal je SG4 IDE+Z01 (Liste)',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2225',
+      'condition_text': 'Einmal für jede Marktlokation bzw. Tranche für die der LF nicht die gemeldete Ansicht des NB teilt',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2236',
+      'condition_text': 'Code einmal je SG4 IDE+24 (Vorgang)',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2252',
+      'condition_text': 'Einmal für jede Marktlokation bzw. Tranche, die in der Lieferantenausfallarbeits- summenzeitreihe berücksichtigt wurde',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2261',
+      'condition_text': 'Für jede ID im SG5 LOC+Z21 (Tranche) DE3225, mindestens einmal anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2284',
+      'condition_text': 'Für jede Messlokations-ID im SG5 LOC+Z17 (Messlokation) DE3225 genau einmal anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2286',
+      'condition_text': 'Für jede SEQ+Z18 (Daten der Messlokation) mindestens einmal anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2287',
+      'condition_text': 'Für jede SEQ+Z03 (Zähleinrichtungsdate n) mindestens einmal anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2288',
+      'condition_text': 'Einmal für jede Zeitreihe, die in der DZR berücksichtigt wurde',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2307',
+      'condition_text': 'Für jede ID im SG5 LOC+Z21 (Tranche) DE3225 genau einmal anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2308',
+      'condition_text': 'Für jede ID im SG5 LOC+Z16 (Marktlokation) DE3225, mindestens einmal anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2309',
+      'condition_text': 'Für jede ID im SG5 LOC+Z17 (Messlokation) DE3225 mindestens einmal anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2310',
+      'condition_text': 'Für jede ID im SG5 LOC+Z16 (Marktlokation) DE3225 genau einmal anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2311',
+      'condition_text': 'Für jede ID im SG5 LOC+Z21 (Tranche) DE3225, mindestens einmal anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2312',
+      'condition_text': 'Wenn der Objektcode "9992000001256" (Netzlokation) im DE1154 des selben RFF+Z33 nicht vorhanden ist, ist das RFF+Z33 in derselben SG8 SEQ+Z58 (Zuordnung Lokation zum Objektcode des Lokationsbündels) genau einmal anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2313',
+      'condition_text': 'Je SG8 SEQ+Z58 (Zuordnung Lokation zum Objektcode des Lokationsbündels) genau einmal anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2317',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z04 (Wandlerdaten) das SG10 CCI+++Z25 (Wandler) CAV+MIW/MPW/ MUW vorhanden, ist das Segment mindestens zweimal anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2318',
+      'condition_text': 'Wenn in derselben SG8 SEQ+Z04 (Wandlerdaten) das SG10 CCI+++Z25 (Wandler) CAV+MBW (Blockstromwandler) vorhanden, ist das Segment genau einmal anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2344',
+      'condition_text': 'Einmal für jede Marktlokation bzw. Tranche, die in der DZÜ / BG-CL / LF- SZR berücksichtigt wurde',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2348',
+      'condition_text': 'Für jede ID im SG5 LOC+Z21 (Tranche) DE3225, mit dem Code Z01 / Z02 (Lokation aktuell und zukünftig vorhanden / Lokation zukünftig vorhanden) im DE5479, genau einmal anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2349',
+      'condition_text': 'Für jedes SG5 LOC+Z17 (Messlokation) einmal anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2350',
+      'condition_text': 'Für jedes SMGW das im SEQ+Z13 (Smartmeter- Gateway) SG10 CCI+++Z75 CAV+Z30 (Gerätenummer) genannt ist, mindestens einmal je SEQ+Z03 (Zähleinrichtungsdate n) das mit SG8 RFF+Z14 (Referenz auf das Smartmeter- Gateway) auf das SMGW referenziert',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2351',
+      'condition_text': 'Einmal je ZP einer BK- SZR, in der die Marktlokation in die Berechnung der abgerechneten Summenzeitreihe aufgenommen wurde',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2352',
+      'condition_text': 'Einmal je ZP einer BG- SZR, in der die Marktlokation in die Berechnung der abgerechneten Summenzeitreihe aufge- nommen wurde',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2354',
+      'condition_text': 'Für jede ID im SG5 LOC+Z16 / Z17 / Z18 / Z20 (Marktlokation / Messlokation / Netzlokation / Technische Ressource) DE3225 genau einmal anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2356',
+      'condition_text': 'Je SG5 LOC+Z18 (Netzlokation) ist genau einmal die Segmentgruppe anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2357',
+      'condition_text': 'Je SG5 LOC+Z20 (Technische Ressource) ist genau einmal die Segmentgruppe anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2358',
+      'condition_text': 'Je SG5 LOC+Z19 (Steuerbare Ressource) ist genau einmal die Segmentgruppe anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2359',
+      'condition_text': 'Für jede ID im SG5 LOC+Z16 / Z17 / Z20 (Marktlokation / Messlokation / Technische Ressource) DE3225 genau einmal anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '2360',
+      'condition_text': 'Für jede ID im SG5 LOC+Z18 (Netzlokation) DE3225 mindestens einmal anzugeben',
+      'edifact_format': 'UTILMDS',
+    }),
+  ])
+# ---
+# name: TestCliConditions.test_cli_conditions[UTILMDS].2
   None
 # ---
 # name: TestCliConditions.test_cli_conditions[UTILTS]

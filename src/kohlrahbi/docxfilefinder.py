@@ -408,8 +408,8 @@ class DocxFileFinder(BaseModel):
 
         for group_items in groups.values():
             most_recent_file = get_most_recent_file(group_items)
-            assert most_recent_file is not None, "Could not find the most recent file."
-            result.append(most_recent_file)
+            if most_recent_file is not None:
+                result.append(most_recent_file)
         return result
 
     def filter_docx_files_for_edifact_format(self, edifact_format: EdifactFormat) -> None:
@@ -492,8 +492,9 @@ class DocxFileFinder(BaseModel):
         self.filter_for_latest_ahb_docx_files()
         self.remove_temporary_files()
 
-        indicator_string = "UTILMDAHBStrom"
-        self.docx_files = [path for path in self.docx_files if indicator_string in path.name]
+        self.docx_files = [
+            path for path in self.docx_files if "UTILMDAHBStrom" in path.name or "AHB_UTILMD_S" in path.name
+        ]
 
         return self.docx_files
 
