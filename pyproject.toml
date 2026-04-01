@@ -107,6 +107,7 @@ sources = ["src"]
 
 [tool.black]
 line-length = 120
+extend-exclude = "edi_energy_mirror"
 
 [tool.isort]
 line_length = 120
