@@ -263,7 +263,8 @@ class DocxFileFinder(BaseModel):
         """Get the most recent version from each group of documents.
 
         Args:
-            grouped_docs (dict[tuple[str, str, str], list[Path]]): Documents grouped by kind, format, and version prefix.
+            grouped_docs (dict[tuple[str, str, str], list[Path]]): Documents grouped by kind, format,
+                and version prefix.
 
         Returns:
             list[Path]: List of the most recent version from each group.
