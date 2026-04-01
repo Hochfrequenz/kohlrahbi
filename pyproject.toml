@@ -123,3 +123,4 @@ markers = ["snapshot: mark a test as a snapshot test"]
 
 [tool.codespell]
 skip = 'src/kohlrahbi.egg-info'
+ignore-words = 'domain-specific-terms.txt'
