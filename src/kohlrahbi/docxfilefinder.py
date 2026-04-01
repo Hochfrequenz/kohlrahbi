@@ -147,31 +147,32 @@ def get_most_recent_file(group_items: list[Path]) -> Path | None:
         #     path for path in group_items if path.name.lower().startswith("ahb") or path.name.lower().startswith("mig")
         # ]
 
-        ahb_and_mig_file_paths = []
+        # Prefer error corrections > consolidated > plain informational reading versions
+        error_correction_paths = []
+        consolidated_paths = []
+        informational_paths = []
         for path in group_items:
             document_metadata = extract_document_meta_data(path.name)
-            is_document_relevant = document_metadata is not None and (
-                document_metadata.is_informational_reading_version
-                and document_metadata.is_consolidated_reading_version
-                and document_metadata.is_error_correction
-            )
-            if is_document_relevant:
-                ahb_and_mig_file_paths.append(path)
+            if document_metadata is None or not document_metadata.is_informational_reading_version:
+                continue
+            if document_metadata.is_consolidated_reading_version and document_metadata.is_error_correction:
+                error_correction_paths.append(path)
+            elif document_metadata.is_consolidated_reading_version:
+                consolidated_paths.append(path)
+            else:
+                informational_paths.append(path)
 
-        # assert len(ahb_and_mig_file_paths) > 0, "No AHB or MIG files found."
+        best_paths = error_correction_paths or consolidated_paths or informational_paths
+        if not best_paths:
+            logger.debug("No informational reading version found for: %s", [p.name for p in group_items])
+            return None
 
-        list_of_edi_energy_documents = [EdiEnergyDocument.from_path(path) for path in ahb_and_mig_file_paths]
-
-        # assert len(list_of_edi_energy_documents) > 0, "No AHB files found."
+        list_of_edi_energy_documents = [EdiEnergyDocument.from_path(path) for path in best_paths]
         most_recent_file = max(list_of_edi_energy_documents)
-
-        # assert most_recent_file is not None, "Most recent file is None."
-
         return most_recent_file.filename
 
-    except ValueError as e:
-
-        logger.error("Error processing group items: %s", e)
+    except ValueError:
+        logger.debug("No matching version found for: %s", [p.name for p in group_items])
     return None
 
 
@@ -339,9 +340,25 @@ class DocxFileFinder(BaseModel):
         """
         Return the first part of the AHB docx file name.
         The first part contains the information about the EDIFACT formats.
-        """
 
-        return path_to_ahb_document.name.split("-")[0]
+        Handles both naming conventions:
+        - Old: "COMDISAHB-informatorischeLesefassung..." -> "COMDISAHB"
+        - New: "AHB_COMDIS_1.0h_20260401_..." -> "AHB_COMDIS"
+        - New with version prefix: "AHB_UTILMD_G1.2_..." -> "AHB_UTILMD_G"
+        """
+        name = path_to_ahb_document.name
+        # Old naming convention: split on "-"
+        if "-" in name:
+            return name.split("-")[0]
+        # New naming convention: "AHB_FORMAT_version_..."
+        parts = name.split("_")
+        if len(parts) >= 3 and parts[0] == "AHB":
+            # Check if version part starts with a letter prefix (G for Gas, S for Strom)
+            version_part = parts[2]
+            if version_part and version_part[0].isalpha() and not version_part[0].isdigit():
+                return f"{parts[0]}_{parts[1]}_{version_part[0]}"
+            return f"{parts[0]}_{parts[1]}"
+        return parts[0]
 
     def filter_for_latest_ahb_docx_files(self) -> None:
         """
