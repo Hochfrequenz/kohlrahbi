@@ -6,7 +6,7 @@
 # Build system information and other project-specific configuration below.
 
 [build-system]
-requires = ["hatchling>=1.8.0", "hatch-vcs", "hatch-fancy-pypi-readme"]
+requires = ["hatchling>=1.8.0", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
@@ -32,6 +32,7 @@ name = "kohlrahbi"
 description = "Tool to generate machine readable files from AHB documents"
 license = { text = "GPL" }
 requires-python = ">=3.11"
+readme = "README.md"
 authors = [{ name = "Kevin Krechan", email = "kevin.krechan@hochfrequenz.de" }]
 keywords = ["automation", "ahb", "bdew", "edi@energy"]
 classifiers = [
@@ -46,51 +47,49 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
 ]
-dynamic = ["readme", "version"]
+dynamic = ["version"]
 
 [project.scripts]
 kohlrahbi = "kohlrahbi:cli"
 
 [project.optional-dependencies]
 sqlmodels = ["sqlmodel>=0.0.22", "sqlalchemy[mypy]>=2.0.37"]
-dev = [
-  "kohlrahbi[sqlmodels]",
-  "kohlrahbi[test]",
-  "kohlrahbi[lint]",
-  "kohlrahbi[typecheck]",
-  "kohlrahbi[formatting]",
-]
-lint = ["pylint==3.3.4", "pylint-pydantic==0.3.5"]
+
+[dependency-groups]
 test = [
-  "kohlrahbi[sqlmodels]",
   "coverage==7.6.12",
   "dictdiffer==0.9.0",
   "freezegun==1.5.1",
   "pytest-datafiles==3.0.0",
   "pytest==8.3.4",
   "syrupy==4.8.2",
+  "sqlmodel>=0.0.22",
+  "sqlalchemy[mypy]>=2.0.37",
 ]
+lint = ["pylint==3.3.4", "pylint-pydantic==0.3.5"]
 typecheck = [
-  "kohlrahbi[sqlmodels]",
   "mypy==1.11.2",
   "networkx-stubs==0.0.1",
   "pandas-stubs==2.2.3.241126",
   "pytest==8.3.4",
   "types-freezegun==1.1.10",
-  "types-requests==2.32.0.20241016 ",
+  "types-requests==2.32.0.20241016",
+  "sqlmodel>=0.0.22",
+  "sqlalchemy[mypy]>=2.0.37",
 ]
-spell_check = ["codespell==2.4.1"]
-coverage = ["coverage==7.6.12"]
+spelling = ["codespell==2.4.1"]
 formatting = ["black==25.1.0", "isort==6.0.0"]
-test_packaging = ["build==1.2.2.post1", "twine==6.1.0"]
+dev = [
+  { include-group = "test" },
+  { include-group = "lint" },
+  { include-group = "typecheck" },
+  { include-group = "formatting" },
+  { include-group = "spelling" },
+]
 
 [project.urls]
 Changelog = "https://github.com/Hochfrequenz/kohlrahbi/releases"
 Homepage = "https://github.com/Hochfrequenz/kohlrahbi"
-
-[tool.hatch.metadata.hooks.fancy-pypi-readme]
-content-type = "text/markdown"
-fragments = [{ path = "README.md" }]
 
 [tool.hatch.version]
 source = "vcs"

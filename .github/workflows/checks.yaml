@@ -1,16 +1,26 @@
 name: "checks"
 
-# Runs your workflow when activity on a pull request in the workflow's repository occurs.
-# If no activity types are specified, the workflow runs when a pull request is opened, reopened, or when the head branch of the pull request is updated.
-on: [ pull_request ]
+on: [pull_request]
 jobs:
   checks:
     strategy:
       matrix:
-        os: [ ubuntu-latest ]
-        python-version: [ "3.13" ]
-        tox-env: [ "test", "lint", "formatcheck", "typecheck", "test_packaging", "dev" ]
-    name: ${{ matrix.tox-env }}
+        os: [ubuntu-latest]
+        python-version: ["3.13"]
+        check:
+          - name: test
+            run: uv run --group test pytest --cov kohlrahbi --cov-report term-missing --cov-fail-under 79
+          - name: lint
+            run: uv run --group lint pylint src/kohlrahbi
+          - name: formatting
+            run: |
+              uv run --group formatting black --check src/kohlrahbi unittests
+              uv run --group formatting isort --check src/kohlrahbi unittests
+          - name: typecheck
+            run: uv run --group typecheck mypy src/kohlrahbi unittests --strict
+          - name: spelling
+            run: uv run --group spelling codespell src/kohlrahbi README.md
+    name: ${{ matrix.check.name }}
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -20,10 +30,9 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install Dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install tox
-      - name: Run ${{ matrix.tox-env }} via Tox
-        run: |
-          tox -e ${{ matrix.tox-env }}
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+      - name: Install dependencies
+        run: uv sync --group dev
+      - name: Run ${{ matrix.check.name }}
+        run: ${{ matrix.check.run }}
