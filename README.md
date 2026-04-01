@@ -60,7 +60,7 @@ We're all hoping for the day of true digitization on which this repository will 
 **Update 2025**: Indeed the machine-readable (XML) MIGs and AHBs available in a paid BDEW subscription make lots of the kohlrahbi features obsolete 🎉.
 Still, some issues remain:
   1. The XML AHBs do not contain an "Änderungshistorie" although with some work you could compute them from the XMLs (more of a ahlbatross feature)
-  2. Kohlr_AHB_i generates the data modell for the AHB Tabellen web application. 
+  2. Kohlr_AHB_i generates the data model for the AHB Tabellen web application.
 
 ## Installation
 
@@ -105,11 +105,11 @@ kohlrahbi --help
 
 ### Commands overview
 
-| Command | Description |
-|---------|-------------|
-| `kohlrahbi ahb` | Extract AHB tables from `.docx` files |
-| `kohlrahbi conditions` | Extract conditions and packages from `.docx` files |
-| `kohlrahbi changehistory docx` | Extract change histories from `.docx` files |
+| Command                          | Description                                                  |
+| -------------------------------- | ------------------------------------------------------------ |
+| `kohlrahbi ahb`                  | Extract AHB tables from `.docx` files                        |
+| `kohlrahbi conditions`           | Extract conditions and packages from `.docx` files           |
+| `kohlrahbi changehistory docx`   | Extract change histories from `.docx` files                  |
 | `kohlrahbi changehistory bnetza` | Download PDFs from a BNetzA URL and extract change histories |
 
 ---
