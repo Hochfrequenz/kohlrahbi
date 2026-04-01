@@ -7,14 +7,14 @@ import os
 from pathlib import Path
 
 import pytest
-from click.testing import CliRunner, Result
 from efoli import EdifactFormat
 from freezegun import freeze_time
+from typer.testing import CliRunner
 
-from kohlrahbi.conditions.command import conditions
+from kohlrahbi import app
 from unittests import path_to_test_files_fv2310
 
-runner: CliRunner = CliRunner()
+runner = CliRunner()
 
 
 @pytest.fixture(scope="class")
@@ -71,6 +71,7 @@ class TestCliConditions:
             FV = "FV2404"
 
             argument_options: list[str] = [
+                "conditions",
                 "--edi-energy-mirror-path",
                 str(edi_repo_path),
                 "--output-path",
@@ -80,9 +81,9 @@ class TestCliConditions:
             ]
 
             # Call the CLI tool with the desired arguments
-            response: Result = runner.invoke(conditions, argument_options)
+            response = runner.invoke(app, argument_options)
 
-            assert response.exit_code == 0, "failed to run CLI conditions command"
+            assert response.exit_code == 0, f"failed to run CLI conditions command: {response.output}"
         conditions_path = shared_tmp_path / str(edifact_format) / "conditions.json"
         packages_path = shared_tmp_path / str(edifact_format) / "packages.json"
         # assert that all files which should be generated do really exist

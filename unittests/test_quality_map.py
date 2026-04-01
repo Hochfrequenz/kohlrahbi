@@ -4,13 +4,13 @@ from typing import Any, Optional, Union
 from unittest.mock import MagicMock
 
 import pytest
-from click.testing import CliRunner, Result
 from docx.table import Table
+from typer.testing import CliRunner
 
-from kohlrahbi import cli
+from kohlrahbi import app
 from kohlrahbi.qualitymap import is_quality_map_table
 
-runner: CliRunner = CliRunner()
+runner = CliRunner()
 
 
 class MockCell:
@@ -86,7 +86,7 @@ class TestQualityMap:
         )
 
         # Call the CLI tool with the desired arguments
-        response: Result = runner.invoke(cli, argument_options)
+        response = runner.invoke(app, argument_options)
 
         assert response.exit_code == expected_response.get("exit_code")
 

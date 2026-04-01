@@ -7,16 +7,16 @@ from pathlib import Path
 from typing import Union
 
 import pytest
-from click.testing import CliRunner, Result
+from typer.testing import CliRunner
 
-from kohlrahbi import cli
+from kohlrahbi import app
 from unittests import current_state_pruefis
 
 # Setup basic configuration for logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 
-runner: CliRunner = CliRunner()
+runner = CliRunner()
 
 
 def get_csv_paths(root_dir: Union[str, Path]) -> list[Path]:
@@ -73,7 +73,7 @@ class TestCli:
         )
 
         # Call the CLI tool with the desired arguments
-        response: Result = runner.invoke(cli, argument_options)
+        response = runner.invoke(app, argument_options)
 
         assert response.exit_code == expected_response.get("exit_code")
         expected_output_snippet = expected_response.get("output_snippet")

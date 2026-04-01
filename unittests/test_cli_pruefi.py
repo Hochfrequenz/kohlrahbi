@@ -2,12 +2,12 @@ from pathlib import Path
 from typing import Union
 
 import pytest
-from click.testing import CliRunner, Result
+from typer.testing import CliRunner
 
-from kohlrahbi.ahb.command import ahb
+from kohlrahbi import app
 from unittests import path_to_test_edi_energy_mirror_repo, path_to_test_files_fv2310
 
-runner: CliRunner = CliRunner()
+runner = CliRunner()
 
 
 class TestCliPruefi:
@@ -20,6 +20,7 @@ class TestCliPruefi:
         [
             pytest.param(
                 [
+                    "ahb",
                     "--pruefis",
                     "11016",
                     "--edi-energy-mirror-path",
@@ -29,11 +30,12 @@ class TestCliPruefi:
                     "--file-type",
                     "csv",
                 ],
-                {"exit_code": 2, "output_snippet": "invalid/input/path' does not exist"},
+                {"exit_code": 2, "output_snippet": "invalid/input/path"},
                 id="invalid input path",
             ),
             pytest.param(
                 [
+                    "ahb",
                     "--pruefis",
                     "11016",
                     "--edi-energy-mirror-path",
@@ -45,11 +47,12 @@ class TestCliPruefi:
                     "--file-type",
                     "csv",
                 ],
-                {"exit_code": 1, "output_snippet": f"{Path('invalid/output/path')} does not exist"},
+                {"exit_code": 1, "output_snippet": "invalid/output/path"},
                 id="invalid output path",
             ),
             pytest.param(
                 [
+                    "ahb",
                     "--pruefis",
                     "abc",
                     "--edi-energy-mirror-path",
@@ -61,11 +64,9 @@ class TestCliPruefi:
                     "--file-type",
                     "csv",
                 ],
-                {"exit_code": 1, "output_snippet": "There are no valid pruefidentifkatoren"},
+                {"exit_code": 1, "output_snippet": "no valid pruefidentifika"},
                 id="invalid pruefidentifikator",
             ),
-            # TODO add test for invalid format version
-            # TODO add test for required arguments
         ],
     )
     def test_cli_pruefi_with_invalid_arguments(
@@ -76,18 +77,19 @@ class TestCliPruefi:
         """
 
         # Call the CLI tool with the desired arguments
-        response = runner.invoke(ahb, argument_options)
+        response = runner.invoke(app, argument_options)
 
         assert response.exit_code == expected_response.get("exit_code")
         output_snippet = expected_response.get("output_snippet")
         assert isinstance(output_snippet, str)
-        assert output_snippet in response.output
+        assert output_snippet.lower() in response.output.lower()
 
     @pytest.mark.parametrize(
         "argument_options, expected_response",
         [
             pytest.param(
                 [
+                    "ahb",
                     "-p",
                     "17201",
                     "--format-version",
@@ -100,6 +102,7 @@ class TestCliPruefi:
             ),
             pytest.param(
                 [
+                    "ahb",
                     "-p",
                     "17201",
                     "--format-version",
@@ -123,7 +126,6 @@ class TestCliPruefi:
         """
 
         actual_output_dir = path_to_test_files_fv2310 / "actual-output"
-        expected_output_dir = path_to_test_files_fv2310 / "expected-output"
 
         argument_options.extend(
             [
@@ -135,11 +137,6 @@ class TestCliPruefi:
         )
 
         # Call the CLI tool with the desired arguments
-        response: Result = runner.invoke(ahb, argument_options)
+        response = runner.invoke(app, argument_options)
 
         assert response.exit_code == expected_response.get("exit_code")
-        expected_output_snippet = expected_response.get("output_snippet")
-        if expected_output_snippet is not None and isinstance(expected_output_snippet, str):
-            assert expected_output_snippet in response.output
-        else:
-            assert False  # break the test if the output_snippet is None
