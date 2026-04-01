@@ -9,7 +9,6 @@ from datetime import date
 from pathlib import Path
 from typing import Optional
 
-import click
 import docx
 import tomlkit
 from docx.table import Table
@@ -112,8 +111,7 @@ def validate_pruefis(pruefis: list[str]) -> list[str]:
     """
     valid_pruefis = get_valid_pruefis(pruefis)
     if not valid_pruefis:
-        click.secho("⚠️ There are no valid pruefidentifkatoren.", fg="red")
-        raise click.Abort()
+        raise ValueError("There are no valid pruefidentifikatoren.")
     return valid_pruefis
 
 

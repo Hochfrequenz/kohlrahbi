@@ -3,83 +3,198 @@ Command line interface for the changehistory commands.
 """
 
 import asyncio
+import sys
 from pathlib import Path
+from typing import Annotated
 
-import click
+import typer
 from efoli import EdifactFormatVersion
+from rich.console import Console
+from rich.panel import Panel
+from rich.progress import BarColumn, MofNCompleteColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 
-from kohlrahbi.ahb.command import check_python_version, validate_path
-from kohlrahbi.changehistory import scrape_change_histories
-from kohlrahbi.changehistory.bnetza import download_pdfs
+from kohlrahbi.logger import setup_logging
+
+console = Console()
+
+changehistory_app = typer.Typer(no_args_is_help=True)
 
 
-@click.group()
-def changehistory() -> None:
-    """Scrape change histories from EDIFACT documents."""
+def check_python_version() -> None:
+    """Check if the Python interpreter is greater or equal to 3.11"""
+    if sys.version_info.major != 3 or sys.version_info.minor < 11:
+        console.print("[red]Python >=3.11 is required to run this script.[/red]")
+        raise typer.Exit(code=1)
 
 
-@changehistory.command()
-@click.option(
-    "-eemp",
-    "--edi-energy-mirror-path",
-    type=click.Path(exists=True, file_okay=False, dir_okay=True, resolve_path=True, path_type=Path),
-    help="The root path to the edi_energy_mirror repository.",
-    required=True,
-)
-@click.option(
-    "-o",
-    "--output-path",
-    type=click.Path(exists=False, dir_okay=True, file_okay=False, resolve_path=True, path_type=Path),
-    callback=validate_path,
-    default="output",
-    prompt="Output directory",
-    help="Define the path where you want to save the generated files.",
-)
-@click.option(
-    "--format-version",
-    multiple=False,
-    type=click.Choice([e.value for e in EdifactFormatVersion], case_sensitive=False),
-    help="Format version(s) of the AHB documents, e.g. FV2310",
-)
-@click.option(
-    "--assume-yes",
-    "-y",
-    is_flag=True,
-    default=False,
-    help="Confirm all prompts automatically.",
-)
-def docx(  # pylint: disable=unused-argument
-    edi_energy_mirror_path: Path,
-    output_path: Path,
-    format_version: EdifactFormatVersion | str,
-    assume_yes: bool,
+@changehistory_app.command("docx")
+def docx(
+    edi_energy_mirror_path: Annotated[
+        Path,
+        typer.Option(
+            "-eemp",
+            "--edi-energy-mirror-path",
+            help="The root path to the edi_energy_mirror repository.",
+            exists=True,
+            file_okay=False,
+            dir_okay=True,
+            resolve_path=True,
+        ),
+    ] = ...,  # type: ignore[assignment]
+    output_path: Annotated[
+        Path,
+        typer.Option(
+            "-o",
+            "--output-path",
+            help="Define the path where you want to save the generated files.",
+            file_okay=False,
+            dir_okay=True,
+            resolve_path=True,
+        ),
+    ] = Path("output"),
+    format_version: Annotated[
+        str,
+        typer.Option(
+            "--format-version",
+            help="Format version of the AHB documents, e.g. FV2310.",
+        ),
+    ] = ...,  # type: ignore[assignment]
+    assume_yes: Annotated[
+        bool,
+        typer.Option(
+            "-y",
+            "--assume-yes",
+            help="Confirm all prompts automatically.",
+        ),
+    ] = False,
+    verbose: Annotated[
+        bool,
+        typer.Option(
+            "-v",
+            "--verbose",
+            help="Enable verbose logging output.",
+        ),
+    ] = False,
 ) -> None:
     """Scrape change histories from .docx files in the edi_energy_mirror repository."""
+    setup_logging(verbose=verbose)
     check_python_version()
-    if isinstance(format_version, str):
-        format_version = EdifactFormatVersion(format_version)
+
+    from kohlrahbi.ahb.command import ensure_output_path
+
+    output_path = ensure_output_path(output_path, assume_yes)
+    efv = EdifactFormatVersion(format_version)
     input_path = edi_energy_mirror_path / "edi_energy_de"
-    scrape_change_histories(input_path=input_path, output_path=output_path, format_version=format_version)
+
+    from kohlrahbi.changehistory import extract_sheet_name, process_docx_file, save_change_histories_to_excel
+    from kohlrahbi.docxfilefinder import DocxFileFinder
+
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        console=console,
+    ) as progress:
+        progress.add_task("Finding change history files...", total=None)
+        path_to_files = DocxFileFinder(path_to_edi_energy_mirror=input_path).get_file_paths_for_change_history(
+            format_version=efv
+        )
+
+    total = len(path_to_files)
+    processed = 0
+    skipped: list[str] = []
+    change_history_collection: dict[str, object] = {}
+
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        BarColumn(pulse_style="cyan"),
+        MofNCompleteColumn(),
+        TimeElapsedColumn(),
+        console=console,
+    ) as progress:
+        task = progress.add_task("Extracting change histories...", total=total)
+        for file_path in path_to_files:
+            progress.update(task, description=f"Processing {file_path.name}...")
+            df = process_docx_file(file_path)
+            if df is not None:
+                change_history_collection[extract_sheet_name(file_path.name)] = df
+                processed += 1
+            else:
+                skipped.append(file_path.name)
+            progress.advance(task)
+
+    save_change_histories_to_excel(change_history_collection, output_path)  # type: ignore[arg-type]
+
+    from kohlrahbi.docxfiledescriptor import summarize_version_tiers_from_paths
+
+    tier_summary = summarize_version_tiers_from_paths(path_to_files)
+
+    skipped_info = ""
+    if skipped:
+        skipped_list = "\n".join(f"  - {name}" for name in skipped)
+        skipped_info = f"\n[yellow]Skipped (no change history table found):[/yellow]\n{skipped_list}"
+
+    console.print(
+        Panel(
+            f"[green]Processed:[/green]  {processed}/{total} files\n"
+            f"[cyan]Source docs:[/cyan]  {tier_summary}{skipped_info}\n"
+            f"[blue]Output:[/blue]       {output_path}",
+            title="Change History Extraction Complete",
+            border_style="green",
+        )
+    )
 
 
-@changehistory.command()
-@click.option(
-    "--url",
-    type=str,
-    required=True,
-    help="The BNetzA URL to scrape for PDF documents.",
-)
-@click.option(
-    "-o",
-    "--output-path",
-    type=click.Path(exists=False, dir_okay=True, file_okay=False, resolve_path=True, path_type=Path),
-    callback=validate_path,
-    default="output",
-    prompt="Output directory",
-    help="Define the path where you want to save the downloaded PDFs and generated Excel file.",
-)
-def bnetza(url: str, output_path: Path) -> None:
+@changehistory_app.command("bnetza")
+def bnetza(
+    url: Annotated[
+        str,
+        typer.Option(
+            "--url",
+            help="The BNetzA URL to scrape for PDF documents.",
+        ),
+    ] = ...,  # type: ignore[assignment]
+    output_path: Annotated[
+        Path,
+        typer.Option(
+            "-o",
+            "--output-path",
+            help="Define the path where you want to save the downloaded PDFs and generated Excel file.",
+            file_okay=False,
+            dir_okay=True,
+            resolve_path=True,
+        ),
+    ] = Path("output"),
+    verbose: Annotated[
+        bool,
+        typer.Option(
+            "-v",
+            "--verbose",
+            help="Enable verbose logging output.",
+        ),
+    ] = False,
+) -> None:
     """Download PDFs from a BNetzA URL and extract change histories."""
+    setup_logging(verbose=verbose)
     check_python_version()
+
+    from kohlrahbi.changehistory.bnetza import download_pdfs
+
+    output_path.mkdir(parents=True, exist_ok=True)
     pdf_dir = output_path / "pdfs"
-    asyncio.run(download_pdfs(url=url, target_dir=pdf_dir))
+
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        console=console,
+    ) as progress:
+        progress.add_task("Downloading and processing PDFs from BNetzA...", total=None)
+        asyncio.run(download_pdfs(url=url, target_dir=pdf_dir))
+
+    console.print(
+        Panel(
+            f"[blue]Output:[/blue] {output_path}",
+            title="BNetzA Change History Extraction Complete",
+            border_style="green",
+        )
+    )
