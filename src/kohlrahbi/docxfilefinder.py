@@ -259,11 +259,11 @@ class DocxFileFinder(BaseModel):
                 informational_versions.append(path)
         return informational_versions
 
-    def _get_most_recent_versions(self, grouped_docs: dict[tuple[str, str], list[Path]]) -> list[Path]:
+    def _get_most_recent_versions(self, grouped_docs: dict[tuple[str, str, str], list[Path]]) -> list[Path]:
         """Get the most recent version from each group of documents.
 
         Args:
-            grouped_docs (dict[tuple[str, str], list[Path]]): Documents grouped by kind and format.
+            grouped_docs (dict[tuple[str, str, str], list[Path]]): Documents grouped by kind, format, and version prefix.
 
         Returns:
             list[Path]: List of the most recent version from each group.
