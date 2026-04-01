@@ -499,23 +499,22 @@ class DocxFileFinder(BaseModel):
         return self.docx_files
 
     @staticmethod
-    def group_documents_by_kind_and_format(paths: list[Path]) -> dict[tuple[str, str], list[Path]]:
+    def group_documents_by_kind_and_format(paths: list[Path]) -> dict[tuple[str, str, str], list[Path]]:
         """
-        Groups documents by their kind and EDIFACT format.
+        Groups documents by their kind, EDIFACT format, and version prefix.
+
+        The version prefix (e.g. "G" for Gas, "S" for Strom) is included in the grouping key
+        to ensure that documents like AHB UTILMD Gas and AHB UTILMD Strom are treated as
+        separate groups.
 
         Args:
             paths (list[Path]): List of paths to process
 
         Returns:
-            dict[tuple[str, str], list[Path]]: Dictionary where key is (kind, edifact_format) and value is list of paths
-
-        Example:
-            >>> paths = [Path("UTILMDAHB-1.0.docx"), Path("INVOICAHB-2.0.docx")]
-            >>> result = DocxFileFinder.group_documents_by_format(paths)
-            >>> # Result might look like: {("AHB", "UTILMD"): [Path("UTILMDAHB-1.0.docx")],
-            >>> #                         ("AHB", "INVOIC"): [Path("INVOICAHB-2.0.docx")]}
+            dict[tuple[str, str, str], list[Path]]: Dictionary where key is
+                (kind, edifact_format, version_prefix) and value is list of paths
         """
-        result: dict[tuple[str, str], list[Path]] = {}
+        result: dict[tuple[str, str, str], list[Path]] = {}
 
         for path in paths:
             try:
@@ -530,10 +529,16 @@ class DocxFileFinder(BaseModel):
 
                     x = path.name.split("_")[0]
 
-                    key = (x, "")
+                    key = (x, "", "")
 
                 else:
-                    key = (metadata.kind, metadata.edifact_format)
+                    version_prefix = ""
+                    if metadata.version:
+                        try:
+                            version_prefix, _, _, _ = split_version_string(metadata.version)
+                        except ValueError:
+                            pass
+                    key = (metadata.kind, metadata.edifact_format, version_prefix)
                 if key not in result:
                     result[key] = []
                 result[key].append(path)
