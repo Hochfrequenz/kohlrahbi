@@ -33,8 +33,10 @@ def check_python_version() -> None:
     Check if the Python interpreter is greater or equal to 3.11
     """
     if sys.version_info.major != 3 or sys.version_info.minor < 11:
-        raise click.Abort(f"""Python >=3.11 is required to run this script but you use Python
-{sys.version_info.major}.{sys.version_info.minor}""")
+        raise click.Abort(
+            f"""Python >=3.11 is required to run this script but you use Python
+{sys.version_info.major}.{sys.version_info.minor}"""
+        )
 
 
 # pylint: disable=unused-argument

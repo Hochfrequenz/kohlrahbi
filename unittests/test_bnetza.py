@@ -107,20 +107,24 @@ class TestFindChangeHistoryPage:
         return pdf
 
     def test_finds_page_from_toc(self):
-        pdf = self._make_pdf([
-            "Table of Contents\nÄnderungshistorie.....10",
-            "Other content",
-        ])
+        pdf = self._make_pdf(
+            [
+                "Table of Contents\nÄnderungshistorie.....10",
+                "Other content",
+            ]
+        )
         assert find_change_history_page(pdf) == 9  # 10 - 1 = 9 (0-based)
 
     def test_fallback_finds_page_by_text(self):
-        pdf = self._make_pdf([
-            "Introduction",
-            "Some content",
-            "Some content",
-            "Some content",
-            "Änderungshistorie\nSome changes here",
-        ])
+        pdf = self._make_pdf(
+            [
+                "Introduction",
+                "Some content",
+                "Some content",
+                "Some content",
+                "Änderungshistorie\nSome changes here",
+            ]
+        )
         assert find_change_history_page(pdf) == 4
 
     def test_returns_negative_one_when_not_found(self):
