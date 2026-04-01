@@ -116,6 +116,7 @@ profile = "black"
 max-line-length = 120
 good-names = ["i", "j", "k", "ex", "Run", "_", "df"]
 load-plugins = "pylint_pydantic"
+ignore = ["version.py"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
