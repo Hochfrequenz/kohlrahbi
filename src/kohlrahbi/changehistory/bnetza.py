@@ -90,7 +90,7 @@ async def download_pdf(client: httpx.AsyncClient, filename: str, url: str, targe
         logger.info("Successfully downloaded %s", filename)
     except httpx.HTTPError as e:
         logger.error("Failed to download %s from %s: %s", filename, url, str(e))
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         logger.error("Unexpected error while downloading %s: %s", filename, str(e))
 
 
@@ -114,7 +114,7 @@ def rename_existing_files(directory: Path) -> None:
             logger.info("Renaming %s to %s", old_name, new_name)
             try:
                 old_path.rename(new_path)
-            except Exception as e:
+            except Exception as e:  # pylint: disable=broad-exception-caught
                 logger.error("Failed to rename %s: %s", old_name, str(e))
 
 
@@ -136,7 +136,7 @@ def cleanup_old_files(directory: Path) -> None:
             logger.info("Removing old file: %s", file_path.name)
             try:
                 file_path.unlink()
-            except Exception as e:
+            except Exception as e:  # pylint: disable=broad-exception-caught
                 logger.error("Failed to remove %s: %s", file_path.name, str(e))
 
 
@@ -206,6 +206,16 @@ def normalize_table_columns(table: List[List[Optional[str]]]) -> List[List[Optio
     return normalized
 
 
+def _merge_row_into(target: list[str], source: list[str]) -> None:
+    """Merge non-empty values from source into target, joining with newlines."""
+    for i, value in enumerate(source):
+        if value:
+            if target[i]:
+                target[i] = f"{target[i]}\n{value}"
+            else:
+                target[i] = value
+
+
 def clean_table_data(table: List[List[Optional[str]]]) -> List[List[str]]:
     """
     Clean up the table data by merging related rows before converting to DataFrame.
@@ -237,16 +247,9 @@ def clean_table_data(table: List[List[Optional[str]]]) -> List[List[str]]:
         # Convert None to empty strings in current row
         row: list[str] = [str(cell) if cell is not None else "" for cell in raw_row]
         # If first column (Änd-ID) is empty, merge with previous row
-        if not row[0]:
-            if current_row is not None:
-                # Merge non-empty values with the current row
-                for i, value in enumerate(row):
-                    if value:
-                        if current_row[i]:  # If current cell has content, add newline
-                            current_row[i] = f"{current_row[i]}\n{value}"
-                        else:  # If current cell is empty, just use new value
-                            current_row[i] = value
-        else:
+        if not row[0] and current_row is not None:
+            _merge_row_into(current_row, row)
+        elif row[0]:
             # If we have a previous row, add it to results
             if current_row is not None:
                 result.append(current_row)
@@ -299,7 +302,7 @@ def extract_change_history(pdf_path: Path) -> pd.DataFrame:
                         continue
 
                     first_cell = table[0][0]
-                    is_change_history_table = first_cell == "Änd-ID" or first_cell == "Änd-\nID"
+                    is_change_history_table = first_cell in ("Änd-ID", "Änd-\nID")
 
                     if is_change_history_table:
                         logger.info(
@@ -326,9 +329,76 @@ def extract_change_history(pdf_path: Path) -> pd.DataFrame:
 
             logger.warning("No change history table found in %s", pdf_path.name)
             return pd.DataFrame()
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         logger.error("Failed to open PDF %s: %s", pdf_path.name, str(e))
         return pd.DataFrame()
+
+
+def _make_sheet_name(pdf_file: Path) -> str:
+    """Create an Excel sheet name from a PDF filename, max 31 chars."""
+    name = pdf_file.stem
+    if "AHB" in name:
+        name = f"AHB_{name.replace('_AHB', '')}"
+    elif "MIG" in name:
+        name = f"MIG_{name.replace('_MIG', '')}"
+    if len(name) > 31:
+        name = name[:28] + "..."
+    return name
+
+
+def _collect_sheets_data(pdf_files: list[Path]) -> list[tuple[str, pd.DataFrame]]:
+    """Extract change history data from PDF files and return as (sheet_name, df) pairs."""
+    sheets_data: list[tuple[str, pd.DataFrame]] = []
+    processed_count = 0
+    for pdf_file in sorted(pdf_files, key=lambda x: x.stem):
+        try:
+            logger.info("Processing %s...", pdf_file.name)
+            logger.info("File size: %d bytes", pdf_file.stat().st_size)
+
+            if not pdf_file.is_file():
+                logger.error("File %s is not a regular file", pdf_file.name)
+                continue
+
+            df = extract_change_history(pdf_file)
+            if not df.empty:
+                sheets_data.append((_make_sheet_name(pdf_file), df))
+                processed_count += 1
+                logger.info("Successfully extracted data from %s (%d rows)", pdf_file.name, len(df))
+            else:
+                logger.warning("No change history data found in %s", pdf_file.name)
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error("Failed to process %s: %s", pdf_file.name, str(e))
+            continue
+
+    logger.info("Successfully processed %d out of %d PDF files", processed_count, len(pdf_files))
+    return sheets_data
+
+
+def _write_sheets_to_excel(sheets_data: list[tuple[str, pd.DataFrame]], output_file: Path) -> None:
+    """Write collected sheets data to an Excel file with formatting."""
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+
+    try:
+        with pd.ExcelWriter(output_file, engine="openpyxl") as writer:
+            for sheet_name, df in sheets_data:
+                df.to_excel(writer, sheet_name=sheet_name, index=False)
+
+                worksheet = writer.sheets[sheet_name]
+
+                column_widths = [10, 16, 33, 33, 30, 22]
+                for idx, width in enumerate(column_widths):
+                    worksheet.column_dimensions[chr(65 + idx)].width = width
+
+                for row in worksheet.iter_rows():
+                    for cell in row:
+                        cell.alignment = Alignment(wrap_text=True)
+
+                logger.info("Successfully processed sheet %s", sheet_name)
+
+        logger.info("Excel file created successfully at %s", output_file)
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        logger.error("Failed to create Excel file: %s", str(e))
+        raise
 
 
 def create_change_history_excel(pdf_dir: Path, output_file: Path) -> None:
@@ -339,7 +409,6 @@ def create_change_history_excel(pdf_dir: Path, output_file: Path) -> None:
         pdf_dir: Directory containing PDF files
         output_file: Path where the Excel file should be saved
     """
-    # Check if directory exists and contains PDF files
     if not pdf_dir.exists():
         logger.error("Directory %s does not exist", pdf_dir)
         return
@@ -351,82 +420,18 @@ def create_change_history_excel(pdf_dir: Path, output_file: Path) -> None:
 
     logger.info("Found %d PDF files to process", len(pdf_files))
 
-    # First collect all data and sheet names
-    sheets_data = []
-    processed_count = 0
-    for pdf_file in sorted(pdf_files, key=lambda x: x.stem):
-        try:
-            logger.info("Processing %s...", pdf_file.name)
-            logger.info("File size: %d bytes", pdf_file.stat().st_size)
-
-            # Check if file is readable
-            if not pdf_file.is_file():
-                logger.error("File %s is not a regular file", pdf_file.name)
-                continue
-
-            df = extract_change_history(pdf_file)
-            if not df.empty:
-                # Create sheet name with AHB/MIG prefix if present
-                name = pdf_file.stem
-                if "AHB" in name:
-                    name = f"AHB_{name.replace('_AHB', '')}"
-                elif "MIG" in name:
-                    name = f"MIG_{name.replace('_MIG', '')}"
-                # Excel has a 31 character limit for sheet names
-                if len(name) > 31:
-                    name = name[:28] + "..."
-                sheets_data.append((name, df))
-                processed_count += 1
-                logger.info("Successfully extracted data from %s (%d rows)", pdf_file.name, len(df))
-            else:
-                logger.warning("No change history data found in %s", pdf_file.name)
-        except Exception as e:
-            logger.error("Failed to process %s: %s", pdf_file.name, str(e))
-            continue
-
-    logger.info("Successfully processed %d out of %d PDF files", processed_count, len(pdf_files))
+    sheets_data = _collect_sheets_data(pdf_files)
 
     if not sheets_data:
         logger.error("No data extracted from any PDF files. Creating empty Excel file for testing...")
-        # Create a minimal test DataFrame to ensure Excel file is created
         test_df = pd.DataFrame({"Test": ["No data found"], "Status": ["No change history data extracted from PDFs"]})
         sheets_data = [("Test", test_df)]
         logger.warning("Created test sheet with no data message")
 
-    # Sort sheets by name
     sheets_data.sort(key=lambda x: x[0])
 
-    # Write to Excel with sorted sheets
     logger.info("Creating Excel file at %s with %d sheets", output_file, len(sheets_data))
-
-    # Ensure output directory exists
-    output_file.parent.mkdir(parents=True, exist_ok=True)
-
-    try:
-        with pd.ExcelWriter(output_file, engine="openpyxl") as writer:
-            for sheet_name, df in sheets_data:
-                # Write DataFrame to Excel
-                df.to_excel(writer, sheet_name=sheet_name, index=False)
-
-                # Get the worksheet to adjust dimensions
-                worksheet = writer.sheets[sheet_name]
-
-                # Set fixed column widths
-                column_widths = [10, 16, 33, 33, 30, 22]
-                for idx, width in enumerate(column_widths):
-                    worksheet.column_dimensions[chr(65 + idx)].width = width
-
-                # Enable text wrapping for all cells
-                for row in worksheet.iter_rows():
-                    for cell in row:
-                        cell.alignment = Alignment(wrap_text=True)
-
-                logger.info("Successfully processed sheet %s", sheet_name)
-
-        logger.info("Excel file created successfully at %s", output_file)
-    except Exception as e:
-        logger.error("Failed to create Excel file: %s", str(e))
-        raise
+    _write_sheets_to_excel(sheets_data, output_file)
 
 
 async def download_pdfs(url: str, target_dir: Optional[Path] = None) -> None:

@@ -48,7 +48,7 @@ def changehistory() -> None:
     default=False,
     help="Confirm all prompts automatically.",
 )
-def docx(
+def docx(  # pylint: disable=unused-argument
     edi_energy_mirror_path: Path,
     output_path: Path,
     format_version: EdifactFormatVersion | str,

@@ -54,6 +54,26 @@ def get_change_history_table(document: Document) -> Optional[ChangeHistoryTable]
     return None
 
 
+_SPECIAL_PREFIX_MAP: dict[str, tuple[str, str]] = {
+    "allgemeinefestlegungeninformatorischelesefassung": (
+        "Allgemeine_Festlegungen_",
+        r".*?_?([0-9]+\.[0-9]+[a-zA-Z]*)(?:_\d{8}|$)",
+    ),
+    "apiguidelineinformatorischelesefassung": (
+        "API_Guideline_",
+        r".*?_?([0-9]+\.[0-9]+[a-zA-Z]*)(?:_\d{8}|$)",
+    ),
+    "codeliste": (
+        "CL_der_Konfigurationen_",
+        r".*?_?([0-9]+\.[0-9]+[a-zA-Z]*)(?:_\d{8}|$)",
+    ),
+    "Entscheidungsbaum": (
+        "EBDs_CL_",
+        r".*?([0-9]+\.[0-9]+)(?:_\d{8}|$)",
+    ),
+}
+
+
 def extract_sheet_name(filename: str) -> str:
     """
     Extract and format a valid Excel sheet name from a filename.
@@ -74,37 +94,15 @@ def extract_sheet_name(filename: str) -> str:
     parts = filename.split("_")
     if parts[0] in ["AHB", "MIG", "EBD"]:
         if parts[0] == "EBD":
-            # EBD files have format: EBD_4.0b_date_...
             return f"{parts[0]}_{parts[1]}"
-        # AHB/MIG files have format: AHB_COMDIS_1.0f_date_...
         return f"{parts[0]}_{parts[1]}_{parts[2]}"
 
-    # Handle special cases
-    if filename.startswith("allgemeinefestlegungeninformatorischelesefassung"):
-        # Extract version if present
-        version_pattern = r".*?_?([0-9]+\.[0-9]+[a-zA-Z]*)(?:_\d{8}|$)"
-        version_match = re.search(version_pattern, filename)
-        version = version_match.group(1) if version_match else ""
-        return f"Allgemeine_Festlegungen_{version}"
-
-    if filename.startswith("apiguidelineinformatorischelesefassung"):
-        version_pattern = r".*?_?([0-9]+\.[0-9]+[a-zA-Z]*)(?:_\d{8}|$)"
-        version_match = re.search(version_pattern, filename)
-        version = version_match.group(1) if version_match else ""
-        return f"API_Guideline_{version}"
-
-    if filename.startswith("codeliste"):
-        version_pattern = r".*?_?([0-9]+\.[0-9]+[a-zA-Z]*)(?:_\d{8}|$)"
-        version_match = re.search(version_pattern, filename)
-        version = version_match.group(1) if version_match else ""
-        return f"CL_der_Konfigurationen_{version}"
-
-    # Handle Entscheidungsbaum files
-    if filename.startswith("Entscheidungsbaum"):
-        version_pattern = r".*?([0-9]+\.[0-9]+)(?:_\d{8}|$)"
-        version_match = re.search(version_pattern, filename)
-        version = version_match.group(1) if version_match else ""
-        return f"EBDs_CL_{version}"
+    # Handle special prefixes via mapping
+    for prefix, (label, version_pattern) in _SPECIAL_PREFIX_MAP.items():
+        if filename.startswith(prefix):
+            version_match = re.search(version_pattern, filename)
+            version = version_match.group(1) if version_match else ""
+            return f"{label}{version}"
 
     # For any other cases, just return the filename without extension
     # and ensure it's not longer than 31 characters

@@ -536,8 +536,8 @@ class DocxFileFinder(BaseModel):
                 if key not in result:
                     result[key] = []
                 result[key].append(path)
-            except Exception as e:
-                logger.warning(f"Could not process {path.name}: {str(e)}")
+            except Exception as e:  # pylint: disable=broad-exception-caught
+                logger.warning("Could not process %s: %s", path.name, e)
                 continue
 
         return result
