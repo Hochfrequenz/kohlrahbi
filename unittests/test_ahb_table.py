@@ -12,7 +12,7 @@ class TestAhbTable:
     All tests regarding the AhbTable class
     """
 
-    def test_append_ahb_sub_table(self):
+    def test_append_ahb_sub_table(self) -> None:
         """
         Test appending of an AHB subtable
         """
@@ -53,7 +53,7 @@ class TestAhbTable:
             )
         ],
     )
-    def test_sanitize_ahb_table_dataframe(self, ahb_table_dataframe, expected_ahb_table_dataframe):
+    def test_sanitize_ahb_table_dataframe(self, ahb_table_dataframe, expected_ahb_table_dataframe) -> None:  # type: ignore[no-untyped-def]
         """
         test the sanitize method of the AhbTable class
         """
@@ -65,7 +65,7 @@ class TestAhbTable:
         assert len(ahb_table.table) == len(expected_ahb_table_dataframe)
         assert ahb_table.table.equals(expected_ahb_table_dataframe)
 
-    def test_sanitize_ahb_table_dataframe_44001(self):
+    def test_sanitize_ahb_table_dataframe_44001(self) -> None:
         """
         test the sanitizing bug from https://github.com/Hochfrequenz/kohlrahbi/issues/140
         """
@@ -96,7 +96,7 @@ class TestAhbTable:
                 and line.beschreibung == expected_beschreibung
             ), f"No line with Transaktionsgrund '{expected_transaktionsgrund}' ({expected_beschreibung}) found"
 
-    def test_fill_segement_gruppe_segement_dataelement(self):
+    def test_fill_segement_gruppe_segement_dataelement(self) -> None:
         """
         test the fill_segement_gruppe_segement_dataelement method of the AhbTable class
         """
@@ -628,7 +628,7 @@ class TestAhbTable:
 
         assert actual_ahb_table.table.equals(expected_ahb_table.table)
 
-    def test_to_csv(self, tmp_path):
+    def test_to_csv(self, tmp_path: Path) -> None:
         """
         test the to_csv
         """

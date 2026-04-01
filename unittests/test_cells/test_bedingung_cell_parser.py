@@ -1,3 +1,5 @@
+from typing import Any
+
 import pandas as pd
 import pytest
 from docx.shared import Twips
@@ -39,7 +41,7 @@ class TestBedingungCell:
         ],
     )
     def test_edifact_struktur_cell_parser(
-        self, get_ahb_table_with_multiple_paragraphs, bedingung_cell_paragraph, expected_dataframe
+        self, get_ahb_table_with_multiple_paragraphs: Any, bedingung_cell_paragraph: Any, expected_dataframe: Any
     ) -> None:
         table = get_ahb_table_with_multiple_paragraphs(body_cell_paragraphs=bedingung_cell_paragraph)
 

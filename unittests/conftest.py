@@ -1,12 +1,15 @@
+from collections.abc import Callable
+
 import docx
+import docx.table
 import pytest
 
 from unittests.cellparagraph import CellParagraph
 
 
 @pytest.fixture
-def get_ahb_table_with_multiple_paragraphs():
-    def _setup_ahb_table(body_cell_paragraphs: list[CellParagraph]):
+def get_ahb_table_with_multiple_paragraphs() -> Callable[[list[CellParagraph]], docx.table.Table]:
+    def _setup_ahb_table(body_cell_paragraphs: list[CellParagraph]) -> docx.table.Table:
         doc = docx.Document()
         table = doc.add_table(rows=1, cols=1)
 
@@ -36,6 +39,7 @@ def get_ahb_table_with_multiple_paragraphs():
             # set left indent lenght
             body_cell.paragraphs[paragraph_index].paragraph_format.left_indent = bcp.left_indent_length
 
-        return table
+        result: docx.table.Table = table
+        return result
 
     return _setup_ahb_table

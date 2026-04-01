@@ -2,19 +2,20 @@ import json
 from pathlib import Path
 
 import pytest
+from efoli import EdifactFormat
 
 from kohlrahbi.ahbtable.ahbpackagetable import AhbPackageTable
 
 
 class TestAhbPackageTable:
-    def test_dump_as_json(self, tmp_path):
+    def test_dump_as_json(self, tmp_path: Path) -> None:
         test_package_dict = AhbPackageTable(
             package_dict={
-                "PARTIN": {
+                EdifactFormat.PARTIN: {
                     "2P": "[1]u[2]",
                     "3P": "[3]u[4]",
                 },
-                "COMDIS": {
+                EdifactFormat.COMDIS: {
                     "2P": "[10]u[12]",
                     "3P": "[13]u[14]",
                 },
@@ -64,7 +65,7 @@ class TestAhbPackageTable:
             ),
         ],
     )
-    def test_include_package_dict(self, dict1, dict2, expected):
+    def test_include_package_dict(self, dict1, dict2, expected) -> None:  # type: ignore[no-untyped-def]
         test_package_dict = AhbPackageTable(package_dict=dict1)
         test_package_dict.include_package_dict(dict2)
         assert test_package_dict.package_dict == expected

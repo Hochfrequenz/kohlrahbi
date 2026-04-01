@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 runner: CliRunner = CliRunner()
 
 
-def get_csv_paths(root_dir) -> list[Path]:
+def get_csv_paths(root_dir: Union[str, Path]) -> list[Path]:
     """Walk through root_dir and return paths of all CSV files."""
     root_path = Path(root_dir)
     return [path for path in root_path.rglob("*.csv")]
@@ -52,8 +52,12 @@ class TestCli:
         ],
     )
     def test_kohlrahbi_cli_with_valid_arguments(
-        self, argument_options: list[str], expected_response: dict[str, Union[str, int]], snapshot, tmp_path
-    ):
+        self,
+        argument_options: list[str],
+        expected_response: dict[str, Union[str, int]],
+        snapshot: object,
+        tmp_path: Path,
+    ) -> None:
         """
         This test runs the CLI tool with valid arguments and checks if the output is as expected.
         """

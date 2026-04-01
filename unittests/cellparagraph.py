@@ -21,7 +21,7 @@ class CellParagraph(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @model_validator(mode="after")
-    def check_text(self):
+    def check_text(self) -> "CellParagraph":
         """
         If the text contains tabstop characters `\t`, the amount of tab stops must be equal to the amount of tabstop positions.
         """

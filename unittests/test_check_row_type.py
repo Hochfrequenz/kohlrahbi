@@ -2,7 +2,8 @@ import docx
 import pytest
 from docx.shared import RGBColor
 
-from kohlrahbi.row_type_checker import RowType, get_row_type
+from kohlrahbi.enums import RowType
+from kohlrahbi.row_type_checker import get_row_type
 
 
 class TestCheckRowType:
@@ -65,7 +66,9 @@ class TestCheckRowType:
             pytest.param("", 635, RGBColor(0, 0, 0), RowType.EMPTY, id="EMPTY"),
         ],  # TODO find left indent for empty cell
     )
-    def test_define_row_type(self, text: str, left_indent_position: int, font_color: RGBColor, expected: RowType):
+    def test_define_row_type(
+        self, text: str, left_indent_position: int, font_color: RGBColor, expected: RowType
+    ) -> None:
         """Test if all defined row types are identified correctly.
 
         Args:

@@ -222,6 +222,8 @@ from kohlrahbi.ahb import get_valid_pruefis
         ),
     ],
 )
-def test_get_only_valid_pruefis(input_pruefis: list[str], expected_pruefis: list[str], known_pruefis: list[str] | None):
+def test_get_only_valid_pruefis(
+    input_pruefis: list[str], expected_pruefis: list[str], known_pruefis: list[str] | None
+) -> None:
     valid_pruefis = get_valid_pruefis(list_of_pruefis=input_pruefis, all_known_pruefis=known_pruefis)
     assert valid_pruefis == expected_pruefis

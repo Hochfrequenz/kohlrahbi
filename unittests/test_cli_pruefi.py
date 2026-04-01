@@ -68,7 +68,9 @@ class TestCliPruefi:
             # TODO add test for required arguments
         ],
     )
-    def test_cli_pruefi_with_invalid_arguments(self, argument_options: list[str], expected_response):
+    def test_cli_pruefi_with_invalid_arguments(
+        self, argument_options: list[str], expected_response: dict[str, Union[str, int]]
+    ) -> None:
         """
         This test runs the CLI tool with invalid arguments and checks if the output is as expected.
         """
@@ -77,7 +79,9 @@ class TestCliPruefi:
         response = runner.invoke(ahb, argument_options)
 
         assert response.exit_code == expected_response.get("exit_code")
-        assert expected_response.get("output_snippet") in response.output
+        output_snippet = expected_response.get("output_snippet")
+        assert isinstance(output_snippet, str)
+        assert output_snippet in response.output
 
     @pytest.mark.parametrize(
         "argument_options, expected_response",
@@ -113,7 +117,7 @@ class TestCliPruefi:
         self,
         argument_options: list[str],
         expected_response: dict[str, Union[str, int]],
-    ):
+    ) -> None:
         """
         This test runs the CLI tool with valid arguments and checks if the output is as expected.
         """

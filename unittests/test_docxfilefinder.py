@@ -54,7 +54,7 @@ class TestDocxFileFinder:
             ),
         ],
     )
-    def test_filter_latest_version(self, group_items, expected):
+    def test_filter_latest_version(self, group_items: dict[str, list[Path]], expected: list[Path]) -> None:
         assert DocxFileFinder.filter_latest_version(group_items) == expected
 
     @pytest.mark.parametrize(
@@ -80,10 +80,10 @@ class TestDocxFileFinder:
             ),
         ],
     )
-    def test_get_most_recent(self, group_items: list[Path], expected: Path):
+    def test_get_most_recent(self, group_items: list[Path], expected: Path) -> None:
         assert get_most_recent_file(group_items) == expected
 
-    def test_split_version_string(self):
+    def test_split_version_string(self) -> None:
         assert split_version_string("1.0f") == ("", 1, 0, "f")
         assert split_version_string("1.0") == ("", 1, 0, "")
         assert split_version_string("1.0a") == ("", 1, 0, "a")
@@ -109,8 +109,8 @@ class TestDocxFileFinder:
         ],
     )
     def test_get_validated_format_version_path(
-        self, format_version, base_path, should_raise
-    ):  # pylint: disable=protected-access
+        self, format_version: EdifactFormatVersion, base_path: Path, should_raise: bool
+    ) -> None:  # pylint: disable=protected-access
         docx_file_finder = DocxFileFinder(path_to_edi_energy_mirror=base_path)
         expected_path = base_path / format_version.value
 
@@ -122,7 +122,7 @@ class TestDocxFileFinder:
             assert result == expected_path
 
     # pylint: disable=protected-access
-    def test_get_valid_docx_files(self, tmp_path):
+    def test_get_valid_docx_files(self, tmp_path: Path) -> None:
         # Create test files
         valid_file1 = tmp_path / "test1.docx"
         valid_file2 = tmp_path / "test2.docx"
@@ -145,7 +145,7 @@ class TestDocxFileFinder:
         assert temp_file not in result
         assert non_docx_file not in result
 
-    def test_get_file_paths_for_change_history(self):
+    def test_get_file_paths_for_change_history(self) -> None:
         path_to_edi_energy_mirror = Path("edi_energy_mirror") / Path("edi_energy_de")
         docx_file_finder = DocxFileFinder(path_to_edi_energy_mirror=path_to_edi_energy_mirror)
 

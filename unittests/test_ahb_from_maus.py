@@ -1,7 +1,7 @@
 import uuid
 from typing import Optional
 
-import pytest  # type: ignore[import]
+import pytest
 
 from kohlrahbi.models.anwendungshandbuch import (
     AhbLine,
@@ -17,7 +17,7 @@ from kohlrahbi.models.edifact_components import (
     SegmentGroup,
     ValuePoolEntry,
 )
-from unittests.serialization_test_helper import assert_serialization_roundtrip  # type: ignore[import]
+from unittests.serialization_test_helper import assert_serialization_roundtrip
 
 meta_x = AhbMetaInformation(pruefidentifikator="11042", maus_version="0.2.3")
 meta_y = AhbMetaInformation(pruefidentifikator="11043", maus_version="0.2.3")
@@ -62,7 +62,7 @@ class TestAhb:
             ),
         ],
     )
-    def test_ahb_meta_information_serialization_roundtrip(self, ahb: AhbMetaInformation):
+    def test_ahb_meta_information_serialization_roundtrip(self, ahb: AhbMetaInformation) -> None:
         assert_serialization_roundtrip(ahb)
 
     @pytest.mark.parametrize(
@@ -74,7 +74,9 @@ class TestAhb:
             pytest.param(meta_x, meta_y, False),
         ],
     )
-    def test_ahb_meta_information_equality(self, ahb_x: AhbMetaInformation, ahb_y: AhbMetaInformation, are_equal: bool):
+    def test_ahb_meta_information_equality(
+        self, ahb_x: AhbMetaInformation, ahb_y: AhbMetaInformation, are_equal: bool
+    ) -> None:
         actual = ahb_x == ahb_y
         assert actual == are_equal
 
@@ -112,7 +114,7 @@ class TestAhb:
             ),
         ],
     )
-    def test_ahbline_serialization_roundtrip(self, ahb_line: AhbLine):
+    def test_ahbline_serialization_roundtrip(self, ahb_line: AhbLine) -> None:
         assert_serialization_roundtrip(ahb_line)
 
     @pytest.mark.parametrize(
@@ -122,7 +124,7 @@ class TestAhb:
             pytest.param(line_x, line_y, False),
         ],
     )
-    def test_ahb_line_equality(self, line_x: AhbLine, line_y: AhbLine, are_equal: bool):
+    def test_ahb_line_equality(self, line_x: AhbLine, line_y: AhbLine, are_equal: bool) -> None:
         actual = line_x == line_y
         assert actual == are_equal
 
@@ -168,7 +170,7 @@ class TestAhb:
             ),
         ],
     )
-    def test_ahbline_holds_any_information(self, ahb_line: AhbLine, expected_holds_any_information: bool):
+    def test_ahbline_holds_any_information(self, ahb_line: AhbLine, expected_holds_any_information: bool) -> None:
         actual = ahb_line.holds_any_information()
         assert actual == expected_holds_any_information
 
@@ -219,7 +221,9 @@ class TestAhb:
             ),
         ],
     )
-    def test_ahbline_get_discriminator(self, ahb_line: AhbLine, include_name: bool, expected_discriminator: str):
+    def test_ahbline_get_discriminator(
+        self, ahb_line: AhbLine, include_name: bool, expected_discriminator: str
+    ) -> None:
         actual = ahb_line.get_discriminator(include_name)
         assert actual == expected_discriminator
 
@@ -246,7 +250,7 @@ class TestAhb:
             ),
         ],
     )
-    def test_flatahb_serialization_roundtrip(self, flat_ahb: FlatAnwendungshandbuch):
+    def test_flatahb_serialization_roundtrip(self, flat_ahb: FlatAnwendungshandbuch) -> None:
         assert_serialization_roundtrip(flat_ahb)
 
     @pytest.mark.parametrize(
@@ -289,7 +293,9 @@ class TestAhb:
             ),
         ],
     )
-    def test_flat_ahb_equality(self, ahb_x: FlatAnwendungshandbuch, ahb_y: FlatAnwendungshandbuch, are_equal: bool):
+    def test_flat_ahb_equality(
+        self, ahb_x: FlatAnwendungshandbuch, ahb_y: FlatAnwendungshandbuch, are_equal: bool
+    ) -> None:
         actual = ahb_x == ahb_y
         assert actual == are_equal
 
@@ -347,7 +353,7 @@ class TestAhb:
             ),
         ],
     )
-    def test_deep_ahb_serialization_roundtrip(self, deep_ahb: DeepAnwendungshandbuch):
+    def test_deep_ahb_serialization_roundtrip(self, deep_ahb: DeepAnwendungshandbuch) -> None:
         assert_serialization_roundtrip(deep_ahb)
 
     @pytest.mark.parametrize(
@@ -423,7 +429,9 @@ class TestAhb:
             ),
         ],
     )
-    def test_deep_ahb_equality(self, ahb_x: DeepAnwendungshandbuch, ahb_y: DeepAnwendungshandbuch, are_equal: bool):
+    def test_deep_ahb_equality(
+        self, ahb_x: DeepAnwendungshandbuch, ahb_y: DeepAnwendungshandbuch, are_equal: bool
+    ) -> None:
         actual = ahb_x == ahb_y
         assert actual == are_equal
 
@@ -473,7 +481,7 @@ class TestAhb:
             )
         ],
     )
-    def test_get_segment_groups(self, lines: list[AhbLine], expected_group_names: set[Optional[str]]):
+    def test_get_segment_groups(self, lines: list[AhbLine], expected_group_names: list[Optional[str]]) -> None:
         actual = FlatAnwendungshandbuch._get_available_segment_groups(lines)
         assert actual == expected_group_names
 
@@ -581,7 +589,7 @@ class TestAhb:
     )
     def test_sorted_segment_groups(
         self, unsorted_input: list[AhbLine], sg_order: list[Optional[str]], expected_result: list[AhbLine]
-    ):
+    ) -> None:
         actual = FlatAnwendungshandbuch._sorted_lines_by_segment_groups(unsorted_input, sg_order)
         assert actual == expected_result
 
@@ -720,7 +728,9 @@ class TestAhb:
             )
         ],
     )
-    def test_replacing_data_element_inputs(self, original: DeepAnwendungshandbuch, expected: DeepAnwendungshandbuch):
+    def test_replacing_data_element_inputs(
+        self, original: DeepAnwendungshandbuch, expected: DeepAnwendungshandbuch
+    ) -> None:
         assert original != expected
 
         def replacement_func(discriminator: str) -> DeepAhbInputReplacement:
@@ -806,6 +816,6 @@ class TestAhb:
             )
         ],
     )
-    def test_deep_ahb_get_value_pools(self, deep_ahb: DeepAnwendungshandbuch, expected_result_length: int):
+    def test_deep_ahb_get_value_pools(self, deep_ahb: DeepAnwendungshandbuch, expected_result_length: int) -> None:
         actual = deep_ahb.get_all_value_pools()
         assert len(actual) == expected_result_length

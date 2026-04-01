@@ -29,11 +29,13 @@ class TestFindAllFiles:
             ),
         ],
     )
-    def test_find_all_files(self, pruefi_to_file_mapping, expected_result):
+    def test_find_all_files(
+        self, pruefi_to_file_mapping: dict[str, str], expected_result: dict[EdifactFormat, list[str]]
+    ) -> None:
         assert find_all_files_from_all_pruefis(pruefi_to_file_mapping) == expected_result
 
-    def test_find_all_files_no_file(self):
+    def test_find_all_files_no_file(self) -> None:
         # No files provided
-        pruefi_to_file_mapping = {"11001": None}
+        pruefi_to_file_mapping: dict[str, str] = {"11001": None}  # type: ignore[dict-item]
         with pytest.raises(ValueError, match="No file provided for pruefi 11001"):
             find_all_files_from_all_pruefis(pruefi_to_file_mapping)
