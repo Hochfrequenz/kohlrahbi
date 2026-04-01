@@ -227,8 +227,8 @@ def get_all_conditions_from_doc(
     """
     Go through a given document and grasp all conditions and package tables for a given format.
     """
-    package_table: AhbPackageTable
-    conditions_table: AhbConditions
+    package_table: Optional[AhbPackageTable] = None
+    conditions_table = AhbConditions()
     package_tables: list[Table] = []
     conditions_tables: list[Table] = []
     seed = None
