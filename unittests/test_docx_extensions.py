@@ -47,28 +47,18 @@ class TestDocxExtensions:
         "all_file_paths, filtered_file_paths",
         [
             pytest.param(
-                [Path("IFTSTAAHB-informatorischeLesefassung2.0e_99991231_20231001.docx")],
-                [Path("IFTSTAAHB-informatorischeLesefassung2.0e_99991231_20231001.docx")],
+                [Path("AHB_IFTSTA_2.0e_20231001_99991231_20231001_xoxx_5001.docx")],
+                [Path("AHB_IFTSTA_2.0e_20231001_99991231_20231001_xoxx_5001.docx")],
                 id="One file",
             ),
             pytest.param(
                 [
-                    Path("IFTSTAAHB-informatorischeLesefassung2.0e_99991231_20231001.docx"),
-                    Path(
-                        "IFTSTAAHB-informatorischeLesefassung2.0e-AußerordentlicheVeröffentlichung_20231211_20231001.docx"
-                    ),
-                    Path(
-                        "IFTSTAAHB-informatorischeLesefassung2.0eKonsolidierteLesefassungmitFehlerkorrekturenStand11.03.2024_99991231_20240311.docx"
-                    ),
-                    Path(
-                        "IFTSTAAHB-informatorischeLesefassung2.0eKonsolidierteLesefassungmitFehlerkorrekturenStand12.12.2023_20240310_20231212.docx"
-                    ),
+                    Path("AHB_IFTSTA_2.0e_20231001_99991231_20231001_ooox_5001.docx"),
+                    Path("AHB_IFTSTA_2.0e_20231001_20231211_20231001_oxox_5002.docx"),
+                    Path("AHB_IFTSTA_2.0e_20240311_99991231_20240311_xoxx_5003.docx"),
+                    Path("AHB_IFTSTA_2.0e_20231212_20240310_20231212_xoxx_5004.docx"),
                 ],
-                [
-                    Path(
-                        "IFTSTAAHB-informatorischeLesefassung2.0eKonsolidierteLesefassungmitFehlerkorrekturenStand11.03.2024_99991231_20240311.docx"
-                    )
-                ],
+                [Path("AHB_IFTSTA_2.0e_20240311_99991231_20240311_xoxx_5003.docx")],
                 id="Several files",
             ),
         ],

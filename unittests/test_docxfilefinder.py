@@ -11,79 +11,45 @@ class TestDocxFileFinder:
         ["group_items", "expected"],
         [
             pytest.param(
-                {"UTILTSAHB": [Path("UTILTSAHB-informatorischeLesefassung4.0_20240701_20240401.docx")]},
-                [Path("UTILTSAHB-informatorischeLesefassung4.0_20240701_20240401.docx")],
+                {"UTILTSAHB": [Path("AHB_UTILTS_4.0_20240701_20240701_20240401_xoxx_1001.docx")]},
+                [Path("AHB_UTILTS_4.0_20240701_20240701_20240401_xoxx_1001.docx")],
                 id="Single File",
             ),
             pytest.param(
                 {
                     "UTILTSAHB": [
-                        Path(
-                            "UTILTSAHB-informatorischeLesefassung4.0Konsolidiertelesefassungmitfehlerkorrekturen_20240701_20240401.docx"
-                        ),
-                        Path(
-                            "UTILTSAHB-informatorischeLesefassung4.0-außerordentlicheveröffentlichung_20240701_20240501.docx"
-                        ),
-                        Path(
-                            "UTILTSAHB-informatorischeLesefassung4.0-außerordentlicheveröffentlichung_20240930_20240401.docx"
-                        ),
-                        Path(
-                            "UTILTSAHB-informatorischeLesefassung4.0Konsolidiertelesefassungmitfehlerkorrekturen_20240930_20240701.docx"
-                        ),
-                        Path(
-                            "UTILTSAHB-informatorischeLesefassung4.0Konsolidiertelesefassungmitfehlerkorrekturen_20240930_20240501.docx"
-                        ),
+                        Path("AHB_UTILTS_4.0_20240701_20240701_20240401_xoxx_1002.docx"),
+                        Path("AHB_UTILTS_4.0_20240701_20240701_20240501_oxox_1003.docx"),
+                        Path("AHB_UTILTS_4.0_20240701_20240930_20240401_oxox_1004.docx"),
+                        Path("AHB_UTILTS_4.0_20240701_20240930_20240701_xoxx_1005.docx"),
+                        Path("AHB_UTILTS_4.0_20240701_20240930_20240501_xoxx_1006.docx"),
                     ]
                 },
-                [
-                    Path(
-                        "UTILTSAHB-informatorischeLesefassung4.0Konsolidiertelesefassungmitfehlerkorrekturen_20240930_20240701.docx"
-                    )
-                ],
+                [Path("AHB_UTILTS_4.0_20240701_20240930_20240701_xoxx_1005.docx")],
                 id="Standard Case",
             ),
             pytest.param(
                 {
                     "UTILTSAHB": [
-                        Path(
-                            "UTILTSAHB-informatorischeLesefassung4.0Konsolidiertelesefassungmitfehlerkorrekturen_20240701_20240401.docx"
-                        ),
-                        Path(
-                            "UTILTSAHB-informatorischeLesefassung4.0-außerordentlicheveröffentlichung_20240731_20240701.docx"
-                        ),
-                        Path(
-                            "UTILTSAHB-informatorischeLesefassung4.0-außerordentlicheveröffentlichung_20240930_20240401.docx"
-                        ),
-                        Path(
-                            "UTILTSAHB-informatorischeLesefassung4.0Konsolidiertelesefassungmitfehlerkorrekturen_20240930_20240701.docx"
-                        ),
-                        Path(
-                            "UTILTSAHB-informatorischeLesefassung4.0Konsolidiertelesefassungmitfehlerkorrekturen_20240930_20240501.docx"
-                        ),
+                        Path("AHB_UTILTS_4.0_20240701_20240701_20240401_xoxx_1002.docx"),
+                        Path("AHB_UTILTS_4.0_20240701_20240731_20240701_oxox_1003.docx"),
+                        Path("AHB_UTILTS_4.0_20240701_20240930_20240401_oxox_1004.docx"),
+                        Path("AHB_UTILTS_4.0_20240701_20240930_20240701_xoxx_1005.docx"),
+                        Path("AHB_UTILTS_4.0_20240701_20240930_20240501_xoxx_1006.docx"),
                     ]
                 },
-                [
-                    Path(
-                        "UTILTSAHB-informatorischeLesefassung4.0Konsolidiertelesefassungmitfehlerkorrekturen_20240930_20240701.docx"
-                    )
-                ],
+                [Path("AHB_UTILTS_4.0_20240701_20240930_20240701_xoxx_1005.docx")],
                 id="Valid from tie",
             ),
             pytest.param(
                 {
                     "UTILMDAHBMaBiS": [
-                        Path("UTILMDAHBMaBiS-informatorischeLesefassung4.0_99991231_20231001.docx"),
-                        Path(
-                            "UTILMDAHBMaBiS-informatorischeLesefassung4.1aKonsolidierteLesefassungmitFehlerkorrekturenStand11.03.2024_20250403_20240403.docx"
-                        ),
-                        Path("UTILMDAHBMaBiS-informatorischeLesefassung4.1a_20250403_20240403.docx"),
+                        Path("AHB_UTILMD_4.0_20231001_99991231_20231001_ooox_2001.docx"),
+                        Path("AHB_UTILMD_4.1a_20240403_20250403_20240403_xoxx_2002.docx"),
+                        Path("AHB_UTILMD_4.1a_20240403_20250403_20240403_ooox_2003.docx"),
                     ]
                 },
-                [
-                    Path(
-                        "UTILMDAHBMaBiS-informatorischeLesefassung4.1aKonsolidierteLesefassungmitFehlerkorrekturenStand11.03.2024_20250403_20240403.docx"
-                    )
-                ],
+                [Path("AHB_UTILMD_4.1a_20240403_20250403_20240403_xoxx_2002.docx")],
                 id="different names",
             ),
         ],
@@ -96,20 +62,20 @@ class TestDocxFileFinder:
         [
             pytest.param(
                 [
-                    Path("APERAKCONTRLAHB-informatorischeLesefassung2.4a_99991231_20250404.docx"),
-                    Path("APERAKCONTRLAHB-informatorischeLesefassung2.4_99991231_20250404.docx"),
+                    Path("AHB_CONTRL_2.4a_20250404_99991231_20250404_xoxx_3001.docx"),
+                    Path("AHB_CONTRL_2.4_20250404_99991231_20250404_xoxx_3002.docx"),
                 ],
-                Path("APERAKCONTRLAHB-informatorischeLesefassung2.4a_99991231_20250404.docx"),
+                Path("AHB_CONTRL_2.4a_20250404_99991231_20250404_xoxx_3001.docx"),
                 id="Two versions of the same file",
             ),
             pytest.param(
                 [
-                    Path("CodelistederKonfigurationen-informatorischeLesefassung1.3_99991231_20250404.docx"),
-                    Path("CodelistederKonfigurationen-informatorischeLesefassung1.1_99991231_20231001.docx"),
-                    Path("CodelistederKonfigurationen-informatorischeLesefassung1.3a_99991231_20250404.docx"),
-                    Path("CodelistederKonfigurationen-informatorischeLesefassung1.3b_99991231_20250404.docx"),
+                    Path("AHB_COMDIS_1.3_20250404_99991231_20250404_xoxx_4001.docx"),
+                    Path("AHB_COMDIS_1.1_20231001_99991231_20231001_xoxx_4002.docx"),
+                    Path("AHB_COMDIS_1.3a_20250404_99991231_20250404_xoxx_4003.docx"),
+                    Path("AHB_COMDIS_1.3b_20250404_99991231_20250404_xoxx_4004.docx"),
                 ],
-                Path("CodelistederKonfigurationen-informatorischeLesefassung1.3b_99991231_20250404.docx"),
+                Path("AHB_COMDIS_1.3b_20250404_99991231_20250404_xoxx_4004.docx"),
                 id="Four versions of the same file",
             ),
         ],
@@ -188,41 +154,51 @@ class TestDocxFileFinder:
         )
 
         expected_paths = [
-            path_to_edi_energy_mirror / "FV2504/AHB_COMDIS_1.0f_20250606_99991231_20250606_oxox_11427.docx",
-            path_to_edi_energy_mirror / "FV2504/AHB_CONTRL_2.4a_20250606_99991231_20241213_xoxx_11128.docx",
-            path_to_edi_energy_mirror / "FV2504/AHB_IFTSTA_2.0g_20250606_99991231_20241213_xoxx_11132.docx",
-            path_to_edi_energy_mirror / "FV2504/AHB_MSCONS_3.1f_20250606_99991231_20250606_ooox_9612.docx",
-            path_to_edi_energy_mirror / "FV2504/AHB_ORDCHG_1.0a_20250606_99991231_20250606_ooox_11100.docx",
-            path_to_edi_energy_mirror / "FV2504/AHB_ORDERS_1.0a_20250606_99991231_20250131_xoxx_11441.docx",
-            path_to_edi_energy_mirror / "FV2504/AHB_ORDRSP_1.0a_20250606_99991231_20250606_ooox_11104.docx",
-            path_to_edi_energy_mirror / "FV2504/AHB_PARTIN_1.0e_20250606_99991231_20250606_ooox_9819.docx",
-            path_to_edi_energy_mirror / "FV2504/AHB_PRICAT_2.0e_20250606_99991231_20250606_ooox_9965.docx",
-            path_to_edi_energy_mirror / "FV2504/AHB_QUOTES_1.0_20250606_99991231_20241213_xoxx_11146.docx",
-            path_to_edi_energy_mirror / "FV2504/AHB_REMADV_2.5d_20250606_99991231_20250131_xoxx_11434.docx",
-            path_to_edi_energy_mirror / "FV2504/AHB_REQOTE_1.0a_20250606_99991231_20250606_ooox_11109.docx",
-            path_to_edi_energy_mirror / "FV2504/AHB_UTILMD_2.1_20250606_99991231_20241213_xoxx_11157.docx",
-            path_to_edi_energy_mirror / "FV2504/AHB_UTILTS_1.0_20250606_99991231_20241213_xoxx_11164.docx",
-            path_to_edi_energy_mirror / "FV2504/EBD_4.0b_20250606_99991231_20250131_xoxx_11425.docx",
-            path_to_edi_energy_mirror / "FV2504/MIG_APERAK_2.1i_20250606_99991231_20250606_ooox_8671.docx",
-            path_to_edi_energy_mirror / "FV2504/MIG_COMDIS_1.0e_20250606_99991231_20250606_ooox_8885.docx",
-            path_to_edi_energy_mirror / "FV2504/MIG_IFTSTA_2.0f_20250606_99991231_20250606_ooox_9326.docx",
-            path_to_edi_energy_mirror / "FV2504/MIG_INVOIC_2.8d_20250606_99991231_20250131_xoxx_11438.docx",
-            path_to_edi_energy_mirror / "FV2504/MIG_ORDERS_1.4a_20250606_99991231_20241213_xoxx_11139.docx",
-            path_to_edi_energy_mirror / "FV2504/MIG_ORDRSP_1.4_20250606_99991231_20250606_ooox_9797.docx",
-            path_to_edi_energy_mirror / "FV2504/MIG_PARTIN_1.0e_20250606_99991231_20250606_ooox_9836.docx",
-            path_to_edi_energy_mirror / "FV2504/MIG_PRICAT_2.0d_20250606_99991231_20250606_ooox_9982.docx",
-            path_to_edi_energy_mirror / "FV2504/MIG_QUOTES_1.3a_20250606_99991231_20241213_xoxx_11155.docx",
-            path_to_edi_energy_mirror / "FV2504/MIG_REQOTE_1.3b_20250606_99991231_20250606_ooox_10067.docx",
-            path_to_edi_energy_mirror / "FV2504/MIG_UTILMD_S2.1_20250606_99991231_20250131_xoxx_11449.docx",
+            path_to_edi_energy_mirror / "FV2504/AHB_COMDIS_1.0f_20250606_20250930_20250606_ooox_8871.docx",
+            path_to_edi_energy_mirror / "FV2504/AHB_CONTRL_2.4a_20250606_20250930_20250331_xoxx_11558.docx",
+            path_to_edi_energy_mirror / "FV2504/AHB_IFTSTA_2.0g_20250606_20250930_20250225_xoxx_11519.docx",
+            path_to_edi_energy_mirror / "FV2504/AHB_INSRPT_1.1g_20230330_99991231_20251211_oxox_12008.docx",
+            path_to_edi_energy_mirror / "FV2504/AHB_MSCONS_3.1f_20250930_20260331_20250930_xoxx_11889.docx",
+            path_to_edi_energy_mirror / "FV2504/AHB_ORDCHG_1.0a_20250606_20260930_20250606_ooox_11100.docx",
+            path_to_edi_energy_mirror / "FV2504/AHB_ORDERS_1.0a_20250623_20250930_20250623_xoxx_11750.docx",
+            path_to_edi_energy_mirror / "FV2504/AHB_ORDRSP_1.0a_20250606_20250930_20250606_ooox_11104.docx",
+            path_to_edi_energy_mirror / "FV2504/AHB_PARTIN_1.0e_20250606_20260331_20250606_ooox_9819.docx",
+            path_to_edi_energy_mirror / "FV2504/AHB_PRICAT_2.0e_20250623_20250930_20250623_xoxx_11756.docx",
+            path_to_edi_energy_mirror / "FV2504/AHB_QUOTES_1.0_20250606_20250930_20241213_xoxx_11146.docx",
+            path_to_edi_energy_mirror / "FV2504/AHB_REMADV_2.5d_20250623_20250930_20250623_xoxx_11767.docx",
+            path_to_edi_energy_mirror / "FV2504/AHB_REQOTE_1.0a_20250606_20250930_20250606_ooox_11109.docx",
+            path_to_edi_energy_mirror / "FV2504/AHB_UTILMD_S2.1_20250930_20251023_20250930_xoxx_11904.docx",
+            path_to_edi_energy_mirror / "FV2504/AHB_UTILTS_1.0_20250606_20250217_20250218_xoxx_11506.docx",
+            path_to_edi_energy_mirror / "FV2504/EBD_4.0b_20250623_20250930_20250623_xoxx_11739.docx",
+            path_to_edi_energy_mirror / "FV2504/MIG_APERAK_2.1i_20250606_20260930_20250606_ooox_8671.docx",
+            path_to_edi_energy_mirror / "FV2504/MIG_COMDIS_1.0e_20250606_20250930_20250606_ooox_8885.docx",
+            path_to_edi_energy_mirror / "FV2504/MIG_CONTRL_2.0b_20221001_99991231_20251211_oxox_12006.docx",
+            path_to_edi_energy_mirror / "FV2504/MIG_IFTSTA_2.0f_20250606_20250930_20250225_xoxx_11522.docx",
+            path_to_edi_energy_mirror / "FV2504/MIG_INSRPT_1.1a_20230330_99991231_20240726_oxox_9355.docx",
+            path_to_edi_energy_mirror / "FV2504/MIG_INVOIC_2.8d_20250606_20250930_20250131_xoxx_11438.docx",
+            path_to_edi_energy_mirror / "FV2504/MIG_MSCONS_2.4c_20240403_20260930_20240726_oxox_9650.docx",
+            path_to_edi_energy_mirror / "FV2504/MIG_ORDCHG_1.1_20231001_20260930_20240726_oxox_9701.docx",
+            path_to_edi_energy_mirror / "FV2504/MIG_ORDERS_1.4a_20250606_20250930_20250218_xoxx_11509.docx",
+            path_to_edi_energy_mirror / "FV2504/MIG_ORDRSP_1.4_20250606_20250930_20250606_ooox_9797.docx",
+            path_to_edi_energy_mirror / "FV2504/MIG_PARTIN_1.0e_20250606_20260331_20250606_ooox_9836.docx",
+            path_to_edi_energy_mirror / "FV2504/MIG_PRICAT_2.0d_20250606_20250930_20250606_ooox_9982.docx",
+            path_to_edi_energy_mirror / "FV2504/MIG_QUOTES_1.3a_20250606_20251001_20241213_xoxx_11155.docx",
+            path_to_edi_energy_mirror / "FV2504/MIG_REMADV_2.9c_20240403_20250930_20240726_oxox_10040.docx",
+            path_to_edi_energy_mirror / "FV2504/MIG_REQOTE_1.3b_20250606_20250930_20250606_ooox_10067.docx",
+            path_to_edi_energy_mirror / "FV2504/MIG_UTILMD_S2.1_20250606_20251210_20250319_xoxx_11549.docx",
             path_to_edi_energy_mirror / "FV2504/MIG_UTILTS_1.1e_20250606_99991231_20241213_xoxx_11171.docx",
+            path_to_edi_energy_mirror / "FV2504/allgemeinefestlegungen_6.1b_20250930_20260331_20250930_xoxx_11907.docx",
+            path_to_edi_energy_mirror / "FV2504/apiguideline_1.0a_20250606_20260930_20250606_ooox_10824.docx",
             path_to_edi_energy_mirror
-            / "FV2504/allgemeinefestlegungeninformatorischelesefassung_6.1b_20250606_99991231_20250606_ooox_8638.docx",
+            / "FV2504/codelistederartikelnummernundartikelid_5.6_20250930_99991231_20250930_xoxx_11909.docx",
             path_to_edi_energy_mirror
-            / "FV2504/apiguidelineinformatorischelesefassung_1.0a_20250606_99991231_20250606_ooox_10824.docx",
+            / "FV2504/codelistederkonfigurationen_1.3b_20250606_20250930_20250417_xoxx_11690.docx",
             path_to_edi_energy_mirror
-            / "FV2504/codelistederkonfigurationen_1.3b_20250606_99991231_20241213_xoxx_11124.docx",
+            / "FV2504/codelistederlokationsbndelstrukturen_1.0_20241213_99991231_20241213_xoxx_11126.docx",
             path_to_edi_energy_mirror
-            / "FV2504/codelistederkonfigurationeninformatorischelesefassung_1.3b_20250606_99991231_20250606_ooox_8757.docx",
+            / "FV2504/codelistederobiskennzahlenundmedien_2.5b_20250930_20260331_20250930_xoxx_11911.docx",
+            path_to_edi_energy_mirror
+            / "FV2504/codelistedertemperaturanbieter_1.0i_20220726_99991231_20220726_ooox_8737.docx",
         ]
 
         # Convert paths to sets for comparison (order doesn't matter)
