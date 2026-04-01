@@ -35,7 +35,7 @@ class EdiEnergyDocument(BaseModel):
 
         document_metadata = extract_document_meta_data(path.name)
         assert document_metadata is not None, f"Could not extract document version and valid dates from {path.name}."
-        # assert document_metadata.version is not None, "Document version is None."
+        assert document_metadata.version is not None, "Document version is None."
 
         prefix, version_major, version_minor, version_suffix = split_version_string(document_metadata.version)
 
@@ -183,7 +183,13 @@ class DocxFileFinder(BaseModel):
 
     path_to_edi_energy_mirror: Path
 
-    result_paths: list[Path] = []
+    docx_files: list[Path] = []
+
+    @classmethod
+    def from_input_path(cls, input_path: Path) -> "DocxFileFinder":
+        """Create a DocxFileFinder from an input directory path, populating docx_files."""
+        docx_files = [p for p in input_path.iterdir() if p.name.endswith(".docx") and not p.name.startswith("~")]
+        return cls(path_to_edi_energy_mirror=input_path, docx_files=docx_files)
 
     def get_file_paths_for_change_history(self, format_version: EdifactFormatVersion) -> list[Path]:
         """Get all file paths that contain change history for a given format version.
@@ -342,9 +348,9 @@ class DocxFileFinder(BaseModel):
         The latest files contain `LesefassungmitFehlerkorrekturen` in their file names.
         This method is _not_ pure. It changes the state of the object.
         """
-        self.path_to_edi_energy_mirror = self.filter_ahb_docx_files(self.path_to_edi_energy_mirror)
-        grouped_files = self.group_files_by_name_prefix(self.path_to_edi_energy_mirror)
-        self.path_to_edi_energy_mirror = self.filter_latest_version(grouped_files)
+        self.docx_files = self.filter_ahb_docx_files(self.docx_files)
+        grouped_files = self.group_files_by_name_prefix(self.docx_files)
+        self.docx_files = self.filter_latest_version(grouped_files)
 
     @staticmethod
     def filter_ahb_docx_files(paths_to_docx_files: list[Path]) -> list[Path]:
@@ -412,9 +418,7 @@ class DocxFileFinder(BaseModel):
         This method is not pure. It changes the state of the object.
         """
 
-        self.path_to_edi_energy_mirror = [
-            path for path in self.path_to_edi_energy_mirror if str(edifact_format) in path.name
-        ]
+        self.docx_files = [path for path in self.docx_files if str(edifact_format) in path.name]
 
     def remove_temporary_files(self) -> None:
         """
@@ -423,9 +427,7 @@ class DocxFileFinder(BaseModel):
         It appears if a docx file is opened by Word.
         """
 
-        self.path_to_edi_energy_mirror = [
-            path for path in self.path_to_edi_energy_mirror if not path.name.startswith("~")
-        ]
+        self.docx_files = [path for path in self.docx_files if not path.name.startswith("~")]
 
     def get_docx_files_which_may_contain_searched_pruefi(self, searched_pruefi: str) -> list[Path]:
         """
@@ -446,16 +448,16 @@ class DocxFileFinder(BaseModel):
         if (
             edifact_format == EdifactFormat.UTILMD
             and searched_pruefi.startswith("11")
-            and all("202310" in path.name for path in self.path_to_edi_energy_mirror)
+            and all("202310" in path.name for path in self.docx_files)
         ):
             logger.info(
                 # pylint:disable=line-too-long
                 "You searched for a UTILMD prüfi %s starting with the soon deprecated prefix '11' but all relevant files %s are valid from 2023-10 onwards. They won't contain any match.",
                 searched_pruefi,
-                ", ".join([path.name for path in self.path_to_edi_energy_mirror]),
+                ", ".join([path.name for path in self.docx_files]),
             )
             return []
-        return self.path_to_edi_energy_mirror
+        return self.docx_files
 
     def get_all_docx_files_which_contain_change_histories(self) -> list[Path]:
         """
@@ -469,7 +471,7 @@ class DocxFileFinder(BaseModel):
         self.remove_temporary_files()
 
         paths_to_relevant_docx_files = []
-        for path in self.path_to_edi_energy_mirror:
+        for path in self.docx_files:
             document_metadata = extract_document_meta_data(path.name)
             is_document_relevant = document_metadata is not None and (
                 document_metadata.is_informational_reading_version
@@ -479,8 +481,8 @@ class DocxFileFinder(BaseModel):
             if is_document_relevant:
                 paths_to_relevant_docx_files.append(path)
 
-        self.path_to_edi_energy_mirror = paths_to_relevant_docx_files
-        return self.path_to_edi_energy_mirror
+        self.docx_files = paths_to_relevant_docx_files
+        return self.docx_files
 
     def get_docx_files_which_contain_quality_map(self) -> list[Path]:
         """
@@ -491,11 +493,9 @@ class DocxFileFinder(BaseModel):
         self.remove_temporary_files()
 
         indicator_string = "UTILMDAHBStrom"
-        self.path_to_edi_energy_mirror = [
-            path for path in self.path_to_edi_energy_mirror if indicator_string in path.name
-        ]
+        self.docx_files = [path for path in self.docx_files if indicator_string in path.name]
 
-        return self.path_to_edi_energy_mirror
+        return self.docx_files
 
     @staticmethod
     def group_documents_by_kind_and_format(paths: list[Path]) -> dict[tuple[str, str], list[Path]]:

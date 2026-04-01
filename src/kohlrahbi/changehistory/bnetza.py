@@ -10,7 +10,7 @@ import httpx
 import pandas as pd
 import pdfplumber
 from bs4 import BeautifulSoup
-from openpyxl.styles import Alignment
+from openpyxl.styles import Alignment  # type: ignore[import-untyped]
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +55,8 @@ async def get_pdf_links(url: str) -> List[Tuple[str, str]]:
 
         # Find all links that point to PDF files
         for link in soup.find_all("a"):
+            if not hasattr(link, "get"):
+                continue
             href = link.get("href", "")
             text = link.get_text(strip=True)
 
@@ -138,7 +140,7 @@ def cleanup_old_files(directory: Path) -> None:
                 logger.error("Failed to remove %s: %s", file_path.name, str(e))
 
 
-def find_change_history_page(pdf: pdfplumber.PDF) -> int:
+def find_change_history_page(pdf: pdfplumber.pdf.PDF) -> int:
     """
     Find the page number where Änderungshistorie starts by checking the table of contents.
 
@@ -220,20 +222,20 @@ def clean_table_data(table: List[List[Optional[str]]]) -> List[List[str]]:
         logger.warning("Table has insufficient rows (%d), need at least 2", len(table))
         return []
 
-    # Get headers and sub-headers
-    headers = table[0]  # First row is headers
-    sub_header = table[1]  # Second row is sub-headers
+    # Get headers and sub-headers, converting None to empty strings
+    headers = [str(cell) if cell is not None else "" for cell in table[0]]
+    sub_header = [str(cell) if cell is not None else "" for cell in table[1]]
 
     # Start with headers and sub-headers
-    result = [headers]
+    result: list[list[str]] = [headers]
     result.append(sub_header)
 
-    current_row = None
+    current_row: Optional[list[str]] = None
 
     # Process each data row (skip header and sub-header)
-    for row in table[2:]:
+    for raw_row in table[2:]:
         # Convert None to empty strings in current row
-        row = [str(cell) if cell is not None else "" for cell in row]
+        row: list[str] = [str(cell) if cell is not None else "" for cell in raw_row]
         # If first column (Änd-ID) is empty, merge with previous row
         if not row[0]:
             if current_row is not None:
@@ -285,7 +287,7 @@ def extract_change_history(pdf_path: Path) -> pd.DataFrame:
                 "Found Änderungshistorie section in %s starting at page %d", pdf_path.name, change_history_page + 1
             )
 
-            all_rows: List[List] = []
+            all_rows: List[List[Optional[str]]] = []
 
             # Scan pages from the Änderungshistorie page onwards, collecting raw rows
             for page in pdf.pages[change_history_page:]:
