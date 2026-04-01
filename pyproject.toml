@@ -11,8 +11,7 @@ build-backend = "hatchling.build"
 
 [project]
 dependencies = [
-  "click>=8.1.7",
-  "colorlog>=6.9.0",
+  "typer[all]>=0.15.0",
   "edi_energy_scraper>=2.0.0",
   "efoli>=2.2.0",
   "more_itertools>=10.5.0",
