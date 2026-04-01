@@ -64,7 +64,7 @@ def test_sqlmodels(sqlite_session: Session, tmp_path: Path) -> None:
         / "edi_energy_mirror"
         / "edi_energy_de"
         / "FV2504"
-        / "AHB_UTILMD_S2.1_20250606_99991231_20250606_ooox_10554.docx"
+        / "AHB_UTILMD_S2.1_20250606_20260930_20250606_ooox_10554.docx"
     )
     process_pruefi("55001", docx_file_path, flat_ahb_dir_path, (AhbExportFileFormat.FLATAHB,))
     flat_ahb_path = flat_ahb_dir_path / "UTILMDS" / "flatahb" / "55001.json"

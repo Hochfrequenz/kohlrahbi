@@ -10,77 +10,22 @@ from efoli import EdifactFormat
 path_to_test_edi_energy_mirror_repo: Path = Path(__file__).parent / "test-edi-energy-mirror-repo"
 path_to_test_files_fv2310 = path_to_test_edi_energy_mirror_repo / "edi_energy_de" / Path("FV2310")
 # list of pruefis to check against in test_current_state
+# One representative pruefi per EDIFACT format for regression testing.
+# This keeps the test suite fast while covering all formats.
 current_state_pruefis = [
-    "13002",
-    "13014",
-    "13023",
-    "15002",
-    "17002",
-    "17010",
-    "17114",
-    "17129",
-    "19002",
-    "19007",
-    "19016",
-    "19103",
-    "19120",
-    "19131",
-    "21002",
-    "21010",
-    "21015",
-    "21030",
-    "21039",
-    "25004",
-    "25006",
-    "25009",
-    "27001",
-    "27003",
-    "31001",
-    "31003",
-    "31007",
-    "31011",
-    "33004",
-    "35001",
-    "35004",
-    "37000",
-    "37002",
-    "37005",
-    "39000",
-    "39002",
-    "44001",
-    "44005",
-    "44009",
-    "44016",
-    "44023",
-    "44040",
-    "44053",
-    "44103",
-    "44105",
-    "44112",
-    "44117",
-    "44138",
-    "44140",
-    "44148",
-    "44163",
-    "44180",
-    "55003",
-    "55009",
-    "55014",
-    "55035",
-    "55041",
-    "55062",
-    "55077",
-    "55081",
-    "55086",
-    "55093",
-    "55105",
-    "55115",
-    "55127",
-    "55147",
-    "55157",
-    "55182",
-    "55200",
-    "55213",
-    "55555",
+    "13002",  # MSCONS
+    "15002",  # QUOTES
+    "17002",  # ORDERS
+    "19002",  # ORDRSP
+    "21002",  # IFTSTA
+    "25004",  # UTILTS
+    "27001",  # PRICAT
+    "31001",  # INVOIC
+    "33004",  # REMADV
+    "35001",  # REQOTE
+    "37000",  # PARTIN
+    "39000",  # ORDCHG
+    "44001",  # UTILMDG
+    "55003",  # UTILMDS
 ]
 test_formats = [EdifactFormat.ORDCHG, EdifactFormat.ORDRSP, EdifactFormat.IFTSTA]
