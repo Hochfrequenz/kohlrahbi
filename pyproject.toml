@@ -68,7 +68,7 @@ test = [
 ]
 lint = ["pylint==3.3.4", "pylint-pydantic==0.3.5"]
 typecheck = [
-  "mypy==1.11.2",
+  "mypy==1.13.0",
   "networkx-stubs==0.0.1",
   "pandas-stubs==2.2.3.241126",
   "pytest==8.3.4",
@@ -78,7 +78,7 @@ typecheck = [
   "sqlalchemy[mypy]>=2.0.37",
 ]
 spelling = ["codespell==2.4.1"]
-formatting = ["black==26.3.1", "isort==6.0.0"]
+formatting = ["black==26.3.1", "isort==6.0.1"]
 dev = [
   { include-group = "test" },
   { include-group = "lint" },

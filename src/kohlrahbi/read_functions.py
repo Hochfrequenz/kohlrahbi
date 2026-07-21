@@ -142,7 +142,7 @@ def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
 
 def get_style_name(item: Paragraph | Table) -> str:
     """Extracts and normalizes the style name of a document item."""
-    return item.style.name if item.style else "None"  # type: ignore[no-any-return]
+    return item.style.name if item.style else "None"
 
 
 def reached_end_of_document(style_name: str, item: Paragraph | Table | None) -> bool:
