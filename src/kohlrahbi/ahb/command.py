@@ -2,8 +2,10 @@
 Command line interface for the pruefis module.
 """
 
+# pylint: disable=import-outside-toplevel
+# Heavy submodules are imported lazily inside the command functions so that `--help` stays fast.
+
 import sys
-from enum import Enum
 from pathlib import Path
 from typing import Annotated
 
@@ -43,6 +45,10 @@ def ensure_output_path(output_path: Path, assume_yes: bool) -> Path:
 
 
 @ahb_app.callback(invoke_without_command=True)
+# A typer command callback naturally collects many CLI options as arguments/locals; splitting it up
+# would only hurt readability. This is the last function in the module, so disabling until EOF is fine.
+# pylint: disable=too-many-arguments, too-many-positional-arguments, too-many-locals
+# pylint: disable=too-many-statements, dangerous-default-value
 def ahb(
     pruefis: Annotated[
         list[str],

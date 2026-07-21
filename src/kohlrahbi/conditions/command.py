@@ -2,6 +2,9 @@
 Command line interface for handling conditions.
 """
 
+# pylint: disable=import-outside-toplevel
+# Heavy submodules are imported lazily inside the command functions so that `--help` stays fast.
+
 import sys
 from pathlib import Path
 from typing import Annotated

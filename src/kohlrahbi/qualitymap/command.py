@@ -2,6 +2,9 @@
 Command line interface for the qualitymap command.
 """
 
+# pylint: disable=import-outside-toplevel
+# Heavy submodules are imported lazily inside the command functions so that `--help` stays fast.
+
 import sys
 from pathlib import Path
 from typing import Annotated
@@ -27,6 +30,7 @@ def check_python_version() -> None:
 
 
 @qualitymap_app.callback(invoke_without_command=True)
+# pylint: disable-next=too-many-locals
 def qualitymap(
     edi_energy_mirror_path: Annotated[
         Path,

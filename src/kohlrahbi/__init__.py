@@ -27,7 +27,7 @@ app.add_typer(qualitymap_app, name="qualitymap", help="Scrape quality maps from 
 
 @app.callback()
 def main(
-    version: bool = typer.Option(
+    _version: bool = typer.Option(
         False, "--version", "-V", callback=version_callback, is_eager=True, help="Show version and exit."
     ),
 ) -> None:

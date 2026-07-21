@@ -2,6 +2,9 @@
 Command line interface for the changehistory commands.
 """
 
+# pylint: disable=import-outside-toplevel
+# Heavy submodules are imported lazily inside the command functions so that `--help` stays fast.
+
 import asyncio
 import sys
 from pathlib import Path
@@ -28,6 +31,7 @@ def check_python_version() -> None:
 
 
 @changehistory_app.command("docx")
+# pylint: disable-next=too-many-locals
 def docx(
     edi_energy_mirror_path: Annotated[
         Path,
