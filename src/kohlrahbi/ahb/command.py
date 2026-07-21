@@ -5,43 +5,19 @@ Command line interface for the pruefis module.
 # pylint: disable=import-outside-toplevel
 # Heavy submodules are imported lazily inside the command functions so that `--help` stays fast.
 
-import sys
 from pathlib import Path
 from typing import Annotated
 
 import typer
-from efoli import EdifactFormatVersion
 from rich.console import Console
 from rich.panel import Panel
-from rich.progress import BarColumn, MofNCompleteColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 
+from kohlrahbi.cli_utils import bar_progress, prepare_command, spinner_progress
 from kohlrahbi.enums.ahbexportfileformat import AhbExportFileFormat
-from kohlrahbi.logger import setup_logging
 
 console = Console()
 
 ahb_app = typer.Typer(invoke_without_command=True)
-
-
-def check_python_version() -> None:
-    """
-    Check if the Python interpreter is greater or equal to 3.11
-    """
-    if sys.version_info.major != 3 or sys.version_info.minor < 11:
-        console.print("[red]Python >=3.11 is required to run this script.[/red]")
-        raise typer.Exit(code=1)
-
-
-def ensure_output_path(output_path: Path, assume_yes: bool) -> Path:
-    """Ensure the output path exists or offer to create it."""
-    if not output_path.exists():
-        if assume_yes or typer.confirm(f"The path {output_path} does not exist. Would you like to create it?"):
-            output_path.mkdir(parents=True)
-            console.print(f"[green]Created directory {output_path}.[/green]")
-        else:
-            console.print("[green]Alright, exiting. Have a nice day.[/green]")
-            raise typer.Exit()
-    return output_path
 
 
 @ahb_app.callback(invoke_without_command=True)
@@ -123,19 +99,13 @@ def ahb(
     """
     Scrape AHB documents for pruefidentifikatoren.
     """
-    setup_logging(verbose=verbose)
-    check_python_version()
-    output_path = ensure_output_path(output_path, assume_yes)
-
-    efv = EdifactFormatVersion(format_version)
+    output_path, efv = prepare_command(
+        console=console, verbose=verbose, output_path=output_path, assume_yes=assume_yes, format_version=format_version
+    )
 
     from kohlrahbi.ahb import get_pruefi_to_file_mapping, process_pruefi, remove_vanished_pruefis, validate_pruefis
 
-    with Progress(
-        SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-        console=console,
-    ) as progress:
+    with spinner_progress(console) as progress:
         progress.add_task("Loading pruefi mapping...", total=None)
         pruefi_to_file_mapping = get_pruefi_to_file_mapping(
             basic_input_path=edi_energy_mirror_path, format_version=efv, pruefis=pruefis
@@ -166,14 +136,7 @@ def ahb(
     skipped_not_found: list[str] = []
     skipped_errors: list[tuple[str, str]] = []
 
-    with Progress(
-        SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-        BarColumn(pulse_style="cyan"),
-        MofNCompleteColumn(),
-        TimeElapsedColumn(),
-        console=console,
-    ) as progress:
+    with bar_progress(console) as progress:
         task = progress.add_task("Scraping AHB documents...", total=total)
         for pruefi, filename in pruefi_to_file_mapping.items():
             progress.update(task, description=f"Processing pruefi {pruefi}...")

@@ -6,28 +6,19 @@ Command line interface for the changehistory commands.
 # Heavy submodules are imported lazily inside the command functions so that `--help` stays fast.
 
 import asyncio
-import sys
 from pathlib import Path
 from typing import Annotated
 
 import typer
-from efoli import EdifactFormatVersion
 from rich.console import Console
 from rich.panel import Panel
-from rich.progress import BarColumn, MofNCompleteColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 
+from kohlrahbi.cli_utils import bar_progress, check_python_version, prepare_command, spinner_progress
 from kohlrahbi.logger import setup_logging
 
 console = Console()
 
 changehistory_app = typer.Typer(no_args_is_help=True)
-
-
-def check_python_version() -> None:
-    """Check if the Python interpreter is greater or equal to 3.11"""
-    if sys.version_info.major != 3 or sys.version_info.minor < 11:
-        console.print("[red]Python >=3.11 is required to run this script.[/red]")
-        raise typer.Exit(code=1)
 
 
 @changehistory_app.command("docx")
@@ -81,23 +72,15 @@ def docx(
     ] = False,
 ) -> None:
     """Scrape change histories from .docx files in the edi_energy_mirror repository."""
-    setup_logging(verbose=verbose)
-    check_python_version()
-
-    from kohlrahbi.ahb.command import ensure_output_path
-
-    output_path = ensure_output_path(output_path, assume_yes)
-    efv = EdifactFormatVersion(format_version)
+    output_path, efv = prepare_command(
+        console=console, verbose=verbose, output_path=output_path, assume_yes=assume_yes, format_version=format_version
+    )
     input_path = edi_energy_mirror_path / "edi_energy_de"
 
     from kohlrahbi.changehistory import extract_sheet_name, process_docx_file, save_change_histories_to_excel
     from kohlrahbi.docxfilefinder import DocxFileFinder
 
-    with Progress(
-        SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-        console=console,
-    ) as progress:
+    with spinner_progress(console) as progress:
         progress.add_task("Finding change history files...", total=None)
         path_to_files = DocxFileFinder(path_to_edi_energy_mirror=input_path).get_file_paths_for_change_history(
             format_version=efv
@@ -108,14 +91,7 @@ def docx(
     skipped: list[str] = []
     change_history_collection: dict[str, object] = {}
 
-    with Progress(
-        SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-        BarColumn(pulse_style="cyan"),
-        MofNCompleteColumn(),
-        TimeElapsedColumn(),
-        console=console,
-    ) as progress:
+    with bar_progress(console) as progress:
         task = progress.add_task("Extracting change histories...", total=total)
         for file_path in path_to_files:
             progress.update(task, description=f"Processing {file_path.name}...")
@@ -180,18 +156,14 @@ def bnetza(
 ) -> None:
     """Download PDFs from a BNetzA URL and extract change histories."""
     setup_logging(verbose=verbose)
-    check_python_version()
+    check_python_version(console)
 
     from kohlrahbi.changehistory.bnetza import download_pdfs
 
     output_path.mkdir(parents=True, exist_ok=True)
     pdf_dir = output_path / "pdfs"
 
-    with Progress(
-        SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-        console=console,
-    ) as progress:
+    with spinner_progress(console) as progress:
         progress.add_task("Downloading and processing PDFs from BNetzA...", total=None)
         asyncio.run(download_pdfs(url=url, target_dir=pdf_dir))
 
