@@ -63,7 +63,7 @@ class DataElement(BaseModel, ABC):
     )
 
 
-class DataElementFreeText(DataElement):
+class DataElementFreeText(DataElement):  # type: ignore[override]
     """
     A DataElementFreeText is a data element that allows entering arbitrary data.
     This is the main difference to the :class:`DataElementValuePool` which has a finite set of allowed values attached.
@@ -146,7 +146,7 @@ class ValuePoolEntry(BaseModel):
         return _check_is_edifact_qualifier(v)
 
 
-class DataElementValuePool(DataElement):
+class DataElementValuePool(DataElement):  # type: ignore[override]
     """
     A DataElementValuePool is a data element with a finite set of allowed values.
     These allowed values are referred to as keys of the "value pool".
