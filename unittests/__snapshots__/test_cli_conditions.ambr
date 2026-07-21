@@ -2319,6 +2319,11 @@
 # name: TestCliConditions.test_cli_conditions[ORDERS].1
   list([
     dict({
+      'condition_key': '1',
+      'condition_text': 'Wenn IMD+Z03 vorhanden',
+      'edifact_format': 'ORDERS',
+    }),
+    dict({
       'condition_key': '2',
       'condition_text': 'Wenn BGM+7 vorhanden',
       'edifact_format': 'ORDERS',
@@ -2414,8 +2419,23 @@
       'edifact_format': 'ORDERS',
     }),
     dict({
+      'condition_key': '33',
+      'condition_text': 'Wenn IMD+Z01 vorhanden',
+      'edifact_format': 'ORDERS',
+    }),
+    dict({
+      'condition_key': '34',
+      'condition_text': 'Wenn IMD+Z02 vorhanden',
+      'edifact_format': 'ORDERS',
+    }),
+    dict({
       'condition_key': '35',
       'condition_text': 'IMD++Z14+Z06 vorhanden',
+      'edifact_format': 'ORDERS',
+    }),
+    dict({
+      'condition_key': '36',
+      'condition_text': 'Wenn MP-ID in SG2 NAD+MR mit Rolle NB nicht vorhanden',
       'edifact_format': 'ORDERS',
     }),
     dict({
@@ -2907,6 +2927,16 @@
       'edifact_format': 'ORDERS',
     }),
     dict({
+      'condition_key': '500',
+      'condition_text': 'Hinweis: Zählpunkt der BAS',
+      'edifact_format': 'ORDERS',
+    }),
+    dict({
+      'condition_key': '501',
+      'condition_text': 'Hinweis: Zählpunkt der DZR',
+      'edifact_format': 'ORDERS',
+    }),
+    dict({
       'condition_key': '502',
       'condition_text': 'Hinweis: Der Qualifier in DE7081 muss aus der in SG1 referenzierten QUOTES übernommen werden',
       'edifact_format': 'ORDERS',
@@ -2942,6 +2972,11 @@
       'edifact_format': 'ORDERS',
     }),
     dict({
+      'condition_key': '517',
+      'condition_text': 'Hinweis: Zählpunkt der LF- AASZR',
+      'edifact_format': 'ORDERS',
+    }),
+    dict({
       'condition_key': '518',
       'condition_text': 'Hinweis: Das angegebene Ausführungsdatum bestimmt beim Start Abo bzw. Ende Abo ab bzw. bis wann (einschließlich) das Abo laufen soll.',
       'edifact_format': 'ORDERS',
@@ -2969,6 +3004,11 @@
     dict({
       'condition_key': '525',
       'condition_text': 'Hinweis: Wert aus BGM DE1004 der MSCONS',
+      'edifact_format': 'ORDERS',
+    }),
+    dict({
+      'condition_key': '527',
+      'condition_text': 'Hinweis: Zählpunkt der BG-SZR (Kategorie B)',
       'edifact_format': 'ORDERS',
     }),
     dict({
@@ -3188,7 +3228,7 @@
     }),
     dict({
       'condition_key': '951',
-      'condition_text': 'Format: Zählpunktbezeichnung',
+      'condition_text': 'Format: Zählpunktbezeichnu ng',
       'edifact_format': 'ORDERS',
     }),
     dict({
@@ -6813,6 +6853,11 @@
       'edifact_format': 'UTILMDS',
     }),
     dict({
+      'condition_key': '198',
+      'condition_text': 'Wenn SG4 STS+7++E03(Transaktion sgrund: Wechsel) vorhanden',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
       'condition_key': '201',
       'condition_text': 'Wenn die Marktlokation / Tranche nicht den ganzen Bilanzierungsmonat dem gleichen Tupel aus Bilanzkreis, Zeitreihentyp,Spannungsebene und Lieferant zugeordnet ist',
       'edifact_format': 'UTILMDS',
@@ -8088,6 +8133,11 @@
     dict({
       'condition_key': '599',
       'condition_text': 'Hinweis: Es ist der Name und die Adresse des Ablesekartenempfängers für die Messlokation anzugeben, welche in SG8 SEQ+Z18 (Daten der Messlokation) mit CCI+Z01++Z82 (Verwendungsumfang: ID der prozessual behandelten Messlokation) gekennzeichnet ist',
+      'edifact_format': 'UTILMDS',
+    }),
+    dict({
+      'condition_key': '601',
+      'condition_text': 'Hinweis: Es ist die ID der Marktlokation und alle Identifikatoren der Messlokationen anzugeben. Sowie wenn vorhanden die Tranche/n der Marklokation',
       'edifact_format': 'UTILMDS',
     }),
     dict({

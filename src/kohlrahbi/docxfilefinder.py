@@ -26,6 +26,8 @@ class EdiEnergyDocument(BaseModel):
     version_suffix: str
     valid_from: int
     valid_until: int
+    publication_date: int
+    document_id: int
 
     @classmethod
     def from_path(cls, path: Path) -> "EdiEnergyDocument":
@@ -41,6 +43,9 @@ class EdiEnergyDocument(BaseModel):
 
         valid_from = int(document_metadata.valid_from.strftime("%Y%m%d"))
         valid_until = int(document_metadata.valid_until.strftime("%Y%m%d"))
+        publication_date = (
+            int(document_metadata.publication_date.strftime("%Y%m%d")) if document_metadata.publication_date else 0
+        )
         # assert valid_from <= valid_until, "Valid from is greater than valid until."
         assert isinstance(valid_from, int), "Valid from is not an integer."
         assert isinstance(valid_until, int), "Valid until is not an integer."
@@ -54,12 +59,14 @@ class EdiEnergyDocument(BaseModel):
             version_suffix=version_suffix,
             valid_from=valid_from,
             valid_until=valid_until,
+            publication_date=publication_date,
+            document_id=document_metadata.id,
         )
 
     def __lt__(self, other: "EdiEnergyDocument") -> bool:
         """
-        Compare two EdiEnergyDocument instances based on
-        their document_version(major, minor and suffix), valid_until, and valid_from.
+        Compare two EdiEnergyDocument instances based on their document_version (major, minor and
+        suffix), valid_until, valid_from, publication_date and document_id.
 
         I did not know how the tuple comparison works in Python, so I looked it up:
 
@@ -70,18 +77,36 @@ class EdiEnergyDocument(BaseModel):
           If self.valid_from is equal to other.valid_from, Python moves to the next elements in the tuples.
         This process continues with self.valid_until vs. other.valid_until and then with the version numbers.
 
+        publication_date and document_id are appended as final tiebreakers: two documents can share
+        the exact same valid_from/valid_until/version (e.g. a regular reading version and a later
+        "außerordentliche Veröffentlichung" covering the same validity window). Without a tiebreaker,
+        `max()` picks whichever candidate happens to come first in the (filesystem-order-dependent,
+        therefore non-deterministic across OSes/CI) input list. Preferring the later publication_date
+        makes the selection deterministic and picks the more recently published, more authoritative
+        document.
+
         Args:
             other (EdiEnergyDocument): The other document to compare against.
 
         Returns:
             bool: True if this document is considered less than the other document, False otherwise.
         """
-        return (self.valid_from, self.valid_until, self.version_major, self.version_minor, self.version_suffix) < (
+        return (
+            self.valid_from,
+            self.valid_until,
+            self.version_major,
+            self.version_minor,
+            self.version_suffix,
+            self.publication_date,
+            self.document_id,
+        ) < (
             other.valid_from,
             other.valid_until,
             other.version_major,
             other.version_minor,
             other.version_suffix,
+            other.publication_date,
+            other.document_id,
         )
 
 
