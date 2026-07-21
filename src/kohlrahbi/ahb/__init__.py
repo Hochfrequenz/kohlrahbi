@@ -215,16 +215,43 @@ def table_header_contains_text_pruefidentifikator(table: Table) -> bool:
     return bool(re.search(pattern, table.row_cells(0)[-1].text))
 
 
-def get_pruefi_to_file_mapping(basic_input_path: Path, format_version: EdifactFormatVersion) -> dict[str, str]:
-    """Returns the pruefi to file mapping. If the cache file does not exist, it creates it."""
+def get_missing_pruefis(pruefis: Optional[list[str]], pruefi_to_file_mapping: dict[str, str]) -> list[str]:
+    """
+    Returns the subset of the given, concrete (non-wildcard) pruefis that are not part of the given mapping.
+    """
+    if not pruefis:
+        return []
+    return [pruefi for pruefi in pruefis if _pruefi_pattern.match(pruefi) and pruefi not in pruefi_to_file_mapping]
+
+
+def get_pruefi_to_file_mapping(
+    basic_input_path: Path,
+    format_version: EdifactFormatVersion,
+    pruefis: Optional[list[str]] = None,
+) -> dict[str, str]:
+    """
+    Returns the pruefi to file mapping. If the cache file does not exist, it creates it.
+    The cache file never expires on its own: if new AHB documents are added to the edi_energy_mirror
+    (e.g. a later error-correction version), a stale cache would silently omit their pruefis forever.
+    Therefore, if any explicitly requested pruefi is missing from the cache, the mapping is rebuilt
+    from the AHB documents and the cache file is overwritten.
+    """
     default_path_to_cache_file = Path(__file__).parents[1] / "cache" / f"{format_version}_pruefi_docx_filename_map.toml"
 
     if default_path_to_cache_file.exists():
         pruefi_to_file_mapping_cache = load_pruefi_docx_file_map_from_file(default_path_to_cache_file)
-        pruefi_to_file_mapping = pruefi_to_file_mapping_cache.get("pruefidentifikatoren")
-        if isinstance(pruefi_to_file_mapping, type(None)):
+        cached_pruefi_to_file_mapping = pruefi_to_file_mapping_cache.get("pruefidentifikatoren")
+        if isinstance(cached_pruefi_to_file_mapping, type(None)):
             raise ReferenceError(f"Could not find pruefidentifikatoren in {default_path_to_cache_file}")
-        return dict(pruefi_to_file_mapping)
+        cached_pruefi_to_file_mapping = dict(cached_pruefi_to_file_mapping)
+        missing_pruefis = get_missing_pruefis(pruefis, cached_pruefi_to_file_mapping)
+        if not missing_pruefis:
+            return cached_pruefi_to_file_mapping
+        logger.info(
+            "The cached pruefi mapping '%s' does not contain %s. Rebuilding it from the AHB documents.",
+            default_path_to_cache_file.name,
+            ", ".join(missing_pruefis),
+        )
 
     path_to_docx_files = basic_input_path / Path(f"edi_energy_de/{format_version}")
     pruefi_to_file_mapping = find_pruefidentifikatoren(path_to_docx_files)
@@ -292,7 +319,7 @@ def scrape_pruefis(
     starts the scraping process for provided pruefi_to_file_mappings
     """
     pruefi_to_file_mapping = get_pruefi_to_file_mapping(
-        basic_input_path=basic_input_path, format_version=format_version
+        basic_input_path=basic_input_path, format_version=format_version, pruefis=pruefis
     )
     if len(pruefis) > 0:
         validated_pruefis = validate_pruefis(pruefis)

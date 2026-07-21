@@ -131,7 +131,9 @@ def ahb(
         console=console,
     ) as progress:
         progress.add_task("Loading pruefi mapping...", total=None)
-        pruefi_to_file_mapping = get_pruefi_to_file_mapping(basic_input_path=edi_energy_mirror_path, format_version=efv)
+        pruefi_to_file_mapping = get_pruefi_to_file_mapping(
+            basic_input_path=edi_energy_mirror_path, format_version=efv, pruefis=pruefis
+        )
 
     if pruefis:
         try:
@@ -142,6 +144,12 @@ def ahb(
         from kohlrahbi.ahb import reduce_pruefi_to_file_mapping
 
         pruefi_to_file_mapping = reduce_pruefi_to_file_mapping(pruefi_to_file_mapping, validated_pruefis)
+        not_found_pruefis = [p for p in validated_pruefis if p not in pruefi_to_file_mapping]
+        if not_found_pruefis:
+            console.print(
+                f"[yellow]Warning:[/yellow] No AHB document found for pruefidentifikator(en) "
+                f"{', '.join(not_found_pruefis)} in format version {format_version}."
+            )
 
     if clear_output_path:
         remove_vanished_pruefis(pruefi_to_file_mapping, output_path)
