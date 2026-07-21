@@ -2,64 +2,100 @@
 Command line interface for the qualitymap command.
 """
 
+# pylint: disable=import-outside-toplevel
+# Heavy submodules are imported lazily inside the command functions so that `--help` stays fast.
+
 from pathlib import Path
+from typing import Annotated
 
-import click
-from efoli import EdifactFormatVersion
+import typer
+from rich.console import Console
+from rich.panel import Panel
 
-from kohlrahbi.ahb.command import check_python_version, validate_path
-from kohlrahbi.qualitymap import scrape_quality_map
+from kohlrahbi.cli_utils import bar_progress, prepare_command
+
+console = Console()
+
+qualitymap_app = typer.Typer(invoke_without_command=True)
 
 
-@click.command()
-@click.option(
-    "-eemp",
-    "--edi-energy-mirror-path",
-    type=click.Path(exists=True, file_okay=False, dir_okay=True, resolve_path=True, path_type=Path),
-    help="The root path to the edi_energy_mirror repository.",
-    required=True,
-)
-@click.option(
-    "-o",
-    "--output-path",
-    type=click.Path(exists=False, dir_okay=True, file_okay=False, resolve_path=True, path_type=Path),
-    callback=validate_path,
-    default="output",
-    prompt="Output directory",
-    help="Define the path where you want to save the generated files.",
-)
-@click.option(
-    "--format-version",
-    multiple=False,
-    type=click.Choice([e.value for e in EdifactFormatVersion], case_sensitive=False),
-    help="Format version(s) of the AHB documents, e.g. FV2310",
-)
-@click.option(
-    "--assume-yes",
-    "-y",
-    is_flag=True,
-    default=False,
-    help="Confirm all prompts automatically.",
-)
+@qualitymap_app.callback(invoke_without_command=True)
+# pylint: disable-next=too-many-locals
 def qualitymap(
-    edi_energy_mirror_path: Path,
-    output_path: Path,
-    format_version: EdifactFormatVersion | str,
-    assume_yes: bool,  # pylint: disable=unused-argument
-    # it is used by the callback function of the output-path
+    edi_energy_mirror_path: Annotated[
+        Path,
+        typer.Option(
+            "-eemp",
+            "--edi-energy-mirror-path",
+            help="The root path to the edi_energy_mirror repository.",
+            exists=True,
+            file_okay=False,
+            dir_okay=True,
+            resolve_path=True,
+        ),
+    ] = ...,  # type: ignore[assignment]
+    output_path: Annotated[
+        Path,
+        typer.Option(
+            "-o",
+            "--output-path",
+            help="Define the path where you want to save the generated files.",
+            file_okay=False,
+            dir_okay=True,
+            resolve_path=True,
+        ),
+    ] = Path("output"),
+    format_version: Annotated[
+        str,
+        typer.Option(
+            "--format-version",
+            help="Format version of the AHB documents, e.g. FV2310.",
+        ),
+    ] = ...,  # type: ignore[assignment]
+    assume_yes: Annotated[
+        bool,
+        typer.Option(
+            "-y",
+            "--assume-yes",
+            help="Confirm all prompts automatically.",
+        ),
+    ] = False,
+    verbose: Annotated[
+        bool,
+        typer.Option(
+            "-v",
+            "--verbose",
+            help="Enable verbose logging output.",
+        ),
+    ] = False,
 ) -> None:
-    """
-    Scrape quality map from the input path and save them to the output path.
+    """Scrape quality maps from AHB documents."""
+    output_path, efv = prepare_command(
+        console=console, verbose=verbose, output_path=output_path, assume_yes=assume_yes, format_version=format_version
+    )
+    input_path = edi_energy_mirror_path / "edi_energy_de" / efv.value
 
-    Args:
-        edi_energy_mirror_path (Path): The path to the input file or directory containing change histories.
-        output_path (Path): The path to save the scraped change histories.
-        format_version (EdifactFormatVersion | str): The version of the EDIFACT format to use for scraping.
-            Can be either an instance of EdifactFormatVersion or a string representation of the version.
-        assume_yes (bool): Flag indicating whether to assume "yes" for all prompts.
-    """
-    check_python_version()
-    if isinstance(format_version, str):
-        format_version = EdifactFormatVersion(format_version)
-    input_path = edi_energy_mirror_path / "edi_energy_de" / format_version.value
-    scrape_quality_map(input_path=input_path, output_path=output_path)
+    from kohlrahbi.qualitymap import find_docx_files, process_docx_file
+
+    ahb_file_paths = find_docx_files(input_path)
+    total = len(ahb_file_paths)
+    processed = 0
+
+    with bar_progress(console) as progress:
+        task = progress.add_task("Scraping quality maps...", total=total)
+        for file_path in ahb_file_paths:
+            progress.update(task, description=f"Processing {file_path.name}...")
+            quality_map_table = process_docx_file(file_path)
+            if quality_map_table is not None:
+                quality_map_table.save_to_csv(output_path / Path(f"{file_path.stem}_quality_map.csv"))
+                quality_map_table.save_to_xlsx(output_path / Path(f"{file_path.stem}_quality_map.xlsx"))
+                processed += 1
+            progress.advance(task)
+
+    console.print(
+        Panel(
+            f"[green]Processed:[/green] {processed}/{total} files\n" f"[blue]Output:[/blue]     {output_path}",
+            title="Quality Map Scraping Complete",
+            border_style="green",
+        )
+    )

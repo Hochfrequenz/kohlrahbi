@@ -7,6 +7,21 @@ import pytest
 from unittests.cellparagraph import CellParagraph
 
 
+@pytest.fixture(autouse=True)
+def _disable_rich_color(monkeypatch: pytest.MonkeyPatch) -> None:
+    """
+    Force rich/typer CLI output to render without ANSI escape codes.
+    Some environments (e.g. CI runners) set FORCE_COLOR, which makes rich treat output as a
+    color-capable terminal even though typer.testing.CliRunner captures a non-tty stream. Rich
+    then emits bold/dim styling around option names, splitting e.g. "--url" into separately
+    escaped spans ("-" + "-url") and breaking plain substring assertions against CliRunner
+    output. NO_COLOR alone does not prevent this, since bold/dim are style, not color - the
+    terminal detection itself (driven by FORCE_COLOR) has to be neutralized.
+    """
+    monkeypatch.delenv("FORCE_COLOR", raising=False)
+    monkeypatch.setenv("NO_COLOR", "1")
+
+
 @pytest.fixture
 def get_ahb_table_with_multiple_paragraphs() -> Callable[[list[CellParagraph]], docx.table.Table]:
     def _setup_ahb_table(body_cell_paragraphs: list[CellParagraph]) -> docx.table.Table:
