@@ -3,6 +3,7 @@
 from typer.testing import CliRunner
 
 from kohlrahbi import app
+from unittests import strip_ansi
 
 runner = CliRunner()
 
@@ -19,4 +20,4 @@ def test_bnetza_subcommand_help() -> None:
     """bnetza subcommand should accept --url option."""
     result = runner.invoke(app, ["changehistory", "bnetza", "--help"])
     assert result.exit_code == 0
-    assert "--url" in result.output
+    assert "--url" in strip_ansi(result.output)
