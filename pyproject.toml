@@ -77,7 +77,7 @@ typecheck = [
   "sqlmodel>=0.0.22",
   "sqlalchemy[mypy]>=2.0.37",
 ]
-spelling = ["codespell==2.4.1"]
+spelling = ["codespell==2.4.3"]
 formatting = ["black==26.3.1", "isort==6.0.0"]
 dev = [
   { include-group = "test" },
