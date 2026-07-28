@@ -251,20 +251,27 @@ The following table shows the page number of the AHBs for each format of the for
 
 ## Development
 
+This project uses [uv](https://docs.astral.sh/uv/) to manage dependencies and the development environment.
+
 ### Setup
 
-To set up the development environment, you have to install the dev dependencies.
+To set up the development environment, install [uv](https://docs.astral.sh/uv/getting-started/installation/) and sync the dev dependency group.
 
 ```bash
-tox -e dev
+uv sync --group dev
 ```
 
-### Run all tests and linters
+This creates a `.venv` and installs the package together with all development tools (tests, linting, type checking, formatting, spelling).
 
-To run the tests, you can use tox.
+### Run tests and linters
 
 ```bash
-tox
+uv run --group test pytest --cov kohlrahbi --cov-report term-missing
+uv run --group lint pylint src/kohlrahbi
+uv run --group typecheck mypy src/kohlrahbi unittests --strict
+uv run --group formatting black --check src/kohlrahbi unittests
+uv run --group formatting isort --check src/kohlrahbi unittests
+uv run --group spelling codespell src/kohlrahbi README.md
 ```
 
 See our [Python Template Repository](https://github.com/Hochfrequenz/python_template_repository#how-to-use-this-repository-on-your-machine) for detailed explanations.
