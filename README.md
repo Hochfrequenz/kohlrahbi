@@ -263,10 +263,10 @@ uv sync --group dev
 
 This creates a `.venv` and installs the package together with all development tools (tests, linting, type checking, formatting, spelling).
 
-### Run tests and linters
+### Run tests, linters and other checks
 
 ```bash
-uv run --group test pytest --cov kohlrahbi --cov-report term-missing
+uv run --group test pytest --cov kohlrahbi --cov-report term-missing --cov-fail-under 79
 uv run --group lint pylint src/kohlrahbi
 uv run --group typecheck mypy src/kohlrahbi unittests --strict
 uv run --group formatting black --check src/kohlrahbi unittests
