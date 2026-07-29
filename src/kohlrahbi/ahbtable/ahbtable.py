@@ -3,7 +3,6 @@ This module provides the AhbTable class
 """
 
 from pathlib import Path
-from typing import Union
 
 import pandas as pd
 from efoli import get_format_of_pruefidentifikator
@@ -14,7 +13,7 @@ from kohlrahbi.ahbtable.ahbsubtable import AhbSubTable
 from kohlrahbi.logger import logger
 from kohlrahbi.table_header import PruefiMetaData
 
-_column_letter_width_mapping: dict[str, Union[float, int]] = {
+_column_letter_width_mapping: dict[str, float | int] = {
     "A": 3.5,
     "B": 47,
     "C": 9,
@@ -69,7 +68,7 @@ class AhbTable(BaseModel):
             if row["Datenelement"] != "":
                 latest_datenelement = row["Datenelement"]
 
-            if row["Segment Gruppe"] == "" and row["Codes und Qualifier"] != "" or row["Segment"] != "":
+            if (row["Segment Gruppe"] == "" and row["Codes und Qualifier"] != "") or row["Segment"] != "":
                 self.table.at[idx, "Segment Gruppe"] = latest_segement_gruppe
                 self.table.at[idx, "Segment"] = latest_segement
                 self.table.at[idx, "Datenelement"] = latest_datenelement
@@ -168,7 +167,7 @@ class AhbTable(BaseModel):
 
         self.fill_segment_gruppe_segment_dataelement()
 
-        columns_to_export = list(self.table.columns)[:5] + [pruefi]
+        columns_to_export = [*list(self.table.columns)[:5], pruefi]
         columns_to_export.append("Bedingung")
         df_to_export = self.table[columns_to_export]
 
@@ -192,7 +191,7 @@ class AhbTable(BaseModel):
 
         excel_file_name = f"{pruefi}.xlsx"
 
-        columns_to_export = list(self.table.columns)[:5] + [pruefi]
+        columns_to_export = [*list(self.table.columns)[:5], pruefi]
         columns_to_export.append("Bedingung")
         df_to_export = self.table[columns_to_export]
 

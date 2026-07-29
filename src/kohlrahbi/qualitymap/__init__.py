@@ -3,17 +3,14 @@ This module contains the functions to scrape the AHBs for quality maps.
 """
 
 from pathlib import Path
-from typing import Optional
 
 import docx
-import pandas as pd
 from docx.document import Document
 from docx.table import Table
 
 from kohlrahbi.docxfilefinder import DocxFileFinder
 from kohlrahbi.logger import logger
 from kohlrahbi.qualitymap.qualitymaptable import QualityMapTable
-from kohlrahbi.read_functions import get_all_paragraphs_and_tables
 
 
 def find_docx_files(input_path: Path) -> list[Path]:
@@ -34,7 +31,7 @@ def is_quality_map_table(table: Table) -> bool:
         return False
 
 
-def get_quality_map_table(document: Document) -> Optional[QualityMapTable]:
+def get_quality_map_table(document: Document) -> QualityMapTable | None:
     """
     Reads a docx file and extracts the quality map table.
     Returns None if no such table was found.
@@ -50,7 +47,7 @@ def get_quality_map_table(document: Document) -> Optional[QualityMapTable]:
     return None
 
 
-def process_docx_file(file_path: Path) -> Optional[QualityMapTable]:
+def process_docx_file(file_path: Path) -> QualityMapTable | None:
     """
     Read and process quality map from a .docx file.
     """

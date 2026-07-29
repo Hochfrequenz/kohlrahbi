@@ -84,7 +84,9 @@ class BodyCell(BaseModel):
                     *tab_stops_in_current_paragraph,
                 ]
             for tabstop in tab_stops_in_current_paragraph:
-                for indicator_tabstop_position, column_index in zip(self.indicator_tabstop_positions, column_indezes):
+                for indicator_tabstop_position, column_index in zip(
+                    self.indicator_tabstop_positions, column_indezes, strict=False
+                ):
                     if tabstop == indicator_tabstop_position:
                         add_text_to_column(row_index, column_index, splitted_text_at_tabs.pop(0))
 

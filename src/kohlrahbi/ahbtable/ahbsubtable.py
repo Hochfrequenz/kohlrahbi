@@ -2,7 +2,7 @@
 This module contains the AhbSubTable class.
 """
 
-from typing import Generator, Union
+from collections.abc import Generator
 
 import numpy as np
 import pandas as pd
@@ -209,7 +209,7 @@ class AhbSubTable(BaseModel):
         """
         tabsplit_text = paragraph.text.split("\t")
 
-        loc: Union[int, slice, NDArray[np.bool_]] = table.columns.get_loc("Beschreibung")
+        loc: int | slice | NDArray[np.bool_] = table.columns.get_loc("Beschreibung")
 
         # Ensure loc is an int
         if isinstance(loc, int):
@@ -226,9 +226,9 @@ class AhbSubTable(BaseModel):
         )
         if is_broken_code_qualifier and len(tabsplit_text) == 1:
             # only broken code / qualifier
-            assert (
-                table.iat[-1, beschreibung_index] != "" and table.iloc[-1, beschreibung_index + 1 :].ne("").any()
-            ), "no condition expected in broken line"
+            assert table.iat[-1, beschreibung_index] != "" and table.iloc[-1, beschreibung_index + 1 :].ne("").any(), (
+                "no condition expected in broken line"
+            )
         there_are_conditions = (
             len(tabsplit_text) > 1
             and paragraph.paragraph_format.left_indent != table_meta_data.middle_cell_left_indent_position

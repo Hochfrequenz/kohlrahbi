@@ -563,7 +563,6 @@ class DocxFileFinder(BaseModel):
             try:
                 metadata = extract_document_meta_data(path.name)
                 if metadata is None or metadata.kind is None or metadata.edifact_format is None:
-
                     # cases for
                     # 'codelistederkonfigurationen_1.3b_20250606_99991231_20241213_xoxx_11124.docx'
                     # 'codelistederkonfigurationeninformatorischelesefassung_1.3b_20250606_99991231_20250606_ooox_8757.docx'

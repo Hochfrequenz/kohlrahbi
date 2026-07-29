@@ -4,7 +4,6 @@ import asyncio
 import logging
 import re
 from pathlib import Path
-from typing import List, Optional, Tuple
 
 import httpx
 import pandas as pd
@@ -38,7 +37,7 @@ def clean_filename(text: str) -> str:
     return text
 
 
-async def get_pdf_links(url: str) -> List[Tuple[str, str]]:
+async def get_pdf_links(url: str) -> list[tuple[str, str]]:
     """
     Fetch all PDF links from the given BNetzA website URL.
     Returns a list of tuples containing (filename, url).
@@ -171,13 +170,13 @@ def find_change_history_page(pdf: pdfplumber.pdf.PDF) -> int:
     return -1
 
 
-def _merge_columns(cells: List[Optional[str]]) -> str:
+def _merge_columns(cells: list[str | None]) -> str:
     """Merge multiple cells into one, joining non-empty values with newlines."""
     parts = [str(c) for c in cells if c is not None and str(c).strip()]
     return "\n".join(parts) if parts else ""
 
 
-def normalize_table_columns(table: List[List[Optional[str]]]) -> List[List[Optional[str]]]:
+def normalize_table_columns(table: list[list[str | None]]) -> list[list[str | None]]:
     """
     Normalize tables with 10 columns (e.g. Allgemeine Festlegungen) to the standard 6-column layout.
 
@@ -216,7 +215,7 @@ def _merge_row_into(target: list[str], source: list[str]) -> None:
                 target[i] = value
 
 
-def clean_table_data(table: List[List[Optional[str]]]) -> List[List[str]]:
+def clean_table_data(table: list[list[str | None]]) -> list[list[str]]:
     """
     Clean up the table data by merging related rows before converting to DataFrame.
     Rows with empty first column should be merged with the row above.
@@ -240,7 +239,7 @@ def clean_table_data(table: List[List[Optional[str]]]) -> List[List[str]]:
     result: list[list[str]] = [headers]
     result.append(sub_header)
 
-    current_row: Optional[list[str]] = None
+    current_row: list[str] | None = None
 
     # Process each data row (skip header and sub-header)
     for raw_row in table[2:]:
@@ -290,7 +289,7 @@ def extract_change_history(pdf_path: Path) -> pd.DataFrame:
                 "Found Änderungshistorie section in %s starting at page %d", pdf_path.name, change_history_page + 1
             )
 
-            all_rows: List[List[Optional[str]]] = []
+            all_rows: list[list[str | None]] = []
 
             # Scan pages from the Änderungshistorie page onwards, collecting raw rows
             for page in pdf.pages[change_history_page:]:
@@ -312,13 +311,13 @@ def extract_change_history(pdf_path: Path) -> pd.DataFrame:
                             table_idx + 1,
                         )
                         # Normalize 10-column tables to 6 columns
-                        table = normalize_table_columns(table)
+                        normalized_table = normalize_table_columns(table)
                         if not all_rows:
                             # First table: keep header and sub-header
-                            all_rows.extend(table)
+                            all_rows.extend(normalized_table)
                         else:
                             # Subsequent tables: skip header (row 0) and sub-header (row 1)
-                            all_rows.extend(table[2:])
+                            all_rows.extend(normalized_table[2:])
 
             if all_rows:
                 cleaned_table = clean_table_data(all_rows)
@@ -434,7 +433,7 @@ def create_change_history_excel(pdf_dir: Path, output_file: Path) -> None:
     _write_sheets_to_excel(sheets_data, output_file)
 
 
-async def download_pdfs(url: str, target_dir: Optional[Path] = None) -> None:
+async def download_pdfs(url: str, target_dir: Path | None = None) -> None:
     """
     Download PDF files from the given BNetzA website URL and store them in the specified directory.
     If no directory is specified, creates a 'pdfs' directory next to this script.

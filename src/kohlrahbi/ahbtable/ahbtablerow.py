@@ -2,8 +2,6 @@
 This module contains the class AhbTableRow
 """
 
-from typing import Optional
-
 import pandas as pd
 from docx.table import _Cell
 from pydantic import BaseModel, ConfigDict
@@ -27,7 +25,7 @@ class AhbTableRow(BaseModel):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    def parse(self, row_type: RowType) -> Optional[pd.DataFrame]:
+    def parse(self, row_type: RowType) -> pd.DataFrame | None:
         """
         Writes the current row of the current table into the DataFrame depending on the type of the row.
         If the row is a header row, it will be skipped and None will be returned.

@@ -2,8 +2,6 @@
 
 from unittest.mock import MagicMock
 
-import pytest
-
 from kohlrahbi.changehistory.bnetza import (
     clean_filename,
     clean_table_data,

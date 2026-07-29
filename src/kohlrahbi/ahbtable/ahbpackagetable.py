@@ -91,8 +91,7 @@ class AhbPackageTable(BaseModel):
                     if (
                         package_key in self.package_dict[edifact_format]
                         and len(package_conditions) > len(self.package_dict[edifact_format][package_key])
-                        or package_key not in self.package_dict[edifact_format]
-                    ):
+                    ) or package_key not in self.package_dict[edifact_format]:
                         self.package_dict[edifact_format][package_key] = package_conditions
                 else:
                     self.package_dict[edifact_format] = {package_key: package_conditions}

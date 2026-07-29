@@ -7,7 +7,6 @@ import gc
 import re
 from datetime import date
 from pathlib import Path
-from typing import Optional
 
 import docx
 import tomlkit
@@ -87,7 +86,7 @@ def process_ahb_table(
 
 
 # pylint:disable=anomalous-backslash-in-string
-def get_valid_pruefis(list_of_pruefis: list[str], all_known_pruefis: Optional[list[str]] = None) -> list[str]:
+def get_valid_pruefis(list_of_pruefis: list[str], all_known_pruefis: list[str] | None = None) -> list[str]:
     """
     This function returns a list with only those pruefis which match the pruefi_pattern "^[1-9]\\d{4}$".
     It also supports unix wildcards like '*' and '?' if a list of known pruefis is given.
@@ -215,7 +214,7 @@ def table_header_contains_text_pruefidentifikator(table: Table) -> bool:
     return bool(re.search(pattern, table.row_cells(0)[-1].text))
 
 
-def get_missing_pruefis(pruefis: Optional[list[str]], pruefi_to_file_mapping: dict[str, str]) -> list[str]:
+def get_missing_pruefis(pruefis: list[str] | None, pruefi_to_file_mapping: dict[str, str]) -> list[str]:
     """
     Returns the subset of the given, concrete (non-wildcard) pruefis that are not part of the given mapping.
     """
@@ -227,7 +226,7 @@ def get_missing_pruefis(pruefis: Optional[list[str]], pruefi_to_file_mapping: di
 def get_pruefi_to_file_mapping(
     basic_input_path: Path,
     format_version: EdifactFormatVersion,
-    pruefis: Optional[list[str]] = None,
+    pruefis: list[str] | None = None,
 ) -> dict[str, str]:
     """
     Returns the pruefi to file mapping. If the cache file does not exist, it creates it.

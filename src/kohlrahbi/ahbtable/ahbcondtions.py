@@ -63,8 +63,10 @@ class AhbConditions(BaseModel):
                 if edifact_format in self.conditions_dict:  # pylint:disable=unsupported-membership-test
                     if (
                         # pylint:disable=unsubscriptable-object
-                        condition_key in self.conditions_dict[edifact_format]
-                        and len(condition_text) > len(self.conditions_dict[edifact_format][condition_key])
+                        (
+                            condition_key in self.conditions_dict[edifact_format]
+                            and len(condition_text) > len(self.conditions_dict[edifact_format][condition_key])
+                        )
                         # pylint:disable=unsubscriptable-object
                         or condition_key not in self.conditions_dict[edifact_format]
                     ):

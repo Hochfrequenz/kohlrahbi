@@ -11,11 +11,9 @@ jobs:
           - name: test
             run: uv run --group test pytest --cov kohlrahbi --cov-report term-missing --cov-fail-under 79
           - name: lint
-            run: uv run --group lint pylint src/kohlrahbi
+            run: uv run --group lint ruff check src/kohlrahbi
           - name: formatting
-            run: |
-              uv run --group formatting black --check src/kohlrahbi unittests
-              uv run --group formatting isort --check src/kohlrahbi unittests
+            run: uv run --group lint ruff format --check src/kohlrahbi unittests
           - name: typecheck
             run: uv run --group typecheck mypy src/kohlrahbi unittests --strict
           - name: spelling

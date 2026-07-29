@@ -3,8 +3,8 @@ we try to fill a database using kohlrahbi[sqlmodels] and the data from the machi
 """
 
 import json
+from collections.abc import Generator
 from pathlib import Path
-from typing import Generator
 
 import pytest
 from efoli import EdifactFormat, EdifactFormatVersion
@@ -36,7 +36,7 @@ def _load_flat_ahb_to_db(
     #          edifact_format = EdifactFormat(json_path.parent.parent.name)
     #          edifact_format_version = EdifactFormatVersion(json_path.parent.parent.parent.name)
     #          _load_flat_ahb_to_db(...)
-    with open(json_path, "r", encoding="utf-8") as json_file:
+    with open(json_path, encoding="utf-8") as json_file:
         file_body = json.loads(json_file.read())
         flat_ahb = FlatAnwendungshandbuch.model_validate(file_body)
         edifact_format = EdifactFormat.UTILMD

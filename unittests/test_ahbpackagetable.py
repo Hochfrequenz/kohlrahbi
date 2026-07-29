@@ -38,7 +38,7 @@ class TestAhbPackageTable:
 
         for edifact_format in ["PARTIN", "COMDIS"]:
             assert Path(actual_output_dir / edifact_format / "packages.json").exists()
-            with open(actual_output_dir / edifact_format / "packages.json", "r", encoding="utf-8") as file:
+            with open(actual_output_dir / edifact_format / "packages.json", encoding="utf-8") as file:
                 actual_package_dict = json.load(file)
                 assert actual_package_dict == expected_package_dict[edifact_format]
 

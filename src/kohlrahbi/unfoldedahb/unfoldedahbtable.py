@@ -7,7 +7,6 @@ import json
 import re
 from functools import lru_cache
 from pathlib import Path
-from typing import Optional, Union
 from uuid import uuid4
 
 import pandas as pd
@@ -65,11 +64,14 @@ def _keep_guids_of_unchanged_lines_stable(
     if updated_ahb.meta == existing_ahb.meta:
         existing_ahb_search_start_index = 0
         for update_index, updated_line in enumerate(updated_ahb.lines.copy()):
-            if existing_line_match := first_true(  # ⚠ performance wise this goes like O(n^2)
-                existing_ahb.lines[existing_ahb_search_start_index:],
-                pred=lambda x: _lines_are_equal_when_ignoring_guid(
-                    x, updated_line  # pylint:disable=cell-var-from-loop
-                ),
+            if (
+                existing_line_match := first_true(  # ⚠ performance wise this goes like O(n^2)
+                    existing_ahb.lines[existing_ahb_search_start_index:],
+                    pred=lambda x: _lines_are_equal_when_ignoring_guid(
+                        x,
+                        updated_line,  # noqa: B023 -- consumed synchronously within the same iteration
+                    ),
+                )
             ):
                 updated_ahb.lines[update_index].guid = existing_line_match.guid
                 # if we found a line match, we can start the next search at the next line in the next loop iteration
@@ -94,7 +96,7 @@ class UnfoldedAhb(BaseModel):
         """
         unfolded_ahb_lines: list[UnfoldedAhbLine] = []
         current_section_name: str = ""
-        current_segment_id: Optional[str] = None
+        current_segment_id: str | None = None
         # we need to peek one iteration in front of us
         iterable_ahb_table = peekable(ahb_table.table.iterrows())
 
@@ -366,7 +368,7 @@ class UnfoldedAhb(BaseModel):
         flatahb_directory.mkdir(parents=True, exist_ok=True)
         flat_ahb = self.convert_to_flat_ahb()
         if file_path.exists():
-            with open(file_path, "r", encoding="utf-8") as file:
+            with open(file_path, encoding="utf-8") as file:
                 file_content = file.read()
                 existing_flat_ahb = FlatAnwendungshandbuch.model_validate_json(file_content)
             _keep_guids_of_unchanged_lines_stable(flat_ahb, existing_flat_ahb)
@@ -500,7 +502,7 @@ def _line_is_flatahb_line(unfolded_ahb_line: UnfoldedAhbLine) -> bool:
     ) and unfolded_ahb_line.bedingung_ausdruck is not None
 
 
-def _get_ahb(ahb_model_or_path: Union[FlatAnwendungshandbuch, UnfoldedAhb, Path]) -> FlatAnwendungshandbuch:
+def _get_ahb(ahb_model_or_path: FlatAnwendungshandbuch | UnfoldedAhb | Path) -> FlatAnwendungshandbuch:
     """
     returns the AHB model
     """
@@ -509,7 +511,7 @@ def _get_ahb(ahb_model_or_path: Union[FlatAnwendungshandbuch, UnfoldedAhb, Path]
     if isinstance(ahb_model_or_path, UnfoldedAhb):
         return ahb_model_or_path.convert_to_flat_ahb()
     if isinstance(ahb_model_or_path, Path):
-        with open(ahb_model_or_path, "r", encoding="utf-8") as file:
+        with open(ahb_model_or_path, encoding="utf-8") as file:
             file_content = file.read()
             return FlatAnwendungshandbuch.model_validate_json(file_content)
     raise ValueError(
@@ -518,8 +520,8 @@ def _get_ahb(ahb_model_or_path: Union[FlatAnwendungshandbuch, UnfoldedAhb, Path]
 
 
 def are_equal_except_for_guids(
-    ahb_1: Union[FlatAnwendungshandbuch, UnfoldedAhb, Path],
-    ahb_2: Union[FlatAnwendungshandbuch, UnfoldedAhb, Path],
+    ahb_1: FlatAnwendungshandbuch | UnfoldedAhb | Path,
+    ahb_2: FlatAnwendungshandbuch | UnfoldedAhb | Path,
 ) -> bool:
     """returns true iff both provided AHBs are equal except for/when ignoring their line guids"""
     ahb1 = _get_ahb(ahb_1)
