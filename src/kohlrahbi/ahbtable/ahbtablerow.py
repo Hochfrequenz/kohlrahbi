@@ -41,9 +41,7 @@ class AhbTableRow(BaseModel):
             dtype="str",
         )
         # pylint: disable=unsubscriptable-object, no-member
-        empty_row: pd.Series = pd.Series(  # type: ignore[type-arg]
-            len(ahb_row_dataframe.columns) * [""], index=self.seed.column_headers
-        )
+        empty_row: pd.Series = pd.Series(len(ahb_row_dataframe.columns) * [""], index=self.seed.column_headers)
 
         ahb_row_dataframe = pd.concat([ahb_row_dataframe, empty_row.to_frame().T], ignore_index=True)
 

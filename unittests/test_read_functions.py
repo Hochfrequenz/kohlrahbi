@@ -16,7 +16,7 @@ from unittests import test_formats
 
 def create_heading_paragraph(text: str, style: str) -> Paragraph:
     paragraph = Document().add_paragraph(text)
-    paragraph.style = style  # type: ignore[assignment]
+    paragraph.style = style
     return paragraph
 
 
@@ -94,4 +94,6 @@ class TestReadFunctions:
             collected_conditions.include_condition_dict(cond_table.conditions_dict)
             collected_packages.include_package_dict(packages.package_dict)
         assert collected_conditions == snapshot
-        assert collected_packages == snapshot
+        # mypy narrows `snapshot`'s type from `object` to `AhbConditions` after the assert above,
+        # then flags this unrelated comparison as non-overlapping - a false positive, not a real bug.
+        assert collected_packages == snapshot  # type: ignore[comparison-overlap]
