@@ -191,7 +191,7 @@ class FlatAhbCsvReader(FlatAhbReader):
     @staticmethod
     def separate_value_pool_entry_and_name(
         x: str | None,
-        y: str | None,  # pylint:disable=invalid-name
+        y: str | None,
     ) -> tuple[str | None, str | None]:
         """
         The PDFs are so broken, that sometimes the Codes column contains the description of the line instead of the code

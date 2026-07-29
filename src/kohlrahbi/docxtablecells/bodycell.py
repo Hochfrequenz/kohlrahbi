@@ -39,8 +39,7 @@ class BodyCell(BaseModel):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    # I see why pylint is not happy about this many branches, but at the moment I have no clue how to avoid them.
-    # pylint: disable=too-many-branches
+    # This function has a lot of branches; that's inherent to the parsing logic, not easily avoidable.
     def parse(self, ahb_row_dataframe: pd.DataFrame) -> pd.DataFrame:
         """Parses a paragraph in the middle column and puts the information into the appropriate columns
 

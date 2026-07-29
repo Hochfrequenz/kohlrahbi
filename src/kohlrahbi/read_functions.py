@@ -221,7 +221,6 @@ def log_pruefi_not_found(pruefi: str) -> None:
     logger.warning("Prüfi '%s' was not found in the provided document.", pruefi)
 
 
-# pylint: disable=too-many-branches
 def get_all_conditions_from_doc(
     document: Document, edifact_format: EdifactFormat
 ) -> tuple[AhbPackageTable | None, AhbConditions]:
