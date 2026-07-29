@@ -70,7 +70,7 @@ lint = ["pylint==4.0.6", "pylint-pydantic==0.4.1"]
 typecheck = [
   "mypy==2.3.0",
   "networkx-stubs==0.0.1",
-  "pandas-stubs==2.2.3.241126",
+  "pandas-stubs==3.0.3.260530",
   "pytest==9.1.1",
   "types-freezegun==1.1.10",
   "types-requests==2.33.0.20260712",
