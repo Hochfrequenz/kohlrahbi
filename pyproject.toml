@@ -73,7 +73,7 @@ typecheck = [
   "pandas-stubs==2.2.3.241126",
   "pytest==9.1.1",
   "types-freezegun==1.1.10",
-  "types-requests==2.32.0.20241016",
+  "types-requests==2.33.0.20260712",
   "sqlmodel>=0.0.22",
   "sqlalchemy[mypy]>=2.0.37",
 ]
