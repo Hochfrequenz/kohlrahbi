@@ -1,5 +1,4 @@
 import uuid
-from typing import Optional
 
 import pytest
 
@@ -481,7 +480,7 @@ class TestAhb:
             )
         ],
     )
-    def test_get_segment_groups(self, lines: list[AhbLine], expected_group_names: list[Optional[str]]) -> None:
+    def test_get_segment_groups(self, lines: list[AhbLine], expected_group_names: list[str | None]) -> None:
         actual = FlatAnwendungshandbuch._get_available_segment_groups(lines)
         assert actual == expected_group_names
 
@@ -588,7 +587,7 @@ class TestAhb:
         ],
     )
     def test_sorted_segment_groups(
-        self, unsorted_input: list[AhbLine], sg_order: list[Optional[str]], expected_result: list[AhbLine]
+        self, unsorted_input: list[AhbLine], sg_order: list[str | None], expected_result: list[AhbLine]
     ) -> None:
         actual = FlatAnwendungshandbuch._sorted_lines_by_segment_groups(unsorted_input, sg_order)
         assert actual == expected_result

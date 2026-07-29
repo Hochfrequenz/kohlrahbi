@@ -8,8 +8,7 @@
 ![Python Versions (officially) supported](https://img.shields.io/pypi/pyversions/kohlrahbi.svg)
 ![Unittests status badge](https://github.com/Hochfrequenz/kohlrahbi/workflows/Unittests/badge.svg)
 ![Coverage status badge](https://github.com/Hochfrequenz/kohlrahbi/workflows/Coverage/badge.svg)
-![Linting status badge](https://github.com/Hochfrequenz/kohlrahbi/workflows/Linting/badge.svg)
-![Black status badge](https://github.com/Hochfrequenz/kohlrahbi/workflows/Black/badge.svg)
+![Checks status badge](https://github.com/Hochfrequenz/kohlrahbi/workflows/checks/badge.svg)
 ![PyPI](https://img.shields.io/pypi/v/kohlrahbi)
 
 Kohlr_AHB_i generates machine-readable files from AHB documents.
@@ -267,10 +266,9 @@ This creates a `.venv` and installs the package together with all development to
 
 ```bash
 uv run --group test pytest --cov kohlrahbi --cov-report term-missing --cov-fail-under 79
-uv run --group lint pylint src/kohlrahbi
+uv run --group lint ruff check src/kohlrahbi
 uv run --group typecheck mypy src/kohlrahbi unittests --strict
-uv run --group formatting black --check src/kohlrahbi unittests
-uv run --group formatting isort --check src/kohlrahbi unittests
+uv run --group lint ruff format --check src/kohlrahbi unittests
 uv run --group spelling codespell src/kohlrahbi README.md
 ```
 

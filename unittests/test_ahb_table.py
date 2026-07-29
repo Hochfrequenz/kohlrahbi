@@ -654,7 +654,7 @@ class TestAhbTable:
 
         assert (tmp_path / "actual-output" / "temp" / "csv" / "UTILMD" / "11042.csv").exists()
 
-        with open(tmp_path / "actual-output" / "temp" / "csv" / "UTILMD" / "11042.csv", "r", encoding="utf-8") as file:
+        with open(tmp_path / "actual-output" / "temp" / "csv" / "UTILMD" / "11042.csv", encoding="utf-8") as file:
             actual_csv = file.read()
         expected_csv = ",Segment Gruppe,Segment,Datenelement,Codes und Qualifier,Beschreibung,11042,Bedingung\n0,SG8,SEQ,1229,Z50,Messdatenregistriergerätedaten,,A\n1,Referenz auf die ID einer,,,,,,B\n2,Messlokation,,,,,,C\n3,SG8,,,,,,D\n"
         assert actual_csv == expected_csv

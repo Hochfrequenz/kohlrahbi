@@ -1,5 +1,3 @@
-from typing import Optional
-
 from docx.shared import Length
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -15,7 +13,7 @@ class CellParagraph(BaseModel):
     """
 
     text: str = Field(...)
-    tabstop_positions: Optional[list[Length]] = Field(None)
+    tabstop_positions: list[Length] | None = Field(None)
     left_indent_length: Length = Field(...)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -26,7 +24,6 @@ class CellParagraph(BaseModel):
         If the text contains tabstop characters `\t`, the amount of tab stops must be equal to the amount of tabstop positions.
         """
         if "\t" in self.text:
-
             if self.tabstop_positions is None:
                 raise ValueError("There is a tab in the text but the tabstop positions is None")
             elif self.text.count("\t") != len(self.tabstop_positions):

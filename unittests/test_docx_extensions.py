@@ -2,8 +2,8 @@
 tests all the features the kohlrahbi package provides to process Docx files (by using the docx package)
 """
 
+from collections.abc import Generator
 from pathlib import Path
-from typing import Generator
 
 import pytest
 from _pytest.fixtures import SubRequest

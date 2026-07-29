@@ -88,5 +88,7 @@ class TestAhbSubTable:
         assert unfolded_ahb is not None
         flat_ahb = unfolded_ahb.convert_to_flat_ahb()
         assert flat_ahb is not None
-        assert any(l for l in flat_ahb.lines if l.segment_id is not None)
-        assert any(l for l in flat_ahb.lines if l.segment_id == segment_id and l.segment_code == segment_code)
+        assert any(line for line in flat_ahb.lines if line.segment_id is not None)
+        assert any(
+            line for line in flat_ahb.lines if line.segment_id == segment_id and line.segment_code == segment_code
+        )

@@ -2,8 +2,9 @@
 This module contains the TableHeader class.
 """
 
+from collections.abc import Mapping
 from enum import StrEnum
-from typing import Mapping, cast
+from typing import cast
 
 from docx.table import _Cell
 from docx.text.paragraph import Paragraph
@@ -127,16 +128,16 @@ class TableHeader(BaseModel):
             }
             if does_paragraph_contain_beschreibung_or_kommunikation_von:
                 initial_tabstop_positions = get_tabstop_positions(paragraph=paragraph)
-                tabstop_mapper = dict(zip(initial_tabstop_positions, collector.keys()))
+                tabstop_mapper = dict(zip(initial_tabstop_positions, collector.keys(), strict=False))
                 section_type = HeaderSection[text_prefix.replace(" ", "_").upper()]
                 splitted_text.pop(0)
-                for pruefi, text in zip(collector.keys(), splitted_text):
+                for pruefi, text in zip(collector.keys(), splitted_text, strict=False):
                     collector[pruefi][section_type.value] = text + " "
             else:
                 if "" in splitted_text and len(splitted_text) > len(collector.keys()):
                     splitted_text.remove("")
 
-                for tabstop_position, text in zip(initial_tabstop_positions, splitted_text):
+                for tabstop_position, text in zip(initial_tabstop_positions, splitted_text, strict=False):
                     pruefi = tabstop_mapper[tabstop_position]
                     collector[pruefi][section_type.value] += text + " "
 
@@ -169,7 +170,7 @@ class TableHeader(BaseModel):
                 HeaderSection.KOMMUNIKATION_VON.value: "",
                 "tabstop_position": tab_stop,
             }
-            for pruefidentifikator, tab_stop in zip(splitted_text, current_tabstop_positions)
+            for pruefidentifikator, tab_stop in zip(splitted_text, current_tabstop_positions, strict=False)
         }
 
         if not collector:

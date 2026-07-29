@@ -2,7 +2,8 @@
 A collection of functions to get information from AHB tables.
 """
 
-from typing import Generator, Optional, Tuple, TypeGuard, Union
+from collections.abc import Generator
+from typing import TypeGuard
 
 from docx.document import Document
 from docx.oxml.table import CT_Tbl
@@ -19,7 +20,7 @@ from kohlrahbi.logger import logger
 from kohlrahbi.seed import Seed
 
 
-def get_all_paragraphs_and_tables(parent: Union[Document, _Cell]) -> Generator[Union[Paragraph, Table], None, None]:
+def get_all_paragraphs_and_tables(parent: Document | _Cell) -> Generator[Paragraph | Table, None, None]:
     """
     Yield each paragraph and table child within *parent*, in document order.
     Each returned value is an instance of either Table or Paragraph.
@@ -78,7 +79,7 @@ def is_item_table_with_pruefidentifikatoren(item: Paragraph | Table | None) -> T
 
 
 def is_item_headless_table(
-    value: tuple[Union[Paragraph, Table, None], Union[AhbTable, None]],
+    value: tuple[Paragraph | Table | None, AhbTable | None],
 ) -> TypeGuard[tuple[Table, AhbTable]]:
     """
     Checks if the given item is a headless table.
@@ -96,7 +97,7 @@ def is_item_headless_table(
     return isinstance(item, Table) and ahb_table is not None
 
 
-def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
+def get_ahb_table(document: Document, pruefi: str) -> AhbTable | None:
     """
     Reads a docx file and extracts all information for a given Prüfidentifikator.
     If the Prüfidentifikator is not found or we reach the end of the AHB document
@@ -142,7 +143,7 @@ def get_ahb_table(document: Document, pruefi: str) -> Optional[AhbTable]:
 
 def get_style_name(item: Paragraph | Table) -> str:
     """Extracts and normalizes the style name of a document item."""
-    return item.style.name if item.style else "None"  # type: ignore[no-any-return]
+    return item.style.name if item.style else "None"
 
 
 def reached_end_of_document(style_name: str, item: Paragraph | Table | None) -> bool:
@@ -220,14 +221,13 @@ def log_pruefi_not_found(pruefi: str) -> None:
     logger.warning("Prüfi '%s' was not found in the provided document.", pruefi)
 
 
-# pylint: disable=too-many-branches
 def get_all_conditions_from_doc(
     document: Document, edifact_format: EdifactFormat
-) -> Tuple[Optional[AhbPackageTable], AhbConditions]:
+) -> tuple[AhbPackageTable | None, AhbConditions]:
     """
     Go through a given document and grasp all conditions and package tables for a given format.
     """
-    package_table: Optional[AhbPackageTable] = None
+    package_table: AhbPackageTable | None = None
     conditions_table = AhbConditions()
     package_tables: list[Table] = []
     conditions_tables: list[Table] = []
@@ -312,5 +312,5 @@ def is_item_package_heading(item: Paragraph | Table | None, style_name: str, edi
             and "Übersicht der Pakete in der" in item.text
             and f"{edifact_format.name}" in item.text
         )
-        or (((style_name == "Heading 2") and f"Übersicht der Pakete in der {edifact_format.name}" in item.text))
+        or ((style_name == "Heading 2") and f"Übersicht der Pakete in der {edifact_format.name}" in item.text)
     )

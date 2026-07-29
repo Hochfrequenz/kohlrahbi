@@ -42,7 +42,9 @@ def get_ahb_table_with_multiple_paragraphs() -> Callable[[list[CellParagraph]], 
 
         body_cell.paragraphs[0].paragraph_format.left_indent = first_body_cell_paragprah.left_indent_length
 
-        for paragraph_index, bcp in zip(range(1, len(body_cell_paragraphs[1:]) + 1), body_cell_paragraphs[1:]):
+        for paragraph_index, bcp in zip(
+            range(1, len(body_cell_paragraphs[1:]) + 1), body_cell_paragraphs[1:], strict=False
+        ):
             # add paragraph with text
             body_cell.add_paragraph(text=bcp.text)
 

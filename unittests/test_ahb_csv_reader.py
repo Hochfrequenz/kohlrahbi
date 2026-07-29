@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Optional
 
 import pytest
 
@@ -31,7 +30,7 @@ class TestAhbCsvReader:
             pytest.param([], None),
         ],
     )
-    def test_ahb_expression_column_finder(self, field_names: list[str], expected_column_name: Optional[str]) -> None:
+    def test_ahb_expression_column_finder(self, field_names: list[str], expected_column_name: str | None) -> None:
         actual = FlatAhbCsvReader._get_name_of_expression_column(field_names)
         assert actual == expected_column_name
 
@@ -46,7 +45,7 @@ class TestAhbCsvReader:
             pytest.param("Gabi sitzt zu Hause ", False),
         ],
     )
-    def test_is_value_pool_entry(self, value: Optional[str], expected_is_value_pool_entry: bool) -> None:
+    def test_is_value_pool_entry(self, value: str | None, expected_is_value_pool_entry: bool) -> None:
         actual = FlatAhbCsvReader._is_value_pool_entry(value)
         assert actual == expected_is_value_pool_entry
 
@@ -60,7 +59,7 @@ class TestAhbCsvReader:
             pytest.param("SG12", True),
         ],
     )
-    def test_is_segment_group(self, value: Optional[str], expected_is_segment_group: bool) -> None:
+    def test_is_segment_group(self, value: str | None, expected_is_segment_group: bool) -> None:
         actual = FlatAhbCsvReader._is_segment_group(value)
         assert actual == expected_is_segment_group
 
@@ -177,10 +176,10 @@ class TestAhbCsvReader:
     )
     def test_code_description_separation(
         self,
-        csv_code: Optional[str],
-        csv_beschreibung: Optional[str],
-        expected_code: Optional[str],
-        expected_beschreibung: Optional[str],
+        csv_code: str | None,
+        csv_beschreibung: str | None,
+        expected_code: str | None,
+        expected_beschreibung: str | None,
     ) -> None:
         actual_code, actual_beschreibung = FlatAhbCsvReader.separate_value_pool_entry_and_name(
             csv_code, csv_beschreibung

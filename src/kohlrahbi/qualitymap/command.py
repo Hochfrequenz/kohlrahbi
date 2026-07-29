@@ -94,7 +94,7 @@ def qualitymap(
 
     console.print(
         Panel(
-            f"[green]Processed:[/green] {processed}/{total} files\n" f"[blue]Output:[/blue]     {output_path}",
+            f"[green]Processed:[/green] {processed}/{total} files\n[blue]Output:[/blue]     {output_path}",
             title="Quality Map Scraping Complete",
             border_style="green",
         )

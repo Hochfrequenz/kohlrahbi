@@ -3,7 +3,6 @@ This module contains the tests for the CLI tool conditions.
 """
 
 import json
-import os
 from pathlib import Path
 
 import pytest
@@ -12,7 +11,6 @@ from freezegun import freeze_time
 from typer.testing import CliRunner
 
 from kohlrahbi import app
-from unittests import path_to_test_files_fv2310
 
 runner = CliRunner()
 
@@ -68,7 +66,7 @@ class TestCliConditions:
         # run CLI command only for the first time
         if not any(shared_tmp_path.iterdir()):
             edi_repo_path = Path(str(Path(__file__).parents[1] / "edi_energy_mirror"))
-            FV = "FV2404"
+            format_version = "FV2404"
 
             argument_options: list[str] = [
                 "conditions",
@@ -77,7 +75,7 @@ class TestCliConditions:
                 "--output-path",
                 str(shared_tmp_path),
                 "--format-version",
-                FV,
+                format_version,
             ]
 
             # Call the CLI tool with the desired arguments

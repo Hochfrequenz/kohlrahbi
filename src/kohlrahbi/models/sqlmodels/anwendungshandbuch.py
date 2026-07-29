@@ -54,17 +54,17 @@ class AhbLine(SQLModel, table=True):
     flatanwendungshandbuch: FlatAnwendungshandbuch | None = Relationship(back_populates="lines")
 
     # fields copy-pasted from original model:
-    guid: Optional[UUID]
-    segment_group_key: Optional[str]
-    segment_code: Optional[str]
-    data_element: Optional[str]
-    segment_id: Optional[str]
-    value_pool_entry: Optional[str]
-    name: Optional[str]
-    ahb_expression: Optional[str]
-    conditions: Optional[str]
-    section_name: Optional[str]
-    index: Optional[int]
+    guid: UUID | None
+    segment_group_key: str | None
+    segment_code: str | None
+    data_element: str | None
+    segment_id: str | None
+    value_pool_entry: str | None
+    name: str | None
+    ahb_expression: str | None
+    conditions: str | None
+    section_name: str | None
+    index: int | None
 
 
 class AhbMetaInformation(SQLModel, table=True):
@@ -78,13 +78,13 @@ class AhbMetaInformation(SQLModel, table=True):
     id: UUID = Field(primary_key=True, default_factory=uuid.uuid4, description="optional key")
     edifact_format: EdifactFormat = Field(index=True)
     edifact_format_version: EdifactFormatVersion = Field(index=True)
-    flatanwendungshandbuch: Optional[FlatAnwendungshandbuch] = Relationship(
+    flatanwendungshandbuch: FlatAnwendungshandbuch | None = Relationship(
         back_populates="meta", sa_relationship_kwargs={"uselist": False}
     )
     ahb_id: UUID | None = Field(default=None, foreign_key="flatanwendungshandbuch.id")
 
     # copy-pasted fields from original model:
     pruefidentifikator: str
-    maus_version: Optional[str]
-    description: Optional[str]
-    direction: Optional[str]
+    maus_version: str | None
+    description: str | None
+    direction: str | None

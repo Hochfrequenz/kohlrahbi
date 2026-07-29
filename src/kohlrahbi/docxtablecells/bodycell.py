@@ -2,6 +2,8 @@
 This module contains the class BodyCell
 """
 
+from typing import cast
+
 import pandas as pd
 from docx.table import _Cell
 from docx.text.paragraph import Paragraph
@@ -37,8 +39,7 @@ class BodyCell(BaseModel):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    # I see why pylint is not happy about this many branches, but at the moment I have no clue how to avoid them.
-    # pylint: disable=too-many-branches
+    # This function has a lot of branches; that's inherent to the parsing logic, not easily avoidable.
     def parse(self, ahb_row_dataframe: pd.DataFrame) -> pd.DataFrame:
         """Parses a paragraph in the middle column and puts the information into the appropriate columns
 
@@ -52,13 +53,10 @@ class BodyCell(BaseModel):
         def add_text_to_column(row_index: int, column_index: int, text: str) -> None:
             starts_with_known_suffix = any(text.startswith(suffix + " ") for suffix in KNOW_SUFFIXES)
             if len(text) > 0:
-                if (
-                    len(ahb_row_dataframe.iat[row_index, column_index]) > 0
-                    and not starts_with_known_suffix
-                    and len(text) > 1
-                ):
+                existing_text = cast(str, ahb_row_dataframe.iat[row_index, column_index])
+                if len(existing_text) > 0 and not starts_with_known_suffix and len(text) > 1:
                     text = " " + text
-                ahb_row_dataframe.iat[row_index, column_index] += text
+                ahb_row_dataframe.iat[row_index, column_index] = existing_text + text
 
         def handle_code_or_qualifier_entry(
             splitted_text_at_tabs: list[str], row_index: int, is_first_iteration: bool
@@ -84,7 +82,9 @@ class BodyCell(BaseModel):
                     *tab_stops_in_current_paragraph,
                 ]
             for tabstop in tab_stops_in_current_paragraph:
-                for indicator_tabstop_position, column_index in zip(self.indicator_tabstop_positions, column_indezes):
+                for indicator_tabstop_position, column_index in zip(
+                    self.indicator_tabstop_positions, column_indezes, strict=False
+                ):
                     if tabstop == indicator_tabstop_position:
                         add_text_to_column(row_index, column_index, splitted_text_at_tabs.pop(0))
 

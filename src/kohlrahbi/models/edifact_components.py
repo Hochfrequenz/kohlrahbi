@@ -6,16 +6,16 @@ Components contain not only EDIFACT composites but also segments and segment gro
 
 import re
 from abc import ABC
-from enum import Enum
-from typing import Callable, Iterable, Literal, Mapping, Optional, Union
+from collections.abc import Callable, Iterable, Mapping
+from enum import StrEnum
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field, StringConstraints, field_validator
-from typing_extensions import Annotated
 
 from kohlrahbi.models import _check_that_string_is_not_whitespace_or_empty
 
 
-class DataElementDataType(str, Enum):
+class DataElementDataType(StrEnum):
     """
     The Data Element Data Type describes with which kind of data element we're dealing with in a data element.
     This information is set but not used anywhere inside MAUS directly but more of a "service" to downstream code.
@@ -26,7 +26,7 @@ class DataElementDataType(str, Enum):
     VALUE_POOL = "VALUE_POOL"  #: the user can choose between different possible values
 
 
-def derive_data_type_from_segment_code(segment_code: str) -> Optional[DataElementDataType]:
+def derive_data_type_from_segment_code(segment_code: str) -> DataElementDataType | None:
     """
     derives the expected data type from the segment code, e.g. `DATETIME` for DTM segments
     :return: The DataType if it can be derived without any doubt, None otherwise
@@ -43,7 +43,7 @@ class DataElement(BaseModel, ABC):
     For example in UTILMD the data element that holds the 13 digit market partner ID is data element '3039'
     """
 
-    discriminator: Annotated[Optional[str], StringConstraints(strip_whitespace=True, min_length=1)] = Field(
+    discriminator: Annotated[str | None, StringConstraints(strip_whitespace=True, min_length=1)] = Field(
         None,
         description=(
             "The discriminator uniquely identifies the data element."
@@ -54,7 +54,7 @@ class DataElement(BaseModel, ABC):
         ...,
         description="The ID of the data element (e.g. '0062') for the Nachrichten-Referenznummer",
     )
-    value_type: Optional[DataElementDataType] = Field(
+    value_type: DataElementDataType | None = Field(
         None,
         description=(
             "The value_type allows to describe which type of data we're expecting to be used within this data element."
@@ -164,7 +164,7 @@ class DataElementValuePool(DataElement):
     def replace_value_pool(
         self,
         edifact_to_domain_mapping: Mapping[str, str],
-        meaning_qualifier_merger: Optional[Callable[[str, str], str]] = None,
+        meaning_qualifier_merger: Callable[[str, str], str] | None = None,
     ) -> None:
         """
         If your data model comes from another domain than edifact the value pool from the AHBs, you can, in general, not
@@ -218,7 +218,7 @@ class SegmentLevel(BaseModel, ABC):
         ...,
         description="AHB expression",
     )
-    ahb_line_index: Optional[int] = Field(
+    ahb_line_index: int | None = Field(
         default=None,
         description=(
             "Allows sorting the segments depending on where they occurred in the FlatAnwendungshandbuch."
@@ -239,8 +239,8 @@ class Segment(SegmentLevel):
     A Segment contains multiple data elements.
     """
 
-    data_elements: list[Annotated[Union[DataElementValuePool, DataElementFreeText], Field(discriminator="value_type")]]
-    section_name: Optional[str] = Field(
+    data_elements: list[Annotated[DataElementValuePool | DataElementFreeText, Field(discriminator="value_type")]]
+    section_name: str | None = Field(
         default=None,
         description=(
             "For the MIG matching it might be necessary to know the section"
@@ -249,14 +249,14 @@ class Segment(SegmentLevel):
             "See e.g. UTILMD 'Geplante Turnusablesung des MSB (Strom)' vs. 'Geplante Turnusablesung des NB (Gas)'"
         ),
     )
-    segment_id: Optional[
-        Annotated[str, StringConstraints(strip_whitespace=True, to_upper=True, pattern=r"^\d{5}$")]
-    ] = Field(
-        default=None,
-        description=(
-            "The 5 digit segment id,"
-            "e.g. '00522' for UTILMD Strom SG12, NAD 'Korrespondenzanschrift des Kunden des Lieferanten'"
-        ),
+    segment_id: Annotated[str, StringConstraints(strip_whitespace=True, to_upper=True, pattern=r"^\d{5}$")] | None = (
+        Field(
+            default=None,
+            description=(
+                "The 5 digit segment id,"
+                "e.g. '00522' for UTILMD Strom SG12, NAD 'Korrespondenzanschrift des Kunden des Lieferanten'"
+            ),
+        )
     )
 
     def get_all_value_pools(self) -> list[DataElementValuePool]:
@@ -274,8 +274,8 @@ class SegmentGroup(SegmentLevel):
     This group has the key "root".
     """
 
-    segments: Optional[list[Segment]] = Field(default=None, description="The segments inside this very group")
-    segment_groups: Optional[list["SegmentGroup"]] = Field(
+    segments: list[Segment] | None = Field(default=None, description="The segments inside this very group")
+    segment_groups: list["SegmentGroup"] | None = Field(
         default=None, description="Groups that are nested into this group"
     )
 
@@ -328,7 +328,7 @@ class EdifactStackLevel(BaseModel):
             "within the same message"
         ),
     )
-    index: Optional[int] = Field(default=None, description="The index if present (e.g. 0)")
+    index: int | None = Field(default=None, description="The index if present (e.g. 0)")
 
 
 #: a pattern that matches parts of the json path: https://regex101.com/r/iQzdXK/1
@@ -364,9 +364,8 @@ class EdifactStack(BaseModel):
         if len(other.levels) > len(self.levels):
             # self cannot be a sub path of other if other is "deeper"
             return False
-        for level_self, level_other in zip(other.levels, self.levels):  # , strict=False):  # type:ignore[call-overload]
-            # strict is False because it's ok if we stop the iteration if self.levels is "exhausted"; explicit is better
-            # the type-ignore for the strict=False is necessary for Python<3.10
+        # strict is False because it's ok if the iteration stops once self.levels is "exhausted"; explicit is better
+        for level_other, level_self in zip(other.levels, self.levels, strict=False):
             if level_self != level_other:
                 return False
         # the iteration stopped meaning that for all levels that both other and self share, they are identical.

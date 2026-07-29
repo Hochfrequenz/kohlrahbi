@@ -1,12 +1,10 @@
 import json
-import shutil
 from pathlib import Path
 
 import pytest
 from efoli import EdifactFormat
 
 from kohlrahbi.ahbtable.ahbcondtions import AhbConditions
-from unittests import path_to_test_files_fv2310
 
 
 class TestAhbConditions:
@@ -40,7 +38,7 @@ class TestAhbConditions:
 
         for edifact_format in ["PARTIN", "COMDIS"]:
             assert Path(actual_output_dir / edifact_format / "conditions.json").exists()
-            with open(actual_output_dir / edifact_format / "conditions.json", "r", encoding="utf-8") as file:
+            with open(actual_output_dir / edifact_format / "conditions.json", encoding="utf-8") as file:
                 actual_package_dict = json.load(file)
                 assert actual_package_dict == expected_condition_dict[edifact_format]
 

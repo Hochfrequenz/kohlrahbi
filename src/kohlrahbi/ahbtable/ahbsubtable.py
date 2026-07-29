@@ -2,7 +2,8 @@
 This module contains the AhbSubTable class.
 """
 
-from typing import Generator, Union
+from collections.abc import Generator
+from typing import cast
 
 import numpy as np
 import pandas as pd
@@ -171,9 +172,10 @@ class AhbSubTable(BaseModel):
         """Add a text to the last row of the dataframe."""
         starts_with_known_suffix = any(text.startswith(suffix + " ") for suffix in KNOW_SUFFIXES)
         if len(text) > 0:
-            if len(ahb_table_dataframe.iat[row_index, column_index]) > 0 and not starts_with_known_suffix:
+            existing_text = cast(str, ahb_table_dataframe.iat[row_index, column_index])
+            if len(existing_text) > 0 and not starts_with_known_suffix:
                 text = " " + text
-            ahb_table_dataframe.iat[row_index, column_index] += text
+            ahb_table_dataframe.iat[row_index, column_index] = existing_text + text
 
     @staticmethod
     def add_broken_line(ahb_table_dataframe: pd.DataFrame, broken_line: pd.DataFrame) -> None:
@@ -190,7 +192,7 @@ class AhbSubTable(BaseModel):
             paragraph.text for paragraph in bedingung_cell.paragraphs if paragraph.text != ""
         )
         last_valid_row = ahb_table_dataframe["Bedingung"].last_valid_index()
-        conditions_text = ahb_table_dataframe.at[last_valid_row, "Bedingung"] + conditions_text
+        conditions_text = cast(str, ahb_table_dataframe.at[last_valid_row, "Bedingung"]) + conditions_text
         # remove existing text
         ahb_table_dataframe.at[last_valid_row, "Bedingung"] = ""
         # remove remaining text to avoid misplacements
@@ -209,7 +211,7 @@ class AhbSubTable(BaseModel):
         """
         tabsplit_text = paragraph.text.split("\t")
 
-        loc: Union[int, slice, NDArray[np.bool_]] = table.columns.get_loc("Beschreibung")
+        loc: int | slice | NDArray[np.bool_] = table.columns.get_loc("Beschreibung")
 
         # Ensure loc is an int
         if isinstance(loc, int):
@@ -226,12 +228,12 @@ class AhbSubTable(BaseModel):
         )
         if is_broken_code_qualifier and len(tabsplit_text) == 1:
             # only broken code / qualifier
-            assert (
-                table.iat[-1, beschreibung_index] != "" and table.iloc[-1, beschreibung_index + 1 :].ne("").any()
-            ), "no condition expected in broken line"
+            assert table.iat[-1, beschreibung_index] != "" and table.iloc[-1, beschreibung_index + 1 :].ne("").any(), (
+                "no condition expected in broken line"
+            )
         there_are_conditions = (
             len(tabsplit_text) > 1
             and paragraph.paragraph_format.left_indent != table_meta_data.middle_cell_left_indent_position
         )
 
-        return is_empty_middle_line or there_are_conditions or is_broken_code_qualifier
+        return bool(is_empty_middle_line or there_are_conditions or is_broken_code_qualifier)
