@@ -56,8 +56,11 @@ jobs:
        - name: Upsert GitHub Release
          uses: softprops/action-gh-release@v2
          with:
-           tag_name: ${{ github.ref_name }}
-           name: ${{ github.ref_name }}
+           # On a `release` event, prefer the event's own tag/title so a
+           # manually-entered Release title is preserved; on a tag push both
+           # fall back to the tag name.
+           tag_name: ${{ github.event.release.tag_name || github.ref_name }}
+           name: ${{ github.event.release.name || github.ref_name }}
            body: ${{ needs.generate-changelog.outputs.release_body }}
            prerelease: ${{ contains(github.ref_name, '-rc') }}
 
