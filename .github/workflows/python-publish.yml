@@ -1,15 +1,68 @@
-# This GitHub workflow is only needed for python package releases which are supposed to be published on pypi.
-# It requires the Github "environments" feature (see instructions below) it might not be available for private free accounts (but works for public or organization repos).
-# After creating the "release" environment in the Github repo settings, you need to enter your Github organization/user name + repo name + "python-publish.yml" workflow file name in the PyPI UI to make this work.
+# This GitHub workflow cuts a release for kohlrahbi. It runs on either of two triggers:
+#   * pushing a `v*.*.*` git tag, or
+#   * creating a GitHub Release manually via the UI.
+# A single user action only ever fires one of these events (a manual Release emits no
+# `push` event, a tag push creates no Release), so the two triggers never double-fire.
+#
+# It generates release notes with git-cliff (see cliff.toml), upserts them onto the
+# GitHub Release, then tests, builds and publishes the package to PyPI.
+#
+# Publishing to PyPI uses trusted publishing, which is bound to this workflow's FILENAME
+# (python-publish.yml). Do NOT rename this file without updating the PyPI project settings.
+# It requires the Github "environments" feature (the "release" environment) which might not
+# be available for private free accounts (but works for public or organization repos).
+# After creating the "release" environment in the Github repo settings, you need to enter
+# your Github organization/user name + repo name + "python-publish.yml" workflow file name
+# in the PyPI UI to make this work.
 
-name: Upload Python Package
+name: Release
 
 on:
+   push:
+     tags:
+       - 'v*.*.*'
    release:
-     types: [created, edited]
+     types: [created]
 
 jobs:
+   generate-changelog:
+     name: Generate changelog
+     runs-on: ubuntu-latest
+     outputs:
+       release_body: ${{ steps.git-cliff.outputs.content }}
+     steps:
+       - name: Checkout
+         uses: actions/checkout@v7
+         with:
+           fetch-depth: 0
+       - name: Generate a changelog
+         uses: orhun/git-cliff-action@v4
+         id: git-cliff
+         with:
+           config: cliff.toml
+           args: --latest --github-repo ${{ github.repository }}
+           github_token: ${{ secrets.GITHUB_TOKEN }}
+
+   publish-release-notes:
+     name: Publish GitHub Release notes
+     needs: generate-changelog
+     runs-on: ubuntu-latest
+     permissions:
+       contents: write
+     steps:
+       # Creates the Release on the tag-push path, or updates the body of the
+       # manually-created Release on the release path. Uses GITHUB_TOKEN, so it does
+       # not cascade into another workflow run.
+       - name: Upsert GitHub Release
+         uses: softprops/action-gh-release@v2
+         with:
+           tag_name: ${{ github.ref_name }}
+           name: ${{ github.ref_name }}
+           body: ${{ needs.generate-changelog.outputs.release_body }}
+           prerelease: ${{ contains(github.ref_name, '-rc') }}
+
    test:
+     needs: generate-changelog
      if: startsWith(github.ref, 'refs/tags/v')
      runs-on: ubuntu-latest
      steps:
@@ -47,3 +100,5 @@ jobs:
        - name: Publish distribution to PyPI
          if: startsWith(github.ref, 'refs/tags/v')
          uses: pypa/gh-action-pypi-publish@release/v1
+         with:
+           skip-existing: true
