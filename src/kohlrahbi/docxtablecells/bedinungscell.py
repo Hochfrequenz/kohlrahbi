@@ -3,6 +3,7 @@ This module contains the class BedingungCell
 """
 
 import re
+from typing import cast
 
 import pandas as pd
 from docx.table import _Cell
@@ -27,7 +28,8 @@ class BedingungCell(BaseModel):
         bedingung = self.beautify_bedingungen(bedingung)
 
         row_index = ahb_row_dataframe.index.max()
-        ahb_row_dataframe.at[row_index, "Bedingung"] += bedingung
+        existing_bedingung = cast(str, ahb_row_dataframe.at[row_index, "Bedingung"])
+        ahb_row_dataframe.at[row_index, "Bedingung"] = existing_bedingung + bedingung
         return ahb_row_dataframe
 
     # pylint: disable=line-too-long

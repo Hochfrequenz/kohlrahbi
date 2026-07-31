@@ -7,8 +7,9 @@ import logging
 import re
 import uuid
 from abc import ABC, abstractmethod
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Literal, Optional, Sequence, TextIO, Tuple, overload
+from typing import Literal, TextIO, overload
 
 from kohlrahbi.models.anwendungshandbuch import _VERSION, AhbLine, AhbMetaInformation, FlatAnwendungshandbuch
 from kohlrahbi.models.edifact_components import gabi_edifact_qualifier_pattern
@@ -52,17 +53,17 @@ class FlatAhbCsvReader(FlatAhbReader):
     def __init__(  # type: ignore[no-untyped-def]
         self,
         file_path: Path,
-        pruefidentifikator: Optional[str] = None,
+        pruefidentifikator: str | None = None,
         encoding="utf-8",
         delimiter=",",
     ):
         self.rows: list[AhbLine] = []
         self._logger = logging.getLogger()
-        self.current_section_name: Optional[str] = None
+        self.current_section_name: str | None = None
         self.pruefidentifikator = pruefidentifikator
         self.delimiter = delimiter
         self.bedingungen: dict[str, str] = {}
-        with open(file_path, "r", encoding=encoding) as infile:
+        with open(file_path, encoding=encoding) as infile:
             # current_section_name: Optional[str]
             raw_lines = self.get_raw_rows(infile)
         raw_lines_with_merged_section_names = FlatAhbCsvReader.merge_section_only_lines(raw_lines)
@@ -149,7 +150,7 @@ class FlatAhbCsvReader(FlatAhbReader):
             raise ValueError("Cannot find column name for ahb expression")
         return list(reader)
 
-    def raw_ahb_row_to_ahbline(self, ahb_row: dict) -> Optional[AhbLine]:  # type: ignore[type-arg]
+    def raw_ahb_row_to_ahbline(self, ahb_row: dict) -> AhbLine | None:  # type: ignore[type-arg]
         """
         Converts a row of the raw/scraped AHB into the AhbLine data structure.
         Returns None for rows that are skipped.
@@ -159,7 +160,7 @@ class FlatAhbCsvReader(FlatAhbReader):
             ahb_row["Codes und Qualifier"], ahb_row["Beschreibung"]
         )
         self.bedingungen.update(FlatAhbCsvReader._extract_bedingungen(ahb_row["Bedingung"]))
-        segment_group: Optional[str] = None
+        segment_group: str | None = None
         if FlatAhbCsvReader._is_segment_group(ahb_row["Segment Gruppe"]):
             segment_group = ahb_row["Segment Gruppe"]
         elif len(ahb_row["Segment Gruppe"]) >= 3:
@@ -189,8 +190,9 @@ class FlatAhbCsvReader(FlatAhbReader):
 
     @staticmethod
     def separate_value_pool_entry_and_name(
-        x: Optional[str], y: Optional[str]  # pylint:disable=invalid-name
-    ) -> Tuple[Optional[str], Optional[str]]:
+        x: str | None,
+        y: str | None,
+    ) -> tuple[str | None, str | None]:
         """
         The PDFs are so broken, that sometimes the Codes column contains the description of the line instead of the code
         This function returns a value_pool_entry at index 0, a possible description at index 1, even if they're mixed up
@@ -208,7 +210,7 @@ class FlatAhbCsvReader(FlatAhbReader):
         return y or None, x or None
 
     @staticmethod
-    def _is_value_pool_entry(candidate: Optional[str]) -> bool:
+    def _is_value_pool_entry(candidate: str | None) -> bool:
         """
         Returns true iff the provided candidate is a possible value pool entry.
         """
@@ -227,7 +229,7 @@ class FlatAhbCsvReader(FlatAhbReader):
         return _ebd_code_pattern.match(candidate) is not None
 
     @staticmethod
-    def _is_segment_group(candidate: Optional[str]) -> bool:
+    def _is_segment_group(candidate: str | None) -> bool:
         """
         Returns true iff the provided candidate is a possible segment group
         """
@@ -238,7 +240,7 @@ class FlatAhbCsvReader(FlatAhbReader):
     _bedingung_pattern = re.compile(r"\[(?P<key>\d+)\]\s*(?P<text>[^\[\]]+)\s*")  # https://regex101.com/r/hN5x9w/1
 
     @staticmethod
-    def _extract_bedingungen(candidate: Optional[str]) -> dict[str, str]:
+    def _extract_bedingungen(candidate: str | None) -> dict[str, str]:
         """
         Checks if the given candidate is a bedingung. If no, returns empty dict.
         If yes returns a dictionary where the Bedingung keys (e.g. "494") are dictionary keys and the Bedingung
@@ -250,7 +252,7 @@ class FlatAhbCsvReader(FlatAhbReader):
         return {m[0]: m[1].strip() for m in FlatAhbCsvReader._bedingung_pattern.findall(candidate)}
 
     @staticmethod
-    def _get_name_of_expression_column(field_names: Optional[Sequence[str]]) -> Optional[str]:
+    def _get_name_of_expression_column(field_names: Sequence[str] | None) -> str | None:
         """
         Gets the name of the column that holds the AHB expressions.
         This allows us to read any AHB without a priori knowledge of its pruefidentifikator.
@@ -287,7 +289,7 @@ def _replace_hardcoded_section_names(section_name: str) -> str: ...
 def _replace_hardcoded_section_names(section_name: Literal[None]) -> Literal[None]: ...
 
 
-def _replace_hardcoded_section_names(section_name: Optional[str]) -> Optional[str]:
+def _replace_hardcoded_section_names(section_name: str | None) -> str | None:
     """
     Replace section names that differ because of "Datenschiefstände"
     :param section_name:

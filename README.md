@@ -8,8 +8,7 @@
 ![Python Versions (officially) supported](https://img.shields.io/pypi/pyversions/kohlrahbi.svg)
 ![Unittests status badge](https://github.com/Hochfrequenz/kohlrahbi/workflows/Unittests/badge.svg)
 ![Coverage status badge](https://github.com/Hochfrequenz/kohlrahbi/workflows/Coverage/badge.svg)
-![Linting status badge](https://github.com/Hochfrequenz/kohlrahbi/workflows/Linting/badge.svg)
-![Black status badge](https://github.com/Hochfrequenz/kohlrahbi/workflows/Black/badge.svg)
+![Checks status badge](https://github.com/Hochfrequenz/kohlrahbi/workflows/checks/badge.svg)
 ![PyPI](https://img.shields.io/pypi/v/kohlrahbi)
 
 Kohlr_AHB_i generates machine-readable files from AHB documents.
@@ -110,7 +109,7 @@ kohlrahbi --help
 | `kohlrahbi ahb`                  | Extract AHB tables from `.docx` files                        |
 | `kohlrahbi conditions`           | Extract conditions and packages from `.docx` files           |
 | `kohlrahbi changehistory docx`   | Extract change histories from `.docx` files                  |
-| `kohlrahbi changehistory bnetza` | Download PDFs from a BNetzA URL and extract change histories |
+| `kohlrahbi changehistory bnetza` | Download documents from a BNetzA URL and extract change histories |
 
 ---
 
@@ -183,9 +182,15 @@ The `changehistory` command has two subcommands depending on your data source.
 kohlrahbi changehistory docx -eemp ../edi_energy_mirror/ --output-path ./output/ --format-version FV2310
 ```
 
-#### `kohlrahbi changehistory bnetza` — From BNetzA PDFs
+#### `kohlrahbi changehistory bnetza` — From BNetzA documents
 
-Downloads PDF documents from a BNetzA URL, extracts the change history tables, and writes them to an Excel file.
+Downloads all linked documents from a BNetzA "Mitteilung" URL, extracts the change history
+(`Änderungshistorie`) tables, and writes one Excel sheet per document.
+
+It handles every document the page links, not just PDFs: newer pages serve most EDIFACT
+documents as `.html`-named downloads (whose body is actually a PDF) and some as Office files.
+Each file's real type is detected from its content, so nothing is skipped because of its URL
+extension.
 
 ```bash
 kohlrahbi changehistory bnetza \
@@ -193,7 +198,10 @@ kohlrahbi changehistory bnetza \
   --output-path ./output/
 ```
 
-The PDFs are saved to `<output-path>/pdfs/` and the resulting Excel file to `<output-path>/change_history.xlsx`.
+The downloaded documents are saved to `<output-path>/pdfs/` and the resulting Excel file to
+`<output-path>/change_history.xlsx`. On completion a summary reports how many links were found,
+how many documents were downloaded (by type), how many sheets were written, and which documents
+contained no change history.
 
 ## `.docx` Data Sources
 
@@ -251,20 +259,26 @@ The following table shows the page number of the AHBs for each format of the for
 
 ## Development
 
+This project uses [uv](https://docs.astral.sh/uv/) to manage dependencies and the development environment.
+
 ### Setup
 
-To set up the development environment, you have to install the dev dependencies.
+To set up the development environment, install [uv](https://docs.astral.sh/uv/getting-started/installation/) and sync the dev dependency group.
 
 ```bash
-tox -e dev
+uv sync --group dev
 ```
 
-### Run all tests and linters
+This creates a `.venv` and installs the package together with all development tools (tests, linting, type checking, formatting, spelling).
 
-To run the tests, you can use tox.
+### Run tests, linters and other checks
 
 ```bash
-tox
+uv run --group test pytest --cov kohlrahbi --cov-report term-missing --cov-fail-under 79
+uv run --group lint ruff check src/kohlrahbi
+uv run --group typecheck mypy src/kohlrahbi unittests --strict
+uv run --group lint ruff format --check src/kohlrahbi unittests
+uv run --group spelling codespell src/kohlrahbi README.md
 ```
 
 See our [Python Template Repository](https://github.com/Hochfrequenz/python_template_repository#how-to-use-this-repository-on-your-machine) for detailed explanations.

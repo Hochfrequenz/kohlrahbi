@@ -43,7 +43,7 @@ class TestAhb:
         )
         assert expected_output_path.exists()
         expected_pruefi_map = '[meta_data]\nupdated_on = 2024-04-29\n\n[pruefidentifikatoren]\n29001 = "file1.docx"\n17201 = "file2.docx"\n37001 = "file3.docx"\n'
-        with open(expected_output_path, "r", encoding="utf-8") as f:
+        with open(expected_output_path, encoding="utf-8") as f:
             actual_pruefi_map = f.read()
         assert actual_pruefi_map == expected_pruefi_map
         expected_output_path.unlink()

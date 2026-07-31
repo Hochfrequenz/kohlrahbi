@@ -216,6 +216,5 @@ class TestDocxFileFinder:
 
         # Also verify the count matches
         assert len(paths_to_docx_files) == len(expected_paths), (
-            f"Number of paths doesn't match. "
-            f"Expected {len(expected_paths)} paths, but got {len(paths_to_docx_files)}"
+            f"Number of paths doesn't match. Expected {len(expected_paths)} paths, but got {len(paths_to_docx_files)}"
         )

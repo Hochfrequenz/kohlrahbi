@@ -184,7 +184,7 @@ class TestUnfoldedAhbTable:
         assert isinstance(flat_ahb, FlatAnwendungshandbuch)
         assert expected_flat_ahb.meta == flat_ahb.meta
 
-        for expected_ahb_line, ahb_line in zip(expected_flat_ahb.lines, flat_ahb.lines):
+        for expected_ahb_line, ahb_line in zip(expected_flat_ahb.lines, flat_ahb.lines, strict=False):
             # overwrite the guid with None to match the expected flat ahb
             ahb_line.guid = None
             assert expected_ahb_line == ahb_line

@@ -1,8 +1,3 @@
-# NOTE: you have to use single-quoted strings in TOML for regular expressions.
-# It's the equivalent of r-strings in Python.  Multiline strings are treated as
-# verbose regular expressions by Black.  Use [ ] to denote a significant space
-# character.
-
 # Build system information and other project-specific configuration below.
 
 [build-system]
@@ -23,8 +18,8 @@ dependencies = [
   "tomlkit>=0.13.2",
   "xlsxwriter>=3.2.0",
   "httpx==0.28.1",
-  "pdfplumber==0.11.5",
-  "beautifulsoup4==4.13.3",
+  "pdfplumber==0.11.10",
+  "beautifulsoup4==4.15.0",
 ]
 
 name = "kohlrahbi"
@@ -56,34 +51,32 @@ sqlmodels = ["sqlmodel>=0.0.22", "sqlalchemy[mypy]>=2.0.37"]
 
 [dependency-groups]
 test = [
-  "coverage==7.6.12",
-  "pytest-cov==6.1.1",
-  "dictdiffer==0.9.0",
-  "freezegun==1.5.1",
-  "pytest-datafiles==3.0.0",
-  "pytest==8.3.4",
-  "syrupy==4.8.2",
+  "coverage==7.15.2",
+  "pytest-cov==7.1.0",
+  "dictdiffer==0.10.0",
+  "freezegun==1.5.5",
+  "pytest-datafiles==3.0.1",
+  "pytest==9.1.1",
+  "syrupy==5.5.3",
   "sqlmodel>=0.0.22",
   "sqlalchemy[mypy]>=2.0.37",
 ]
-lint = ["pylint==3.3.4", "pylint-pydantic==0.3.5"]
+lint = ["ruff==0.16.0"]
 typecheck = [
-  "mypy==1.13.0",
+  "mypy==2.3.0",
   "networkx-stubs==0.0.1",
-  "pandas-stubs==2.2.3.241126",
-  "pytest==8.3.4",
+  "pandas-stubs==3.0.3.260530",
+  "pytest==9.1.1",
   "types-freezegun==1.1.10",
-  "types-requests==2.32.0.20241016",
+  "types-requests==2.33.0.20260712",
   "sqlmodel>=0.0.22",
   "sqlalchemy[mypy]>=2.0.37",
 ]
-spelling = ["codespell==2.4.1"]
-formatting = ["black==26.3.1", "isort==6.0.1"]
+spelling = ["codespell==2.4.3"]
 dev = [
   { include-group = "test" },
   { include-group = "lint" },
   { include-group = "typecheck" },
-  { include-group = "formatting" },
   { include-group = "spelling" },
 ]
 
@@ -104,19 +97,48 @@ exclude = ["/unittests", "/edi_energy_mirror"]
 only-include = ["src"]
 sources = ["src"]
 
-[tool.black]
+[tool.ruff]
 line-length = 120
-extend-exclude = "edi_energy_mirror"
+extend-exclude = ["edi_energy_mirror", "src/kohlrahbi/version.py"]
 
-[tool.isort]
-line_length = 120
-profile = "black"
+[tool.ruff.lint]
+select = [
+  "E",   # pycodestyle errors
+  "W",   # pycodestyle warnings
+  "F",   # pyflakes
+  "I",   # isort
+  "UP",  # pyupgrade
+  "B",   # flake8-bugbear
+  "N",   # pep8-naming
+  "PL",  # pylint
+  "RUF", # ruff-specific rules
+]
+ignore = [
+  "PLR0913", # too-many-arguments - not enforced under the old pylint config either
+  "PLR0917", # too-many-positional-arguments
+  "PLR0912", # too-many-branches
+  "PLR0915", # too-many-statements
+  "PLR2004", # magic-value-comparison
+  "RUF001",  # ambiguous-unicode-character-string - false positives on German quotation marks („"›)
+]
 
-[tool.pylint."MESSAGES CONTROL"]
-max-line-length = 120
-good-names = ["i", "j", "k", "ex", "Run", "_", "df"]
-load-plugins = "pylint_pydantic"
-ignore = ["version.py"]
+[tool.ruff.lint.per-file-ignores]
+"unittests/**" = ["PLR2004"]
+# lazy imports for CLI startup performance, same convention as the removed
+# `# pylint: disable=import-outside-toplevel` file headers
+"src/kohlrahbi/*/command.py" = ["PLC0415"]
+# long lines are unavoidable German legal text / docx filename regex patterns,
+# same convention as the removed `# pylint: disable=line-too-long` comments
+"src/kohlrahbi/conditions/allgemeine_festlegungen.py" = ["E501"]
+"src/kohlrahbi/docxfilefinder.py" = ["E501"]
+"src/kohlrahbi/docxtablecells/bedinungscell.py" = ["E501"]
+"src/kohlrahbi/models/flat_ahb_reader.py" = ["E501"]
+
+[tool.ruff.lint.pep8-naming]
+ignore-names = ["i", "j", "k", "ex", "Run", "_", "df"]
+
+[tool.ruff.format]
+line-ending = "lf"
 
 [tool.pytest.ini_options]
 pythonpath = ["."]

@@ -1,10 +1,9 @@
 import glob
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
-from docx.table import Table
 from typer.testing import CliRunner
 
 from kohlrahbi import app
@@ -14,8 +13,8 @@ runner = CliRunner()
 
 
 class MockCell:
-    def __init__(self, text: Optional[str]) -> None:
-        self.text: Optional[str] = text
+    def __init__(self, text: str | None) -> None:
+        self.text: str | None = text
 
     def strip(self) -> str:
         assert self.text is not None
@@ -23,8 +22,8 @@ class MockCell:
 
 
 class MockTable:
-    def __init__(self, cell_text: Optional[str]) -> None:
-        self.cell_text: Optional[str] = cell_text
+    def __init__(self, cell_text: str | None) -> None:
+        self.cell_text: str | None = cell_text
 
     def cell(self, row_idx: int, col_idx: int) -> MockCell:
         if row_idx == 0 and col_idx == 0:
@@ -68,7 +67,7 @@ class TestQualityMap:
     def test_cli_quality_map_table(
         self,
         argument_options: list[str],
-        expected_response: dict[str, Union[str, int]],
+        expected_response: dict[str, str | int],
         snapshot: object,
         tmp_path: Path,
     ) -> None:
@@ -101,5 +100,5 @@ class TestQualityMap:
 
         path_to_actual_csv_file = get_csv_file(actual_output_dir)
 
-        with open(path_to_actual_csv_file, "r", encoding="utf-8") as actual_csv:
+        with open(path_to_actual_csv_file, encoding="utf-8") as actual_csv:
             assert snapshot == actual_csv.read()

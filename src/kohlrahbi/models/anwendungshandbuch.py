@@ -8,7 +8,8 @@ another segment group)
 """
 
 import re
-from typing import Annotated, Callable, Optional, Sequence, Union
+from collections.abc import Callable, Sequence
+from typing import Annotated
 from uuid import UUID
 
 from more_itertools import last, split_when
@@ -31,25 +32,25 @@ class AhbLine(BaseModel):
     An AhbLine is a single line inside the machine-readable, flat AHB.
     """
 
-    guid: Optional[UUID] = Field(default=None, description="optional key")
+    guid: UUID | None = Field(default=None, description="optional key")
     # because the combination (segment group, segment, data element, name) is not guaranteed to be unique
     # yes, it's actually that bad already
-    segment_group_key: Optional[str] = Field(default=None, description="the segment group, e.g. 'SG5'")
+    segment_group_key: str | None = Field(default=None, description="the segment group, e.g. 'SG5'")
 
-    segment_code: Optional[str] = Field(default=None, description="the segment, e.g. 'IDE'")
+    segment_code: str | None = Field(default=None, description="the segment, e.g. 'IDE'")
 
-    data_element: Optional[str] = Field(default=None, description="the data element ID, e.g. '3224'")
+    data_element: str | None = Field(default=None, description="the data element ID, e.g. '3224'")
 
-    segment_id: Optional[str] = Field(
+    segment_id: str | None = Field(
         default=None,
         description="the 5 digit segment id, e.g. '00003' for Nachrichten Kopfsegment. This is available since FV2410.",
     )
 
-    value_pool_entry: Optional[str] = Field(
+    value_pool_entry: str | None = Field(
         None, description="one of (possible multiple) allowed values, e.g. 'E01' or '293'"
     )
 
-    name: Optional[str] = Field(
+    name: str | None = Field(
         None, description="the name, e.g. 'Meldepunkt'. It can be both the description of a field but also its meaning"
     )
 
@@ -57,7 +58,7 @@ class AhbLine(BaseModel):
     # where user input is expected but also the meanings / values of value pool entries. This means the exact meaning of
     # name can only be determined in the context in which it is used. This is one of many shortcoming of the current AHB
     # structure: Things in the same column don't necessarily mean the same thing.
-    ahb_expression: Annotated[Optional[str], StringConstraints(strip_whitespace=True, min_length=1)] = Field(
+    ahb_expression: Annotated[str | None, StringConstraints(strip_whitespace=True, min_length=1)] = Field(
         default=None,
         description=(
             "a requirement indicator + an optional condition ('ahb expression'),"
@@ -65,7 +66,7 @@ class AhbLine(BaseModel):
             "consider using AHBicht: https://github.com/Hochfrequenz/ahbicht/"
         ),
     )
-    conditions: Optional[str] = Field(
+    conditions: str | None = Field(
         default=None,
         description=(
             "The condition text describes the text to the optional condition of the ahb expression."
@@ -73,7 +74,7 @@ class AhbLine(BaseModel):
         ),
     )
 
-    section_name: Optional[str] = Field(
+    section_name: str | None = Field(
         default=None,
         description=(
             "The section name describes the purpose of a segment,"
@@ -81,7 +82,7 @@ class AhbLine(BaseModel):
         ),
     )
 
-    index: Optional[int] = Field(
+    index: int | None = Field(
         default=None,
         description=(
             "index is a number that describes the position of the AHBLine"
@@ -131,14 +132,14 @@ class AhbMetaInformation(BaseModel):
     pruefidentifikator: str = Field(
         ..., description="identifies the message type (within a fixed format version) e.g. '11042' or '13012'"
     )
-    maus_version: Optional[str] = Field(
+    maus_version: str | None = Field(
         default=_VERSION, description="semantic version of maus used to create this document"
     )
-    description: Annotated[Optional[str], StringConstraints(strip_whitespace=True, min_length=1)] = Field(
+    description: Annotated[str | None, StringConstraints(strip_whitespace=True, min_length=1)] = Field(
         default=None,
         description="an optional description of the purpose of the pruefidentifikator; e.g. 'Anmeldung MSB' for 11042",
     )
-    direction: Annotated[Optional[str], StringConstraints(strip_whitespace=True, min_length=1)] = Field(
+    direction: Annotated[str | None, StringConstraints(strip_whitespace=True, min_length=1)] = Field(
         default=None,
         description=(
             "a stringly typed description of the roles of sender and receiver of the message"
@@ -256,20 +257,20 @@ class FlatAnwendungshandbuch(BaseModel):
             _check_that_line_has_either_none_az_segment_code(ahb_line)
         return value
 
-    def get_segment_groups(self) -> list[Optional[str]]:
+    def get_segment_groups(self) -> list[str | None]:
         """
         :return: a set with all segment groups in this AHB in the order in which they occur
         """
         return FlatAnwendungshandbuch._get_available_segment_groups(self.lines)
 
     @staticmethod
-    def _get_available_segment_groups(lines: list[AhbLine]) -> list[Optional[str]]:
+    def _get_available_segment_groups(lines: list[AhbLine]) -> list[str | None]:
         """
         extracts the distinct segment groups from a list of ahb lines
         :param lines:
         :return: distinct segment groups, including None in the order in which they occur
         """
-        result: list[Optional[str]] = []
+        result: list[str | None] = []
         for line in lines:
             if line.segment_group_key not in result:
                 # an "in" check against a set would be faster but we want to preserve both order and readability
@@ -283,7 +284,7 @@ class FlatAnwendungshandbuch(BaseModel):
         self.lines = FlatAnwendungshandbuch._sorted_lines_by_segment_groups(self.lines, self.get_segment_groups())
 
     @staticmethod
-    def _sorted_lines_by_segment_groups(ahb_lines: Sequence[AhbLine], sg_order: list[Optional[str]]) -> list[AhbLine]:
+    def _sorted_lines_by_segment_groups(ahb_lines: Sequence[AhbLine], sg_order: list[str | None]) -> list[AhbLine]:
         """
         Calls sorted(...) on the provided list and returns a new list.
         Its purpose is, that if a segment group in the AHB (read from top to bottom in the flat ahb/pdf) is interrupted
@@ -329,7 +330,7 @@ class DeepAhbInputReplacement(BaseModel):
     replacement_found: bool = Field(..., description="True iff a replacement is applicable")
 
     # replacements for DataElementValuePool
-    value_pool_replacement: Optional[ValuePoolEntry] = Field(
+    value_pool_replacement: ValuePoolEntry | None = Field(
         default=None,
         description=(
             "The replacement for a value pool entry."
@@ -337,7 +338,7 @@ class DeepAhbInputReplacement(BaseModel):
         ),
     )
     # replacements for DataElementFreeText
-    free_text_replacement: Optional[DataElementFreeText] = Field(
+    free_text_replacement: DataElementFreeText | None = Field(
         default=None,
         description=(
             "The replacement for a DataElementFreeText."
@@ -428,7 +429,7 @@ class DeepAnwendungshandbuch(BaseModel):
         :return: a list of all value pools
         """
         result: list[DataElementValuePool] = []
-        added_discriminators: set[Optional[str]] = set()
+        added_discriminators: set[str | None] = set()
         # checks like "str in set" are way faster than "value pool in list"
 
         def add_to_result(value_pool: DataElementValuePool):  # type: ignore[no-untyped-def]
@@ -477,7 +478,7 @@ def _replace_inputs_based_on_discriminator(
     """
 
     def process_data_element(
-        data_element: Union[DataElementFreeText, DataElementValuePool], replacement_result: DeepAhbInputReplacement
+        data_element: DataElementFreeText | DataElementValuePool, replacement_result: DeepAhbInputReplacement
     ) -> None:
         if isinstance(data_element, DataElementFreeText) and replacement_result.free_text_replacement:
             data_element.free_text = replacement_result.free_text_replacement.free_text

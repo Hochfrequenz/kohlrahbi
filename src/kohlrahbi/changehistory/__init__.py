@@ -10,9 +10,8 @@ The main functions in this module are:
 """
 
 import re
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Optional
 
 import docx
 import pandas as pd
@@ -38,7 +37,7 @@ def is_change_history_table(table: Table) -> bool:
         return False
 
 
-def get_change_history_table(document: Document) -> Optional[ChangeHistoryTable]:
+def get_change_history_table(document: Document) -> ChangeHistoryTable | None:
     """
     Reads a docx file and extracts the change history.
     Returns None if no such table was found.
@@ -118,7 +117,7 @@ def save_change_histories_to_excel(change_history_collection: dict[str, pd.DataF
     # It is handy during debugging to save different versions of the output files with the datetime information.
     # But in production we only want to save one file per day.
     # current_timestamp = datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
-    current_timestamp = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d")
+    current_timestamp = datetime.now(tz=UTC).strftime("%Y-%m-%d")
     path_to_change_history_excel_file = output_path / f"{current_timestamp}_change_histories.xlsx"
 
     logger.info("💾 Saving change histories xlsx file %s", path_to_change_history_excel_file)
@@ -158,7 +157,7 @@ def find_docx_files(input_path: Path) -> list[Path]:
     return docx_file_finder.get_all_docx_files_which_contain_change_histories()
 
 
-def process_docx_file(file_path: Path) -> Optional[pd.DataFrame]:
+def process_docx_file(file_path: Path) -> pd.DataFrame | None:
     """
     Read and process change history from a .docx file.
     """

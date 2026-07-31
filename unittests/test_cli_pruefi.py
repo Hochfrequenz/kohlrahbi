@@ -1,6 +1,3 @@
-from pathlib import Path
-from typing import Union
-
 import pytest
 from typer.testing import CliRunner
 
@@ -70,7 +67,7 @@ class TestCliPruefi:
         ],
     )
     def test_cli_pruefi_with_invalid_arguments(
-        self, argument_options: list[str], expected_response: dict[str, Union[str, int]]
+        self, argument_options: list[str], expected_response: dict[str, str | int]
     ) -> None:
         """
         This test runs the CLI tool with invalid arguments and checks if the output is as expected.
@@ -119,7 +116,7 @@ class TestCliPruefi:
     def test_cli_pruefi_with_valid_arguments(
         self,
         argument_options: list[str],
-        expected_response: dict[str, Union[str, int]],
+        expected_response: dict[str, str | int],
     ) -> None:
         """
         This test runs the CLI tool with valid arguments and checks if the output is as expected.
