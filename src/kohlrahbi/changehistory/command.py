@@ -177,9 +177,12 @@ def bnetza(
     if summary.no_change_history:
         no_ch = "\n".join(f"  - {name}" for name in summary.no_change_history)
         lines.append(f"[yellow]No change history:[/yellow]\n{no_ch}")
-    if summary.failed:
-        failed = "\n".join(f"  - {name}" for name in summary.failed)
-        lines.append(f"[red]Failed downloads:[/red]\n{failed}")
+    if summary.failed_processing:
+        failed_proc = "\n".join(f"  - {name}" for name in summary.failed_processing)
+        lines.append(f"[red]Failed to process:[/red]\n{failed_proc}")
+    if summary.failed_downloads:
+        failed_dl = "\n".join(f"  - {name}" for name in summary.failed_downloads)
+        lines.append(f"[red]Failed downloads:[/red]\n{failed_dl}")
     output_line = summary.output_file if summary.output_file else f"{output_path} (no Excel written)"
     lines.append(f"[blue]Output:[/blue]        {output_line}")
 

@@ -492,7 +492,7 @@ def extract_change_history_from_xlsx(xlsx_path: Path) -> pd.DataFrame:
         for worksheet in workbook.worksheets:
             rows = [[_cell_text(cell) for cell in row] for row in worksheet.iter_rows(values_only=True)]
             for header_idx, row in enumerate(rows):
-                if row and row[0] == "Änd-ID":
+                if row and _is_change_history_header(row[0]):
                     df = _rows_to_change_history_df(rows[header_idx:])
                     if not df.empty:
                         logger.info("Extracted %d rows of change history data from %s", len(df), xlsx_path.name)
@@ -532,7 +532,7 @@ def extract_change_history_from_html(html_path: Path) -> pd.DataFrame:
             if not isinstance(table_row, Tag):
                 continue
             rows.append([_cell_text(cell.get_text(" ", strip=True)) for cell in table_row.find_all(["td", "th"])])
-        if rows and rows[0] and rows[0][0].replace("\n", "").startswith("Änd-ID"):
+        if rows and rows[0] and _is_change_history_header(rows[0][0]):
             df = _rows_to_change_history_df(rows)
             if not df.empty:
                 logger.info("Extracted %d rows of change history data from %s", len(df), html_path.name)
@@ -591,21 +591,30 @@ def _unique_sheet_name(name: str, used_names: set[str]) -> str:
 _SUPPORTED_EXTENSIONS = (".pdf", ".xlsx", ".docx", ".html", ".htm")
 
 
-def _collect_sheets_data(document_files: list[Path]) -> tuple[list[tuple[str, pd.DataFrame]], list[str]]:
+@dataclass
+class ExtractionResult:
+    """Result of extracting change histories from a set of downloaded documents."""
+
+    sheets: list[tuple[str, pd.DataFrame]] = field(default_factory=list)
+    no_change_history: list[str] = field(default_factory=list)  # processed, but no Änderungshistorie
+    failed: list[str] = field(default_factory=list)  # raised while being processed
+
+
+def _collect_sheets_data(document_files: list[Path]) -> ExtractionResult:
     """
     Extract change history data from documents.
 
-    Returns ``(sheets_data, no_change_history)`` where ``sheets_data`` is the list of
-    ``(sheet_name, df)`` pairs and ``no_change_history`` lists the names of documents that were
-    processed but contained no Änderungshistorie table.
+    Documents that raise during processing are recorded in ``failed`` (a genuine error), kept
+    distinct from ``no_change_history`` (documents that were read fine but simply contain no
+    Änderungshistorie table).
     """
-    sheets_data: list[tuple[str, pd.DataFrame]] = []
-    no_change_history: list[str] = []
+    result = ExtractionResult()
     used_names: set[str] = set()
     for document_file in sorted(document_files, key=lambda x: x.stem):
         try:
             if not document_file.is_file():
                 logger.error("File %s is not a regular file", document_file.name)
+                result.failed.append(document_file.name)
                 continue
             logger.info("Processing %s (%d bytes)...", document_file.name, document_file.stat().st_size)
 
@@ -613,22 +622,22 @@ def _collect_sheets_data(document_files: list[Path]) -> tuple[list[tuple[str, pd
             if not df.empty:
                 sheet_name = _unique_sheet_name(_make_sheet_name(document_file), used_names)
                 used_names.add(sheet_name)
-                sheets_data.append((sheet_name, df))
+                result.sheets.append((sheet_name, df))
                 logger.info("Successfully extracted data from %s (%d rows)", document_file.name, len(df))
             else:
-                no_change_history.append(document_file.name)
+                result.no_change_history.append(document_file.name)
                 logger.warning("No change history data found in %s", document_file.name)
         except Exception as e:  # pylint: disable=broad-exception-caught
-            no_change_history.append(document_file.name)
+            result.failed.append(document_file.name)
             logger.error("Failed to process %s: %s", document_file.name, str(e))
             continue
 
     logger.info(
         "Successfully extracted change histories from %d of %d documents",
-        len(sheets_data),
+        len(result.sheets),
         len(document_files),
     )
-    return sheets_data, no_change_history
+    return result
 
 
 def _write_sheets_to_excel(sheets_data: list[tuple[str, pd.DataFrame]], output_file: Path) -> None:
@@ -658,9 +667,7 @@ def _write_sheets_to_excel(sheets_data: list[tuple[str, pd.DataFrame]], output_f
         raise
 
 
-def create_change_history_excel(
-    document_dir: Path, output_file: Path
-) -> tuple[list[tuple[str, pd.DataFrame]], list[str]]:
+def create_change_history_excel(document_dir: Path, output_file: Path) -> ExtractionResult:
     """
     Create an Excel file containing change history tables from all documents in the directory.
 
@@ -669,31 +676,31 @@ def create_change_history_excel(
         output_file: Path where the Excel file should be saved
 
     Returns:
-        ``(sheets_data, no_change_history)``: the ``(sheet_name, df)`` pairs that were written and
-        the names of documents processed but containing no change history.
+        The :class:`ExtractionResult` describing which documents produced sheets, which contained
+        no change history and which failed to process.
     """
     if not document_dir.exists():
         logger.error("Directory %s does not exist", document_dir)
-        return [], []
+        return ExtractionResult()
 
     document_files = [p for p in sorted(document_dir.iterdir()) if p.suffix.lower() in _SUPPORTED_EXTENSIONS]
     if not document_files:
         logger.warning("No documents found in directory %s", document_dir)
-        return [], []
+        return ExtractionResult()
 
     logger.info("Found %d documents to process", len(document_files))
 
-    sheets_data, no_change_history = _collect_sheets_data(document_files)
+    result = _collect_sheets_data(document_files)
 
-    if not sheets_data:
+    if not result.sheets:
         logger.warning("No change history data extracted from any document; no Excel file written")
-        return [], no_change_history
+        return result
 
-    sheets_data.sort(key=lambda x: x[0])
+    result.sheets.sort(key=lambda x: x[0])
 
-    logger.info("Creating Excel file at %s with %d sheets", output_file, len(sheets_data))
-    _write_sheets_to_excel(sheets_data, output_file)
-    return sheets_data, no_change_history
+    logger.info("Creating Excel file at %s with %d sheets", output_file, len(result.sheets))
+    _write_sheets_to_excel(result.sheets, output_file)
+    return result
 
 
 @dataclass
@@ -703,10 +710,11 @@ class BNetzASummary:
     links_found: int = 0
     downloaded: int = 0
     skipped: int = 0
-    failed: list[str] = field(default_factory=list)
-    kinds: dict[str, int] = field(default_factory=dict)
+    failed_downloads: list[str] = field(default_factory=list)
+    kinds: dict[str, int] = field(default_factory=dict)  # by real type, downloaded files only
     sheets: list[str] = field(default_factory=list)
     no_change_history: list[str] = field(default_factory=list)
+    failed_processing: list[str] = field(default_factory=list)
     output_file: Path | None = None
 
 
@@ -753,22 +761,24 @@ async def download_documents(url: str, target_dir: Path | None = None) -> BNetzA
         logger.info("Download process completed")
 
     for result in results:
-        summary.kinds[result.kind] = summary.kinds.get(result.kind, 0) + 1
         if result.status == "downloaded":
             summary.downloaded += 1
+            # kinds describes freshly downloaded files, matching the "Downloaded" count shown.
+            summary.kinds[result.kind] = summary.kinds.get(result.kind, 0) + 1
         elif result.status == "skipped":
             summary.skipped += 1
         elif result.status == "failed":
-            summary.failed.append(result.stem)
+            summary.failed_downloads.append(result.stem)
 
     output_file = target_dir.parent / "change_history.xlsx"
     logger.info("Creating change history Excel file at %s", output_file)
 
-    sheets_data, no_change_history = create_change_history_excel(target_dir, output_file)
-    summary.sheets = [name for name, _ in sheets_data]
-    summary.no_change_history = no_change_history
+    extraction = create_change_history_excel(target_dir, output_file)
+    summary.sheets = [name for name, _ in extraction.sheets]
+    summary.no_change_history = extraction.no_change_history
+    summary.failed_processing = extraction.failed
 
-    if sheets_data and output_file.exists():
+    if extraction.sheets and output_file.exists():
         summary.output_file = output_file
         logger.info("Excel file created at %s (%d bytes)", output_file, output_file.stat().st_size)
     else:

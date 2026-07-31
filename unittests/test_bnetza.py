@@ -2,9 +2,15 @@
 
 import io
 import zipfile
+from pathlib import Path
 from unittest.mock import MagicMock
 
+import pandas as pd
+import pytest
+
+from kohlrahbi.changehistory import bnetza
 from kohlrahbi.changehistory.bnetza import (
+    _collect_sheets_data,
     _filename_stem_from_url,
     _is_change_history_header,
     _rows_to_change_history_df,
@@ -277,3 +283,29 @@ class TestIsChangeHistoryHeader:
         assert not _is_change_history_header(None)
         assert not _is_change_history_header("")
         assert not _is_change_history_header("Ort")
+
+
+class TestCollectSheetsData:
+    def test_separates_failures_from_no_change_history(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        good = tmp_path / "AHB_UTILMD_2_3.pdf"
+        empty = tmp_path / "Formblatt.xlsx"
+        broken = tmp_path / "AHB_APERAK_1_1.pdf"
+        for file in (good, empty, broken):
+            file.write_bytes(b"x")
+
+        def fake_extract(path: Path) -> pd.DataFrame:
+            if path.name == broken.name:
+                raise ValueError("corrupt document")
+            if path.name == good.name:
+                return pd.DataFrame({"Änd-ID": ["1"]})
+            return pd.DataFrame()  # empty -> no change history
+
+        monkeypatch.setattr(bnetza, "extract_change_history_from_document", fake_extract)
+
+        result = _collect_sheets_data([good, empty, broken])
+
+        assert len(result.sheets) == 1  # only the good document produced a sheet
+        assert result.no_change_history == ["Formblatt.xlsx"]
+        # A document that raised is a failure, NOT reported as "no change history".
+        assert result.failed == ["AHB_APERAK_1_1.pdf"]
+        assert broken.name not in result.no_change_history
