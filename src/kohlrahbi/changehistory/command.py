@@ -154,22 +154,41 @@ def bnetza(
         ),
     ] = False,
 ) -> None:
-    """Download PDFs from a BNetzA URL and extract change histories."""
+    """Download documents from a BNetzA URL and extract change histories."""
     setup_logging(verbose=verbose)
     check_python_version(console)
 
-    from kohlrahbi.changehistory.bnetza import download_pdfs
+    from kohlrahbi.changehistory.bnetza import download_documents
 
     output_path.mkdir(parents=True, exist_ok=True)
     pdf_dir = output_path / "pdfs"
 
     with spinner_progress(console) as progress:
-        progress.add_task("Downloading and processing PDFs from BNetzA...", total=None)
-        asyncio.run(download_pdfs(url=url, target_dir=pdf_dir))
+        progress.add_task("Downloading and processing documents from BNetzA...", total=None)
+        summary = asyncio.run(download_documents(url=url, target_dir=pdf_dir))
+
+    kinds = ", ".join(f"{count}×{kind}" for kind, count in sorted(summary.kinds.items())) or "none"
+    cached = f"  [dim]+{summary.skipped} cached[/dim]" if summary.skipped else ""
+    lines = [
+        f"[green]Links found:[/green]   {summary.links_found}",
+        f"[green]Downloaded:[/green]    {summary.downloaded} ({kinds}){cached}",
+        f"[green]Sheets written:[/green] {len(summary.sheets)}",
+    ]
+    if summary.no_change_history:
+        no_ch = "\n".join(f"  - {name}" for name in summary.no_change_history)
+        lines.append(f"[yellow]No change history:[/yellow]\n{no_ch}")
+    if summary.failed_processing:
+        failed_proc = "\n".join(f"  - {name}" for name in summary.failed_processing)
+        lines.append(f"[red]Failed to process:[/red]\n{failed_proc}")
+    if summary.failed_downloads:
+        failed_dl = "\n".join(f"  - {name}" for name in summary.failed_downloads)
+        lines.append(f"[red]Failed downloads:[/red]\n{failed_dl}")
+    output_line = summary.output_file if summary.output_file else f"{output_path} (no Excel written)"
+    lines.append(f"[blue]Output:[/blue]        {output_line}")
 
     console.print(
         Panel(
-            f"[blue]Output:[/blue] {output_path}",
+            "\n".join(lines),
             title="BNetzA Change History Extraction Complete",
             border_style="green",
         )

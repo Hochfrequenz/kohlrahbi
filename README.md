@@ -109,7 +109,7 @@ kohlrahbi --help
 | `kohlrahbi ahb`                  | Extract AHB tables from `.docx` files                        |
 | `kohlrahbi conditions`           | Extract conditions and packages from `.docx` files           |
 | `kohlrahbi changehistory docx`   | Extract change histories from `.docx` files                  |
-| `kohlrahbi changehistory bnetza` | Download PDFs from a BNetzA URL and extract change histories |
+| `kohlrahbi changehistory bnetza` | Download documents from a BNetzA URL and extract change histories |
 
 ---
 
@@ -182,9 +182,15 @@ The `changehistory` command has two subcommands depending on your data source.
 kohlrahbi changehistory docx -eemp ../edi_energy_mirror/ --output-path ./output/ --format-version FV2310
 ```
 
-#### `kohlrahbi changehistory bnetza` — From BNetzA PDFs
+#### `kohlrahbi changehistory bnetza` — From BNetzA documents
 
-Downloads PDF documents from a BNetzA URL, extracts the change history tables, and writes them to an Excel file.
+Downloads all linked documents from a BNetzA "Mitteilung" URL, extracts the change history
+(`Änderungshistorie`) tables, and writes one Excel sheet per document.
+
+It handles every document the page links, not just PDFs: newer pages serve most EDIFACT
+documents as `.html`-named downloads (whose body is actually a PDF) and some as Office files.
+Each file's real type is detected from its content, so nothing is skipped because of its URL
+extension.
 
 ```bash
 kohlrahbi changehistory bnetza \
@@ -192,7 +198,10 @@ kohlrahbi changehistory bnetza \
   --output-path ./output/
 ```
 
-The PDFs are saved to `<output-path>/pdfs/` and the resulting Excel file to `<output-path>/change_history.xlsx`.
+The downloaded documents are saved to `<output-path>/pdfs/` and the resulting Excel file to
+`<output-path>/change_history.xlsx`. On completion a summary reports how many links were found,
+how many documents were downloaded (by type), how many sheets were written, and which documents
+contained no change history.
 
 ## `.docx` Data Sources
 

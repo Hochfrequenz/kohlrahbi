@@ -1,17 +1,32 @@
-"""Module to download and handle BNetzA PDF files."""
+"""Module to download and handle BNetzA change-history documents (PDF, Office and HTML)."""
 
 import asyncio
+import io
 import logging
 import re
+import zipfile
+from dataclasses import dataclass, field
 from pathlib import Path
+from urllib.parse import unquote, urldefrag, urljoin, urlparse
 
+import docx
 import httpx
+import openpyxl  # type: ignore[import-untyped]
 import pandas as pd
 import pdfplumber
 from bs4 import BeautifulSoup
+from bs4.element import Tag
 from openpyxl.styles import Alignment  # type: ignore[import-untyped]
 
+from kohlrahbi.changehistory import get_change_history_table
+
 logger = logging.getLogger(__name__)
+
+# BNetzA occasionally blocks clients without a browser-like User-Agent; set one defensively.
+_HTTP_HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; kohlrahbi change-history scraper)"}
+
+# Map a detected document kind to the file extension we store it under.
+_EXTENSION_BY_KIND = {"pdf": ".pdf", "xlsx": ".xlsx", "docx": ".docx", "html": ".html"}
 
 
 def clean_filename(text: str) -> str:
@@ -37,106 +52,206 @@ def clean_filename(text: str) -> str:
     return text
 
 
-async def get_pdf_links(url: str) -> list[tuple[str, str]]:
+def _resolve_base_url(page_url: str, soup: BeautifulSoup) -> str:
     """
-    Fetch all PDF links from the given BNetzA website URL.
-    Returns a list of tuples containing (filename, url).
+    Determine the base URL used to resolve relative links on the page.
+
+    BNetzA pages set ``<base href="/">`` and emit document links that are relative *without*
+    a leading slash (e.g. ``DE/Beschlusskammern/...``), so they must be resolved against the
+    site root rather than the document's directory.
+    """
+    base_tag = soup.find("base")
+    if isinstance(base_tag, Tag):
+        base_href = base_tag.get("href")
+        if isinstance(base_href, str) and base_href:
+            return urljoin(page_url, base_href)
+    return page_url
+
+
+def _is_download_link(anchor: Tag) -> bool:
+    """
+    Decide whether an anchor points to a downloadable BNetzA document.
+
+    Download links are marked either by a CSS class (``downloadLink``/``Publication``) or by a
+    tell-tale query/fragment (``__blob=publicationFile`` or ``#download=1``). Matching on any of
+    these catches PDFs, Office documents and the ``.html``-named documents alike.
+    """
+    href = anchor.get("href")
+    if not isinstance(href, str) or not href:
+        return False
+    class_attr = anchor.get("class")
+    class_str = " ".join(class_attr) if isinstance(class_attr, list) else (class_attr or "")
+    if "downloadLink" in class_str or "Publication" in class_str:
+        return True
+    return "__blob=publicationFile" in href or "#download=1" in href
+
+
+def extract_document_links(page_html: str, page_url: str) -> list[tuple[str, str]]:
+    """
+    Parse all downloadable document links out of a BNetzA page's HTML.
+
+    Returns a list of ``(absolute_url, link_text)`` tuples, de-duplicated by absolute URL
+    (ignoring the fragment). Relative hrefs are resolved against the page's ``<base>`` element.
+    """
+    soup = BeautifulSoup(page_html, "html.parser")
+    base_url = _resolve_base_url(page_url, soup)
+
+    links: list[tuple[str, str]] = []
+    seen: set[str] = set()
+    for anchor in soup.find_all("a"):
+        if not isinstance(anchor, Tag) or not _is_download_link(anchor):
+            continue
+        href = anchor.get("href")
+        assert isinstance(href, str)  # guaranteed by _is_download_link
+        absolute_url = urldefrag(urljoin(base_url, href)).url
+        if absolute_url in seen:
+            continue
+        seen.add(absolute_url)
+        links.append((absolute_url, anchor.get_text(strip=True)))
+    return links
+
+
+async def get_document_links(url: str) -> list[tuple[str, str]]:
+    """
+    Fetch all downloadable document links from the given BNetzA website URL.
+
+    Returns a list of ``(absolute_url, link_text)`` tuples, de-duplicated by absolute URL
+    (ignoring the fragment). Unlike the previous implementation this is not limited to ``.pdf``
+    links: newer BNetzA pages serve most EDIFACT documents as ``.html``-named downloads and as
+    Office files, all of which are included here.
 
     Args:
-        url: The BNetzA page URL to scrape for PDF links.
+        url: The BNetzA page URL to scrape for document links.
     """
-    async with httpx.AsyncClient(timeout=httpx.Timeout(30.0)) as client:
+    async with httpx.AsyncClient(timeout=httpx.Timeout(30.0), follow_redirects=True, headers=_HTTP_HEADERS) as client:
         response = await client.get(url)
         response.raise_for_status()
+        page_html = response.text
 
-        soup = BeautifulSoup(response.text, "html.parser")
-        pdf_links = []
-
-        # Find all links that point to PDF files
-        for link in soup.find_all("a"):
-            if not hasattr(link, "get"):
-                continue
-            href = link.get("href", "")
-            text = link.get_text(strip=True)
-
-            if isinstance(href, str) and ".pdf" in href:
-                # Convert relative URLs to absolute URLs if necessary
-                if href.startswith("/"):
-                    href = f"https://www.bundesnetzagentur.de{href}"
-                # Create a clean filename
-                safe_filename = clean_filename(text)
-                pdf_links.append((safe_filename, href))
-
-        logger.info("Found %d PDF links to download", len(pdf_links))
-        return pdf_links
+    links = extract_document_links(page_html, url)
+    logger.info("Found %d document links to download", len(links))
+    return links
 
 
-async def download_pdf(client: httpx.AsyncClient, filename: str, url: str, target_path: Path) -> None:
+def _filename_stem_from_url(url: str) -> str:
     """
-    Download a single PDF file.
+    Derive a stable filename stem from the document URL (not the anchor text).
+
+    Using the URL avoids collisions between documents that share a human-readable label and
+    yields the real document name (e.g. ``UTILMD_AHB_Strom_2_3_Konsultationsfassung_20260731``).
+    The extension is intentionally dropped here; the real one is chosen after download based on
+    the actual content type.
     """
-    if target_path.exists():
-        logger.info("File %s already exists, skipping...", filename)
-        return
+    path = urlparse(url).path
+    name = unquote(path.rsplit("/", 1)[-1])
+    stem = name.rsplit(".", 1)[0] if "." in name else name
+    return stem or "document"
+
+
+def _kind_from_content_type(content_type: str | None) -> str:
+    """Map an HTTP ``Content-Type`` to a document kind (fallback when magic bytes are unclear)."""
+    if not content_type:
+        return "unknown"
+    normalized = content_type.split(";")[0].strip().lower()
+    if "spreadsheetml" in normalized:
+        return "xlsx"
+    if "wordprocessingml" in normalized:
+        return "docx"
+    simple = {
+        "application/pdf": "pdf",
+        "text/html": "html",
+        "application/xhtml+xml": "html",
+    }
+    return simple.get(normalized, "unknown")
+
+
+def detect_document_type(content: bytes, content_type: str | None = None) -> str:
+    """
+    Classify a downloaded document by its content.
+
+    BNetzA serves many documents under a ``.html`` filename even though the body is a PDF, so the
+    real type must be detected from the bytes (with the HTTP ``Content-Type`` as a fallback)
+    rather than trusted from the URL extension.
+
+    Returns one of ``"pdf"``, ``"xlsx"``, ``"docx"``, ``"html"`` or ``"unknown"``.
+    """
+    if content[:4] == b"%PDF":
+        return "pdf"
+    if content[:2] == b"PK":
+        try:
+            names = zipfile.ZipFile(io.BytesIO(content)).namelist()
+        except zipfile.BadZipFile:
+            names = []
+        if any(name.startswith("xl/") for name in names):
+            return "xlsx"
+        if any(name.startswith("word/") for name in names):
+            return "docx"
+    stripped = content[:64].lstrip().lower()
+    if stripped.startswith(b"<!doctype html") or stripped.startswith(b"<html"):
+        return "html"
+    return _kind_from_content_type(content_type)
+
+
+@dataclass
+class DownloadResult:
+    """Outcome of downloading a single BNetzA document."""
+
+    url: str
+    text: str
+    stem: str
+    kind: str  # pdf / xlsx / docx / html / unknown
+    path: Path | None
+    status: str  # "downloaded", "skipped", "failed"
+    error: str | None = None
+
+
+def _find_existing_download(target_dir: Path, stem: str) -> Path | None:
+    """Return an already-downloaded file for this stem, if any (any extension)."""
+    for candidate in sorted(target_dir.glob(f"{stem}.*")):
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+async def download_document(
+    client: httpx.AsyncClient, url: str, text: str, target_dir: Path, semaphore: asyncio.Semaphore
+) -> DownloadResult:
+    """
+    Download a single document, detect its real type, and store it with the correct extension.
+
+    Skips the download when a file for the same stem already exists on disk (any extension).
+    """
+    stem = _filename_stem_from_url(url)
+
+    existing = _find_existing_download(target_dir, stem)
+    if existing is not None:
+        logger.info("File %s already exists, skipping download...", existing.name)
+        kind = next((k for k, ext in _EXTENSION_BY_KIND.items() if ext == existing.suffix.lower()), "unknown")
+        return DownloadResult(url=url, text=text, stem=stem, kind=kind, path=existing, status="skipped")
 
     try:
-        logger.info("Downloading %s from %s", filename, url)
-        async with client.stream("GET", url) as response:
+        async with semaphore:
+            logger.info("Downloading %s from %s", stem, url)
+            response = await client.get(url)
             response.raise_for_status()
-            with open(target_path, "wb") as f:
-                async for chunk in response.aiter_bytes():
-                    f.write(chunk)
-        logger.info("Successfully downloaded %s", filename)
-    except httpx.HTTPError as e:
-        logger.error("Failed to download %s from %s: %s", filename, url, str(e))
-    except Exception as e:  # pylint: disable=broad-exception-caught
-        logger.error("Unexpected error while downloading %s: %s", filename, str(e))
+            content = response.content
+    except httpx.HTTPError as error:
+        logger.error("Failed to download %s from %s: %s", stem, url, str(error))
+        return DownloadResult(
+            url=url, text=text, stem=stem, kind="unknown", path=None, status="failed", error=str(error)
+        )
 
+    kind = detect_document_type(content, response.headers.get("content-type"))
+    extension = _EXTENSION_BY_KIND.get(kind, Path(urlparse(url).path).suffix or ".bin")
+    target_path = target_dir / f"{stem}{extension}"
+    try:
+        target_path.write_bytes(content)
+    except OSError as error:
+        logger.error("Failed to write %s: %s", target_path.name, str(error))
+        return DownloadResult(url=url, text=text, stem=stem, kind=kind, path=None, status="failed", error=str(error))
 
-def rename_existing_files(directory: Path) -> None:
-    """
-    Rename existing files in the directory to match the new naming convention.
-
-    Args:
-        directory: The directory containing the files to rename
-    """
-    if not directory.exists():
-        return
-
-    for file_path in directory.glob("*.pdf"):
-        old_name = file_path.name
-        new_name = clean_filename(old_name)
-
-        if old_name != new_name:
-            old_path = directory / old_name
-            new_path = directory / new_name
-            logger.info("Renaming %s to %s", old_name, new_name)
-            try:
-                old_path.rename(new_path)
-            except Exception as e:  # pylint: disable=broad-exception-caught
-                logger.error("Failed to rename %s: %s", old_name, str(e))
-
-
-def cleanup_old_files(directory: Path) -> None:
-    """
-    Remove files with the old naming convention (containing file size information).
-
-    Args:
-        directory: The directory containing the files to clean up
-    """
-    if not directory.exists():
-        return
-
-    # Pattern to match files with size information in parentheses
-    pattern = re.compile(r".*\(pdf___\d+(?:\.\d+)?\s*[KMG]B\)\.pdf$")
-
-    for file_path in directory.glob("*.pdf"):
-        if pattern.match(file_path.name):
-            logger.info("Removing old file: %s", file_path.name)
-            try:
-                file_path.unlink()
-            except Exception as e:  # pylint: disable=broad-exception-caught
-                logger.error("Failed to remove %s: %s", file_path.name, str(e))
+    logger.info("Successfully downloaded %s (%s, %d bytes)", target_path.name, kind, len(content))
+    return DownloadResult(url=url, text=text, stem=stem, kind=kind, path=target_path, status="downloaded")
 
 
 def find_change_history_page(pdf: pdfplumber.pdf.PDF) -> int:
@@ -263,6 +378,17 @@ def clean_table_data(table: list[list[str | None]]) -> list[list[str]]:
     return result
 
 
+def _is_change_history_header(first_cell: str | None) -> bool:
+    """
+    Decide whether a table's first cell marks the start of an Änderungshistorie table.
+
+    The header cell is sometimes split across lines (``"Änd-\\nID"``) or annotated
+    (``"Änd-ID\\n…"``), so newlines are stripped and a prefix match is used. This is a strict
+    superset of an exact ``"Änd-ID"`` match.
+    """
+    return (first_cell or "").replace("\n", "").strip().startswith("Änd-ID")
+
+
 def extract_change_history(pdf_path: Path) -> pd.DataFrame:
     """
     Extract the Änderungshistorie table from a PDF file.
@@ -300,10 +426,7 @@ def extract_change_history(pdf_path: Path) -> pd.DataFrame:
                     if not table or not table[0]:
                         continue
 
-                    first_cell = table[0][0]
-                    is_change_history_table = first_cell in ("Änd-ID", "Änd-\nID")
-
-                    if is_change_history_table:
+                    if _is_change_history_header(table[0][0]):
                         logger.info(
                             "Found change history table in %s on page %d (table %d)",
                             pdf_path.name,
@@ -333,9 +456,116 @@ def extract_change_history(pdf_path: Path) -> pd.DataFrame:
         return pd.DataFrame()
 
 
-def _make_sheet_name(pdf_file: Path) -> str:
-    """Create an Excel sheet name from a PDF filename, max 31 chars."""
-    name = pdf_file.stem
+def _cell_text(cell: object) -> str:
+    """Normalize a raw cell value (openpyxl/BeautifulSoup) to a stripped string."""
+    return "" if cell is None else str(cell).strip()
+
+
+def _rows_to_change_history_df(rows: list[list[str]]) -> pd.DataFrame:
+    """
+    Build a change-history DataFrame from a list of text rows.
+
+    The first row is treated as the header; empty trailing rows are dropped and every row is
+    padded/truncated to the header width. Used for the Office/HTML extraction paths where
+    ``pdfplumber``'s page-spanning logic does not apply.
+    """
+    if len(rows) < 2:
+        return pd.DataFrame()
+    header = rows[0]
+    width = len(header)
+    data = [row for row in rows[1:] if any(cell for cell in row)]
+    normalized = [(row + [""] * width)[:width] for row in data]
+    if not normalized:
+        return pd.DataFrame()
+    return pd.DataFrame(normalized, columns=header)
+
+
+def extract_change_history_from_xlsx(xlsx_path: Path) -> pd.DataFrame:
+    """Extract the Änderungshistorie table from an ``.xlsx`` document, if it contains one."""
+    try:
+        workbook = openpyxl.load_workbook(xlsx_path, read_only=True, data_only=True)
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        logger.error("Failed to open XLSX %s: %s", xlsx_path.name, str(e))
+        return pd.DataFrame()
+
+    try:
+        for worksheet in workbook.worksheets:
+            rows = [[_cell_text(cell) for cell in row] for row in worksheet.iter_rows(values_only=True)]
+            for header_idx, row in enumerate(rows):
+                if row and _is_change_history_header(row[0]):
+                    df = _rows_to_change_history_df(rows[header_idx:])
+                    if not df.empty:
+                        logger.info("Extracted %d rows of change history data from %s", len(df), xlsx_path.name)
+                        return df
+    finally:
+        workbook.close()
+
+    logger.warning("No change history table found in %s", xlsx_path.name)
+    return pd.DataFrame()
+
+
+def extract_change_history_from_docx(docx_path: Path) -> pd.DataFrame:
+    """Extract the Änderungshistorie table from a ``.docx`` document, reusing the docx pipeline."""
+    try:
+        document = docx.Document(str(docx_path))
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        logger.error("Failed to open DOCX %s: %s", docx_path.name, str(e))
+        return pd.DataFrame()
+
+    change_history_table = get_change_history_table(document=document)
+    if change_history_table is None:
+        logger.warning("No change history table found in %s", docx_path.name)
+        return pd.DataFrame()
+
+    change_history_table.sanitize_table()
+    return change_history_table.table
+
+
+def extract_change_history_from_html(html_path: Path) -> pd.DataFrame:
+    """Extract the Änderungshistorie table from a genuine HTML document, if it contains one."""
+    soup = BeautifulSoup(html_path.read_text(encoding="utf-8", errors="replace"), "html.parser")
+    for table in soup.find_all("table"):
+        if not isinstance(table, Tag):
+            continue
+        rows: list[list[str]] = []
+        for table_row in table.find_all("tr"):
+            if not isinstance(table_row, Tag):
+                continue
+            rows.append([_cell_text(cell.get_text(" ", strip=True)) for cell in table_row.find_all(["td", "th"])])
+        if rows and rows[0] and _is_change_history_header(rows[0][0]):
+            df = _rows_to_change_history_df(rows)
+            if not df.empty:
+                logger.info("Extracted %d rows of change history data from %s", len(df), html_path.name)
+                return df
+
+    logger.warning("No change history table found in %s", html_path.name)
+    return pd.DataFrame()
+
+
+def extract_change_history_from_document(document_path: Path) -> pd.DataFrame:
+    """
+    Route a downloaded document to the extractor matching its (real) file type.
+
+    Note: BNetzA serves many documents under a ``.html`` filename whose body is actually a PDF;
+    those are stored with a ``.pdf`` extension at download time, so routing on the suffix here is
+    correct.
+    """
+    suffix = document_path.suffix.lower()
+    if suffix == ".pdf":
+        return extract_change_history(document_path)
+    if suffix == ".xlsx":
+        return extract_change_history_from_xlsx(document_path)
+    if suffix == ".docx":
+        return extract_change_history_from_docx(document_path)
+    if suffix in (".html", ".htm"):
+        return extract_change_history_from_html(document_path)
+    logger.warning("Unsupported document type for change history extraction: %s", document_path.name)
+    return pd.DataFrame()
+
+
+def _make_sheet_name(document_file: Path) -> str:
+    """Create an Excel sheet name from a document filename, max 31 chars."""
+    name = document_file.stem
     if "AHB" in name:
         name = f"AHB_{name.replace('_AHB', '')}"
     elif "MIG" in name:
@@ -345,32 +575,69 @@ def _make_sheet_name(pdf_file: Path) -> str:
     return name
 
 
-def _collect_sheets_data(pdf_files: list[Path]) -> list[tuple[str, pd.DataFrame]]:
-    """Extract change history data from PDF files and return as (sheet_name, df) pairs."""
-    sheets_data: list[tuple[str, pd.DataFrame]] = []
-    processed_count = 0
-    for pdf_file in sorted(pdf_files, key=lambda x: x.stem):
+def _unique_sheet_name(name: str, used_names: set[str]) -> str:
+    """Return a sheet name not already in ``used_names``, disambiguating with a numeric suffix."""
+    if name not in used_names:
+        return name
+    for counter in range(2, 1000):
+        suffix = f"_{counter}"
+        candidate = name[: 31 - len(suffix)] + suffix
+        if candidate not in used_names:
+            return candidate
+    return name[:31]
+
+
+# Document extensions we know how to extract a change history from.
+_SUPPORTED_EXTENSIONS = (".pdf", ".xlsx", ".docx", ".html", ".htm")
+
+
+@dataclass
+class ExtractionResult:
+    """Result of extracting change histories from a set of downloaded documents."""
+
+    sheets: list[tuple[str, pd.DataFrame]] = field(default_factory=list)
+    no_change_history: list[str] = field(default_factory=list)  # processed, but no Änderungshistorie
+    failed: list[str] = field(default_factory=list)  # raised while being processed
+
+
+def _collect_sheets_data(document_files: list[Path]) -> ExtractionResult:
+    """
+    Extract change history data from documents.
+
+    Documents that raise during processing are recorded in ``failed`` (a genuine error), kept
+    distinct from ``no_change_history`` (documents that were read fine but simply contain no
+    Änderungshistorie table).
+    """
+    result = ExtractionResult()
+    used_names: set[str] = set()
+    for document_file in sorted(document_files, key=lambda x: x.stem):
         try:
-            logger.info("Processing %s...", pdf_file.name)
-            logger.info("File size: %d bytes", pdf_file.stat().st_size)
-
-            if not pdf_file.is_file():
-                logger.error("File %s is not a regular file", pdf_file.name)
+            if not document_file.is_file():
+                logger.error("File %s is not a regular file", document_file.name)
+                result.failed.append(document_file.name)
                 continue
+            logger.info("Processing %s (%d bytes)...", document_file.name, document_file.stat().st_size)
 
-            df = extract_change_history(pdf_file)
+            df = extract_change_history_from_document(document_file)
             if not df.empty:
-                sheets_data.append((_make_sheet_name(pdf_file), df))
-                processed_count += 1
-                logger.info("Successfully extracted data from %s (%d rows)", pdf_file.name, len(df))
+                sheet_name = _unique_sheet_name(_make_sheet_name(document_file), used_names)
+                used_names.add(sheet_name)
+                result.sheets.append((sheet_name, df))
+                logger.info("Successfully extracted data from %s (%d rows)", document_file.name, len(df))
             else:
-                logger.warning("No change history data found in %s", pdf_file.name)
+                result.no_change_history.append(document_file.name)
+                logger.warning("No change history data found in %s", document_file.name)
         except Exception as e:  # pylint: disable=broad-exception-caught
-            logger.error("Failed to process %s: %s", pdf_file.name, str(e))
+            result.failed.append(document_file.name)
+            logger.error("Failed to process %s: %s", document_file.name, str(e))
             continue
 
-    logger.info("Successfully processed %d out of %d PDF files", processed_count, len(pdf_files))
-    return sheets_data
+    logger.info(
+        "Successfully extracted change histories from %d of %d documents",
+        len(result.sheets),
+        len(document_files),
+    )
+    return result
 
 
 def _write_sheets_to_excel(sheets_data: list[tuple[str, pd.DataFrame]], output_file: Path) -> None:
@@ -400,91 +667,125 @@ def _write_sheets_to_excel(sheets_data: list[tuple[str, pd.DataFrame]], output_f
         raise
 
 
-def create_change_history_excel(pdf_dir: Path, output_file: Path) -> None:
+def create_change_history_excel(document_dir: Path, output_file: Path) -> ExtractionResult:
     """
-    Create an Excel file containing change history tables from all PDFs in the directory.
+    Create an Excel file containing change history tables from all documents in the directory.
 
     Args:
-        pdf_dir: Directory containing PDF files
+        document_dir: Directory containing the downloaded documents (PDF/Office/HTML)
         output_file: Path where the Excel file should be saved
+
+    Returns:
+        The :class:`ExtractionResult` describing which documents produced sheets, which contained
+        no change history and which failed to process.
     """
-    if not pdf_dir.exists():
-        logger.error("Directory %s does not exist", pdf_dir)
-        return
+    if not document_dir.exists():
+        logger.error("Directory %s does not exist", document_dir)
+        return ExtractionResult()
 
-    pdf_files = list(pdf_dir.glob("*.pdf"))
-    if not pdf_files:
-        logger.warning("No PDF files found in directory %s", pdf_dir)
-        return
+    document_files = [p for p in sorted(document_dir.iterdir()) if p.suffix.lower() in _SUPPORTED_EXTENSIONS]
+    if not document_files:
+        logger.warning("No documents found in directory %s", document_dir)
+        return ExtractionResult()
 
-    logger.info("Found %d PDF files to process", len(pdf_files))
+    logger.info("Found %d documents to process", len(document_files))
 
-    sheets_data = _collect_sheets_data(pdf_files)
+    result = _collect_sheets_data(document_files)
 
-    if not sheets_data:
-        logger.error("No data extracted from any PDF files. Creating empty Excel file for testing...")
-        test_df = pd.DataFrame({"Test": ["No data found"], "Status": ["No change history data extracted from PDFs"]})
-        sheets_data = [("Test", test_df)]
-        logger.warning("Created test sheet with no data message")
+    if not result.sheets:
+        logger.warning("No change history data extracted from any document; no Excel file written")
+        return result
 
-    sheets_data.sort(key=lambda x: x[0])
+    result.sheets.sort(key=lambda x: x[0])
 
-    logger.info("Creating Excel file at %s with %d sheets", output_file, len(sheets_data))
-    _write_sheets_to_excel(sheets_data, output_file)
+    logger.info("Creating Excel file at %s with %d sheets", output_file, len(result.sheets))
+    _write_sheets_to_excel(result.sheets, output_file)
+    return result
 
 
-async def download_pdfs(url: str, target_dir: Path | None = None) -> None:
+@dataclass
+class BNetzASummary:
+    """Reconciliation of a BNetzA change-history run: links → downloads → extracted sheets."""
+
+    links_found: int = 0
+    downloaded: int = 0
+    skipped: int = 0
+    failed_downloads: list[str] = field(default_factory=list)
+    kinds: dict[str, int] = field(default_factory=dict)  # by real type, downloaded files only
+    sheets: list[str] = field(default_factory=list)
+    no_change_history: list[str] = field(default_factory=list)
+    failed_processing: list[str] = field(default_factory=list)
+    output_file: Path | None = None
+
+
+# Limit concurrent downloads to be polite to the BNetzA server and cap peak memory.
+_MAX_CONCURRENT_DOWNLOADS = 8
+
+
+async def download_documents(url: str, target_dir: Path | None = None) -> BNetzASummary:
     """
-    Download PDF files from the given BNetzA website URL and store them in the specified directory.
-    If no directory is specified, creates a 'pdfs' directory next to this script.
+    Download all documents linked from the given BNetzA page and build the change-history Excel.
+
+    Downloads PDFs, Office files and the ``.html``-named documents (which are usually PDFs),
+    stores each under its real file type, extracts the Änderungshistorie from every document that
+    has one, and writes one Excel sheet per document to ``<target_dir>/../change_history.xlsx``.
 
     Args:
-        url: The BNetzA page URL to scrape for PDF links.
-        target_dir: Directory to store downloaded PDFs. Defaults to a 'pdfs' directory next to this script.
+        url: The BNetzA page URL to scrape for document links.
+        target_dir: Directory to store downloaded documents. Defaults to a 'pdfs' directory next
+            to this script.
+
+    Returns:
+        A :class:`BNetzASummary` reconciling links found, files downloaded and sheets extracted.
     """
     if target_dir is None:
         target_dir = Path(__file__).parent / "pdfs"
 
-    target_dir.mkdir(exist_ok=True)
-    logger.info("Downloading PDFs to %s", target_dir)
+    target_dir.mkdir(parents=True, exist_ok=True)
+    logger.info("Downloading documents to %s", target_dir)
 
-    # First rename any existing files
-    rename_existing_files(target_dir)
+    summary = BNetzASummary()
 
-    # Clean up old files
-    cleanup_old_files(target_dir)
+    document_links = await get_document_links(url)
+    summary.links_found = len(document_links)
+    if not document_links:
+        logger.warning("No document links found on the page")
+        return summary
 
-    pdf_links = await get_pdf_links(url)
-    if not pdf_links:
-        logger.warning("No PDF links found on the page")
-        return
-
-    logger.info("Found %d PDF files to download", len(pdf_links))
-    async with httpx.AsyncClient(timeout=httpx.Timeout(30.0)) as client:
-        tasks = []
-        for filename, pdf_url in pdf_links:
-            target_path = target_dir / filename
-            task = download_pdf(client, filename, pdf_url, target_path)
-            tasks.append(task)
-
-        logger.info("Starting download of %d PDF files...", len(tasks))
-        await asyncio.gather(*tasks)
+    semaphore = asyncio.Semaphore(_MAX_CONCURRENT_DOWNLOADS)
+    async with httpx.AsyncClient(timeout=httpx.Timeout(120.0), follow_redirects=True, headers=_HTTP_HEADERS) as client:
+        logger.info("Starting download of %d documents...", len(document_links))
+        results = await asyncio.gather(
+            *(download_document(client, link_url, text, target_dir, semaphore) for link_url, text in document_links)
+        )
         logger.info("Download process completed")
 
-    # After downloading, create the change history Excel file
+    for result in results:
+        if result.status == "downloaded":
+            summary.downloaded += 1
+            # kinds describes freshly downloaded files, matching the "Downloaded" count shown.
+            summary.kinds[result.kind] = summary.kinds.get(result.kind, 0) + 1
+        elif result.status == "skipped":
+            summary.skipped += 1
+        elif result.status == "failed":
+            summary.failed_downloads.append(result.stem)
+
     output_file = target_dir.parent / "change_history.xlsx"
-    logger.info("Creating change history Excel file at: %s", output_file)
-    logger.info("Using PDF directory: %s", target_dir)
+    logger.info("Creating change history Excel file at %s", output_file)
 
-    # Check if any PDFs were downloaded
-    pdf_files_after_download = list(target_dir.glob("*.pdf"))
-    logger.info("Found %d PDF files after download", len(pdf_files_after_download))
+    extraction = create_change_history_excel(target_dir, output_file)
+    summary.sheets = [name for name, _ in extraction.sheets]
+    summary.no_change_history = extraction.no_change_history
+    summary.failed_processing = extraction.failed
 
-    create_change_history_excel(target_dir, output_file)
-
-    # Check if the Excel file was actually created
-    if output_file.exists():
-        logger.info("Excel file successfully created at: %s", output_file)
-        logger.info("File size: %d bytes", output_file.stat().st_size)
+    if extraction.sheets and output_file.exists():
+        summary.output_file = output_file
+        logger.info("Excel file created at %s (%d bytes)", output_file, output_file.stat().st_size)
     else:
-        logger.error("Excel file was not created at: %s", output_file)
+        logger.error("No Excel file was created (no change history data extracted)")
+
+    return summary
+
+
+# Backwards-compatible alias; prefer :func:`download_documents`.
+download_pdfs = download_documents
