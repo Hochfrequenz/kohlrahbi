@@ -8,7 +8,15 @@ from pathlib import Path
 import typer
 from efoli import EdifactFormatVersion
 from rich.console import Console
-from rich.progress import BarColumn, MofNCompleteColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
+from rich.progress import (
+    BarColumn,
+    MofNCompleteColumn,
+    Progress,
+    SpinnerColumn,
+    TextColumn,
+    TimeElapsedColumn,
+    TimeRemainingColumn,
+)
 
 from kohlrahbi.logger import setup_logging
 
@@ -68,5 +76,6 @@ def bar_progress(console: Console) -> Progress:
         BarColumn(pulse_style="cyan"),
         MofNCompleteColumn(),
         TimeElapsedColumn(),
+        TimeRemainingColumn(),
         console=console,
     )
