@@ -357,15 +357,23 @@ class TestCollectSheetsData:
         assert result.failed == ["AHB_APERAK_1_1.pdf"]
         assert broken.name not in result.no_change_history
 
-    def test_on_extracted_called_once_per_document(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-        files = [tmp_path / "AHB_UTILMD_2_3.pdf", tmp_path / "Formblatt.xlsx"]
-        for file in files:
+    def test_on_extracted_called_once_per_document_including_failures(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        good = tmp_path / "AHB_UTILMD_2_3.pdf"
+        broken = tmp_path / "Formblatt.xlsx"
+        for file in (good, broken):
             file.write_bytes(b"x")
 
-        monkeypatch.setattr(bnetza, "extract_change_history_from_document", lambda path: pd.DataFrame())
+        def fake_extract(path: Path) -> pd.DataFrame:
+            if path.name == broken.name:
+                raise ValueError("corrupt document")
+            return pd.DataFrame()
+
+        monkeypatch.setattr(bnetza, "extract_change_history_from_document", fake_extract)
 
         seen: list[str] = []
-        _collect_sheets_data(files, on_extracted=seen.append)
+        _collect_sheets_data([good, broken], on_extracted=seen.append)
 
-        # sorted by stem: Formblatt then AHB_UTILMD
+        # on_extracted fires once per document after it is processed, failures included
         assert sorted(seen) == ["AHB_UTILMD_2_3.pdf", "Formblatt.xlsx"]

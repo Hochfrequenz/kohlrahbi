@@ -178,7 +178,7 @@ def bnetza(
             progress.update(extract_task, total=total, visible=True)
 
         def on_extracted(name: str) -> None:
-            progress.update(extract_task, description=f"Extracting {name}")
+            progress.update(extract_task, description=f"Extracted {name}")
             progress.advance(extract_task)
 
         summary = asyncio.run(

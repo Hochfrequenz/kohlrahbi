@@ -613,14 +613,13 @@ def _collect_sheets_data(
     distinct from ``no_change_history`` (documents that were read fine but simply contain no
     Änderungshistorie table).
 
-    ``on_extracted`` is invoked with each document's file name as it starts processing, allowing
-    a caller to drive a progress bar.
+    ``on_extracted`` is invoked with each document's file name once it has been processed
+    (including failures), allowing a caller to advance a determinate progress bar as work
+    completes.
     """
     result = ExtractionResult()
     used_names: set[str] = set()
     for document_file in sorted(document_files, key=lambda x: x.stem):
-        if on_extracted is not None:
-            on_extracted(document_file.name)
         try:
             if not document_file.is_file():
                 logger.error("File %s is not a regular file", document_file.name)
@@ -641,6 +640,9 @@ def _collect_sheets_data(
             result.failed.append(document_file.name)
             logger.error("Failed to process %s: %s", document_file.name, str(e))
             continue
+        finally:
+            if on_extracted is not None:
+                on_extracted(document_file.name)
 
     logger.info(
         "Successfully extracted change histories from %d of %d documents",
@@ -692,7 +694,7 @@ def create_change_history_excel(
         output_file: Path where the Excel file should be saved
         on_extract_start: Invoked once with the number of documents to process, before extraction
             starts, so a caller can size a progress bar.
-        on_extracted: Invoked with each document's file name as it starts processing.
+        on_extracted: Invoked with each document's file name once it has been processed.
 
     Returns:
         The :class:`ExtractionResult` describing which documents produced sheets, which contained
@@ -767,7 +769,7 @@ async def download_documents(
             download starts, so a caller can size a download progress bar.
         on_downloaded: Invoked with each :class:`DownloadResult` as its download finishes.
         on_extract_start: Invoked once with the number of documents to extract from.
-        on_extracted: Invoked with each document's file name as extraction starts.
+        on_extracted: Invoked with each document's file name once it has been processed.
 
     Returns:
         A :class:`BNetzASummary` reconciling links found, files downloaded and sheets extracted.

@@ -968,7 +968,7 @@ requires-dist = [
     { name = "sqlalchemy", extras = ["mypy"], marker = "extra == 'sqlmodels'", specifier = ">=2.0.37" },
     { name = "sqlmodel", marker = "extra == 'sqlmodels'", specifier = ">=0.0.22" },
     { name = "tomlkit", specifier = ">=0.13.2" },
-    { name = "typer", extras = ["all"], specifier = ">=0.15.0" },
+    { name = "typer", specifier = ">=0.15.0" },
     { name = "xlsxwriter", specifier = ">=3.2.0" },
 ]
 provides-extras = ["sqlmodels"]

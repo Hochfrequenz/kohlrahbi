@@ -42,7 +42,8 @@ def scrape_conditions(
     starts the scraping process for conditions of all formats
 
     ``on_start`` is invoked once with the total number of files to scrape and ``on_file`` with each
-    file name as it starts processing, so a caller can drive a progress bar.
+    file name once it has been processed, so a caller can advance a determinate progress bar as
+    work completes.
     """
     path_to_file = basic_input_path / Path("edi_energy_de") / Path(format_version.value)
     pruefi_to_file_mapping = get_pruefi_to_file_mapping(basic_input_path, format_version)
@@ -54,8 +55,6 @@ def scrape_conditions(
         on_start(sum(len(files) for files in all_format_files.values()))
     for edifact_format, files in all_format_files.items():
         for file in files:
-            if on_file is not None:
-                on_file(file)
             # pylint: disable=too-many-function-args
             path: Path = basic_input_path / path_to_file / Path(file)
             doc = docx.Document(str(path.absolute()))
@@ -67,6 +66,8 @@ def scrape_conditions(
                 collected_conditions.include_condition_dict(packages.provide_conditions(edifact_format))
                 collected_packages.include_package_dict(packages.package_dict)
             collected_conditions.include_condition_dict(cond_table.conditions_dict)
+            if on_file is not None:
+                on_file(file)
         collected_conditions.include_condition_dict({edifact_format: time_conditions})
     collected_conditions.dump_as_json(output_path)
     collected_packages.dump_as_json(output_path)

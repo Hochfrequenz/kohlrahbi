@@ -84,7 +84,7 @@ def conditions(
             progress.update(task, description="Scraping conditions...", total=total)
 
         def on_file(name: str) -> None:
-            progress.update(task, description=f"Scraping {name}")
+            progress.update(task, description=f"Scraped {name}")
             progress.advance(task)
 
         scrape_conditions(
