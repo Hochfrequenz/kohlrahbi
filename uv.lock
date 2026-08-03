@@ -892,6 +892,7 @@ dependencies = [
     { name = "pydantic" },
     { name = "python-docx" },
     { name = "pytz" },
+    { name = "rich" },
     { name = "tomlkit" },
     { name = "typer" },
     { name = "xlsxwriter" },
@@ -963,10 +964,11 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.9.2" },
     { name = "python-docx", specifier = ">=1.1.2" },
     { name = "pytz", specifier = ">=2024.2" },
+    { name = "rich", specifier = ">=13.0.0" },
     { name = "sqlalchemy", extras = ["mypy"], marker = "extra == 'sqlmodels'", specifier = ">=2.0.37" },
     { name = "sqlmodel", marker = "extra == 'sqlmodels'", specifier = ">=0.0.22" },
     { name = "tomlkit", specifier = ">=0.13.2" },
-    { name = "typer", extras = ["all"], specifier = ">=0.15.0" },
+    { name = "typer", specifier = ">=0.15.0" },
     { name = "xlsxwriter", specifier = ">=3.2.0" },
 ]
 provides-extras = ["sqlmodels"]
