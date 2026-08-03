@@ -54,7 +54,7 @@ jobs:
        # manually-created Release on the release path. Uses GITHUB_TOKEN, so it does
        # not cascade into another workflow run.
        - name: Upsert GitHub Release
-         uses: softprops/action-gh-release@v2
+         uses: softprops/action-gh-release@v3
          with:
            # On a `release` event, prefer the event's own tag/title so a
            # manually-entered Release title is preserved; on a tag push both
