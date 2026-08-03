@@ -12,7 +12,7 @@ import typer
 from rich.console import Console
 from rich.panel import Panel
 
-from kohlrahbi.cli_utils import prepare_command, spinner_progress
+from kohlrahbi.cli_utils import bar_progress, prepare_command
 
 console = Console()
 
@@ -77,12 +77,22 @@ def conditions(
 
     from kohlrahbi.conditions import scrape_conditions
 
-    with spinner_progress(console) as progress:
-        progress.add_task("Scraping conditions...", total=None)
+    with bar_progress(console) as progress:
+        task = progress.add_task("Loading pruefi mapping...", total=None)
+
+        def on_start(total: int) -> None:
+            progress.update(task, description="Scraping conditions...", total=total)
+
+        def on_file(name: str) -> None:
+            progress.update(task, description=f"Scraped {name}")
+            progress.advance(task)
+
         scrape_conditions(
             basic_input_path=edi_energy_mirror_path,
             output_path=output_path,
             format_version=efv,
+            on_start=on_start,
+            on_file=on_file,
         )
 
     console.print(
