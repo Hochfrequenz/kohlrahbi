@@ -178,9 +178,22 @@ The `changehistory` command has two subcommands depending on your data source.
 > [!NOTE]
 > This command requires a local clone of the [edi_energy_mirror](https://github.com/Hochfrequenz/edi_energy_mirror/).
 
+Extract the change histories for one format version:
+
 ```bash
 kohlrahbi changehistory docx -eemp ../edi_energy_mirror/ --output-path ./output/ --format-version FV2310
 ```
+
+`--output-path` defaults to `./output`, so you can leave it out. Add `-v`/`--verbose` for detailed
+logging and `-y`/`--assume-yes` to skip the interactive confirmation (handy in scripts and CI):
+
+```bash
+kohlrahbi changehistory docx -eemp ../edi_energy_mirror/ --format-version FV2310 --assume-yes --verbose
+```
+
+All extracted change histories are written to a single, timestamped
+`<output-path>/<timestamp>_change_histories.xlsx` file, with one sheet per document. On completion a
+summary reports how many files were processed and which ones contained no change history table.
 
 #### `kohlrahbi changehistory bnetza` — From BNetzA documents
 
@@ -192,16 +205,33 @@ documents as `.html`-named downloads (whose body is actually a PDF) and some as 
 Each file's real type is detected from its content, so nothing is skipped because of its URL
 extension.
 
+> [!TIP]
+> The `--url` is a BNetzA "Mitteilung Nr. XX" page from the
+> [Mitteilungen zu Datenformaten](https://www.bundesnetzagentur.de/DE/Beschlusskammern/BK06/BK6_83_Zug_Mess/835_mitteilungen_datenformate/mitteilungen_datenformate_node.html)
+> overview. Open the Mitteilung you are interested in and copy its page URL.
+
+Extract the change histories for a Mitteilung (documents and Excel go to `./output/`):
+
 ```bash
 kohlrahbi changehistory bnetza \
   --url "https://www.bundesnetzagentur.de/DE/Beschlusskammern/BK06/BK6_83_Zug_Mess/835_mitteilungen_datenformate/Mitteilung_55/Mitteilung_Nr_55.html" \
   --output-path ./output/
 ```
 
+`--output-path` defaults to `./output`, so a minimal invocation is just the URL. Add `-v`/`--verbose`
+to see each download and extraction as it happens:
+
+```bash
+kohlrahbi changehistory bnetza \
+  --url "https://www.bundesnetzagentur.de/DE/Beschlusskammern/BK06/BK6_83_Zug_Mess/835_mitteilungen_datenformate/Mitteilung_55/Mitteilung_Nr_55.html" \
+  --verbose
+```
+
 The downloaded documents are saved to `<output-path>/pdfs/` and the resulting Excel file to
 `<output-path>/change_history.xlsx`. On completion a summary reports how many links were found,
 how many documents were downloaded (by type), how many sheets were written, and which documents
-contained no change history.
+contained no change history. Re-running against the same output path reuses already-downloaded
+documents (reported as `cached`).
 
 ## `.docx` Data Sources
 
