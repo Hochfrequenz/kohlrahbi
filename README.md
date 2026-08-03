@@ -63,10 +63,32 @@ Still, some issues remain:
 
 ## Installation
 
-Kohlr_AHB_i is a Python based tool.
-Therefore you have to make sure, that Python is running on your machine.
+Kohlr_AHB_i is a Python-based tool published on [PyPI](https://pypi.org/project/kohlrahbi/).
 
-We recommend to use virtual environments to keep your system clean.
+### Install as a global CLI (recommended)
+
+If you just want the `kohlrahbi` command available on your machine, install it as an isolated
+global tool with [`uv`](https://docs.astral.sh/uv/) or [`pipx`](https://pipx.pypa.io/):
+
+```bash
+uv tool install kohlrahbi
+# or
+pipx install kohlrahbi
+```
+
+This gives you a global, isolated `kohlrahbi` command on macOS, Linux **and** Windows, without
+installing into your system Python environment (its `site-packages`). Upgrade it later with
+`uv tool upgrade kohlrahbi` (or `pipx upgrade kohlrahbi`).
+
+> [!NOTE]
+> We looked into a Homebrew tap ([#632](https://github.com/Hochfrequenz/kohlrahbi/issues/632))
+> but recommend `uv tool` / `pipx` instead: they install prebuilt wheels (no C/Rust toolchain),
+> require no extra infrastructure, and work on Windows too.
+
+### Install into a virtual environment (for library use / pinning)
+
+If you want to import kohlrahbi as a library or pin it into a project, install it into a virtual
+environment to keep your system clean.
 
 Create a new virtual environment with
 
@@ -76,13 +98,13 @@ python -m venv .venv
 
 The activation of the virtual environment depends on your used OS.
 
-### Windows
+#### Windows
 
 ```powershell
 .venv\Scripts\activate
 ```
 
-### MacOS/Linux
+#### macOS/Linux
 
 ```zsh
 source .venv/bin/activate
