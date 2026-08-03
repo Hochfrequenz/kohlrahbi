@@ -2,6 +2,7 @@
 This module contains the function to write the collected conditions to a json file.
 """
 
+from collections.abc import Callable
 from pathlib import Path
 
 import docx
@@ -33,9 +34,15 @@ def scrape_conditions(
     basic_input_path: Path,
     output_path: Path,
     format_version: EdifactFormatVersion,
+    *,
+    on_start: Callable[[int], None] | None = None,
+    on_file: Callable[[str], None] | None = None,
 ) -> None:
     """
     starts the scraping process for conditions of all formats
+
+    ``on_start`` is invoked once with the total number of files to scrape and ``on_file`` with each
+    file name as it starts processing, so a caller can drive a progress bar.
     """
     path_to_file = basic_input_path / Path("edi_energy_de") / Path(format_version.value)
     pruefi_to_file_mapping = get_pruefi_to_file_mapping(basic_input_path, format_version)
@@ -43,8 +50,12 @@ def scrape_conditions(
     collected_conditions: AhbConditions = AhbConditions()
     collected_packages: AhbPackageTable = AhbPackageTable()
     all_format_files = find_all_files_from_all_pruefis(pruefi_to_file_mapping)
+    if on_start is not None:
+        on_start(sum(len(files) for files in all_format_files.values()))
     for edifact_format, files in all_format_files.items():
         for file in files:
+            if on_file is not None:
+                on_file(file)
             # pylint: disable=too-many-function-args
             path: Path = basic_input_path / path_to_file / Path(file)
             doc = docx.Document(str(path.absolute()))
