@@ -5,6 +5,7 @@ import io
 import logging
 import re
 import zipfile
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 from urllib.parse import unquote, urldefrag, urljoin, urlparse
@@ -600,17 +601,26 @@ class ExtractionResult:
     failed: list[str] = field(default_factory=list)  # raised while being processed
 
 
-def _collect_sheets_data(document_files: list[Path]) -> ExtractionResult:
+def _collect_sheets_data(
+    document_files: list[Path],
+    *,
+    on_extracted: Callable[[str], None] | None = None,
+) -> ExtractionResult:
     """
     Extract change history data from documents.
 
     Documents that raise during processing are recorded in ``failed`` (a genuine error), kept
     distinct from ``no_change_history`` (documents that were read fine but simply contain no
     Änderungshistorie table).
+
+    ``on_extracted`` is invoked with each document's file name as it starts processing, allowing
+    a caller to drive a progress bar.
     """
     result = ExtractionResult()
     used_names: set[str] = set()
     for document_file in sorted(document_files, key=lambda x: x.stem):
+        if on_extracted is not None:
+            on_extracted(document_file.name)
         try:
             if not document_file.is_file():
                 logger.error("File %s is not a regular file", document_file.name)
@@ -667,13 +677,22 @@ def _write_sheets_to_excel(sheets_data: list[tuple[str, pd.DataFrame]], output_f
         raise
 
 
-def create_change_history_excel(document_dir: Path, output_file: Path) -> ExtractionResult:
+def create_change_history_excel(
+    document_dir: Path,
+    output_file: Path,
+    *,
+    on_extract_start: Callable[[int], None] | None = None,
+    on_extracted: Callable[[str], None] | None = None,
+) -> ExtractionResult:
     """
     Create an Excel file containing change history tables from all documents in the directory.
 
     Args:
         document_dir: Directory containing the downloaded documents (PDF/Office/HTML)
         output_file: Path where the Excel file should be saved
+        on_extract_start: Invoked once with the number of documents to process, before extraction
+            starts, so a caller can size a progress bar.
+        on_extracted: Invoked with each document's file name as it starts processing.
 
     Returns:
         The :class:`ExtractionResult` describing which documents produced sheets, which contained
@@ -689,8 +708,10 @@ def create_change_history_excel(document_dir: Path, output_file: Path) -> Extrac
         return ExtractionResult()
 
     logger.info("Found %d documents to process", len(document_files))
+    if on_extract_start is not None:
+        on_extract_start(len(document_files))
 
-    result = _collect_sheets_data(document_files)
+    result = _collect_sheets_data(document_files, on_extracted=on_extracted)
 
     if not result.sheets:
         logger.warning("No change history data extracted from any document; no Excel file written")
@@ -722,7 +743,15 @@ class BNetzASummary:
 _MAX_CONCURRENT_DOWNLOADS = 8
 
 
-async def download_documents(url: str, target_dir: Path | None = None) -> BNetzASummary:
+async def download_documents(
+    url: str,
+    target_dir: Path | None = None,
+    *,
+    on_links_found: Callable[[int], None] | None = None,
+    on_downloaded: Callable[[DownloadResult], None] | None = None,
+    on_extract_start: Callable[[int], None] | None = None,
+    on_extracted: Callable[[str], None] | None = None,
+) -> BNetzASummary:
     """
     Download all documents linked from the given BNetzA page and build the change-history Excel.
 
@@ -734,6 +763,11 @@ async def download_documents(url: str, target_dir: Path | None = None) -> BNetzA
         url: The BNetzA page URL to scrape for document links.
         target_dir: Directory to store downloaded documents. Defaults to a 'pdfs' directory next
             to this script.
+        on_links_found: Invoked once with the number of document links discovered, before any
+            download starts, so a caller can size a download progress bar.
+        on_downloaded: Invoked with each :class:`DownloadResult` as its download finishes.
+        on_extract_start: Invoked once with the number of documents to extract from.
+        on_extracted: Invoked with each document's file name as extraction starts.
 
     Returns:
         A :class:`BNetzASummary` reconciling links found, files downloaded and sheets extracted.
@@ -748,6 +782,8 @@ async def download_documents(url: str, target_dir: Path | None = None) -> BNetzA
 
     document_links = await get_document_links(url)
     summary.links_found = len(document_links)
+    if on_links_found is not None:
+        on_links_found(len(document_links))
     if not document_links:
         logger.warning("No document links found on the page")
         return summary
@@ -755,9 +791,18 @@ async def download_documents(url: str, target_dir: Path | None = None) -> BNetzA
     semaphore = asyncio.Semaphore(_MAX_CONCURRENT_DOWNLOADS)
     async with httpx.AsyncClient(timeout=httpx.Timeout(120.0), follow_redirects=True, headers=_HTTP_HEADERS) as client:
         logger.info("Starting download of %d documents...", len(document_links))
-        results = await asyncio.gather(
-            *(download_document(client, link_url, text, target_dir, semaphore) for link_url, text in document_links)
-        )
+        download_tasks = [
+            asyncio.ensure_future(download_document(client, link_url, text, target_dir, semaphore))
+            for link_url, text in document_links
+        ]
+        results: list[DownloadResult] = []
+        # as_completed yields in completion order, not input order; the summary aggregation below
+        # and the disk-based extraction are order-independent, so this only affects progress timing.
+        for future in asyncio.as_completed(download_tasks):
+            result = await future
+            results.append(result)
+            if on_downloaded is not None:
+                on_downloaded(result)
         logger.info("Download process completed")
 
     for result in results:
@@ -773,7 +818,9 @@ async def download_documents(url: str, target_dir: Path | None = None) -> BNetzA
     output_file = target_dir.parent / "change_history.xlsx"
     logger.info("Creating change history Excel file at %s", output_file)
 
-    extraction = create_change_history_excel(target_dir, output_file)
+    extraction = create_change_history_excel(
+        target_dir, output_file, on_extract_start=on_extract_start, on_extracted=on_extracted
+    )
     summary.sheets = [name for name, _ in extraction.sheets]
     summary.no_change_history = extraction.no_change_history
     summary.failed_processing = extraction.failed

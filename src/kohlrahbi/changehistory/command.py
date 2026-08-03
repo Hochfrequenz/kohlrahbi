@@ -158,14 +158,39 @@ def bnetza(
     setup_logging(verbose=verbose)
     check_python_version(console)
 
-    from kohlrahbi.changehistory.bnetza import download_documents
+    from kohlrahbi.changehistory.bnetza import DownloadResult, download_documents
 
     output_path.mkdir(parents=True, exist_ok=True)
     pdf_dir = output_path / "pdfs"
 
-    with spinner_progress(console) as progress:
-        progress.add_task("Downloading and processing documents from BNetzA...", total=None)
-        summary = asyncio.run(download_documents(url=url, target_dir=pdf_dir))
+    with bar_progress(console) as progress:
+        download_task = progress.add_task("Discovering documents...", total=None)
+        extract_task = progress.add_task("Extracting change histories...", total=None, visible=False)
+
+        def on_links_found(total: int) -> None:
+            progress.update(download_task, description="Downloading documents...", total=total)
+
+        def on_downloaded(result: DownloadResult) -> None:
+            progress.update(download_task, description=f"Downloaded {result.stem}")
+            progress.advance(download_task)
+
+        def on_extract_start(total: int) -> None:
+            progress.update(extract_task, total=total, visible=True)
+
+        def on_extracted(name: str) -> None:
+            progress.update(extract_task, description=f"Extracting {name}")
+            progress.advance(extract_task)
+
+        summary = asyncio.run(
+            download_documents(
+                url=url,
+                target_dir=pdf_dir,
+                on_links_found=on_links_found,
+                on_downloaded=on_downloaded,
+                on_extract_start=on_extract_start,
+                on_extracted=on_extracted,
+            )
+        )
 
     kinds = ", ".join(f"{count}×{kind}" for kind, count in sorted(summary.kinds.items())) or "none"
     cached = f"  [dim]+{summary.skipped} cached[/dim]" if summary.skipped else ""

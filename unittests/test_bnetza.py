@@ -1,15 +1,18 @@
 """Tests for the pure functions in kohlrahbi.changehistory.bnetza."""
 
+import asyncio
 import io
 import zipfile
 from pathlib import Path
 from unittest.mock import MagicMock
 
+import httpx
 import pandas as pd
 import pytest
 
 from kohlrahbi.changehistory import bnetza
 from kohlrahbi.changehistory.bnetza import (
+    DownloadResult,
     _collect_sheets_data,
     _filename_stem_from_url,
     _is_change_history_header,
@@ -237,6 +240,50 @@ class TestDetectDocumentType:
         assert detect_document_type(b"random-bytes") == "unknown"
 
 
+class TestDownloadDocumentsCallbacks:
+    def test_progress_callbacks_fire_per_item(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        links = [("https://x/a.pdf", "A"), ("https://x/b.pdf", "B"), ("https://x/c.pdf", "C")]
+
+        async def fake_get_links(url: str) -> list[tuple[str, str]]:
+            return links
+
+        async def fake_download(
+            client: httpx.AsyncClient, url: str, text: str, target_dir: Path, semaphore: asyncio.Semaphore
+        ) -> DownloadResult:
+            stem = bnetza._filename_stem_from_url(url)
+            path = target_dir / f"{stem}.pdf"
+            path.write_bytes(b"%PDF-1.7\n")
+            return DownloadResult(url=url, text=text, stem=stem, kind="pdf", path=path, status="downloaded")
+
+        monkeypatch.setattr(bnetza, "get_document_links", fake_get_links)
+        monkeypatch.setattr(bnetza, "download_document", fake_download)
+        # no change history -> no Excel written, keeps the test focused on the callbacks
+        monkeypatch.setattr(bnetza, "extract_change_history_from_document", lambda path: pd.DataFrame())
+
+        links_found: list[int] = []
+        downloaded: list[str] = []
+        extract_start: list[int] = []
+        extracted: list[str] = []
+
+        summary = asyncio.run(
+            bnetza.download_documents(
+                url="https://x/page",
+                target_dir=tmp_path,
+                on_links_found=links_found.append,
+                on_downloaded=lambda result: downloaded.append(result.stem),
+                on_extract_start=extract_start.append,
+                on_extracted=extracted.append,
+            )
+        )
+
+        assert links_found == [3]
+        assert sorted(downloaded) == ["a", "b", "c"]  # order-independent (as_completed)
+        assert extract_start == [3]
+        assert sorted(extracted) == ["a.pdf", "b.pdf", "c.pdf"]
+        assert summary.links_found == 3
+        assert summary.downloaded == 3
+
+
 class TestUniqueSheetName:
     def test_returns_name_when_unused(self) -> None:
         assert _unique_sheet_name("AHB_UTILMD", set()) == "AHB_UTILMD"
@@ -309,3 +356,16 @@ class TestCollectSheetsData:
         # A document that raised is a failure, NOT reported as "no change history".
         assert result.failed == ["AHB_APERAK_1_1.pdf"]
         assert broken.name not in result.no_change_history
+
+    def test_on_extracted_called_once_per_document(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        files = [tmp_path / "AHB_UTILMD_2_3.pdf", tmp_path / "Formblatt.xlsx"]
+        for file in files:
+            file.write_bytes(b"x")
+
+        monkeypatch.setattr(bnetza, "extract_change_history_from_document", lambda path: pd.DataFrame())
+
+        seen: list[str] = []
+        _collect_sheets_data(files, on_extracted=seen.append)
+
+        # sorted by stem: Formblatt then AHB_UTILMD
+        assert sorted(seen) == ["AHB_UTILMD_2_3.pdf", "Formblatt.xlsx"]
