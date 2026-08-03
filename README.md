@@ -63,7 +63,7 @@ Still, some issues remain:
 
 ## Installation
 
-Kohlr_AHB_i is a Python based tool and is published on [PyPI](https://pypi.org/project/kohlrahbi/).
+Kohlr_AHB_i is a Python-based tool published on [PyPI](https://pypi.org/project/kohlrahbi/).
 
 ### Install as a global CLI (recommended)
 
@@ -77,8 +77,8 @@ pipx install kohlrahbi
 ```
 
 This gives you a global, isolated `kohlrahbi` command on macOS, Linux **and** Windows, without
-touching your system Python. Upgrade it later with `uv tool upgrade kohlrahbi` (or
-`pipx upgrade kohlrahbi`).
+installing into your system Python environment (its `site-packages`). Upgrade it later with
+`uv tool upgrade kohlrahbi` (or `pipx upgrade kohlrahbi`).
 
 > [!NOTE]
 > We looked into a Homebrew tap ([#632](https://github.com/Hochfrequenz/kohlrahbi/issues/632))
@@ -104,7 +104,7 @@ The activation of the virtual environment depends on your used OS.
 .venv\Scripts\activate
 ```
 
-#### MacOS/Linux
+#### macOS/Linux
 
 ```zsh
 source .venv/bin/activate
