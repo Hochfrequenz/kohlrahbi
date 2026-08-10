@@ -52,7 +52,7 @@ sqlmodels = ["sqlmodel>=0.0.22", "sqlalchemy[mypy]>=2.0.37"]
 
 [dependency-groups]
 test = [
-  "coverage==7.15.3",
+  "coverage==7.15.4",
   "pytest-cov==7.1.0",
   "dictdiffer==0.10.0",
   "freezegun==1.5.5",
