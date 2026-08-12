@@ -23,7 +23,7 @@ from efoli import EdifactFormat, EdifactFormatVersion
 #
 # or
 #
-# ..\.tox\dev\Lib\site-packages\sqlmodel\main.py:697: in get_sqlalchemy_type
+# site-packages/sqlmodel/main.py:697: in get_sqlalchemy_type
 #     raise ValueError(f"{type_} has no matching SQLAlchemy type")
 # E   ValueError: <class 'kohlrahbi.models.anwendungshandbuch.AhbMetaInformation'> has no matching SQLAlchemy type
 
