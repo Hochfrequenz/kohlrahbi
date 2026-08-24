@@ -62,7 +62,7 @@ test = [
   "sqlmodel>=0.0.22",
   "sqlalchemy[mypy]>=2.0.37",
 ]
-lint = ["ruff==0.16.3"]
+lint = ["ruff==0.16.4"]
 typecheck = [
   "mypy==2.3.1",
   "networkx-stubs==0.0.1",
