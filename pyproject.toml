@@ -58,7 +58,7 @@ test = [
   "freezegun==1.5.5",
   "pytest-datafiles==3.0.1",
   "pytest==9.1.1",
-  "syrupy==5.5.3",
+  "syrupy==6.0.0",
   "sqlmodel>=0.0.22",
   "sqlalchemy[mypy]>=2.0.37",
 ]
