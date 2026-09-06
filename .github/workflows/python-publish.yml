@@ -79,6 +79,8 @@ jobs:
            # Fine-grained PAT, Contents:Read on Hochfrequenz/edi_energy_mirror only.
            # Stored in BOTH the Actions and the Dependabot secret store, because
            # Dependabot-triggered runs resolve secrets against their own store.
+           # Fine-grained PATs last at most 366 days - record the expiry date here
+           # when rotating, and rotate both copies.
            MIRROR_PAT: ${{ secrets.EDI_ENERGY_MIRROR_PAT }}
            # Dependabot branches live in this repository, so they are not forks and
            # correctly take the strict branch below.
@@ -97,11 +99,12 @@ jobs:
            fi
            # Exported rather than passed with `git -c`, so the token is not visible in
            # the world-readable /proc/<pid>/cmdline. GIT_CONFIG_* is inherited by the
-           # submodule subprocess, and the rewrite is scoped to the Hochfrequenz org.
+           # submodule subprocess. Scoped to this one repository, so a future
+           # Hochfrequenz submodule can never silently receive this PAT.
            export GIT_CONFIG_COUNT=1
-           export GIT_CONFIG_KEY_0="url.https://x-access-token:$MIRROR_PAT@github.com/Hochfrequenz/.insteadOf"
-           export GIT_CONFIG_VALUE_0="https://github.com/Hochfrequenz/"
-           if ! git submodule update --init --depth=1 edi_energy_mirror; then
+           export GIT_CONFIG_KEY_0="url.https://x-access-token:$MIRROR_PAT@github.com/Hochfrequenz/edi_energy_mirror.insteadOf"
+           export GIT_CONFIG_VALUE_0="https://github.com/Hochfrequenz/edi_energy_mirror"
+           if ! git submodule update --init --recursive --depth=1 edi_energy_mirror; then
              echo "::error::Could not fetch edi_energy_mirror. The most likely cause is an expired, revoked or unapproved EDI_ENERGY_MIRROR_PAT; check the repository secrets."
              exit 1
            fi
