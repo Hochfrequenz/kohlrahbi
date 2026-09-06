@@ -79,8 +79,8 @@ jobs:
            # Fine-grained PAT, Contents:Read on Hochfrequenz/edi_energy_mirror only.
            # Stored in BOTH the Actions and the Dependabot secret store, because
            # Dependabot-triggered runs resolve secrets against their own store.
-           # Fine-grained PATs last at most 366 days - record the expiry date here
-           # when rotating, and rotate both copies.
+           # Expires 2027-09-07. Fine-grained PATs cannot be set to never expire, so
+           # CI breaks on that date unless both copies are rotated before it.
            MIRROR_PAT: ${{ secrets.EDI_ENERGY_MIRROR_PAT }}
            # Dependabot branches live in this repository, so they are not forks and
            # correctly take the strict branch below.

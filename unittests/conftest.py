@@ -88,7 +88,7 @@ def _edi_energy_mirror_is_available() -> bool:
     return (Path(__file__).parents[1] / "edi_energy_mirror" / "edi_energy_de").is_dir()
 
 
-def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
+def _disabled_pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
     """Skip the tests that need the private edi_energy_mirror submodule when it is unavailable."""
     if _edi_energy_mirror_is_available():
         return
