@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from pathlib import Path
 
 import docx
 import docx.table
@@ -60,3 +61,38 @@ def get_ahb_table_with_multiple_paragraphs() -> Callable[[list[CellParagraph]], 
         return result
 
     return _setup_ahb_table
+
+
+# edi_energy_mirror is a private repository, so it is not available in every CI run: pull requests
+# from forks get no secrets and therefore cannot fetch the submodule. These test modules read real
+# documents from it - unlike the rest of the suite, which uses the miniature mirror committed under
+# unittests/test-edi-energy-mirror-repo - so they are skipped instead of failing when it is absent.
+# The list is the empirically determined set: without the submodule these 8 modules produce 36
+# failures and no other module does.
+_MODULES_REQUIRING_EDI_ENERGY_MIRROR = frozenset(
+    {
+        "test_ahb.py",
+        "test_cli_changehistory_docx.py",
+        "test_cli_conditions.py",
+        "test_current_state.py",
+        "test_docxfilefinder.py",
+        "test_quality_map.py",
+        "test_read_functions.py",
+        "test_sqlmodels.py",
+    }
+)
+
+
+def _edi_energy_mirror_is_available() -> bool:
+    """Whether the edi_energy_mirror submodule is checked out and populated."""
+    return (Path(__file__).parents[1] / "edi_energy_mirror" / "edi_energy_de").is_dir()
+
+
+def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
+    """Skip the tests that need the private edi_energy_mirror submodule when it is unavailable."""
+    if _edi_energy_mirror_is_available():
+        return
+    skip_marker = pytest.mark.skip(reason="the private edi_energy_mirror submodule is not available")
+    for item in items:
+        if Path(str(item.fspath)).name in _MODULES_REQUIRING_EDI_ENERGY_MIRROR:
+            item.add_marker(skip_marker)
