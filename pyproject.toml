@@ -58,11 +58,11 @@ test = [
   "freezegun==1.5.5",
   "pytest-datafiles==3.0.1",
   "pytest==9.1.1",
-  "syrupy==5.5.3",
+  "syrupy==6.0.0",
   "sqlmodel>=0.0.22",
   "sqlalchemy[mypy]>=2.0.37",
 ]
-lint = ["ruff==0.16.3"]
+lint = ["ruff==0.16.6"]
 typecheck = [
   "mypy==2.3.1",
   "networkx-stubs==0.0.1",
