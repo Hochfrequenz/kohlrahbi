@@ -117,6 +117,8 @@ kohlrahbi --help
 
 > [!NOTE]
 > This command requires a local clone of the [edi_energy_mirror](https://github.com/Hochfrequenz/edi_energy_mirror/) repository, which contains the `.docx` files of the AHBs.
+> That repository is **private**, so cloning it requires a GitHub account with read access. Without it, the tests
+> that read real AHB documents are skipped and the rest of the suite still runs.
 > The folder structure should look like this:
 > ```plaintext
 > .

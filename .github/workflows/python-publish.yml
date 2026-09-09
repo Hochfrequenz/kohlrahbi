@@ -70,8 +70,52 @@ jobs:
      runs-on: ubuntu-latest
      steps:
        - uses: actions/checkout@v7
-         with:
-           submodules: true
+       # edi_energy_mirror is private, so the default GITHUB_TOKEN (scoped to this
+       # repository only) cannot clone it; `submodules:` on the checkout above would
+       # abort the whole job with "Repository not found" before any step runs.
+       - name: Check out submodules
+         id: submodules
+         env:
+           # Fine-grained PAT, Contents:Read on Hochfrequenz/edi_energy_mirror only.
+           # Stored in BOTH the Actions and the Dependabot secret store, because
+           # Dependabot-triggered runs resolve secrets against their own store.
+           # Expires 2027-09-07. Fine-grained PATs cannot be set to never expire, so
+           # CI breaks on that date unless both copies are rotated before it.
+           MIRROR_PAT: ${{ secrets.EDI_ENERGY_MIRROR_PAT }}
+           # Dependabot branches live in this repository, so they are not forks and
+           # correctly take the strict branch below.
+           IS_FORK: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
+         run: |
+           # A reused workspace can carry a stale submodule.<name>.url.
+           git submodule sync --recursive
+           if [ -z "$MIRROR_PAT" ]; then
+             if [ "$IS_FORK" = "true" ]; then
+               echo "::warning::Pull request from a fork: secrets are unavailable, so the private edi_energy_mirror submodule is skipped and the tests that need it will be skipped too."
+               echo "mirror=false" >> "$GITHUB_OUTPUT"
+               exit 0
+             fi
+             echo "::error::EDI_ENERGY_MIRROR_PAT is empty on a first-party run (event=$GITHUB_EVENT_NAME, actor=$GITHUB_ACTOR). Dependabot runs read the *Dependabot* secret store, not the Actions one - check that the secret exists in both."
+             exit 1
+           fi
+           # Exported rather than passed with `git -c`, so the token is not visible in
+           # the world-readable /proc/<pid>/cmdline. GIT_CONFIG_* is inherited by the
+           # submodule subprocess. Scoped to this one repository, so a future
+           # Hochfrequenz submodule can never silently receive this PAT.
+           export GIT_CONFIG_COUNT=1
+           export GIT_CONFIG_KEY_0="url.https://x-access-token:$MIRROR_PAT@github.com/Hochfrequenz/edi_energy_mirror.insteadOf"
+           export GIT_CONFIG_VALUE_0="https://github.com/Hochfrequenz/edi_energy_mirror"
+           if ! git submodule update --init --recursive --depth=1 edi_energy_mirror; then
+             echo "::error::Could not fetch edi_energy_mirror. The most likely cause is an expired, revoked or unapproved EDI_ENERGY_MIRROR_PAT; check the repository secrets."
+             exit 1
+           fi
+           # `submodule update` also exits 0 when nothing was registered, and the
+           # directory is non-empty as soon as it holds a bare `.git` file - so probe
+           # the content the tests actually read.
+           if [ ! -d edi_energy_mirror/edi_energy_de ]; then
+             echo "::error::edi_energy_mirror/edi_energy_de is missing after 'git submodule update' - the checkout is incomplete."
+             exit 1
+           fi
+           echo "mirror=true" >> "$GITHUB_OUTPUT"
        - name: Set up Python 3.12
          uses: actions/setup-python@v7
          with:
