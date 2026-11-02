@@ -214,9 +214,14 @@ class UnfoldedAhb(BaseModel):
                 )
 
         metadata = {"name": "" or None, "communication_direction": "" or None}
-        if len(ahb_table.metadata) > 0:
-            metadata["name"] = ahb_table.metadata[0].name or None
-            metadata["communication_direction"] = ahb_table.metadata[0].communication_direction or None
+        # the table contains the metadata of all Prüfidentifikatoren that share it; use the one of this pruefi
+        pruefi_metadata = next(
+            (m for m in ahb_table.metadata if m.pruefidentifikator == pruefi),
+            ahb_table.metadata[0] if len(ahb_table.metadata) > 0 else None,
+        )
+        if pruefi_metadata is not None:
+            metadata["name"] = pruefi_metadata.name or None
+            metadata["communication_direction"] = pruefi_metadata.communication_direction or None
 
         return cls(
             unfolded_ahb_lines=unfolded_ahb_lines,
