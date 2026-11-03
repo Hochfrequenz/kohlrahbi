@@ -31,8 +31,9 @@ def is_change_history_table(table: Table) -> bool:
     """
     # in the document 'Entscheidungsbaum-DiagrammeundCodelisten-informatorischeLesefassung3.5_99991231_20240401.docx'
     # I got the error "IndexError: list index out of range", I am not sure which table caused the error
+    # 'endswith' because the header cell of the PRICAT AHB 2.1 starts with a stray '….'
     try:
-        return table.cell(row_idx=0, col_idx=0).text.strip() == "Änd-ID"
+        return table.cell(row_idx=0, col_idx=0).text.strip().endswith("Änd-ID")
     except IndexError:
         return False
 

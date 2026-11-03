@@ -16,6 +16,7 @@ from pydantic import BaseModel, ConfigDict
 from kohlrahbi.ahbtable.ahbtablerow import AhbTableRow
 from kohlrahbi.docxtablecells.bodycell import INDEX_OF_CODES_AND_QUALIFIER_COLUMN, KNOW_SUFFIXES
 from kohlrahbi.enums import RowType
+from kohlrahbi.nestedlayout import NestedTableLayout, is_nested_layout_table
 from kohlrahbi.row_type_checker import get_row_type
 from kohlrahbi.seed import Seed
 
@@ -36,6 +37,11 @@ class AhbSubTable(BaseModel):
         table_meta_data: Seed, ahb_table_dataframe: pd.DataFrame, docx_table: DocxTable
     ) -> pd.DataFrame:
         """Parse the docx table and add the information to the dataframe."""
+        if is_nested_layout_table(docx_table):
+            nested_table_dataframe = NestedTableLayout.from_table(docx_table).parse_table(
+                docx_table, column_headers=table_meta_data.column_headers
+            )
+            return pd.concat([ahb_table_dataframe, nested_table_dataframe], ignore_index=True)
         for row in docx_table.rows:
             sanitized_cells = list(AhbSubTable.iter_visible_cells(row=row))
 
