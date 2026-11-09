@@ -12,7 +12,7 @@ jobs:
             # Without the private submodule the tests that need it skip and coverage
             # drops to 66%, so the full gate only applies when it is present.
             run: |
-              if [ "${{ steps.submodules.outputs.mirror }}" = "true" ]; then MIN=79; else MIN=66; fi
+              if [ "$MIRROR" = "true" ]; then MIN=79; else MIN=66; fi
               uv run --group test pytest -rs --cov kohlrahbi --cov-report term-missing --cov-fail-under "$MIN"
           - name: lint
             run: uv run --group lint ruff check src/kohlrahbi
@@ -81,4 +81,8 @@ jobs:
       - name: Install dependencies
         run: uv sync --group dev
       - name: Run ${{ matrix.check.name }}
+        env:
+          # The steps context is not available inside strategy.matrix, so the
+          # submodule result reaches the matrix commands as an env var.
+          MIRROR: ${{ steps.submodules.outputs.mirror }}
         run: ${{ matrix.check.run }}
