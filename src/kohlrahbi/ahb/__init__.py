@@ -17,6 +17,7 @@ from kohlrahbi.ahbtable.ahbtable import AhbTable
 from kohlrahbi.docxfilefinder import DocxFileFinder
 from kohlrahbi.enums.ahbexportfileformat import AhbExportFileFormat
 from kohlrahbi.logger import logger
+from kohlrahbi.nestedlayout import is_nested_layout_table, nested_header_contains_pruefidentifikatoren
 from kohlrahbi.read_functions import (
     get_ahb_table,
     get_all_paragraphs_and_tables,
@@ -209,6 +210,8 @@ def extract_pruefis_from_table(table: Table) -> list[str]:
 
 def table_header_contains_text_pruefidentifikator(table: Table) -> bool:
     """Checks if the table header contains the text 'Prüfidentifikator'."""
+    if is_nested_layout_table(table):
+        return nested_header_contains_pruefidentifikatoren(table)
     pattern = r"Prüfidentifikator(?:\t){0,10}\t\d+"
     # "matches "Prüfidentifikator" followed by at least 1 tab separated numbers, max 11 pruefis is chosen arbitrarily
     return bool(re.search(pattern, table.row_cells(0)[-1].text))
