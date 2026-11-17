@@ -52,17 +52,17 @@ sqlmodels = ["sqlmodel>=0.0.22", "sqlalchemy[mypy]>=2.0.37"]
 
 [dependency-groups]
 test = [
-  "coverage==7.17.2",
+  "coverage==7.17.3",
   "pytest-cov==7.1.0",
   "dictdiffer==0.10.0",
   "freezegun==1.5.5",
   "pytest-datafiles==3.0.1",
   "pytest==9.2.0",
-  "syrupy==6.1.1",
+  "syrupy==7.0.0",
   "sqlmodel>=0.0.22",
   "sqlalchemy[mypy]>=2.0.37",
 ]
-lint = ["ruff==0.17.4"]
+lint = ["ruff==0.17.5"]
 typecheck = [
   "mypy==2.4.1",
   "networkx-stubs==0.0.1",
