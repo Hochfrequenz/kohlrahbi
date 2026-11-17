@@ -17,6 +17,7 @@ from kohlrahbi.ahbtable.ahbpackagetable import AhbPackageTable
 from kohlrahbi.ahbtable.ahbsubtable import AhbSubTable
 from kohlrahbi.ahbtable.ahbtable import AhbTable
 from kohlrahbi.logger import logger
+from kohlrahbi.nestedlayout import get_lines_of_outer_row, is_nested_layout_table
 from kohlrahbi.seed import Seed
 
 
@@ -46,7 +47,12 @@ def table_header_starts_with_text_edifact_struktur(table: Table) -> bool:
     """
     Check if the table header starts with the text "EDIFACT Struktur".
     """
-    return table.cell(row_idx=0, col_idx=0).text.strip() == "EDIFACT Struktur"
+    if table.cell(row_idx=0, col_idx=0).text.strip() == "EDIFACT Struktur":
+        return True
+    # in the nested layout, the text might be part of an inner table
+    return is_nested_layout_table(table) and any(
+        cell.text == "EDIFACT Struktur" for line in get_lines_of_outer_row(table, 0) for cell in line
+    )
 
 
 def is_item_header_of_change_history_section(item: Paragraph | Table | None, style_name: str) -> TypeGuard[Paragraph]:
@@ -262,7 +268,7 @@ def get_all_conditions_from_doc(
         seed = update_seed(item, seed)
         if is_relevant_pruefi_table(item, seed, edifact_format):
             conditions_tables.append(item)
-        if is_last_row_unt_0062(item):
+        if is_last_row_end_of_message(item):
             seed = None
     if len(conditions_tables) > 0:
         conditions_table = AhbConditions.from_docx_table(conditions_tables, edifact_format)
@@ -277,11 +283,24 @@ def get_all_conditions_from_doc(
     return package_table, conditions_table
 
 
-def is_last_row_unt_0062(item: Table | Paragraph) -> bool:
+_END_OF_MESSAGE_DATA_ELEMENTS = {("UNT", "0062"), ("UNZ", "0020")}  # MSCONS messages end with the UNZ segment
+
+
+def is_last_row_end_of_message(item: Table | Paragraph) -> bool:
     """
-    Checks if the given table contains UNT segment in last row.
+    Checks if the last row of the given table is the last data element of the message (UNT 0062 or UNZ 0020).
+    The tables after it (e.g. the 'Sparte' tables in the MSCONS AHB) don't belong to the AHB table anymore.
     """
-    return isinstance(item, Table) and "UNT\t0062" == item.cell(row_idx=-1, col_idx=0).text.strip()
+    if not isinstance(item, Table):
+        return False
+    if is_nested_layout_table(item):
+        last_row_lines = get_lines_of_outer_row(item, len(item._tbl.tr_lst) - 1)  # pylint:disable=protected-access
+        if not last_row_lines:
+            return False
+        texts = [cell.text for cell in last_row_lines[0]]
+        return any(tuple(texts[index : index + 2]) in _END_OF_MESSAGE_DATA_ELEMENTS for index in range(len(texts)))
+    segment, _, data_element = item.cell(row_idx=-1, col_idx=0).text.strip().partition("\t")
+    return (segment, data_element) in _END_OF_MESSAGE_DATA_ELEMENTS
 
 
 def is_relevant_pruefi_table(

@@ -6,7 +6,17 @@ from docx.table import Table
 from pydantic import BaseModel, Field
 
 from kohlrahbi.enums import RowType
+from kohlrahbi.nestedlayout import NestedTableLayout, is_nested_layout_table
 from kohlrahbi.table_header import PruefiMetaData, TableHeader, get_tabstop_positions
+
+BASE_COLUMN_NAMES: list[str] = [
+    "Segment Gruppe",
+    "Segment",
+    "Segment ID",
+    "Datenelement",
+    "Codes und Qualifier",
+    "Beschreibung",
+]
 
 
 # pylint: disable=too-few-public-methods
@@ -33,6 +43,8 @@ class Seed(BaseModel):
         Args:
             item (Union[Paragraph, Table]): A paragraph or table from the docx
         """
+        if is_nested_layout_table(docx_table):
+            return cls.from_nested_layout_table(docx_table)
 
         # the header cell with all pruefi information is the last cell in the first row
         # the first row contains the 'EDIFACT Struktur' column, which is not needed
@@ -56,15 +68,7 @@ class Seed(BaseModel):
         # metadata
         metadata = table_header.pruefi_meta_data
 
-        base_column_names: list[str] = [
-            "Segment Gruppe",
-            "Segment",
-            "Segment ID",
-            "Datenelement",
-            "Codes und Qualifier",
-            "Beschreibung",
-        ]
-        columns = base_column_names + pruefidentifikatoren + ["Bedingung"]
+        columns = BASE_COLUMN_NAMES + pruefidentifikatoren + ["Bedingung"]
 
         # Initialize help variables
         last_two_row_types: list[RowType] = [RowType.EMPTY, RowType.EMPTY]
@@ -77,4 +81,19 @@ class Seed(BaseModel):
             tabstop_positions=tabstop_positions,
             last_two_row_types=last_two_row_types,
             metadata=metadata,
+        )
+
+    @classmethod
+    def from_nested_layout_table(cls, docx_table: Table) -> "Seed":
+        """
+        Prepare a Seed for a table in the nested layout (see kohlrahbi.nestedlayout).
+        The indent and tab stop positions are only needed for the old layout and stay at their defaults.
+        """
+        layout = NestedTableLayout.from_table(docx_table)
+        pruefidentifikatoren = layout.get_pruefidentifikatoren()
+        return cls(
+            pruefidentifikatoren=pruefidentifikatoren,
+            column_headers=BASE_COLUMN_NAMES + pruefidentifikatoren + ["Bedingung"],
+            last_two_row_types=[RowType.EMPTY, RowType.EMPTY],
+            metadata=layout.pruefi_meta_data,
         )
